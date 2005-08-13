@@ -33,3 +33,24 @@ class Menu(OrderedContainer):
     implements(IMenu)
 
     title = u''
+
+    def getMenuItems(self):
+        return ()
+
+    def addMenuItem(self, id, title, description='', target=None, urlPath=''):
+        pass
+
+    def getParentMenuItem(self, menu=None, accu=[]):
+        return None
+
+    def getMenu(self):
+        return None
+        
+    def getActiveMenuItems(self, context):
+        return ()
+
+    def getCorrespondingMenuItems(self,context):
+        return ()
+
+    def menuItemPath(self):
+        return ''

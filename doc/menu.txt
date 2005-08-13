@@ -9,4 +9,3 @@ We first set up a test and working environment:
 Create a menu:
 
     >>> m1 = Menu()
-    

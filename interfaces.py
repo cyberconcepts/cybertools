@@ -28,7 +28,90 @@ from zope.app.container.interfaces import IOrderedContainer
 from zope.schema import Text, TextLine, List, Object, Int
 
 
-class IMenu(IOrderedContainer):
-    """ A Menu.
+class IBaseMenuItem(IOrderedContainer):
+    """ Base interface with common methods for IMenu and IMenuItem.
     """
+
+    def getMenuItems():
+        """ Return sub-menu items contained in this menu or menu item.
+        """
+
+    def addMenuItem(id, title, description='', target=None, urlPath=''):
+        """ Add a new menu item to this item or menu. Return the newly
+            created menu item.
+
+            This is a convenience method for creating menu structures
+            programmatically.
+        """
+
+    def getParentMenuItem(menu=None, accu=[]):
+        """ Return the menu or menu item this item is a sub menu item.
+
+            For certain cases of dynamic menu generation it may be
+            useful to give this method the menu object to which the
+            parent menu item path may eventually lead, and a list
+            of already accumulated menu items - in order to avoid
+            infinite cyclic searches for parent menu items.
+        """
+
+    def getMenu():
+        """ Return the top-most menu object.
+        """
+
+
+class IMenu(IBaseMenuItem):
+    """ A Menu is a container for MenuItems and will be shown in a
+        menu portlet.
+    """
+
+    def getActiveMenuItems(context):
+        """ Return a a tuple with two elements:
+            [0] list with basic (current) menu item objects that
+                are associtated with the context.
+            [1] list with all menu item objects that lead to
+                the context object.
+        """
+
+    def getCorrespondingMenuItems(context):
+        """ Return the menu items of which context is the target.
+        """
+
+    def menuItemPath():
+        """ Used for index creation: returns normalized urlPath attribute
+            for efficiently finding correspondign menu items via the
+            context object's path.
+        """
+
+
+class IMenuItem(IBaseMenuItem):
+    """ A MenuItem is part of a Menu and usually displayed together
+        with other MenuItem objects in a menu portlet.
+    """
+
+    def getItemUrl():
+        """ Return the target URL of this menu item.
+        """
+
+    def getTargetUrl():
+        """ Return the target URL of this menu item.
+        """
+
+    def getTargetObject():
+        """ Return the object this menu item points to.
+        """
+
+    def isActive(context):
+        """ Return True if this menu item leads to the context object.
+        """
+
+    def isCurrent(context):
+        """ Return True if this menu item is associated with the
+            context object.
+        """
+
+    def menuItemPath():
+        """ Used for index creation: returns normalized urlPath attribute
+            for efficiently finding correspondign menu items via the
+            context object's path.
+        """
 
