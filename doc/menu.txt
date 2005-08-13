@@ -1,9 +1,10 @@
 Creating and Rendering Menus
 ============================
 
-We first set up a test environment:
+We first set up a test and working environment:
 
     >>> from zope.app.testing import ztapi
+    >>> from cybertools.menu import Menu
 
 Create a menu:
 

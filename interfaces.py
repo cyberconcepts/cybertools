@@ -28,7 +28,7 @@ from zope.app.container.interfaces import IOrderedContainer
 from zope.schema import Text, TextLine, List, Object, Int
 
 
-class IMenu(Interface):
+class IMenu(IOrderedContainer):
     """ A Menu.
     """
 
