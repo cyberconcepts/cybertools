@@ -1,0 +1,15 @@
+<!-- $Id$ -->
+
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   i18n_domain="zope"
+   >
+
+  <!-- Security definitions -->
+
+  <!-- Content declarations -->
+
+  <!-- Register various browser related components, including all views -->
+  <include package=".browser" />
+
+</configure>

@@ -1,0 +1,35 @@
+<!-- $Id$ -->
+
+<configure
+   xmlns:zope="http://namespaces.zope.org/zope"
+   xmlns="http://namespaces.zope.org/browser"
+   i18n_domain="zope"
+   >
+
+  <layer name="cyberview" />
+
+  <skin name="CyberView"
+        layers="cyberview
+                zope.app.zopetop.css
+                zope.app.zopetop.images
+                zope.app.zopetop.templates
+                rotterdam default" />
+    
+  <page for="*"
+        name="view_macros" template="view_macros.pt"
+        permission="zope.View"
+        layer="cyberview" />
+
+  <resource name="cyberview.css" file="cyberview.css"
+            layer="cyberview" />
+
+  <resource name="cyberconcepts.png" image="cyc-logo02.png"
+            layer="cyberview" />
+
+  <resource name="cyberconcepts.gif" image="cyc-logo03.gif"
+            layer="cyberview" />
+
+  <resource name="bg_cyberview.gif" image="bg_cyberview.gif"
+            layer="cyberview" />
+
+</configure>
