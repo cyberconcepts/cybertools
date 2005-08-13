@@ -1,0 +1,7 @@
+Creating and Rendering Menus
+============================
+
+We first set up a test environment:
+
+    >>> from zope.app.testing import ztapi
+
