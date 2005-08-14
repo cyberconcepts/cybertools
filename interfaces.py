@@ -24,6 +24,7 @@ $Id$
 
 from zope.interface import Interface
 from zope.app.container.interfaces import IOrderedContainer
+from zope.app.component.interfaces.registration import IRegisterable
 
 from zope.schema import Text, TextLine, List, Object, Int
 
@@ -31,6 +32,12 @@ from zope.schema import Text, TextLine, List, Object, Int
 class IBaseMenuItem(IOrderedContainer):
     """ Base interface with common methods for IMenu and IMenuItem.
     """
+
+    title = TextLine(
+        title=u'Title',
+        description=u'Title of the menu or text that will appear on the menu item',
+        default=u'',
+        required=True)
 
     def getMenuItems():
         """ Return sub-menu items contained in this menu or menu item.
@@ -59,7 +66,7 @@ class IBaseMenuItem(IOrderedContainer):
         """
 
 
-class IMenu(IBaseMenuItem):
+class IMenu(IBaseMenuItem, IRegisterable):
     """ A Menu is a container for MenuItems and will be shown in a
         menu portlet.
     """
@@ -87,6 +94,16 @@ class IMenuItem(IBaseMenuItem):
     """ A MenuItem is part of a Menu and usually displayed together
         with other MenuItem objects in a menu portlet.
     """
+
+    target = Object(Interface,
+        title=u'Target',
+        description=u'Target object this menu item should link to.',)
+
+    urlPath = TextLine(
+        title=u'URL or Path',
+        description=u'URL or path that this menu item should link to.',
+        default=u'',
+        required=True)
 
     def getItemUrl():
         """ Return the target URL of this menu item.
