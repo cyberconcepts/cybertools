@@ -27,8 +27,8 @@
     <table class="columns">
       <tr>
         <td class="left">
+          <span metal:use-macro="context/@@standard_macros/navigation_box" />
           <!--
-            <span metal:use-macro="context/@@standard_macros/navigation_box" />
             <span metal:use-macro="context/@@standard_macros/commontasks_box" />
             <span metal:use-macro="context/@@standard_macros/metadata_box" />
             <span metal:use-macro="context/@@standard_macros/views_box" />

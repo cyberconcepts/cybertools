@@ -1,0 +1,21 @@
+<!-- $Id$ -->
+
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   i18n_domain="zope"
+   >
+
+  <!-- Security definitions -->
+
+  <!-- Content declarations -->
+
+  <utility provides=".interfaces.IRelationsRepository"
+           factory=".utilities.RelationsRepository" />
+
+  <utility provides=".interfaces.IRelationsRegistry"
+           factory=".utilities.RelationsRegistry" />
+
+  <!-- Register various browser related components, including all views -->
+  <!--include package=".browser" /-->
+
+</configure>

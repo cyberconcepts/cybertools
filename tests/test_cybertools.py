@@ -13,6 +13,7 @@ from zope.app import zapi
 from cybertools.menu import Menu
 from cybertools.interfaces import IMenu
 
+
 class TestMenu(unittest.TestCase):
     "Test methods of the Menu class."
 
@@ -21,8 +22,8 @@ class TestMenu(unittest.TestCase):
         placefulSetUp()
         self.f1 = Folder()
         self.f1.__name__ = u'f1'
-        self.m1 = Menu()
-        self.f1['m1'] = self.m1
+        #self.m1 = Menu()
+        #self.f1['m1'] = self.m1
 
     def tearDown(self):
         pass
@@ -35,6 +36,7 @@ class TestMenu(unittest.TestCase):
         self.assert_(IContained.providedBy(Menu()),
             'Interface IContained is not implemented by class Menu.')
         verifyClass(IMenu, Menu)
+
 
 def test_suite():
     return unittest.TestSuite((

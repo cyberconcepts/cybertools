@@ -17,48 +17,35 @@
 #
 
 """
-Definition of the Menu class.
+Implementation of the utilities needed for the relations package.
 
 $Id$
 """
 
 from zope.interface import implements
-from zope.app.container.ordered import OrderedContainer
 from zope.app import zapi
 
-from interfaces import IMenu
+class RelationsRepository(Persistent, Contained):
+    """ Local utility for storing relations.
+    """
 
-class Menu(OrderedContainer):
+    def add(self, relation):
+        return 'bla'
 
-    implements(IMenu)
-
-    title = u''
-
-    def __init__(self, name=''):
-        self.__name__ = name
-
-    def getMenuItems(self):
-        return ()
-
-    def addMenuItem(self, id, title, description='', target=None, urlPath=''):
+    def remove(self, relation):
         pass
-
-    def getParentMenuItem(self, menu=None, accu=[]):
-        return None
-
-    def getMenu(self):
-        return None
         
-    def getActiveMenuItems(self, context):
-        return ()
 
-    def getCorrespondingMenuItems(self,context):
-        return ()
+class RelationsRegistry(Persistent, Contained):
+    """ Local utility for registering (cataloguing) and searching relations.
+    """
 
-    def menuItemPath(self):
-        return ''
-
-    def __repr__(self):
-        return "%s('%s')" % (self.__class__.__name__, self.__name__)
-
+    def register(self, relation):
+        pass
     
+    def unregister(relation):
+        pass
+    
+    def query(**kw):
+        return []
+
