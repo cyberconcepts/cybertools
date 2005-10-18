@@ -38,6 +38,19 @@
       fields="title"
       />
 
+  <menu
+      id="mmain"
+      title="main Menu"
+      />
+
+  <menuItem
+      action="demo"
+      for="zope.interface.Interface"
+      menu="mmain"
+      title="Demo"
+      permission="zope.Public"
+      />
+
   <include package=".skin" />
 
 </configure>

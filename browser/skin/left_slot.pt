@@ -1,0 +1,10 @@
+<div>
+  Headline
+</div>
+<div tal:repeat="viewlet options/viewlets">
+  <div tal:content="structure python: viewlet(viewlet=viewlet)">
+  <!--<div tal:repeat="item python: menu.getMenuItems(context, request)">
+    <span tal:replace="item/title"/>
+  </div>-->
+  </div>
+</div>

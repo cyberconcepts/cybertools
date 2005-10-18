@@ -32,4 +32,24 @@
   <resource name="bg_cyberview.gif" image="bg_cyberview.gif"
             layer="cyberview" />
 
+  <zope:interface interface="cybertools.browser.viewlets.ILeft"
+      type="zope.contentprovider.interfaces.IContentProviderType" />
+      
+  <viewletManager
+      name="navMenu"
+      provides="cybertools.browser.viewlets.ILeft"
+      template="left_slot.pt"
+      permission="zope.Public"
+      layer="cyberview"
+      />
+
+  <viewlet
+      name="navMenu"
+      manager="cybertools.browser.viewlets.ILeft"
+      template="menu_viewlet.pt"
+      class="cybertools.browser.menu.MenuViewlet"
+      permission="zope.Public"
+      layer="cyberview"
+      />
+
 </configure>
