@@ -40,8 +40,9 @@ class TestMenu(unittest.TestCase):
 
 def test_suite():
     return unittest.TestSuite((
-            unittest.makeSuite(TestMenu),
-            DocFileSuite('../doc/menu.txt'),
+                unittest.makeSuite(TestMenu),
+                DocFileSuite('browser/README.txt'),
+                DocFileSuite('doc/menu.txt'),
             ))
 
 if __name__ == '__main__':

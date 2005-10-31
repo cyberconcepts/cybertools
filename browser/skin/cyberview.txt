@@ -1,0 +1,23 @@
+Using the CyberView Skin
+========================
+
+We first set up a test and working environment:
+
+    >>> from zope.app import zapi
+    >>> from zope.app.testing import ztapi
+    >>> from zope.app.component import site, interfaces
+
+    >>> from zope.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.addHeader('Authorization', 'Basic mgr:mgrpw')
+
+We can now open a page using the CyberView skin:
+    
+    >>> browser.addHeader('Accept-Language', 'en-US')
+    >>> browser.open('http://localhost/++skin++CyberView')
+    >>> print browser.headers
+    Status: 200 Ok...
+    
+    >>> browser.url
+    'http://localhost/++skin++CyberView'
+    

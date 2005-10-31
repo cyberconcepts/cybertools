@@ -17,31 +17,26 @@
 #
 
 """
-Implementation of classes providing lazy variables.
+interface definitions for the LazyVars stuff.
 
 $Id$
 """
 
-from zope.interface import implements
-import interfaces
+from zope.interface import Interface, Attribute
 
-class LazyVars(object):
-    """ Basic adapter providing lazy variables.
+
+class ILazyNamespace(Interface):
+    """ Generic adapter that provides lazy setting and returning
+        of variables.
     """
 
-    implements(interfaces.ILazyVars)
+    def registerVariable(class_, name, function):
+        """ Class method: register a variable 'name' on class 'class_' that
+            will be provided by calling the function given.
 
-    variables = {}
+            The function should have one parameter that is set to the
+            LazyNamespace object when the function is called. Thus the method
+            has access to the instance variables (and other methods) of the
+            LazyVars object.
+        """
 
-    def __init__(self, context):
-        self.context = context
-
-    @classmethod
-    def registerVariable(class_, name, method):
-        class_.variables[name] = method
-
-    def __getattr__(self, attr):
-        value = self.variables[attr](self)
-        setattr(self, attr, value)
-        return value
-    

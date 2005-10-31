@@ -15,10 +15,23 @@
                 zope.app.zopetop.templates
                 rotterdam default" />
     
-  <page for="*"
+  <!--<page for="*"
         name="view_macros" template="view_macros.pt"
         permission="zope.View"
-        layer="cyberview" />
+        layer="cyberview" />-->
+
+  <view for="*"
+        name="default.html"
+        class="cybertools.browser.pageprovider.PageProviderView"
+        permission="zope.View"
+        layer="cyberview"
+        />
+
+  <defaultView
+      for="*"
+      name="default.html"
+      layer="cyberview"
+      />
 
   <resource name="cyberview.css" file="cyberview.css"
             layer="cyberview" />
@@ -32,21 +45,43 @@
   <resource name="bg_cyberview.gif" image="bg_cyberview.gif"
             layer="cyberview" />
 
-  <zope:interface interface="cybertools.browser.viewlets.ILeft"
-      type="zope.contentprovider.interfaces.IContentProviderType" />
-      
   <viewletManager
-      name="navMenu"
-      provides="cybertools.browser.viewlets.ILeft"
+      name="cybertools.pageprovider"
+      provides="zope.contentprovider.interfaces.IContentProvider"
+      class="cybertools.browser.pageprovider.PageProvider"
+      template="main.pt"
+      permission="zope.Public"
+      layer="cyberview"
+      />
+
+  <viewletManager
+      name="cybertools.body"
+      provides="cybertools.browser.IBody"
+      permission="zope.Public"
+      layer="cyberview"
+      />
+
+  <viewlet
+      name="body"
+      manager="cybertools.browser.IBody"
+      template="index.pt"
+      class="zope.app.container.browser.contents.Contents"
+      permission="zope.Public"
+      layer="cyberview"
+      />
+
+  <viewletManager
+      name="cybertools.left"
+      provides="cybertools.browser.ILeft"
       template="left_slot.pt"
       permission="zope.Public"
       layer="cyberview"
       />
 
   <viewlet
-      name="navMenu"
-      manager="cybertools.browser.viewlets.ILeft"
-      template="menu_viewlet.pt"
+      name="navmenu"
+      manager="cybertools.browser.ILeft"
+      template="viewlet_menu.pt"
       class="cybertools.browser.menu.MenuViewlet"
       permission="zope.Public"
       layer="cyberview"

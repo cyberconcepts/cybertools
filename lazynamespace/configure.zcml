@@ -9,11 +9,13 @@
 
   <!-- Content declarations -->
 
-  <utility provides=".interfaces.IRelationsRepository"
-           factory=".utilities.RelationsRepository" />
-
-  <utility provides=".interfaces.IRelationsRegistry"
-           factory=".utilities.RelationsRegistry" />
+  <adapter
+      for="zope.interface.Interface
+           zope.app.publisher.interfaces.browser.IBrowserRequest"
+      provides=".interfaces.ILazyNamespace"
+      factory=".lazynamespace.LazyNamespace"
+      permission="zope.Public"
+      />
 
   <!-- Register various browser related components, including all views -->
   <!--include package=".browser" /-->

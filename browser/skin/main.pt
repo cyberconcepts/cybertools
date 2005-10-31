@@ -10,12 +10,11 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link href="cyberview.css" rel="stylesheet" type="text/css"
           tal:attributes="href context/++resource++cyberview.css" />
-    <div metal:define-slot="headers" />
   </head>
   
   <body>
     <div class="top">
-      <a href="#" name="top" tal:attributes="href string:${request/URL/1}/@@manage">
+      <a href="#" name="top" tal:attributes="href string:${request/URL/1}">
         <img src="cyberconcepts.gif" height="75"
              alt="cyberconcepts IT-Consulting"
              tal:attributes="src context/++resource++cyberconcepts.gif" />
@@ -33,7 +32,7 @@
             <span metal:use-macro="context/@@standard_macros/views_box" />
             <span metal:use-macro="context/@@standard_macros/actions_box" />
           -->
-          <div tal:replace="structure provider:navMenu" />
+          <div tal:replace="structure provider:cybertools.left" />
         </td>
         <td class="main">
           <!--
@@ -41,8 +40,7 @@
             <span metal:use-macro="context/@@standard_macros/zmi_actions" />
             <span metal:use-macro="context/@@standard_macros/content_header_bar" />
           -->
-          <span metal:define-slot="body">Here comes the body</span>
-          <!--<p tal:content="provider:cybertools.pageprovider" />-->
+          <div tal:replace="structure provider:cybertools.body" />
         </td>
       </tr>
     </table>

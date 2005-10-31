@@ -1,0 +1,2 @@
+<div tal:define="menu options/viewlet/getMenu"
+     tal:content="python: menu.getMenuItems(context, request)" />
