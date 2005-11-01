@@ -7,8 +7,8 @@ We first set up a test and working environment:
     >>> from zope.app.testing import ztapi
     >>> from zope.app.component import site, interfaces
     >>> from zope.app.folder import Folder
-    >>> from cybertools.menu import Menu
-    >>> from cybertools.interfaces import IMenu
+    >>> from cybertools.menu.menu import Menu
+    >>> from cybertools.menu.interfaces import IMenu
 
 Set up a site:
 

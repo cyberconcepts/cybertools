@@ -17,7 +17,9 @@
 #
 
 """
-cybertools regions.
+This is intended to replace the page macro - we just use a view that renders
+a standard template (main.pt). This calls a set of viewlet managers that
+do the real work.
 
 $Id$
 """

@@ -1,0 +1,70 @@
+<!-- $Id$ -->
+
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="zope"
+   >
+
+  <!-- Content declarations -->
+
+  <interface
+      interface=".interfaces.IMenu"
+      type="zope.app.content.interfaces.IContentType" />
+
+  <content class=".menu.Menu">
+
+    <implements
+        interface="zope.app.utility.interfaces.ILocalUtility
+                   zope.app.annotation.interfaces.IAttributeAnnotatable" />
+
+    <factory
+        id="cybertools.Menu"
+        description="A configurable menu" />
+
+    <require
+        permission="zope.View"
+        interface=".interfaces.IMenu" />
+
+    <require
+        permission="zope.ManageContent"
+        set_schema=".interfaces.IMenu" />
+
+  </content>
+
+  <!-- Register views and skin stuff -->
+  <!--<include package=".browser" />-->
+
+  <tool
+      interface="cybertools.menu.interfaces.IMenu"
+      title="Menu"
+      description="A Menu allows you to add menu items that are then shown in a portlet"
+      />
+    
+  <browser:addform
+      label="Add Menu"
+      name="AddMenu.html"
+      schema="cybertools.interfaces.IMenu"
+      content_factory="cybertools.menu.Menu"
+      fields="title"
+      permission="zope.ManageContent"
+      />
+
+  <browser:addMenuItem
+      class="cybertools.menu.Menu"
+      title="Menu"
+      permission="zope.ManageContent"
+      view="AddMenu.html"
+      />
+
+  <browser:editform
+      label="Edit Menu"
+      name="edit.html"
+      schema="cybertools.interfaces.IMenu"
+      for="cybertools.interfaces.IMenu"
+      permission="zope.ManageContent"
+      menu="zmi_views" title="Edit"
+      fields="title"
+      />
+
+</configure>

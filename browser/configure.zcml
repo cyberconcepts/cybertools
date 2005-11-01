@@ -6,38 +6,6 @@
    i18n_domain="zope"
    >
 
-  <tool
-      interface="cybertools.interfaces.IMenu"
-      title="Menu"
-      description="A Menu allows you to add menu items that are then shown in a portlet"
-      />
-    
-  <addform
-      label="Add Menu"
-      name="AddMenu.html"
-      schema="cybertools.interfaces.IMenu"
-      content_factory="cybertools.menu.Menu"
-      fields="title"
-      permission="zope.ManageContent"
-      />
-
-  <addMenuItem
-      class="cybertools.menu.Menu"
-      title="Menu"
-      permission="zope.ManageContent"
-      view="AddMenu.html"
-      />
-
-  <editform
-      label="Edit Menu"
-      name="edit.html"
-      schema="cybertools.interfaces.IMenu"
-      for="cybertools.interfaces.IMenu"
-      permission="zope.ManageContent"
-      menu="zmi_views" title="Edit"
-      fields="title"
-      />
-
   <menu
       id="mmain"
       title="main Menu"

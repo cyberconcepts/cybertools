@@ -10,8 +10,8 @@ from zope.app.container.interfaces import IContained
 from zope.app.folder import Folder
 from zope.app import zapi
 
-from cybertools.menu import Menu
-from cybertools.interfaces import IMenu
+from menu import Menu
+from interfaces import IMenu
 
 
 class TestMenu(unittest.TestCase):
@@ -41,8 +41,7 @@ class TestMenu(unittest.TestCase):
 def test_suite():
     return unittest.TestSuite((
                 unittest.makeSuite(TestMenu),
-                DocFileSuite('browser/README.txt'),
-                DocFileSuite('doc/menu.txt'),
+                DocFileSuite('README.txt'),
             ))
 
 if __name__ == '__main__':
