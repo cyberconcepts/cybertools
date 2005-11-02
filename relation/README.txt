@@ -125,3 +125,12 @@ registry and query it:
     >>> clarkRels = relations.query(first=clark)
     >>> len(clarkRels)
     1
+    >>> clarkRels[0].second == washington
+    True
+
+    >>> nyRels = relations.query(second=newyork)
+    >>> len(nyRels)
+    2
+
+
+    
