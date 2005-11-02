@@ -88,7 +88,8 @@ When we search for relations that contain clark as first we get both:
 So we want to look only for ParentsOf relationships - this should give us
 all relations for clark's children:
 
-    >>> clarkChildren = relations.query(relationship=ParentsOf, first=clark)
+    >>> clarkChildren = relations.query(relationship=ParentsOf,
+    ...                                 first=clark)
     >>> len(clarkChildren)
     1
     >>> clarkChildren[0].second == audrey
@@ -99,3 +100,28 @@ all relations for clark's children:
 Setting up and using a RelationsRegistry local utility
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+We now do the same stuff as above with a real, catalog-based implementation of
+the relations registry.
+
+    >>> from cybertools.relation.registry import RelationsRegistry
+    >>> relations = RelationsRegistry()
+
+In order to register relations the objects that are referenced have to be
+registered with an IntIds (unique ids) utility, so we have to set up such
+an utility (using a stub/dummy implementation for testing purposes):
+
+    >>> from cybertools.relation.tests import IntIdsStub
+    >>> from zope.app.intid.interfaces import IIntIds
+    >>> from zope.app.testing import ztapi
+    >>> ztapi.provideUtility(IIntIds, IntIdsStub())
+
+So we are ready again to register a set of relations with our new relations
+registry and query it:
+
+    >>> relations.register(LivesIn(clark, washington))
+    >>> relations.register(LivesIn(audrey, newyork))
+    >>> relations.register(LivesIn(kirk, newyork))
+
+    >>> clarkRels = relations.query(first=clark)
+    >>> len(clarkRels)
+    1
