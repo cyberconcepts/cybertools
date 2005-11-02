@@ -9,7 +9,6 @@ from zope.app import zapi
 
 def test_suite():
     return unittest.TestSuite((
-                unittest.makeSuite(TestMenu),
                 DocFileSuite('README.txt'),
             ))
 

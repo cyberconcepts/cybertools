@@ -25,19 +25,6 @@ $Id$
 from zope.interface import Interface, Attribute
 
 
-class IRelationsRepository(Interface):
-    """ Local utility for storing relations.
-    """
-
-    def add(relation):
-        """ Add the relation given and return the id generated for it.
-        """
-
-    def remove(relation):
-        """ Remove the relation given.
-        """
-        
-
 class IRelationsRegistry(Interface):
     """ Local utility for registering (cataloguing) and searching relations.
     """

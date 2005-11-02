@@ -9,9 +9,6 @@
 
   <!-- Content declarations -->
 
-  <utility provides=".interfaces.IRelationsRepository"
-           factory=".utilities.RelationsRepository" />
-
   <utility provides=".interfaces.IRelationsRegistry"
            factory=".utilities.RelationsRegistry" />
 
