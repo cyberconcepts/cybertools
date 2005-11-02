@@ -116,13 +116,16 @@ an utility (using a stub/dummy implementation for testing purposes):
     >>> ztapi.provideUtility(IIntIds, IntIdsStub())
 
 So we are ready again to register a set of relations with our new relations
-registry and query it:
+registry and query it.
 
     >>> relations.register(LivesIn(clark, washington))
     >>> relations.register(LivesIn(audrey, newyork))
     >>> relations.register(LivesIn(kirk, newyork))
 
-    >>> clarkRels = relations.query(first=clark)
+As we now get back a result set we have to convert the query results to a list
+if we want to access relations by array index:
+    
+    >>> clarkRels = list(relations.query(first=clark))
     >>> len(clarkRels)
     1
     >>> clarkRels[0].second == washington
@@ -132,5 +135,29 @@ registry and query it:
     >>> len(nyRels)
     2
 
+    >>> relations.unregister(
+    ...     list(relations.query(first=audrey, second=newyork))[0]
+    ... )
+    >>> nyRels = list(relations.query(second=newyork))
+    >>> len(nyRels)
+    1
+    >>> nyRels[0].first == kirk
+    True
 
-    
+It should work also for triadic relations:
+
+    >>> relations.register(ParentsOf(clark, audrey, kirk))
+
+    >>> clarkRels = relations.query(first=clark)
+    >>> len(clarkRels)
+    2
+
+    >>> clarkChildren = list(relations.query(relationship=ParentsOf,
+    ...                                      first=clark))
+    >>> len(clarkChildren)
+    1
+    >>> clarkChildren[0].second == audrey
+    True
+    >>> clarkChildren[0].third == kirk
+    True
+
