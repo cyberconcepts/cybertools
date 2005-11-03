@@ -2,17 +2,40 @@
 
 <configure
    xmlns="http://namespaces.zope.org/zope"
-   i18n_domain="zope"
-   >
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="zope">
 
-  <!-- Security definitions -->
+  <localUtility class=".registry.RelationsRegistry">
+    <require
+        permission="zope.Public"
+        interface=".interfaces.IRelationsRegistry"
+        />
+    <require
+        interface="zope.app.catalog.interfaces.ICatalogQuery"
+        permission="zope.Public"
+        />
+    <require
+        interface="zope.app.catalog.interfaces.ICatalogEdit"
+        permission="zope.ManageServices"
+        />
+    <require
+        interface="zope.app.container.interfaces.IContainer"
+        permission="zope.ManageServices"
+        />
+    <factory id="cybertools.relation.registry.RelationsRegistry" />
+  </localUtility>
 
-  <!-- Content declarations -->
+  <browser:tool
+      interface=".interfaces.IRelationsRegistry"
+      title="Relations Registry"
+      description="Registry for relation objects."
+      />
 
-  <utility provides=".interfaces.IRelationsRegistry"
-           factory=".utilities.RelationsRegistry" />
-
-  <!-- Register various browser related components, including all views -->
-  <!--include package=".browser" /-->
+  <browser:addMenuItem
+      title="Relations Registry Utility"
+      description="A utility that allows the registration of and query for relations"
+      class=".registry.RelationsRegistry"
+      permission="zope.ManageSite"
+    />
 
 </configure>

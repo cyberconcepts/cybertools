@@ -65,7 +65,7 @@ It is also possible to remove a relation from the relation registry:
     >>> nyRels[0].first == kirk
     True
 
-Triedic Relations
+Triadic Relations
 ~~~~~~~~~~~~~~~~~
 
 We now extend our setting using a triadic relationship - triadic relations

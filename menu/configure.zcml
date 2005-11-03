@@ -35,7 +35,7 @@
   <!-- Register views and skin stuff -->
   <!--<include package=".browser" />-->
 
-  <tool
+  <browser:tool
       interface="cybertools.menu.interfaces.IMenu"
       title="Menu"
       description="A Menu allows you to add menu items that are then shown in a portlet"
@@ -44,7 +44,7 @@
   <browser:addform
       label="Add Menu"
       name="AddMenu.html"
-      schema="cybertools.interfaces.IMenu"
+      schema="cybertools.menu.interfaces.IMenu"
       content_factory="cybertools.menu.Menu"
       fields="title"
       permission="zope.ManageContent"
@@ -60,8 +60,8 @@
   <browser:editform
       label="Edit Menu"
       name="edit.html"
-      schema="cybertools.interfaces.IMenu"
-      for="cybertools.interfaces.IMenu"
+      schema="cybertools.menu.interfaces.IMenu"
+      for="cybertools.menu.interfaces.IMenu"
       permission="zope.ManageContent"
       menu="zmi_views" title="Edit"
       fields="title"

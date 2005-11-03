@@ -69,14 +69,18 @@ class RelationsRegistry(Catalog):
 
     implements(IRelationsRegistry)
 
-    def __init__(self, *args, **kwargs):
-        Catalog.__init__(self, *args, **kwargs)
+    indexesSetUp = False
+
+    def setupIndexes(self):
         self['relationship'] = FieldIndex()
         self['first'] = FieldIndex()
         self['second'] = FieldIndex()
         self['third'] = FieldIndex()
+        self.indexesSetUp = True
 
     def register(self, relation):
+        if not self.indexesSetUp:
+            self.setupIndexes()
         relid = self._getUid(relation)
         for idx in self:
             index = self[idx]
