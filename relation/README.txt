@@ -115,6 +115,15 @@ an utility (using a stub/dummy implementation for testing purposes):
     >>> from zope.app.testing import ztapi
     >>> ztapi.provideUtility(IIntIds, IntIdsStub())
 
+We also have to provide an adapter for the Relation objects that provides
+the attributes needed for indexing:
+
+    >>> from cybertools.relation.registry import IIndexableRelation
+    >>> from cybertools.relation.registry import IndexableRelationAdapter
+    >>> from cybertools.relation.interfaces import IRelation
+    >>> ztapi.provideAdapter(IRelation, IIndexableRelation,
+    ...                      IndexableRelationAdapter)
+
 So we are ready again to register a set of relations with our new relations
 registry and query it.
 

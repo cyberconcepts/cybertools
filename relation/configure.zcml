@@ -25,6 +25,12 @@
     <factory id="cybertools.relation.registry.RelationsRegistry" />
   </localUtility>
 
+  <adapter
+        for=".interfaces.IRelation"
+        provides=".registry.IIndexableRelation"
+        factory=".registry.IndexableRelationAdapter"
+        />
+
   <browser:tool
       interface=".interfaces.IRelationsRegistry"
       title="Relations Registry"

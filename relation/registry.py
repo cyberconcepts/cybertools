@@ -22,10 +22,10 @@ Implementation of the utilities needed for the relations package.
 $Id$
 """
 
-from zope.interface import implements
+from zope.interface import Interface, Attribute, implements
 from zope.app import zapi
 from zope.app.catalog.catalog import Catalog
-from zope.index.field import FieldIndex
+from zope.app.catalog.field import FieldIndex
 from zope.app.intid.interfaces import IIntIds
 
 from interfaces import IRelationsRegistry
@@ -72,43 +72,63 @@ class RelationsRegistry(Catalog):
     indexesSetUp = False
 
     def setupIndexes(self):
-        self['relationship'] = FieldIndex()
-        self['first'] = FieldIndex()
-        self['second'] = FieldIndex()
-        self['third'] = FieldIndex()
+        self['relationship'] = FieldIndex('relationship', IIndexableRelation)
+        self['first'] = FieldIndex('first', IIndexableRelation)
+        self['second'] = FieldIndex('second', IIndexableRelation)
+        self['third'] = FieldIndex('third', IIndexableRelation)
         self.indexesSetUp = True
 
     def register(self, relation):
         if not self.indexesSetUp:
             self.setupIndexes()
-        relid = self._getUid(relation)
-        for idx in self:
-            index = self[idx]
-            if idx == 'relationship':
-                index.index_doc(relid, self._getRelationship(relation))
-            else:
-                target = getattr(relation, idx, None)
-                index.index_doc(relid, target and self._getUid(target))
+        self.index_doc(_getUid(relation), relation)
     
     def unregister(self, relation):
-        self.unindex_doc(self._getUid(relation))
+        self.unindex_doc(_getUid(relation))
     
     def query(self, **kw):
         for k in kw:
             if k == 'relationship':
-                quString = self._getClassString(kw[k])
+                quString = _getClassString(kw[k])
             else:
-                quString = self._getUid(kw[k])
+                quString = _getUid(kw[k])
             # set min, max
             kw[k] = (quString, quString)
         return self.searchResults(**kw)
 
-    def _getUid(self, ob):
-        return zapi.getUtility(IIntIds).getId(ob)
 
-    def _getRelationship(self, relation):
-        return self._getClassString(relation.__class__)
-
-    def _getClassString(self, cls):
-        return cls.__module__ + '.' + cls.__name__
     
+class IIndexableRelation(Interface):
+    """ Provides the attributes needed for indexing relation objects in
+        a catalog-based registry.
+    """
+
+
+class IndexableRelationAdapter(object):
+    """ Adapter for providing the attributes needed for indexing
+        relation objects.
+    """
+
+    implements(IIndexableRelation)
+
+    def __init__(self, context):
+        self.context = context
+
+    def getRelationship(self):
+        return _getRelationship(self.context)
+    relationship = property(getRelationship)
+
+    def __getattr__(self, attr):
+        value = getattr(self.context, attr)
+        return _getUid(value)
+
+        
+def _getUid(ob):
+    return zapi.getUtility(IIntIds).getId(ob)
+
+def _getRelationship(relation):
+    return _getClassString(relation.__class__)
+
+def _getClassString(cls):
+    return cls.__module__ + '.' + cls.__name__
+
