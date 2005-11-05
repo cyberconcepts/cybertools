@@ -44,7 +44,7 @@ class IRelationsRegistryQuery(Interface):
     """
 
     def query(**kw):
-        """ Return a list of relations that fulfill the criteria given.
+        """ Return a sequence of relations that fulfill the criteria given.
 
             Example: rr.queryRelations(first=someObject, second=anotherObject,
                                        relationship=SomeRelationClass)
@@ -57,7 +57,7 @@ class IRelationsRegistry(IRelationsRegistryUpdate, IRelationsRegistryQuery):
 
 
 class IRelation(Interface):
-    """ Base class for relations.
+    """ Base interface for relations.
     """
     
     
@@ -75,4 +75,3 @@ class ITriadicRelation(IDyadicRelation):
     
     third = Attribute('Third object that belongs to the relation.')
 
-    
