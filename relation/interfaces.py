@@ -47,7 +47,7 @@ class IRelationsRegistryQuery(Interface):
         """ Return a list of relations that fulfill the criteria given.
 
             Example: rr.queryRelations(first=someObject, second=anotherObject,
-                                       relationship='a.dotted.name')
+                                       relationship=SomeRelationClass)
         """
 
 
