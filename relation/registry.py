@@ -22,6 +22,7 @@ Implementation of the utilities needed for the relations package.
 $Id$
 """
 
+from persistent import Persistent
 from zope.interface import Interface, Attribute, implements
 from zope.app import zapi
 from zope.app.catalog.catalog import Catalog
@@ -120,8 +121,13 @@ class IndexableRelationAdapter(object):
 
     def __getattr__(self, attr):
         value = getattr(self.context, attr)
-        return _getUid(value)
+        if isinstance(value, Persistent):
+            return _getUid(value)
+        else:
+            return value
 
+
+# helper functions
         
 def _getUid(ob):
     return zapi.getUtility(IIntIds).getId(ob)
@@ -131,4 +137,20 @@ def _getRelationship(relation):
 
 def _getClassString(cls):
     return cls.__module__ + '.' + cls.__name__
+
+
+# event handler
+
+def unregisterRelations(context, event):
+    """ Handles IObjectRemoved event: unregisters all relations for the
+        object that has been removed.
+    """
+    relations = []
+    registry = zapi.getUtility(IRelationsRegistry)
+    for attr in ('first', 'second', 'third'):
+        relations = registry.query(**{attr: context})
+        for relation in relations:
+            registry.unregister(relation)
+            # to do: unregister relation also from the IntId utility
+            #        (if appropriate).
 

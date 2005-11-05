@@ -25,8 +25,9 @@ $Id$
 from zope.interface import Interface, Attribute
 
 
-class IRelationsRegistry(Interface):
-    """ Local utility for registering (cataloguing) and searching relations.
+class IRelationsRegistryUpdate(Interface):
+    """ Interface for registering and unregistering relations with a
+        relations registry.
     """
 
     def register(relation):
@@ -37,6 +38,11 @@ class IRelationsRegistry(Interface):
         """ Remove the relation given from this registry.
         """
 
+
+class IRelationsRegistryQuery(Interface):
+    """ Interface for querying a relations registry.
+    """
+
     def query(**kw):
         """ Return a list of relations that fulfill the criteria given.
 
@@ -45,14 +51,15 @@ class IRelationsRegistry(Interface):
         """
 
 
+class IRelationsRegistry(IRelationsRegistryUpdate, IRelationsRegistryQuery):
+    """ Local utility for registering (cataloguing) and searching relations.
+    """
+
+
 class IRelation(Interface):
     """ Base class for relations.
     """
     
-    relationship = Attribute(
-        'A string specific for a kind of relation; e.g. the full module '
-        'path and class name of the class implementing a certain type of relation.')
-
     
 class IDyadicRelation(IRelation):
     """ Relation connecting two objects.

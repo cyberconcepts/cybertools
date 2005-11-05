@@ -1,13 +1,19 @@
-Yet Another Relations Engine...
-===============================
+Yet Another Relations (Reference) Engine...
+===========================================
+
+    >>> from zope.app.testing.placelesssetup import setUp
+    >>> setUp()
 
 Let's start with two classes and a few objects that we will connect using
-relations:
+relations (we derive the classes from Persistent, thus we will be able to
+reference these objects via IntIds later; the __parent__ and __name__
+attributes are also needed later when we send an IObjectRemovedEvent event):
 
-    >>> class Person(object):
-    ...     pass
+    >>> from persistent import Persistent
+    >>> class Person(Persistent):
+    ...     __name__= __parent__ = None
 
-    >>> class City(object):
+    >>> class City(Persistent):
     ...     pass
 
     >>> clark = Person()
@@ -19,6 +25,7 @@ relations:
 The relation we'll use tells us in which city a person lives; this is a dyadic
 relation as it connects two objects. We also associate the relationship
 with an interface as we will later use this interface for querying relations.
+
 
 Dyadic Relations
 ~~~~~~~~~~~~~~~~
@@ -65,6 +72,7 @@ It is also possible to remove a relation from the relation registry:
     >>> nyRels[0].first == kirk
     True
 
+    
 Triadic Relations
 ~~~~~~~~~~~~~~~~~
 
@@ -97,14 +105,19 @@ all relations for clark's children:
     >>> clarkChildren[0].third == kirk
     True
 
+    
 Setting up and using a RelationsRegistry local utility
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We now do the same stuff as above with a real, catalog-based implementation of
-the relations registry.
+the relations registry. We also register the relations registry as a
+utility for demonstration purposes (and to be able to use it later when
+working with events).
 
     >>> from cybertools.relation.registry import RelationsRegistry
-    >>> relations = RelationsRegistry()
+    >>> from cybertools.relation.interfaces import IRelationsRegistry
+    >>> from zope.app.testing import ztapi
+    >>> ztapi.provideUtility(IRelationsRegistry, RelationsRegistry())    
 
 In order to register relations the objects that are referenced have to be
 registered with an IntIds (unique ids) utility, so we have to set up such
@@ -112,7 +125,6 @@ an utility (using a stub/dummy implementation for testing purposes):
 
     >>> from cybertools.relation.tests import IntIdsStub
     >>> from zope.app.intid.interfaces import IIntIds
-    >>> from zope.app.testing import ztapi
     >>> ztapi.provideUtility(IIntIds, IntIdsStub())
 
 We also have to provide an adapter for the Relation objects that provides
@@ -127,6 +139,9 @@ the attributes needed for indexing:
 So we are ready again to register a set of relations with our new relations
 registry and query it.
 
+    >>> from zope.app import zapi
+    >>> relations = zapi.getUtility(IRelationsRegistry)
+    
     >>> relations.register(LivesIn(clark, washington))
     >>> relations.register(LivesIn(audrey, newyork))
     >>> relations.register(LivesIn(kirk, newyork))
@@ -170,3 +185,32 @@ It should work also for triadic relations:
     >>> clarkChildren[0].third == kirk
     True
 
+
+Handling object removal
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Often it is desirable to unregister a when one of the objects
+involved in the relation is removed from its container. This can be
+done by subscribing to IObjectRemovedEvent. The relation.registry module
+provides a simple handler for this event.
+
+    >>> from zope.app.container.interfaces import IObjectRemovedEvent
+    >>> from zope.interface import Interface
+    >>> from cybertools.relation.registry import unregisterRelations 
+    >>> ztapi.subscribe([Interface, IObjectRemovedEvent], None, unregisterRelations)
+
+We simulate the removal of kirk by calling notify:
+
+    >>> from zope.app.container.contained import ObjectRemovedEvent
+    >>> from zope.event import notify
+    
+    >>> len(relations.query(first=clark))
+    2
+    
+    >>> notify(ObjectRemovedEvent(kirk))
+
+Thus there should only remain one relation containing clark as first:
+
+    >>> len(relations.query(first=clark))
+    1
+    

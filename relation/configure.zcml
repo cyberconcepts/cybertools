@@ -7,12 +7,16 @@
 
   <localUtility class=".registry.RelationsRegistry">
     <require
-        permission="zope.Public"
-        interface=".interfaces.IRelationsRegistry"
+        permission="zope.View"
+        interface=".interfaces.IRelationsRegistryQuery"
+        />
+    <require
+        permission="zope.ManageContent"
+        interface=".interfaces.IRelationsRegistryUpdate"
         />
     <require
         interface="zope.app.catalog.interfaces.ICatalogQuery"
-        permission="zope.Public"
+        permission="zope.View"
         />
     <require
         interface="zope.app.catalog.interfaces.ICatalogEdit"
@@ -29,8 +33,17 @@
         for=".interfaces.IRelation"
         provides=".registry.IIndexableRelation"
         factory=".registry.IndexableRelationAdapter"
+        trusted="true"
         />
 
+  <subscriber
+        for="zope.interface.Interface
+             zope.app.container.interfaces.IObjectRemovedEvent"
+        handler=".registry.unregisterRelations"
+        />
+
+  <!-- browser settings -->
+        
   <browser:tool
       interface=".interfaces.IRelationsRegistry"
       title="Relations Registry"
