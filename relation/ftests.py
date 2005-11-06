@@ -2,12 +2,28 @@
 
 import unittest, doctest
 from zope.app.testing.functional import FunctionalTestCase
+from zope.app.testing import setup
 from zope.testbrowser import Browser
+
+from zope.app import component, intid, zapi
 
 class BrowserTest(FunctionalTestCase):
     "Functional tests for the relation package."
 
-    def test(self):
+    def setUp(self):
+        super(BrowserTest, self).setUp()
+        root = self.getRootFolder()
+        sitemanager = zapi.getSiteManager(root)
+        #defaultSite = component.site.LocalSiteManager(root)['default']
+        default = sitemanager['default']
+        intids = intid.IntIds()
+        default['intids'] = intids
+        reg = component.site.UtilityRegistration(u'',
+                                intid.interfaces.IIntIds, default['intids'])
+        key = default.registrationManager.addRegistration(reg)
+        default.registrationManager[key].status = component.interfaces.registration.ActiveStatus
+
+    def test(self):        
         browser = Browser()
         browser.handleErrors = False
         browser.addHeader('Authorization', 'Basic mgr:mgrpw')
@@ -26,7 +42,7 @@ class BrowserTest(FunctionalTestCase):
 
 def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
-    #browser = FunctionalDocFileSuite('skin/cyberview.txt', optionflags=flags)
+    #browser = FunctionalDocFileSuite('funky.txt', optionflags=flags)
     browser = unittest.makeSuite(BrowserTest)
     return unittest.TestSuite((browser,))
 

@@ -23,8 +23,41 @@ $Id$
 """
 
 from zope.interface import Interface, Attribute
+from zope.app.event.interfaces import IObjectEvent
 
 
+# relation interfaces
+
+class IRelation(Interface):
+    """ Base interface for relations.
+    """
+    
+    
+class IDyadicRelation(IRelation):
+    """ Relation connecting two objects.
+    """
+
+    first = Attribute('First object that belongs to the relation.')
+    second = Attribute('Second object that belongs to the relation.')
+
+    
+class ITriadicRelation(IDyadicRelation):
+    """ Relation connecting three objects.
+    """
+    
+    third = Attribute('Third object that belongs to the relation.')
+
+
+# event interfaces
+
+class IRelationInvalidatedEvent(IObjectEvent):
+    """ This event fires when a relation is invalidated, typically because
+        an object that is involved in the relation is removed.
+    """
+
+
+# relations registry interfaces
+    
 class IRelationsRegistryUpdate(Interface):
     """ Interface for registering and unregistering relations with a
         relations registry.
@@ -55,23 +88,4 @@ class IRelationsRegistry(IRelationsRegistryUpdate, IRelationsRegistryQuery):
     """ Local utility for registering (cataloguing) and searching relations.
     """
 
-
-class IRelation(Interface):
-    """ Base interface for relations.
-    """
-    
-    
-class IDyadicRelation(IRelation):
-    """ Relation connecting two objects.
-    """
-
-    first = Attribute('First object that belongs to the relation.')
-    second = Attribute('Second object that belongs to the relation.')
-
-    
-class ITriadicRelation(IDyadicRelation):
-    """ Relation connecting three objects.
-    """
-    
-    third = Attribute('Third object that belongs to the relation.')
 

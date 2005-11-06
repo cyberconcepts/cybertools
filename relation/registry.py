@@ -28,8 +28,12 @@ from zope.app import zapi
 from zope.app.catalog.catalog import Catalog
 from zope.app.catalog.field import FieldIndex
 from zope.app.intid.interfaces import IIntIds
+from zope.app.location.interfaces import ILocation
+from zope.event import notify
+from zope.app.event.objectevent import ObjectEvent
+from zope.security.proxy import removeSecurityProxy
 
-from interfaces import IRelationsRegistry
+from interfaces import IRelationsRegistry, IRelationInvalidatedEvent
 
 
 class DummyRelationsRegistry(object):
@@ -70,18 +74,13 @@ class RelationsRegistry(Catalog):
 
     implements(IRelationsRegistry)
 
-    indexesSetUp = False
-
     def setupIndexes(self):
-        self['relationship'] = FieldIndex('relationship', IIndexableRelation)
-        self['first'] = FieldIndex('first', IIndexableRelation)
-        self['second'] = FieldIndex('second', IIndexableRelation)
-        self['third'] = FieldIndex('third', IIndexableRelation)
-        self.indexesSetUp = True
+        for idx in ('relationship', 'first', 'second', 'third'):
+            if idx not in self:
+                self[idx] = FieldIndex(idx, IIndexableRelation)
 
     def register(self, relation):
-        if not self.indexesSetUp:
-            self.setupIndexes()
+        #self.setupIndexes()
         self.index_doc(_getUid(relation), relation)
     
     def unregister(self, relation):
@@ -133,24 +132,48 @@ def _getUid(ob):
     return zapi.getUtility(IIntIds).getId(ob)
 
 def _getRelationship(relation):
-    return _getClassString(relation.__class__)
+    return _getClassString(removeSecurityProxy(relation).__class__)
 
 def _getClassString(cls):
-    return cls.__module__ + '.' + cls.__name__
+    return '%s.%s' % (cls.__module__, cls.__name__)
 
 
-# event handler
+# events and handlers
 
-def unregisterRelations(context, event):
-    """ Handles IObjectRemoved event: unregisters all relations for the
-        object that has been removed.
+class RelationInvalidatedEvent(ObjectEvent):
+    implements(IRelationInvalidatedEvent)
+
+
+def invalidateRelations(context, event):
+    """ Handles IObjectRemoved event: sends out an IRelationInvalidatedEvent
+        for all relations the object to be removed is involved in.
     """
     relations = []
     registry = zapi.getUtility(IRelationsRegistry)
     for attr in ('first', 'second', 'third'):
         relations = registry.query(**{attr: context})
         for relation in relations:
-            registry.unregister(relation)
-            # to do: unregister relation also from the IntId utility
-            #        (if appropriate).
+            notify(RelationInvalidatedEvent(relation))
+
+def removeRelation(context, event):
+    """ Handles IRelationInvalidatedEvent by unregistering the relation
+        and removing it from its container (if appropriate) and the IntIds
+        utility.
+    """
+    registry = zapi.getUtility(IRelationsRegistry)
+    registry.unregister(context)
+    if ILocation.providedBy(context):
+        parent = zapi.getParent(context)
+        if parent is not None:
+            del parent[context]
+    intids = zapi.getUtility(IIntIds)
+    intids.unregister(context)
+
+def setupIndexes(context, event):
+    """ Handles IObjectCreated event for the RelationsRegistry utility
+        and creates the indexes needed.
+    """
+    if isinstance(context, RelationsRegistry):
+        context.setupIndexes()
+
 

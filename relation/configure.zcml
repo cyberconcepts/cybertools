@@ -37,9 +37,21 @@
         />
 
   <subscriber
+        for=".interfaces.IRelationsRegistry
+             zope.app.container.interfaces.IObjectAddedEvent"
+        handler=".registry.setupIndexes"
+        />
+
+  <subscriber
         for="zope.interface.Interface
              zope.app.container.interfaces.IObjectRemovedEvent"
-        handler=".registry.unregisterRelations"
+        handler=".registry.invalidateRelations"
+        />
+
+  <subscriber
+        for="cybertools.relation.interfaces.IRelation
+             cybertools.relation.interfaces.IRelationInvalidatedEvent"
+        handler=".registry.removeRelation"
         />
 
   <!-- browser settings -->

@@ -117,8 +117,17 @@ working with events).
     >>> from cybertools.relation.registry import RelationsRegistry
     >>> from cybertools.relation.interfaces import IRelationsRegistry
     >>> from zope.app.testing import ztapi
-    >>> ztapi.provideUtility(IRelationsRegistry, RelationsRegistry())    
+    >>> ztapi.provideUtility(IRelationsRegistry, RelationsRegistry())
 
+    >>> from zope.app import zapi
+    >>> relations = zapi.getUtility(IRelationsRegistry)
+
+In real life the indexes needed will be set up manually after object creation
+or via subscription to IObjectCreatedEvent - here we have to do this
+explicitly:
+
+    >>> relations.setupIndexes()
+    
 In order to register relations the objects that are referenced have to be
 registered with an IntIds (unique ids) utility, so we have to set up such
 an utility (using a stub/dummy implementation for testing purposes):
@@ -139,9 +148,6 @@ the attributes needed for indexing:
 So we are ready again to register a set of relations with our new relations
 registry and query it.
 
-    >>> from zope.app import zapi
-    >>> relations = zapi.getUtility(IRelationsRegistry)
-    
     >>> relations.register(LivesIn(clark, washington))
     >>> relations.register(LivesIn(audrey, newyork))
     >>> relations.register(LivesIn(kirk, newyork))
@@ -189,23 +195,46 @@ It should work also for triadic relations:
 Handling object removal
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Often it is desirable to unregister a when one of the objects
-involved in the relation is removed from its container. This can be
+Often it is desirable to unregister a relation when one of the objects
+involved in it is removed from its container. This can be
 done by subscribing to IObjectRemovedEvent. The relation.registry module
-provides a simple handler for this event.
+provides a simple handler for this event. (In real life all this is
+done via configure.zcml - see relation/configure.zcml for an example that
+also provides the default behaviour.)
 
     >>> from zope.app.container.interfaces import IObjectRemovedEvent
-    >>> from zope.interface import Interface
-    >>> from cybertools.relation.registry import unregisterRelations 
-    >>> ztapi.subscribe([Interface, IObjectRemovedEvent], None, unregisterRelations)
-
-We simulate the removal of kirk by calling notify:
-
     >>> from zope.app.container.contained import ObjectRemovedEvent
     >>> from zope.event import notify
+    >>> from zope.interface import Interface
+    >>> from cybertools.relation.registry import invalidateRelations
     
+    >>> ztapi.subscribe([Interface, IObjectRemovedEvent], None,
+    ...                 invalidateRelations)
+
+The invalidateRelations handler will query for all relations the object to be
+removed is involved in and then fire for these relations a
+IRelationInvalidatedEvent. This then does the real work.
+
+So we also have to subscribe to this event. We use a standard handler that
+removes the relation from whereever it is known that is provided in
+the registry module. (There might be other handlers that raise an
+exception thus preventing the removal of objects that take part in certain
+relations.)
+
+    >>> from cybertools.relation.interfaces import IRelation
+    >>> from cybertools.relation.interfaces import IRelationInvalidatedEvent
+    >>> from cybertools.relation.registry import removeRelation
+    
+    >>> ztapi.subscribe([IRelation, IRelationInvalidatedEvent], None,
+    ...                 removeRelation)
+
+Let's first check if everything is still as before:
+
     >>> len(relations.query(first=clark))
     2
+    
+We simulate the removal of kirk by calling notify, so clark hasn't got
+a son any longer :-(
     
     >>> notify(ObjectRemovedEvent(kirk))
 
@@ -213,4 +242,4 @@ Thus there should only remain one relation containing clark as first:
 
     >>> len(relations.query(first=clark))
     1
-    
+

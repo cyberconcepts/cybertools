@@ -29,6 +29,10 @@ class IntIdsStub:
             self.objs.append(ob)
         return self.objs.index(ob)
 
+    def unregister(self, ob):
+        id = self.getId(ob)
+        self.objs[id] = None
+
 
 class TestRelation(unittest.TestCase):
     "Basic tests for the relation package."
