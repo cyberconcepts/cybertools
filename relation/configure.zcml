@@ -63,7 +63,7 @@
       />
 
   <browser:addMenuItem
-      title="Relations Registry Utility"
+      title="Relations Registry"
       description="A utility that allows the registration of and query for relations"
       class=".registry.RelationsRegistry"
       permission="zope.ManageSite"

@@ -9,7 +9,8 @@ from zope.app import zapi
 from zope.app.intid.interfaces import IIntIds
 
 from cybertools.relation.interfaces import IDyadicRelation, ITriadicRelation
-from cybertools.relation import DyadicRelation, TriadicRelation
+from cybertools.relation.interfaces import IRelation, IPredicate
+from cybertools.relation import Relation, DyadicRelation, TriadicRelation
 from cybertools.relation.interfaces import IRelationsRegistry
 from cybertools.relation.registry import RelationsRegistry
 
@@ -25,6 +26,9 @@ class IntIdsStub:
         return self.objs[uid]
 
     def getId(self, ob):
+        return self.objs.index(ob)
+
+    def register(self, ob):
         if ob not in self.objs:
             self.objs.append(ob)
         return self.objs.index(ob)
@@ -38,6 +42,8 @@ class TestRelation(unittest.TestCase):
     "Basic tests for the relation package."
 
     def testInterfaces(self):
+        verifyClass(IPredicate, Relation)
+        verifyClass(IRelation, Relation)
         self.assert_(IDyadicRelation.providedBy(DyadicRelation(None, None)),
             'Interface IDyadicRelation is not implemented by class DyadicRelation.')
         verifyClass(IDyadicRelation, DyadicRelation)

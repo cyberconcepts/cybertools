@@ -1,6 +1,8 @@
 Yet Another Relations (Reference) Engine...
 ===========================================
 
+  ($Id$)
+
     >>> from zope.app.testing.placelesssetup import setUp
     >>> setUp()
 
@@ -122,19 +124,31 @@ working with events).
     >>> from zope.app import zapi
     >>> relations = zapi.getUtility(IRelationsRegistry)
 
-In real life the indexes needed will be set up manually after object creation
-or via subscription to IObjectCreatedEvent - here we have to do this
-explicitly:
+In real life the indexes needed will be set up via subscription to
+IObjectCreatedEvent - here we have to do this explicitly:
 
     >>> relations.setupIndexes()
     
 In order to register relations the objects that are referenced have to be
 registered with an IntIds (unique ids) utility, so we have to set up such
-an utility (using a stub/dummy implementation for testing purposes):
+an utility (using a stub/dummy implementation for testing purposes) and
+register the objects with it (in real life this is done automatically
+when we add an object to a container):
 
     >>> from cybertools.relation.tests import IntIdsStub
     >>> from zope.app.intid.interfaces import IIntIds
     >>> ztapi.provideUtility(IIntIds, IntIdsStub())
+    >>> intids = zapi.getUtility(IIntIds)
+    >>> intids.register(clark)
+    0
+    >>> intids.register(kirk)
+    1
+    >>> intids.register(audrey)
+    2
+    >>> intids.register(washington)
+    3
+    >>> intids.register(newyork)
+    4
 
 We also have to provide an adapter for the Relation objects that provides
 the attributes needed for indexing:

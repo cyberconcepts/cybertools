@@ -27,10 +27,19 @@ $Id$
 
 from persistent import Persistent
 from zope.interface import implements
-from interfaces import IDyadicRelation, ITriadicRelation
+from interfaces import IPredicate
+from interfaces import IRelation, IDyadicRelation, ITriadicRelation
+
+class Relation(Persistent):
+
+    implements(IPredicate, IRelation)
+
+    @classmethod
+    def getPredicateName(cls):
+        return '%s.%s' % (cls.__module__, cls.__name__)
 
 
-class DyadicRelation(Persistent):
+class DyadicRelation(Relation):
     
     implements(IDyadicRelation)
 
@@ -39,7 +48,7 @@ class DyadicRelation(Persistent):
         self.second = second
 
 
-class TriadicRelation(Persistent):
+class TriadicRelation(Relation):
     
     implements(ITriadicRelation)
 

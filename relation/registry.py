@@ -80,18 +80,20 @@ class RelationsRegistry(Catalog):
                 self[idx] = FieldIndex(idx, IIndexableRelation)
 
     def register(self, relation):
-        #self.setupIndexes()
-        self.index_doc(_getUid(relation), relation)
+        if getattr(relation, '__parent__', None) is None:
+            # Allow the IntIds utility to get a DB connection:
+            relation.__parent__ = self
+        self.index_doc(zapi.getUtility(IIntIds).register(relation), relation)
     
     def unregister(self, relation):
-        self.unindex_doc(_getUid(relation))
+        self.unindex_doc(zapi.getUtility(IIntIds).getId(relation))
     
     def query(self, **kw):
         for k in kw:
             if k == 'relationship':
-                quString = _getClassString(kw[k])
+                quString = kw[k].getPredicateName()
             else:
-                quString = _getUid(kw[k])
+                quString = zapi.getUtility(IIntIds).getId(kw[k])
             # set min, max
             kw[k] = (quString, quString)
         return self.searchResults(**kw)
@@ -115,27 +117,15 @@ class IndexableRelationAdapter(object):
         self.context = context
 
     def getRelationship(self):
-        return _getRelationship(self.context)
+        return self.context.getPredicateName()
     relationship = property(getRelationship)
 
     def __getattr__(self, attr):
         value = getattr(self.context, attr)
         if isinstance(value, Persistent):
-            return _getUid(value)
+            return zapi.getUtility(IIntIds).getId(value)
         else:
             return value
-
-
-# helper functions
-        
-def _getUid(ob):
-    return zapi.getUtility(IIntIds).getId(ob)
-
-def _getRelationship(relation):
-    return _getClassString(removeSecurityProxy(relation).__class__)
-
-def _getClassString(cls):
-    return '%s.%s' % (cls.__module__, cls.__name__)
 
 
 # events and handlers

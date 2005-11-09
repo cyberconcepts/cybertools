@@ -28,10 +28,26 @@ from zope.app.event.interfaces import IObjectEvent
 
 # relation interfaces
 
+class IPredicate(Interface):
+    """ A predicate signifies a relationship. This may be implemented
+        directly as a relation class, or the relation object may 
+        hold the predicate as an attribute.
+    """
+    
+    def getPredicateName():
+        """ Return this predicate as a string that may be used for indexing.
+        """
+        
+
 class IRelation(Interface):
     """ Base interface for relations.
     """
     
+    def getPredicateName():
+        """ Return the predicate of this relation as a string that may be
+            used for indexing.
+        """
+        
     
 class IDyadicRelation(IRelation):
     """ Relation connecting two objects.
