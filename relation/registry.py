@@ -23,6 +23,7 @@ $Id$
 """
 
 from persistent import Persistent
+from persistent.interfaces import IPersistent
 from zope.interface import Interface, Attribute, implements
 from zope.app import zapi
 from zope.app.catalog.catalog import Catalog
@@ -122,7 +123,7 @@ class IndexableRelationAdapter(object):
 
     def __getattr__(self, attr):
         value = getattr(self.context, attr)
-        if isinstance(value, Persistent):
+        if IPersistent.providedBy(value):
             return zapi.getUtility(IIntIds).getId(value)
         else:
             return value
@@ -160,10 +161,9 @@ def removeRelation(context, event):
     intids.unregister(context)
 
 def setupIndexes(context, event):
-    """ Handles IObjectCreated event for the RelationsRegistry utility
+    """ Handles IObjectAdded event for the RelationsRegistry utility
         and creates the indexes needed.
     """
     if isinstance(context, RelationsRegistry):
         context.setupIndexes()
-
 

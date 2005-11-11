@@ -257,3 +257,51 @@ Thus there should only remain one relation containing clark as first:
     >>> len(relations.query(first=clark))
     1
 
+
+Named Predicates
+~~~~~~~~~~~~~~~~
+
+Up to now we had to create a new class for each relationship we want to use.
+This is also the way the standard implementation works.
+
+But often it is desirable to create new relationships on the fly by
+providing some string as the name of the relationship. This can be done by
+creating a special relation class that uses named predicates.
+
+    >>> class PredicateRelation(DyadicRelation):
+    ...     def __init__(self, predicate, first, second):
+    ...         self.predicate = predicate
+    ...         self.first = first
+    ...         self.second = second
+    ...     def getPredicateName(self):
+    ...         return self.predicate.getPredicateName()
+
+We also need a class for the predicate objects that will be used for
+the constructor of the NamedPredicateRelation class:
+
+    >>> from cybertools.relation.interfaces import IPredicate
+    >>> from zope.interface import implements
+    
+    >>> class Predicate(object):
+    ...     implements(IPredicate)
+    ...     def __init__(self, name):
+    ...         self.name = name
+    ...     def getPredicateName(self):
+    ...         return self.name
+
+We can now create a predicate with the name '_lives in_' (that may replace
+our LivesIn relation class from above) and use for registration:
+
+    >>> livesIn = Predicate('_ lives in _')
+
+    >>> relations.register(PredicateRelation(livesIn, clark, washington))
+    >>> relations.register(PredicateRelation(livesIn, audrey, newyork))
+    >>> relations.register(PredicateRelation(livesIn, kirk, newyork))
+
+The predicate may then be used as the relationship argument when querying
+the relations registry.
+
+    >>> len(relations.query(relationship=livesIn, second=washington))
+    1
+    >>> len(relations.query(relationship=livesIn, second=newyork))
+    2
