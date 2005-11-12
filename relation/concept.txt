@@ -1,0 +1,88 @@
+Yet Another Relations (Reference) Engine...
+===========================================
+
+  ($Id$)
+
+There are quite a few solutions out there in the Zope world that allow to
+manage relations or references bewtween objects. So I have been working
+with the reference engine provided by Archetypes (as part of Plone) for
+nearly two years now; and I also had a look at some proposals
+on zope.org and implementations that are available in the Zope 3 packages from
+SchoolTool and CPSSkins.
+
+I have to confess that I was not really happy with any of these proposals
+or solutions - a feeling that we may discuss in more detail, the main
+point being just that I wanted to have something simple that is nevertheless
+flexible enough to accomodate to various needs...
+
+So I came up with the following (mainly combining concepts by Jean-Marc
+Orliaguet and implementation ideas from Archetypes 1.3):
+
+Basic API
+---------
+
+A relation is an object providing the IRelation interface. This has got
+two attributes ('first', 'second') for a dyadic relation) or three ('first',
+'second', 'third') for a triadic relation. (You may ignore triadic relations if
+you don't think you need them.)
+
+If I now create corresponding classes (DyadicRelation, TriadicRelation) I
+can store the objects taking part in a relation directly in these
+attributes of my relation objects. (Note that the objects taking part in
+a relation are not touched at all.) In fact I create a class for each kind
+of relation (each relationship or predicate or whatever you like to call it)
+I want to use.
+
+So the question arises what to do with the relation objects? The point here
+is not so much where to store them but how to make sure that we can find
+them. So we need a registry for relations - interface IRelationsRegistry.
+
+This has three methods:
+
+- register(relation)
+- unregister(relation)
+- query(**kw)
+
+The keyword arguments to the query() method may be:
+
+- relationship=... - a relation class (we can also work with named predicates,
+                     see below)
+- first=... - an object
+- second=... - an object
+- third=... - an object
+
+One can combine those arguments at will to search for all relations of the
+relation class specified (if given) with the given values for the attributes.
+The list may be extended if you use relation classes with additionsl
+attributes you want to search for.
+
+(For details have a look at the file README.txt)
+
+Default Implementation
+----------------------
+
+You see that this looks very much like a catalog search - so why not implement
+the relations registry as a subclass of Catalog (see zope.app.catalog).
+
+OK, so the RelationsRegistry class is derived from Catalog, and of course it is
+a local utility. The indexes are just FieldIndex objects, using an adapter
+to provide unique ids for the objects involved via the IntIds
+utility; the same is done for providing an id for the relation objects
+themselves. The relationship is mapped to the full module path + class name of
+the relation class.
+
+An interesting consequence of this is that the relation objects are not
+expllicitly stored somewhere, the only reference to them is via the IntIds
+utility. You may of course store them in some container or even make them
+first class content objects if you want.
+
+The whole stuff is flexible enough to be extended as needed, e.g. with special
+registry classes used via named utilities (or even specialized registry
+interfaces), additional attributes on relations (easily indexable in the
+registry); it could be wrapped in a richer and more application-oriented
+API, etc.
+
+It is also possible to use named predicates (with URIs or strings like
+'_ is child of _') instead of different relation classes to represent
+relationships (this is shown by an example at the end of the README.txt).
+

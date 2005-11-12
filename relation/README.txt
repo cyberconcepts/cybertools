@@ -1,7 +1,30 @@
-Yet Another Relations (Reference) Engine...
-===========================================
+Quickstart Instructions
+=======================
 
   ($Id$)
+
+In the ++etc++/default folder of your Zope 3 site create a Unique Id Utility
+and a Relations Registry.
+
+In your application
+
+- define a subclass of DyadicRelation (``MyRelation``)
+
+- create instances of this class that relate objects via
+  ``MyRelation(object1, object2)``.
+
+- register these relation objects by getting a utility providing
+  ``IRelationsRegistry`` and call the ``register(relation)`` on this utility.
+  
+You are now ready to retrieve relations by using the relations registry's
+``query()`` method as described below.
+
+You may also like to read the file concept.txt that gives you some more basic
+ideas about the relation package.
+    
+
+Relations Management: create - register - query
+===============================================
 
     >>> from zope.app.testing.placelesssetup import setUp
     >>> setUp()
@@ -13,7 +36,7 @@ attributes are also needed later when we send an IObjectRemovedEvent event):
 
     >>> from persistent import Persistent
     >>> class Person(Persistent):
-    ...     __name__= __parent__ = None
+    ...     __name__ = __parent__ = None
 
     >>> class City(Persistent):
     ...     pass
