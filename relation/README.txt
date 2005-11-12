@@ -19,7 +19,7 @@ In your application
 You are now ready to retrieve relations by using the relations registry's
 ``query()`` method as described below.
 
-You may also like to read the file concept.txt that gives you some more basic
+You may also like to read the file concepts.txt that gives you some more basic
 ideas about the relation package.
     
 
