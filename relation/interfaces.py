@@ -28,17 +28,6 @@ from zope.app.event.interfaces import IObjectEvent
 
 # relation interfaces
 
-class IPredicate(Interface):
-    """ A predicate signifies a relationship. This may be implemented
-        directly as a relation class, or the relation object may 
-        hold the predicate as an attribute.
-    """
-    
-    def getPredicateName():
-        """ Return this predicate as a string that may be used for indexing.
-        """
-        
-
 class IRelation(Interface):
     """ Base interface for relations.
     """
@@ -47,6 +36,24 @@ class IRelation(Interface):
         """ Return the predicate of this relation as a string that may be
             used for indexing.
         """
+
+    def validate(registry=None):
+        """ Return True if this relation is valid.
+
+            If the registry argument is provided the check should be done
+            with respect to this relation registry, e.g. to 
+        """
+
+
+class IMonadicRelation(IRelation):
+    """ Relation with just one object.
+
+        While a monadic relation could be easily represented by an attribute
+        or an annotation, monadic relations are e.g. useful when working with
+        an ontology-driven higher-level relation framework.
+    """
+
+    first = Attribute('First and only object that belongs to the relation.')
         
     
 class IDyadicRelation(IRelation):
@@ -63,6 +70,17 @@ class ITriadicRelation(IDyadicRelation):
     
     third = Attribute('Third object that belongs to the relation.')
 
+
+class IPredicate(Interface):
+    """ A predicate signifies a relationship. This may be implemented
+        directly as a relation class, or the relation object may 
+        hold the predicate as an attribute.
+    """
+    
+    def getPredicateName():
+        """ Return this predicate as a string that may be used for indexing.
+        """
+        
 
 # event interfaces
 
@@ -92,16 +110,22 @@ class IRelationsRegistryQuery(Interface):
     """ Interface for querying a relations registry.
     """
 
-    def query(**kw):
+    def query(relation=None, **kw):
         """ Return a sequence of relations that fulfill the criteria given.
 
-            Example: rr.queryRelations(first=someObject, second=anotherObject,
-                                       relationship=SomeRelationClass)
+            You may provide a relation object as an example that specifies the
+            search criteria, i.e. its predicate and first, second or third
+            attribute will be used for searching, or explicit criteria
+            via keyword arguments.
+            
+            Example for using keyword criteria:
+                rr.queryRelations(first=someObject, second=anotherObject,
+                                  relationship=SomeRelationClass)
         """
 
 
 class IRelationsRegistry(IRelationsRegistryUpdate, IRelationsRegistryQuery):
-    """ Local utility for registering (cataloguing) and searching relations.
+    """ A registry for registering and searching relations typically
+        implemented as a local utility .
     """
-
 

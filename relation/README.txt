@@ -21,10 +21,62 @@ You are now ready to retrieve relations by using the relations registry's
 
 You may also like to read the file concepts.txt that gives you some more basic
 ideas about the relation package.
-    
 
-Relations Management: create - register - query
-===============================================
+
+A Basic API for Relation Management
+===================================
+
+In object-oriented programming you usually don't care explicitly about
+relations: you just assign an object to an attribute of another object
+and you have created a relation beween these two objects.
+
+An example: Let's have two classes, Person and City, and we want to store the
+fact that a person lives in a certain city. So if ``clark`` is an instance
+of Person and ``washington`` an instance of City we can just say:
+``clark.city = washington``.
+
+This works fine (even when you are dealing with persistent objects in Zope)
+and is the standard way of establishing a relation in an object-oriented
+programming language.
+
+But there are scenarios where this is not sufficient and you have to
+care explicitly about relations.
+
+One would be the requirement to get all inhabitants of Washington: You could
+of course do this by collecting all persons and check which ones have
+set it's ``city`` attribute to ``washington``. This approach poses (at least)
+two problems:
+
+- how can I find all instances of the Person class?
+
+- depending on the numbers of persons in my system checking all might take a
+  tremendous long time.
+
+You can easiliy resolve these problems by providing a corresponding attribute
+on the City class, something like ``washington.inhabitants = [clark]`` and add
+a person to this list every time you assign ``washington`` to a person's
+``city`` attribute.
+
+Of course there are other things to consider, e.g. how to handle deletions
+of objects.
+
+But for this simple kind of relationships just connecting two objects you
+could in fact solve all this problems without the need for a special
+relation management framework. Nevertheless, as this is a common pattern,
+it would be helpful to have an ageed-upon standard how to handle such
+cases; this might deal with the automatic housekeeping of redundant
+assignments as well as with the deletion problem.
+
+Such a standard - and a corresponding relation management framework - is
+getting really important when we deal with more complex use cases - involving
+e.g. triadic relations (connecting three objects) like in
+"kirk is the child of audrey and clark" or if we want the relation to carry
+additional information, e.g. like in
+"clark lived in washington from 1999 to 2003".
+
+
+Relation Management at Work: create - register - query
+======================================================
 
     >>> from zope.app.testing.placelesssetup import setUp
     >>> setUp()

@@ -38,6 +38,9 @@ class Relation(Persistent):
     def getPredicateName(cls):
         return '%s.%s' % (cls.__module__, cls.__name__)
 
+    def validate(self, registry=None):
+        return True
+    
 
 class DyadicRelation(Relation):
     

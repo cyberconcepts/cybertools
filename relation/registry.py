@@ -54,7 +54,7 @@ class DummyRelationsRegistry(object):
         if relation in self.relations:
             self.relations.remove(relation)
     
-    def query(self, **kw):
+    def query(self, example=None, **kw):
         result = []
         for r in self.relations:
             hit = True
@@ -89,7 +89,7 @@ class RelationsRegistry(Catalog):
     def unregister(self, relation):
         self.unindex_doc(zapi.getUtility(IIntIds).getId(relation))
     
-    def query(self, **kw):
+    def query(self, example=None, **kw):
         for k in kw:
             if k == 'relationship':
                 quString = kw[k].getPredicateName()
