@@ -1,0 +1,47 @@
+<metal:block define-macro="page"><metal:block define-slot="doctype"><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"></metal:block>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+      i18n:domain="zope">
+      
+  <head metal:define-macro="head">
+    <title metal:define-slot="title"
+           tal:content="options/getTitle|view/getTitle|context/getTitle|default">
+      cyberconcepts IT-Consulting
+    </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="liquid.css" rel="stylesheet" type="text/css"
+          tal:attributes="href context/++resource++liquid.css" />
+    <div metal:define-slot="headers" />
+  </head>
+  
+  <body>
+    
+    <div id="header">
+      <div class="top">
+        <a href="#" name="top" tal:attributes="href string:${request/URL/1}/@@manage">
+          <img src="cyberconcepts.gif" height="75" border="0"
+               alt="cyberconcepts IT-Consulting"
+               tal:attributes="src context/++resource++cyberconcepts.gif" />
+        </a>
+        <span metal:use-macro="context/@@standard_macros/logged_user">
+          Logged in as user
+        </span>
+      </div>
+    </div>
+    
+    <div id="menu"><h1>menu</h1></div>
+    
+    <div id="content">
+      <span metal:define-slot="body">Here comes the body</span>
+    </div>
+    
+    <div id="sub-section"><h1>sub-section</h1></div>
+    
+    <div id="footer"><h1>footer</h1>
+        <span metal:use-macro="context/@@standard_macros/footer" />
+    </div>
+
+  </body>
+
+</html>
+</metal:block>
+

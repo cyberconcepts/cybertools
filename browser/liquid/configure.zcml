@@ -1,0 +1,28 @@
+<!-- $Id$ -->
+
+<configure
+   xmlns:zope="http://namespaces.zope.org/zope"
+   xmlns="http://namespaces.zope.org/browser"
+   i18n_domain="zope"
+   >
+
+  <layer name="liquid" />
+
+  <skin name="Liquid"
+        layers="liquid rotterdam default" />
+    
+  <page for="*"
+        name="skin_macros" template="view_macros.pt"
+        permission="zope.View"
+        layer="liquid" />
+
+  <resource name="liquid.css" file="liquid4.css"
+            layer="liquid" />
+
+  <resource name="cyberconcepts.gif" file="cyc-logo03.gif"
+            layer="liquid" />
+
+  <resource name="bg_cyberview.gif" file="bg_cyberview.gif"
+            layer="liquid" />
+
+</configure>

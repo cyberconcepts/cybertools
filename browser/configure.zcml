@@ -20,5 +20,6 @@
       />
 
   <include package=".skin" />
+  <include package=".liquid" />
 
 </configure>
