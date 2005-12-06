@@ -86,18 +86,18 @@ relations (we derive the classes from Persistent, thus we will be able to
 reference these objects via IntIds later; the __parent__ and __name__
 attributes are also needed later when we send an IObjectRemovedEvent event):
 
-    >>> from persistent import Persistent
-    >>> class Person(Persistent):
-    ...     __name__ = __parent__ = None
+  >>> from persistent import Persistent
+  >>> class Person(Persistent):
+  ...     __name__ = __parent__ = None
 
-    >>> class City(Persistent):
-    ...     pass
+  >>> class City(Persistent):
+  ...     pass
 
-    >>> clark = Person()
-    >>> kirk = Person()
-    >>> audrey = Person()
-    >>> washington = City()
-    >>> newyork = City()
+  >>> clark = Person()
+  >>> kirk = Person()
+  >>> audrey = Person()
+  >>> washington = City()
+  >>> newyork = City()
 
 The relation we'll use tells us in which city a person lives; this is a dyadic
 relation as it connects two objects. We also associate the relationship
@@ -107,49 +107,49 @@ with an interface as we will later use this interface for querying relations.
 Dyadic Relations
 ~~~~~~~~~~~~~~~~
 
-    >>> from cybertools.relation import DyadicRelation
-    >>> class LivesIn(DyadicRelation):
-    ...     pass
+  >>> from cybertools.relation import DyadicRelation
+  >>> class LivesIn(DyadicRelation):
+  ...     pass
 
 We don't directly keep track of relations but use a relations registry for
 this. The relations registry is usually a local utility; for testing we use
 a simple dummy implementation:
 
-    >>> from cybertools.relation.registry import DummyRelationsRegistry
-    >>> relations = DummyRelationsRegistry()
+  >>> from cybertools.relation.registry import DummyRelationsRegistry
+  >>> relations = DummyRelationsRegistry()
 
 So we are ready to connect a person and a city using the LivesIn relationship:
 
-    >>> relations.register(LivesIn(clark, washington))
-    >>> relations.register(LivesIn(audrey, newyork))
-    >>> relations.register(LivesIn(kirk, newyork))
+  >>> relations.register(LivesIn(clark, washington))
+  >>> relations.register(LivesIn(audrey, newyork))
+  >>> relations.register(LivesIn(kirk, newyork))
 
 We can now query the relations registry to find out where clark lives and
 who lives in New York. For this we use the standard attributes of dyadic
 relations, first and second:
 
-    >>> clarkRels = relations.query(first=clark)
-    >>> len(clarkRels)
-    1
-    >>> clarkRels[0].second == washington
-    True
+  >>> clarkRels = relations.query(first=clark)
+  >>> len(clarkRels)
+  1
+  >>> clarkRels[0].second == washington
+  True
 
-    >>> nyRels = relations.query(second=newyork)
-    >>> len(nyRels)
-    2
+  >>> nyRels = relations.query(second=newyork)
+  >>> len(nyRels)
+  2
 
 It is also possible to remove a relation from the relation registry:
 
-    >>> relations.unregister(
-    ...     relations.query(first=audrey, second=newyork)[0]
-    ... )
-    >>> nyRels = relations.query(second=newyork)
-    >>> len(nyRels)
-    1
-    >>> nyRels[0].first == kirk
-    True
+  >>> relations.unregister(
+  ...     relations.query(first=audrey, second=newyork)[0]
+  ... )
+  >>> nyRels = relations.query(second=newyork)
+  >>> len(nyRels)
+  1
+  >>> nyRels[0].first == kirk
+  True
 
-    
+
 Triadic Relations
 ~~~~~~~~~~~~~~~~~
 
@@ -157,32 +157,32 @@ We now extend our setting using a triadic relationship - triadic relations
 connect three objects. (If you want to connect more than three objects you
 may use combinations of triadic and dyadic relations.)
 
-    >>> from cybertools.relation import TriadicRelation
-    >>> class ParentsOf(TriadicRelation):
-    ...     """ first (father) and second (mother) are the parents of
-    ...         third (child)."""
+  >>> from cybertools.relation import TriadicRelation
+  >>> class ParentsOf(TriadicRelation):
+  ...     """ first (father) and second (mother) are the parents of
+  ...         third (child)."""
 
-    >>> relations.register(ParentsOf(clark, audrey, kirk))
+  >>> relations.register(ParentsOf(clark, audrey, kirk))
 
 When we search for relations that contain clark as first we get both:
     
-    >>> clarkRels = relations.query(first=clark)
-    >>> len(clarkRels)
-    2
+  >>> clarkRels = relations.query(first=clark)
+  >>> len(clarkRels)
+  2
 
 So we want to look only for ParentsOf relationships - this should give us
 all relations for clark's children:
 
-    >>> clarkChildren = relations.query(relationship=ParentsOf,
-    ...                                 first=clark)
-    >>> len(clarkChildren)
-    1
-    >>> clarkChildren[0].second == audrey
-    True
-    >>> clarkChildren[0].third == kirk
-    True
+  >>> clarkChildren = relations.query(relationship=ParentsOf,
+  ...                                 first=clark)
+  >>> len(clarkChildren)
+  1
+  >>> clarkChildren[0].second == audrey
+  True
+  >>> clarkChildren[0].third == kirk
+  True
 
-    
+
 Setting up and using a RelationsRegistry local utility
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -191,18 +191,18 @@ the relations registry. We also register the relations registry as a
 utility for demonstration purposes (and to be able to use it later when
 working with events).
 
-    >>> from cybertools.relation.registry import RelationsRegistry
-    >>> from cybertools.relation.interfaces import IRelationsRegistry
-    >>> from zope.app.testing import ztapi
-    >>> ztapi.provideUtility(IRelationsRegistry, RelationsRegistry())
+  >>> from cybertools.relation.registry import RelationsRegistry
+  >>> from cybertools.relation.interfaces import IRelationsRegistry
+  >>> from zope.app.testing import ztapi
+  >>> ztapi.provideUtility(IRelationsRegistry, RelationsRegistry())
 
-    >>> from zope.app import zapi
-    >>> relations = zapi.getUtility(IRelationsRegistry)
+  >>> from zope.app import zapi
+  >>> relations = zapi.getUtility(IRelationsRegistry)
 
 In real life the indexes needed will be set up via subscription to
 IObjectCreatedEvent - here we have to do this explicitly:
 
-    >>> relations.setupIndexes()
+  >>> relations.setupIndexes()
     
 In order to register relations the objects that are referenced have to be
 registered with an IntIds (unique ids) utility, so we have to set up such
@@ -210,75 +210,84 @@ an utility (using a stub/dummy implementation for testing purposes) and
 register the objects with it (in real life this is done automatically
 when we add an object to a container):
 
-    >>> from cybertools.relation.tests import IntIdsStub
-    >>> from zope.app.intid.interfaces import IIntIds
-    >>> ztapi.provideUtility(IIntIds, IntIdsStub())
-    >>> intids = zapi.getUtility(IIntIds)
-    >>> intids.register(clark)
-    0
-    >>> intids.register(kirk)
-    1
-    >>> intids.register(audrey)
-    2
-    >>> intids.register(washington)
-    3
-    >>> intids.register(newyork)
-    4
+  >>> from cybertools.relation.tests import IntIdsStub
+  >>> from zope.app.intid.interfaces import IIntIds
+  >>> ztapi.provideUtility(IIntIds, IntIdsStub())
+  >>> intids = zapi.getUtility(IIntIds)
+  >>> intids.register(clark)
+  0
+  >>> intids.register(kirk)
+  1
+  >>> intids.register(audrey)
+  2
+  >>> intids.register(washington)
+  3
+  >>> intids.register(newyork)
+  4
 
 We also have to provide an adapter for the Relation objects that provides
 the attributes needed for indexing:
 
-    >>> from cybertools.relation.registry import IIndexableRelation
-    >>> from cybertools.relation.registry import IndexableRelationAdapter
-    >>> from cybertools.relation.interfaces import IRelation
-    >>> ztapi.provideAdapter(IRelation, IIndexableRelation,
-    ...                      IndexableRelationAdapter)
+  >>> from cybertools.relation.registry import IIndexableRelation
+  >>> from cybertools.relation.registry import IndexableRelationAdapter
+  >>> from cybertools.relation.interfaces import IRelation
+  >>> ztapi.provideAdapter(IRelation, IIndexableRelation,
+  ...                      IndexableRelationAdapter)
 
 So we are ready again to register a set of relations with our new relations
 registry and query it.
 
-    >>> relations.register(LivesIn(clark, washington))
-    >>> relations.register(LivesIn(audrey, newyork))
-    >>> relations.register(LivesIn(kirk, newyork))
+  >>> relations.register(LivesIn(clark, washington))
+  >>> relations.register(LivesIn(audrey, newyork))
+  >>> relations.register(LivesIn(kirk, newyork))
 
 As we now get back a result set we have to convert the query results to a list
 if we want to access relations by array index:
     
-    >>> clarkRels = list(relations.query(first=clark))
-    >>> len(clarkRels)
-    1
-    >>> clarkRels[0].second == washington
-    True
+  >>> clarkRels = list(relations.query(first=clark))
+  >>> len(clarkRels)
+  1
+  >>> clarkRels[0].second == washington
+  True
 
-    >>> nyRels = relations.query(second=newyork)
-    >>> len(nyRels)
-    2
+  >>> nyRels = relations.query(second=newyork)
+  >>> len(nyRels)
+  2
 
-    >>> relations.unregister(
-    ...     list(relations.query(first=audrey, second=newyork))[0]
-    ... )
-    >>> nyRels = list(relations.query(second=newyork))
-    >>> len(nyRels)
-    1
-    >>> nyRels[0].first == kirk
-    True
+  >>> relations.unregister(
+  ...     list(relations.query(first=audrey, second=newyork))[0]
+  ... )
+  >>> nyRels = list(relations.query(second=newyork))
+  >>> len(nyRels)
+  1
+  >>> nyRels[0].first == kirk
+  True
 
 It should work also for triadic relations:
 
-    >>> relations.register(ParentsOf(clark, audrey, kirk))
+  >>> relations.register(ParentsOf(clark, audrey, kirk))
 
-    >>> clarkRels = relations.query(first=clark)
-    >>> len(clarkRels)
-    2
+  >>> clarkRels = relations.query(first=clark)
+  >>> len(clarkRels)
+  2
 
-    >>> clarkChildren = list(relations.query(relationship=ParentsOf,
-    ...                                      first=clark))
-    >>> len(clarkChildren)
-    1
-    >>> clarkChildren[0].second == audrey
-    True
-    >>> clarkChildren[0].third == kirk
-    True
+  >>> clarkChildren = list(relations.query(relationship=ParentsOf,
+  ...                                      first=clark))
+  >>> len(clarkChildren)
+  1
+  >>> clarkChildren[0].second == audrey
+  True
+  >>> clarkChildren[0].third == kirk
+  True
+
+There is also a convenience function that it makes even easier to query
+a relations registry; it allows to query for more than one relationship:
+
+  >>> from cybertools.relation.registry import getRelations
+  >>> len(getRelations(first=clark))
+  2
+  >>> len(getRelations(first=clark, relationships=[LivesIn]))
+  1
 
 
 Handling object removal
@@ -291,14 +300,14 @@ provides a simple handler for this event. (In real life all this is
 done via configure.zcml - see relation/configure.zcml for an example that
 also provides the default behaviour.)
 
-    >>> from zope.app.container.interfaces import IObjectRemovedEvent
-    >>> from zope.app.container.contained import ObjectRemovedEvent
-    >>> from zope.event import notify
-    >>> from zope.interface import Interface
-    >>> from cybertools.relation.registry import invalidateRelations
-    
-    >>> ztapi.subscribe([Interface, IObjectRemovedEvent], None,
-    ...                 invalidateRelations)
+  >>> from zope.app.container.interfaces import IObjectRemovedEvent
+  >>> from zope.app.container.contained import ObjectRemovedEvent
+  >>> from zope.event import notify
+  >>> from zope.interface import Interface
+  >>> from cybertools.relation.registry import invalidateRelations
+
+  >>> ztapi.subscribe([Interface, IObjectRemovedEvent], None,
+  ...                 invalidateRelations)
 
 The invalidateRelations handler will query for all relations the object to be
 removed is involved in and then fire for these relations a
@@ -310,27 +319,27 @@ the registry module. (There might be other handlers that raise an
 exception thus preventing the removal of objects that take part in certain
 relations.)
 
-    >>> from cybertools.relation.interfaces import IRelation
-    >>> from cybertools.relation.interfaces import IRelationInvalidatedEvent
-    >>> from cybertools.relation.registry import removeRelation
-    
-    >>> ztapi.subscribe([IRelation, IRelationInvalidatedEvent], None,
-    ...                 removeRelation)
+  >>> from cybertools.relation.interfaces import IRelation
+  >>> from cybertools.relation.interfaces import IRelationInvalidatedEvent
+  >>> from cybertools.relation.registry import removeRelation
+
+  >>> ztapi.subscribe([IRelation, IRelationInvalidatedEvent], None,
+  ...                 removeRelation)
 
 Let's first check if everything is still as before:
 
-    >>> len(relations.query(first=clark))
-    2
-    
+  >>> len(relations.query(first=clark))
+  2
+  
 We simulate the removal of kirk by calling notify, so clark hasn't got
 a son any longer :-(
     
-    >>> notify(ObjectRemovedEvent(kirk))
+  >>> notify(ObjectRemovedEvent(kirk))
 
 Thus there should only remain one relation containing clark as first:
 
-    >>> len(relations.query(first=clark))
-    1
+  >>> len(relations.query(first=clark))
+  1
 
 
 Named Predicates
@@ -343,40 +352,40 @@ But often it is desirable to create new relationships on the fly by
 providing some string as the name of the relationship. This can be done by
 creating a special relation class that uses named predicates.
 
-    >>> class PredicateRelation(DyadicRelation):
-    ...     def __init__(self, predicate, first, second):
-    ...         self.predicate = predicate
-    ...         self.first = first
-    ...         self.second = second
-    ...     def getPredicateName(self):
-    ...         return self.predicate.getPredicateName()
+  >>> class PredicateRelation(DyadicRelation):
+  ...     def __init__(self, predicate, first, second):
+  ...         self.predicate = predicate
+  ...         self.first = first
+  ...         self.second = second
+  ...     def getPredicateName(self):
+  ...         return self.predicate.getPredicateName()
 
 We also need a class for the predicate objects that will be used for
 the constructor of the NamedPredicateRelation class:
 
-    >>> from cybertools.relation.interfaces import IPredicate
-    >>> from zope.interface import implements
-    
-    >>> class Predicate(object):
-    ...     implements(IPredicate)
-    ...     def __init__(self, name):
-    ...         self.name = name
-    ...     def getPredicateName(self):
-    ...         return self.name
+  >>> from cybertools.relation.interfaces import IPredicate
+  >>> from zope.interface import implements
+
+  >>> class Predicate(object):
+  ...     implements(IPredicate)
+  ...     def __init__(self, name):
+  ...         self.name = name
+  ...     def getPredicateName(self):
+  ...         return self.name
 
 We can now create a predicate with the name '_lives in_' (that may replace
 our LivesIn relation class from above) and use for registration:
 
-    >>> livesIn = Predicate('_ lives in _')
+  >>> livesIn = Predicate('_ lives in _')
 
-    >>> relations.register(PredicateRelation(livesIn, clark, washington))
-    >>> relations.register(PredicateRelation(livesIn, audrey, newyork))
-    >>> relations.register(PredicateRelation(livesIn, kirk, newyork))
+  >>> relations.register(PredicateRelation(livesIn, clark, washington))
+  >>> relations.register(PredicateRelation(livesIn, audrey, newyork))
+  >>> relations.register(PredicateRelation(livesIn, kirk, newyork))
 
 The predicate may then be used as the relationship argument when querying
 the relations registry.
 
-    >>> len(relations.query(relationship=livesIn, second=washington))
-    1
-    >>> len(relations.query(relationship=livesIn, second=newyork))
-    2
+  >>> len(relations.query(relationship=livesIn, second=washington))
+  1
+  >>> len(relations.query(relationship=livesIn, second=newyork))
+  2

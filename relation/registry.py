@@ -129,6 +129,30 @@ class IndexableRelationAdapter(object):
             return value
 
 
+# convenience function:
+
+def getRelations(first=None, second=None, third=None, relationships=None):
+    """ Return a sequence of relations matching the query specified by the
+        parameters.
+
+        The relationships parameter expects a sequence of relationships
+        (relation classes or predicate objects).
+    """
+    registry = zapi.getUtility(IRelationsRegistry)
+    query = {}
+    if first: query['first'] = first
+    if second: query['second'] = second
+    if third: query['third'] = third
+    if not relationships:
+        return registry.query(**query)
+    else:
+        result = set()
+        for r in relationships:
+            query['relationship'] = r
+            result.update(registry.query(**query))
+        return result
+
+
 # events and handlers
 
 class RelationInvalidatedEvent(ObjectEvent):

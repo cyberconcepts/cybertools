@@ -59,5 +59,4 @@ class TriadicRelation(Relation):
         self.first = first
         self.second = second
         self.third = third
-    
-    
+
