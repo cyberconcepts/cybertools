@@ -8,36 +8,45 @@
       cyberconcepts IT-Consulting
     </title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link href="liquid.css" rel="stylesheet" type="text/css"
-          tal:attributes="href context/++resource++liquid.css" />
-    <div metal:define-slot="headers" />
+    <style type="text/css" media="all"
+           tal:content="string:@import url(${context/++resource++zope3_tablelayout.css});">
+      @import url(zope3_tablelayout.css);
+    </style>
+    <metal:block metal:define-slot="headers" />
+    <metal:block define-slot="style_slot" />
+    <style type="text/css" media="all"
+           tal:content="string:@import url(${context/++resource++liquid.css});">
+      @import url(liquid.css);
+    </style>
+    <metal:block define-slot="ecmascript_slot" />
+    <link rel="icon" type="image/png"
+          tal:attributes="href context/++resource++favicon.png" />
   </head>
   
   <body>
     
     <div id="header">
       <div class="top">
-        <a href="#" name="top" tal:attributes="href string:${request/URL/1}/@@manage">
-          <img src="cyberconcepts.gif" height="75" border="0"
+        <a href="#" name="top"
+           tal:attributes="href string:${request/URL/1}"><img
+               src="cyberconcepts.gif" height="75" border="0"
                alt="cyberconcepts IT-Consulting"
-               tal:attributes="src context/++resource++cyberconcepts.gif" />
-        </a>
-        <span metal:use-macro="context/@@standard_macros/logged_user">
-          Logged in as user
-        </span>
+               tal:attributes="src context/++resource++cyberconcepts.gif" /></a>
       </div>
     </div>
-    
-    <div id="menu"><h1>menu</h1></div>
-    
-    <div id="content">
-      <span metal:define-slot="body">Here comes the body</span>
+    <div id="menu">
+      <metal:menu define-slot="navigators"><h1>menu</h1></metal:menu>
     </div>
-    
-    <div id="sub-section"><h1>sub-section</h1></div>
-    
-    <div id="footer"><h1>footer</h1>
-        <span metal:use-macro="context/@@standard_macros/footer" />
+    <div id="content">
+      <metal:content define-slot="body">Here comes the body</metal:content>
+    </div>
+    <div id="sub-section">
+      <metal:sub define-slot="context_information">
+      </metal:sub>
+    </div>
+    <div id="footer">
+      <metal:footer define-slot="footer">
+      </metal:footer>
     </div>
 
   </body>
