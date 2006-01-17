@@ -27,7 +27,7 @@
     
     <div id="header">
       <div class="top">
-        <a href="#" name="top"
+        <a href="#" name="top" metal:define-slot="logo"
            tal:attributes="href string:${request/URL/1}"><img
                src="cyberconcepts.gif" height="75" border="0"
                alt="cyberconcepts IT-Consulting"
@@ -44,8 +44,9 @@
       <metal:sub define-slot="context_information">
       </metal:sub>
     </div>
-    <div id="footer">
-      <metal:footer define-slot="footer">
+    <div id="footer" class="footer">
+      &copy; Copyright 2006, cyberconcepts IT-Consulting Dr. Helmut Merz
+      <metal:footer define-slot="footer">    
       </metal:footer>
     </div>
 

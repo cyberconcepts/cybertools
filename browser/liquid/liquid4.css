@@ -33,9 +33,15 @@ body {
     border-left: none;
 }
 
-#footer {
-    border: none;
+.footer {
+    text-align: center;
+    border-top: 1px solid #ccc;
+    border-bottom: none;
+    margin-top: 3px;
+    padding-top: 6px;
 }
+
+#footer { border-bottom: none; }
 
 /* cyberconcepts specialties */
 
