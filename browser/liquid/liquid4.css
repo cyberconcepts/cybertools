@@ -41,6 +41,10 @@ body {
     padding-top: 6px;
 }
 
+.itemViews {
+    border-bottom-width: 2px;
+}
+
 #footer { border-bottom: none; }
 
 /* cyberconcepts specialties */

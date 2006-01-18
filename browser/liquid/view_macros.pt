@@ -12,7 +12,12 @@
            tal:content="string:@import url(${context/++resource++zope3_tablelayout.css});">
       @import url(zope3_tablelayout.css);
     </style>
-    <metal:block metal:define-slot="headers" />
+    <metal:block metal:define-slot="headers">
+      <script type="text/javascript" src="zope3.js"
+              tal:attributes="src string:${context/++resource++zope3.js}" >
+      </script>
+      <span metal:use-macro="context/@@standard_macros/navigation_tree_js" />
+    </metal:block>
     <metal:block define-slot="style_slot" />
     <style type="text/css" media="all"
            tal:content="string:@import url(${context/++resource++liquid.css});">
@@ -23,7 +28,7 @@
           tal:attributes="href context/++resource++favicon.png" />
   </head>
   
-  <body>
+  <body tal:attributes="onload body_onload | nothing">
     
     <div id="header">
       <div class="top">
@@ -35,10 +40,31 @@
       </div>
     </div>
     <div id="menu">
-      <metal:menu define-slot="navigators"><h1>menu</h1></metal:menu>
+      <metal:menu define-slot="navigators">
+        <span metal:use-macro="context/@@standard_macros/navigation_tree_box" />
+        <div class="box" id="commonTasks"
+             tal:define="view context/@@commonTasks|nothing"
+             tal:condition="view/strip|nothing">
+          <h4 i18n:translate="">Add</h4>
+          <div class="body">
+            <span tal:replace="structure view" />
+          </div>
+        </div>
+      </metal:menu>
     </div>
     <div id="content">
-      <metal:content define-slot="body">Here comes the body</metal:content>
+      <div class="itemViews" metal:define-slot="actions">
+        <tal:block repeat="view context/@@view_get_menu/zmi_views">
+          <a href=""
+            tal:attributes="href view/action;
+                            class view/selected;"
+            tal:content="view/title" i18n:translate="">
+            label
+          </a>
+        </tal:block>
+      </div>
+      <metal:content define-slot="body">
+      </metal:content>
     </div>
     <div id="sub-section">
       <metal:sub define-slot="context_information">
