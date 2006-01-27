@@ -26,6 +26,7 @@ from zope.app import zapi
 from zope.app.container.ordered import OrderedContainer as BaseOrderedContainer
 from zope.cachedescriptors.property import Lazy
 from zope.app.container.browser.contents import JustContents
+from zope.app.i18n import ZopeMessageFactory as _
 
 
 class OrderedContainerView(JustContents):
@@ -44,9 +45,9 @@ class OrderedContainerView(JustContents):
                 delta = request.get('delta', 1)
                 ids = request.get('ids', [])
                 if ids:
-                    m = getattr(self, var, None)
-                    if m:
-                        m(ids, delta)
+                    getattr(self, var, None)(ids, delta)
+                else:
+                    self.error = _("You didn't specify any ids to move.")
                 return
 
     def move_down(self, ids=[], delta=1):

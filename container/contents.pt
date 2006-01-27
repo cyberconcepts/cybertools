@@ -5,7 +5,6 @@
   <div metal:define-macro="contents">
 
     <tal:checkmove define="dummy view/checkMoveAction">
-
     <form name="containerContentsForm" method="post" action="."
           tal:attributes="action request/URL"
           tal:define="container_contents view/listContentInfo">
