@@ -5,12 +5,7 @@ Ordered Containers
 
 Let's add an ordered container and place some objects in it:
       
-  >>> from zope.interface import implements
-  >>> from zope.app.container.interfaces import IOrderedContainer
-  >>> import zope.app.container.ordered
-  >>> class OrderedContainer(zope.app.container.ordered.OrderedContainer):
-  ...     implements(IOrderedContainer)
-
+  >>> from zope.app.container.ordered import OrderedContainer
   >>> c1 = OrderedContainer()
   >>> c1['sub1'] = OrderedContainer()
   >>> c1['sub2'] = OrderedContainer()
