@@ -34,10 +34,6 @@ class OrderedContainerView(JustContents):
     """
 
     @Lazy
-    def url(self):
-        return zapi.absoluteURL(self.context, self.request)
-
-    @Lazy
     def orderable(self):
         return len(self.context) > 1
 
@@ -45,36 +41,29 @@ class OrderedContainerView(JustContents):
         request = self.request
         for var in request:
             if var.startswith('move_'):
-                params = []
-                if 'delta' in request:
-                    params.append('delta=' + request['delta'])
-                if 'ids' in request:
-                    for id in request['ids']:
-                        params.append('ids:list=' + id)
-                request.response.redirect('%s/%s?%s'
-                                          % (self.url, var, '&'.join(params)))
-                return True
-        return False
+                delta = request.get('delta', 1)
+                ids = request.get('ids', [])
+                if ids:
+                    m = getattr(self, var, None)
+                    if m:
+                        m(ids, delta)
+                return
 
-    def moveDown(self, ids=[], delta=1):
+    def move_down(self, ids=[], delta=1):
         self.context.updateOrder(
                 moveByDelta(self.context.keys(), ids, int(delta)))
-        self.request.response.redirect(self.url + '/contents.html')
 
-    def moveUp(self, ids=[], delta=1):
+    def move_up(self, ids=[], delta=1):
         self.context.updateOrder(
                 moveByDelta(self.context.keys(), ids, -int(delta)))
-        self.request.response.redirect(self.url + '/contents.html')
 
-    def moveToBottom(self, ids=[]):
+    def move_bottom(self, ids=[], delta=0):
         self.context.updateOrder(
                 moveByDelta(self.context.keys(), ids, len(self.context)))
-        self.request.response.redirect(self.url + '/contents.html')
 
-    def moveToTop(self, ids=[]):
+    def move_top(self, ids=[], delta=0):
         self.context.updateOrder(
                 moveByDelta(self.context.keys(), ids, -len(self.context)))
-        self.request.response.redirect(self.url + '/contents.html')
 
 
 def moveByDelta(objs, toMove, delta):

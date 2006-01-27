@@ -4,9 +4,8 @@
 <div metal:fill-slot="body">
   <div metal:define-macro="contents">
 
-    <tal:checkmove define="isMoveAction view/checkMoveAction">
+    <tal:checkmove define="dummy view/checkMoveAction">
 
-    <tal:showlisting condition="not:isMoveAction">
     <form name="containerContentsForm" method="post" action="."
           tal:attributes="action request/URL"
           tal:define="container_contents view/listContentInfo">
@@ -199,7 +198,6 @@
       </div>
 
     </form>
-    </tal:showlisting>
     </tal:checkmove>
 
 

@@ -5,17 +5,13 @@
    xmlns:zope="http://namespaces.zope.org/zope"
    i18n_domain="zope">
 
-  <pages
+  <page
       for="zope.app.container.interfaces.IOrderedContainer"
+      name="contents.html"
+      template="contents.pt"
       class=".ordered.OrderedContainerView"
-      permission="zope.ManageContent">
-    <page name="contents.html" template="contents.pt"
-          menu="zmi_views" title="Contents"
-          />
-    <page name="move_down" attribute="moveDown" />
-    <page name="move_up" attribute="moveUp" />
-    <page name="move_bottom" attribute="moveToBottom" />
-    <page name="move_top" attribute="moveToTop" />
-  </pages>
+      permission="zope.ManageContent"
+      menu="zmi_views" title="Contents"
+      />
 
 </configure>
