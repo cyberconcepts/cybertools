@@ -22,14 +22,14 @@ body {
 #header,#footer {width:100%}
 #menu,#content,#sub-section {float:left}
 #menu {width:20%}
-#content {width:60%}
-#sub-section {width:19.9%}
+#content {width:67%}
+#sub-section {width:12.9%}
 #footer {clear:left}
 
 /* more general stuff */
 
 .box {
-    margin: 12px 15px 8px 10px;
+    margin: 12px 12px 8px 10px;
     border-left: none;
 }
 

@@ -1,0 +1,21 @@
+<!-- $Id$ -->
+
+<configure
+   xmlns="http://namespaces.zope.org/browser"
+   xmlns:zope="http://namespaces.zope.org/zope"
+   i18n_domain="zope">
+
+  <pages
+      for="zope.app.container.interfaces.IOrderedContainer"
+      class=".ordered.OrderedContainerView"
+      permission="zope.ManageContent">
+    <page name="contents.html" template="contents.pt"
+          menu="zmi_views" title="Contents"
+          />
+    <page name="move_down" attribute="moveDown" />
+    <page name="move_up" attribute="moveUp" />
+    <page name="move_bottom" attribute="moveToBottom" />
+    <page name="move_top" attribute="moveToTop" />
+  </pages>
+
+</configure>
