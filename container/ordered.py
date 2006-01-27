@@ -67,7 +67,7 @@ class OrderedContainerView(JustContents):
 
 
 def moveByDelta(objs, toMove, delta):
-    """ Return the list given by objs resorted in a way that the elements
+    """ Return the list given by objs re-ordered in a way that the elements
         of toMove (which must be in the objs list) have been moved by delta.
     """
     result = [obj for obj in objs if obj not in toMove]
