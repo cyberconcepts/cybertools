@@ -88,7 +88,8 @@ class RelationsRegistry(Catalog):
     
     def unregister(self, relation):
         self.unindex_doc(zapi.getUtility(IIntIds).getId(relation))
-    
+        notify(RelationInvalidatedEvent(relation))
+
     def query(self, example=None, **kw):
         for k in kw:
             if k == 'relationship':
@@ -140,9 +141,9 @@ def getRelations(first=None, second=None, third=None, relationships=None):
     """
     registry = zapi.getUtility(IRelationsRegistry)
     query = {}
-    if first: query['first'] = first
-    if second: query['second'] = second
-    if third: query['third'] = third
+    if first is not None: query['first'] = first
+    if second is not None: query['second'] = second
+    if third is not None: query['third'] = third
     if not relationships:
         return registry.query(**query)
     else:
@@ -160,23 +161,21 @@ class RelationInvalidatedEvent(ObjectEvent):
 
 
 def invalidateRelations(context, event):
-    """ Handles IObjectRemoved event: sends out an IRelationInvalidatedEvent
-        for all relations the object to be removed is involved in.
+    """ Handles IObjectRemoved event: unregisters
+        all relations the object to be removed is involved in.
     """
     relations = []
     registry = zapi.getUtility(IRelationsRegistry)
     for attr in ('first', 'second', 'third'):
         relations = registry.query(**{attr: context})
         for relation in relations:
-            notify(RelationInvalidatedEvent(relation))
+            registry.unregister(relation)
 
 def removeRelation(context, event):
-    """ Handles IRelationInvalidatedEvent by unregistering the relation
-        and removing it from its container (if appropriate) and the IntIds
-        utility.
+    """ Handles IRelationInvalidatedEvent by removing the relation
+        (that should be already unregistered from the relations registry)
+        from its container (if appropriate) and the IntIds utility.
     """
-    registry = zapi.getUtility(IRelationsRegistry)
-    registry.unregister(context)
     if ILocation.providedBy(context):
         parent = zapi.getParent(context)
         if parent is not None:
