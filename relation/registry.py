@@ -53,6 +53,7 @@ class DummyRelationsRegistry(object):
     def unregister(self, relation):
         if relation in self.relations:
             self.relations.remove(relation)
+            notify(RelationInvalidatedEvent(relation))
     
     def query(self, example=None, **kw):
         result = []
