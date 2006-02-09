@@ -11,8 +11,8 @@ from zope.app.intid.interfaces import IIntIds
 from cybertools.relation.interfaces import IDyadicRelation, ITriadicRelation
 from cybertools.relation.interfaces import IRelation, IPredicate
 from cybertools.relation import Relation, DyadicRelation, TriadicRelation
-from cybertools.relation.interfaces import IRelationsRegistry
-from cybertools.relation.registry import RelationsRegistry
+from cybertools.relation.interfaces import IRelationRegistry
+from cybertools.relation.registry import RelationRegistry
 
 
 class IntIdsStub:
@@ -50,9 +50,9 @@ class TestRelation(unittest.TestCase):
         self.assert_(ITriadicRelation.providedBy(TriadicRelation(None, None, None)),
              'Interface ITriadicRelation is not implemented by class TriadicRelation.')
         verifyClass(ITriadicRelation, TriadicRelation)
-        self.assert_(IRelationsRegistry.providedBy(RelationsRegistry()),
-            'Interface IRelationsRegistry is not implemented by class RelationsRegistry.')
-        verifyClass(IRelationsRegistry, RelationsRegistry)
+        self.assert_(IRelationRegistry.providedBy(RelationRegistry()),
+            'Interface IRelationRegistry is not implemented by class RelationRegistry.')
+        verifyClass(IRelationRegistry, RelationRegistry)
 
 
 def test_suite():

@@ -4,7 +4,7 @@ Quickstart Instructions
   ($Id$)
 
 In the ++etc++/default folder of your Zope 3 site create a Unique Id Utility
-and a Relations Registry.
+and a relation registry.
 
 In your application
 
@@ -14,9 +14,9 @@ In your application
   ``MyRelation(object1, object2)``.
 
 - register these relation objects by getting a utility providing
-  ``IRelationsRegistry`` and call the ``register(relation)`` on this utility.
+  ``IRelationRegistry`` and call the ``register(relation)`` on this utility.
   
-You are now ready to retrieve relations by using the relations registry's
+You are now ready to retrieve relations by using the relation registry's
 ``query()`` method as described below.
 
 You may also like to read the file concepts.txt that gives you some more basic
@@ -111,12 +111,12 @@ Dyadic Relations
   >>> class LivesIn(DyadicRelation):
   ...     pass
 
-We don't directly keep track of relations but use a relations registry for
-this. The relations registry is usually a local utility; for testing we use
+We don't directly keep track of relations but use a relation registry for
+this. The relation registry is usually a local utility; for testing we use
 a simple dummy implementation:
 
-  >>> from cybertools.relation.registry import DummyRelationsRegistry
-  >>> relations = DummyRelationsRegistry()
+  >>> from cybertools.relation.registry import DummyRelationRegistry
+  >>> relations = DummyRelationRegistry()
 
 So we are ready to connect a person and a city using the LivesIn relationship:
 
@@ -124,7 +124,7 @@ So we are ready to connect a person and a city using the LivesIn relationship:
   >>> relations.register(LivesIn(audrey, newyork))
   >>> relations.register(LivesIn(kirk, newyork))
 
-We can now query the relations registry to find out where clark lives and
+We can now query the relation registry to find out where clark lives and
 who lives in New York. For this we use the standard attributes of dyadic
 relations, first and second:
 
@@ -183,21 +183,21 @@ all relations for clark's children:
   True
 
 
-Setting up and using a RelationsRegistry local utility
+Setting up and using a RelationRegistry local utility
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We now do the same stuff as above with a real, catalog-based implementation of
-the relations registry. We also register the relations registry as a
+the relation registry. We also register the relation registry as a
 utility for demonstration purposes (and to be able to use it later when
 working with events).
 
-  >>> from cybertools.relation.registry import RelationsRegistry
-  >>> from cybertools.relation.interfaces import IRelationsRegistry
+  >>> from cybertools.relation.registry import RelationRegistry
+  >>> from cybertools.relation.interfaces import IRelationRegistry
   >>> from zope.app.testing import ztapi
-  >>> ztapi.provideUtility(IRelationsRegistry, RelationsRegistry())
+  >>> ztapi.provideUtility(IRelationRegistry, RelationRegistry())
 
   >>> from zope.app import zapi
-  >>> relations = zapi.getUtility(IRelationsRegistry)
+  >>> relations = zapi.getUtility(IRelationRegistry)
 
 In real life the indexes needed will be set up via subscription to
 IObjectCreatedEvent - here we have to do this explicitly:
@@ -281,7 +281,7 @@ It should work also for triadic relations:
   True
 
 There is also a convenience function that it makes even easier to query
-a relations registry; it allows to query for more than one relationship:
+a relation registry; it allows to query for more than one relationship:
 
   >>> from cybertools.relation.registry import getRelations
   >>> len(getRelations(first=clark))
@@ -383,7 +383,7 @@ our LivesIn relation class from above) and use for registration:
   >>> relations.register(PredicateRelation(livesIn, kirk, newyork))
 
 The predicate may then be used as the relationship argument when querying
-the relations registry.
+the relation registry.
 
   >>> len(relations.query(relationship=livesIn, second=washington))
   1

@@ -35,7 +35,7 @@ I want to use.
 
 So the question arises what to do with the relation objects? The point here
 is not so much where to store them but how to make sure that we can find
-them. So we need a registry for relations - interface IRelationsRegistry.
+them. So we need a registry for relations - interface IRelationRegistry.
 
 This has three methods:
 
@@ -62,9 +62,9 @@ Default Implementation
 ----------------------
 
 You see that this looks very much like a catalog search - so why not implement
-the relations registry as a subclass of Catalog (see zope.app.catalog).
+the relation registry as a subclass of Catalog (see zope.app.catalog).
 
-OK, so the RelationsRegistry class is derived from Catalog, and of course it is
+OK, so the RelationRegistry class is derived from Catalog, and of course it is
 a local utility. The indexes are just FieldIndex objects, using an adapter
 to provide unique ids for the objects involved via the IntIds
 utility; the same is done for providing an id for the relation objects

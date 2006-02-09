@@ -34,14 +34,14 @@ from zope.event import notify
 from zope.app.event.objectevent import ObjectEvent
 from zope.security.proxy import removeSecurityProxy
 
-from interfaces import IRelationsRegistry, IRelationInvalidatedEvent
+from interfaces import IRelationRegistry, IRelationInvalidatedEvent
 
 
-class DummyRelationsRegistry(object):
+class DummyRelationRegistry(object):
     """ Dummy implementation for demonstration and test purposes.
     """
 
-    implements(IRelationsRegistry)
+    implements(IRelationRegistry)
 
     def __init__(self):
         self.relations = []
@@ -69,12 +69,15 @@ class DummyRelationsRegistry(object):
                 result.append(r)
         return result
 
+#BBB
+#DummyRelationsRegistry = DummyRelationRegistry
 
-class RelationsRegistry(Catalog):
+
+class RelationRegistry(Catalog):
     """ Local utility for registering (cataloguing) and searching relations.
     """
 
-    implements(IRelationsRegistry)
+    implements(IRelationRegistry)
 
     def setupIndexes(self):
         for idx in ('relationship', 'first', 'second', 'third'):
@@ -100,6 +103,9 @@ class RelationsRegistry(Catalog):
             # set min, max
             kw[k] = (quString, quString)
         return self.searchResults(**kw)
+
+#BBB
+#RelationsRegistry = RelationRegistry
 
 
     
@@ -140,7 +146,7 @@ def getRelations(first=None, second=None, third=None, relationships=None):
         The relationships parameter expects a sequence of relationships
         (relation classes or predicate objects).
     """
-    registry = zapi.getUtility(IRelationsRegistry)
+    registry = zapi.getUtility(IRelationRegistry)
     query = {}
     if first is not None: query['first'] = first
     if second is not None: query['second'] = second
@@ -166,15 +172,16 @@ def invalidateRelations(context, event):
         all relations the object to be removed is involved in.
     """
     relations = []
-    registry = zapi.getUtility(IRelationsRegistry)
-    for attr in ('first', 'second', 'third'):
-        relations = registry.query(**{attr: context})
-        for relation in relations:
-            registry.unregister(relation)
+    registry = zapi.queryUtility(IRelationRegistry)
+    if registry is not None:
+        for attr in ('first', 'second', 'third'):
+            relations = registry.query(**{attr: context})
+            for relation in relations:
+                registry.unregister(relation)
 
 def removeRelation(context, event):
     """ Handles IRelationInvalidatedEvent by removing the relation
-        (that should be already unregistered from the relations registry)
+        (that should be already unregistered from the relation registry)
         from its container (if appropriate) and the IntIds utility.
     """
     if ILocation.providedBy(context):
@@ -185,9 +192,9 @@ def removeRelation(context, event):
     intids.unregister(context)
 
 def setupIndexes(context, event):
-    """ Handles IObjectAdded event for the RelationsRegistry utility
+    """ Handles IObjectAdded event for the RelationRegistry utility
         and creates the indexes needed.
     """
-    if isinstance(context, RelationsRegistry):
+    if isinstance(context, RelationRegistry):
         context.setupIndexes()
 

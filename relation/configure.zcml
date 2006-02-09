@@ -5,14 +5,14 @@
    xmlns:browser="http://namespaces.zope.org/browser"
    i18n_domain="zope">
 
-  <localUtility class=".registry.RelationsRegistry">
+  <localUtility class=".registry.RelationRegistry">
     <require
         permission="zope.View"
-        interface=".interfaces.IRelationsRegistryQuery"
+        interface=".interfaces.IRelationRegistryQuery"
         />
     <require
         permission="zope.ManageContent"
-        interface=".interfaces.IRelationsRegistryUpdate"
+        interface=".interfaces.IRelationRegistryUpdate"
         />
     <require
         interface="zope.app.catalog.interfaces.ICatalogQuery"
@@ -26,7 +26,7 @@
         interface="zope.app.container.interfaces.IContainer"
         permission="zope.ManageServices"
         />
-    <factory id="cybertools.relation.registry.RelationsRegistry" />
+    <factory id="cybertools.relation.registry.RelationRegistry" />
   </localUtility>
 
   <adapter
@@ -37,7 +37,7 @@
         />
 
   <subscriber
-        for=".interfaces.IRelationsRegistry
+        for=".interfaces.IRelationRegistry
              zope.app.container.interfaces.IObjectAddedEvent"
         handler=".registry.setupIndexes"
         />
@@ -57,15 +57,15 @@
   <!-- browser settings -->
         
   <browser:tool
-      interface=".interfaces.IRelationsRegistry"
-      title="Relations Registry"
+      interface=".interfaces.IRelationRegistry"
+      title="Relation Registry"
       description="Registry for relation objects."
       />
 
   <browser:addMenuItem
-      title="Relations Registry"
+      title="Relation Registry"
       description="A utility that allows the registration of and query for relations"
-      class=".registry.RelationsRegistry"
+      class=".registry.RelationRegistry"
       permission="zope.ManageSite"
     />
 

@@ -90,11 +90,11 @@ class IRelationInvalidatedEvent(IObjectEvent):
     """
 
 
-# relations registry interfaces
+# relation registry interfaces
     
-class IRelationsRegistryUpdate(Interface):
+class IRelationRegistryUpdate(Interface):
     """ Interface for registering and unregistering relations with a
-        relations registry.
+        relation registry.
     """
 
     def register(relation):
@@ -105,9 +105,12 @@ class IRelationsRegistryUpdate(Interface):
         """ Remove the relation given from this registry.
         """
 
+#BBB
+#IRelationsRegistryUpdate = IRelationRegistryUpdate
 
-class IRelationsRegistryQuery(Interface):
-    """ Interface for querying a relations registry.
+
+class IRelationRegistryQuery(Interface):
+    """ Interface for querying a relation registry.
     """
 
     def query(relation=None, **kw):
@@ -122,10 +125,15 @@ class IRelationsRegistryQuery(Interface):
                 rr.queryRelations(first=someObject, second=anotherObject,
                                   relationship=SomeRelationClass)
         """
+#BBB
+#IRelationsRegistryQuery = IRelationRegistryQuery
 
 
-class IRelationsRegistry(IRelationsRegistryUpdate, IRelationsRegistryQuery):
+class IRelationRegistry(IRelationRegistryUpdate, IRelationRegistryQuery):
     """ A registry for registering and searching relations typically
         implemented as a local utility .
     """
+
+#BBB
+#IRelationsRegistry = IRelationRegistry
 
