@@ -30,7 +30,7 @@ class BrowserTest(FunctionalTestCase):
         browser.addHeader('Accept-Language', 'en-US')
         browser.open('http://localhost/++etc++site/default/@@contents.html')
         self.assert_(browser.isHtml)
-        addLink = browser.getLink('Relations Registry')
+        addLink = browser.getLink('Relation Registry')
         addLink.click()
         self.assert_(browser.isHtml)
         inp = browser.getControl(name='new_value')

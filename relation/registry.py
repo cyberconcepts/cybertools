@@ -60,7 +60,9 @@ class DummyRelationRegistry(object):
         for r in self.relations:
             hit = True
             for k in kw:
-                if ((k == 'relationship' and r.__class__ != kw[k])
+                #if ((k == 'relationship' and r.__class__ != kw[k])
+                if ((k == 'relationship'
+                        and r.getPredicateName() != kw[k].getPredicateName())
                  or (k != 'relationship'
                         and (not hasattr(r, k) or getattr(r, k) != kw[k]))):
                     hit = False
@@ -137,7 +139,7 @@ class IndexableRelationAdapter(object):
             return value
 
 
-# convenience function:
+# convenience functions:
 
 def getRelations(first=None, second=None, third=None, relationships=None):
     """ Return a sequence of relations matching the query specified by the
@@ -160,7 +162,34 @@ def getRelations(first=None, second=None, third=None, relationships=None):
             result.update(registry.query(**query))
         return result
 
+def getRelationSingle(first, relationship):
+    """ Returns the one and only relation for first having relationship
+        or None if there is none.
 
+        Raise an error if there is more than one hit.
+    """
+    rels = getRelations(first, relationships=[relationship])
+    if len(rels) == 0:
+        return None
+    if len(rels) > 1:
+        raise ValueError('Multiple hits when only one relation expected: '
+                '%s, relationship: %s' % (zapi.getName(first),
+                                        relationship.getPredicateName()))
+    return list(rels)[0]
+
+def setRelationSingle(relation):
+    """ Register the relation given, unregistering already existing
+        relations for first and relationship. After this operation there
+        will be only one relation for first with the relationship given.
+    """
+    first = relation.first
+    registry = zapi.getUtility(IRelationRegistry)
+    rels = list(registry.query(first=first, relationship=relation))
+    for oldRel in rels:
+        registry.unregister(oldRel)
+    registry.register(relation)
+
+        
 # events and handlers
 
 class RelationInvalidatedEvent(ObjectEvent):
