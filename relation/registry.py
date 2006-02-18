@@ -162,29 +162,36 @@ def getRelations(first=None, second=None, third=None, relationships=None):
             result.update(registry.query(**query))
         return result
 
-def getRelationSingle(first, relationship):
+def getRelationSingle(obj=None, relationship=None, forSecond=True):
     """ Returns the one and only relation for first having relationship
         or None if there is none.
 
         Raise an error if there is more than one hit.
     """
-    rels = getRelations(first, relationships=[relationship])
+    if forSecond:
+        rels = getRelations(second=obj, relationships=[relationship])
+    else:
+        rels = getRelations(first=obj, relationships=[relationship])
     if len(rels) == 0:
         return None
     if len(rels) > 1:
         raise ValueError('Multiple hits when only one relation expected: '
-                '%s, relationship: %s' % (zapi.getName(first),
+                '%s, relationship: %s' % (zapi.getName(obj),
                                         relationship.getPredicateName()))
     return list(rels)[0]
 
-def setRelationSingle(relation):
+def setRelationSingle(relation, forSecond=True):
     """ Register the relation given, unregistering already existing
         relations for first and relationship. After this operation there
         will be only one relation for first with the relationship given.
     """
     first = relation.first
+    second = relation.second
     registry = zapi.getUtility(IRelationRegistry)
-    rels = list(registry.query(first=first, relationship=relation))
+    if forSecond:
+        rels = list(registry.query(second=second, relationship=relation))
+    else:
+        rels = list(registry.query(first=first, relationship=relation))
     for oldRel in rels:
         registry.unregister(oldRel)
     registry.register(relation)
