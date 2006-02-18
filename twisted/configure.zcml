@@ -1,0 +1,11 @@
+<!-- $Id$ -->
+
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   i18n_domain="zope"
+   >
+
+  <subscriber handler="cybertools.twisted.manhole.startup"
+              for="zope.app.appsetup.interfaces.IDatabaseOpenedEvent" />
+
+</configure>
