@@ -31,9 +31,6 @@ def printTime():
     print 'twisted.manhole running:', time.strftime('%H:%M:%S')
     reactor.callLater(60, printTime)
 
-#reactor.callLater(10, stopReactor)
-#reactor.listenTCP(5222, EchoServerFactory())
-
 def help():
     info = """
     Use  dir()  to see what variables and functions are available."""
@@ -49,6 +46,7 @@ def help():
         print zopeInfo
     print
 
+
 def startup(event=None, port=5001):
     global hasZope
     printTime()
@@ -60,10 +58,11 @@ def startup(event=None, port=5001):
         hasZope = False
     d.update(locals())
     namespace = {}
-    for key in ('__builtins__', 'event', 'setSite', 'hasZope', 'zapi', 'root',
-                '__doc__', 'help'):
+    for key in ('__builtins__', 'conn', 'event', 'setSite', 'hasZope', 'zapi',
+                'root', '__doc__', 'help'):
         if key in d:
             namespace[key] = d[key]
+    # TODO: get admin password from somewhere else or use a real checker.
     reactor.listenTCP(port, getManholeFactory(namespace, admin='aaa'))
 
 if __name__ == '__main__':
@@ -73,4 +72,3 @@ if __name__ == '__main__':
     startup(port=port)
     reactor.run()
 
-    
