@@ -57,22 +57,26 @@ class DummyRelationRegistry(object):
     
     def query(self, example=None, **kw):
         result = []
+        criteria = {}
+        if example is not None:
+            for attr in ('first', 'second', 'third',):
+                value = getattr(example, attr, None)
+                if value is not None:
+                    criteria[attr] = value
+            criteria['relationship'] = example
+        criteria.update(kw)
         for r in self.relations:
             hit = True
-            for k in kw:
-                #if ((k == 'relationship' and r.__class__ != kw[k])
+            for k in criteria:
                 if ((k == 'relationship'
-                        and r.getPredicateName() != kw[k].getPredicateName())
+                        and r.getPredicateName() != criteria[k].getPredicateName())
                  or (k != 'relationship'
-                        and (not hasattr(r, k) or getattr(r, k) != kw[k]))):
+                        and (not hasattr(r, k) or getattr(r, k) != criteria[k]))):
                     hit = False
                     break
             if hit:
                 result.append(r)
         return result
-
-#BBB
-#DummyRelationsRegistry = DummyRelationRegistry
 
 
 class RelationRegistry(Catalog):
@@ -97,14 +101,26 @@ class RelationRegistry(Catalog):
         notify(RelationInvalidatedEvent(relation))
 
     def query(self, example=None, **kw):
+        intIds = zapi.getUtility(IIntIds)
+        criteria = {}
+        if example is not None:
+            for attr in ('first', 'second', 'third',):
+                value = getattr(example, attr, None)
+                if value is not None:
+                    criteria[attr] = intIds.getId(value)
+            pn = example.getPredicateName()
+            if pn:
+                criteria['relationship'] = pn
         for k in kw:
+            # overwrite example fields with explicit values
             if k == 'relationship':
-                quString = kw[k].getPredicateName()
+                criteria[k] = kw[k].getPredicateName()
             else:
-                quString = zapi.getUtility(IIntIds).getId(kw[k])
+                criteria[k] = intIds.getId(kw[k])
+        for k in criteria:
             # set min, max
-            kw[k] = (quString, quString)
-        return self.searchResults(**kw)
+            criteria[k] = (criteria[k], criteria[k])
+        return self.searchResults(**criteria)
 
 #BBB
 #RelationsRegistry = RelationRegistry
@@ -207,9 +223,13 @@ def invalidateRelations(context, event):
     """ Handles IObjectRemoved event: unregisters
         all relations the object to be removed is involved in.
     """
+    # TODO: check marker interface of object:
+    # if not IRelatable.providedBy(event.object):
+    #     return
     relations = []
-    registry = zapi.queryUtility(IRelationRegistry)
-    if registry is not None:
+    #registry = zapi.queryUtility(IRelationRegistry)
+    registries = zapi.getAllUtilitiesRegisteredFor(IRelationRegistry)
+    for registry in registries:
         for attr in ('first', 'second', 'third'):
             relations = registry.query(**{attr: context})
             for relation in relations:

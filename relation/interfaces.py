@@ -71,6 +71,23 @@ class ITriadicRelation(IDyadicRelation):
     third = Attribute('Third object that belongs to the relation.')
 
 
+# this is just a conceptual try - thinking about storing
+# relations as attributes...
+class IAttributeRelation(IDyadicRelation):
+    """ A type of relation that will be stored in attributes of the
+        objects that take part in the relation. You have to use a
+        relation registry that provides IAttributeRelationRegistry
+        for registering/managing relations of this type.
+    """
+
+    attributeNameFirst = Attribute('Name of the attribute in which the '
+                        'relation will be stored on the `first` object. '
+                        'Typically a class attribute.')
+    attributeNameSecond = Attribute('Name of the attribute in which the '
+                        'relation will be stored on the `second` object.'
+                        'Typically a class attribute.')
+
+
 class IPredicate(Interface):
     """ A predicate signifies a relationship. This may be implemented
         directly as a relation class, or the relation object may 
@@ -90,6 +107,15 @@ class IRelationInvalidatedEvent(IObjectEvent):
     """
 
 
+# marker interfaces
+
+class IRelatable(Interface):
+    """ Marker interface for objects that may have relations associated
+        with them. Should be checked by IRelationRegistry.register()
+        and event handlers.
+    """
+
+
 # relation registry interfaces
     
 class IRelationRegistryUpdate(Interface):
@@ -105,15 +131,12 @@ class IRelationRegistryUpdate(Interface):
         """ Remove the relation given from this registry.
         """
 
-#BBB
-#IRelationsRegistryUpdate = IRelationRegistryUpdate
-
 
 class IRelationRegistryQuery(Interface):
     """ Interface for querying a relation registry.
     """
 
-    def query(relation=None, **kw):
+    def query(example=None, **kw):
         """ Return a sequence of relations that fulfill the criteria given.
 
             You may provide a relation object as an example that specifies the
@@ -125,8 +148,6 @@ class IRelationRegistryQuery(Interface):
                 rr.queryRelations(first=someObject, second=anotherObject,
                                   relationship=SomeRelationClass)
         """
-#BBB
-#IRelationsRegistryQuery = IRelationRegistryQuery
 
 
 class IRelationRegistry(IRelationRegistryUpdate, IRelationRegistryQuery):
@@ -134,6 +155,4 @@ class IRelationRegistry(IRelationRegistryUpdate, IRelationRegistryQuery):
         implemented as a local utility .
     """
 
-#BBB
-#IRelationsRegistry = IRelationRegistry
 

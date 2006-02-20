@@ -87,11 +87,15 @@ reference these objects via IntIds later; the __parent__ and __name__
 attributes are also needed later when we send an IObjectRemovedEvent event):
 
   >>> from persistent import Persistent
+  >>> from zope.interface import implements
+  >>> from cybertools.relation.interfaces import IRelatable
+
   >>> class Person(Persistent):
   ...     __name__ = __parent__ = None
+  ...     implements(IRelatable)
 
   >>> class City(Persistent):
-  ...     pass
+  ...     implements(IRelatable)
 
   >>> clark = Person()
   >>> kirk = Person()
@@ -137,6 +141,12 @@ relations, first and second:
   >>> nyRels = relations.query(second=newyork)
   >>> len(nyRels)
   2
+
+We can also query the registry using an example relation:
+
+  >>> clarkRels = relations.query(example=LivesIn(clark, None))
+  >>> len(clarkRels)
+  1
 
 It is also possible to remove a relation from the relation registry:
 
@@ -254,6 +264,12 @@ if we want to access relations by array index:
   >>> len(nyRels)
   2
 
+We can also query the registry using an example relation:
+
+  >>> clarkRels = relations.query(example=LivesIn(clark, None))
+  >>> len(clarkRels)
+  1
+
   >>> relations.unregister(
   ...     list(relations.query(first=audrey, second=newyork))[0]
   ... )
@@ -355,10 +371,12 @@ creating a special relation class that uses named predicates.
   >>> class PredicateRelation(DyadicRelation):
   ...     def __init__(self, predicate, first, second):
   ...         self.predicate = predicate
+  ...         predicate.forClass = self.__class__
   ...         self.first = first
   ...         self.second = second
   ...     def getPredicateName(self):
-  ...         return self.predicate.getPredicateName()
+  ...         baseName = super(PredicateRelation, self).getPredicateName()
+  ...         return '.'.join((baseName, self.predicate.name))
 
 We also need a class for the predicate objects that will be used for
 the constructor of the NamedPredicateRelation class:
@@ -370,7 +388,10 @@ the constructor of the NamedPredicateRelation class:
   ...     implements(IPredicate)
   ...     def __init__(self, name):
   ...         self.name = name
+  ...         self.forClass = None
   ...     def getPredicateName(self):
+  ...         if self.forClass is not None:
+  ...             return self.forClass(self, None, None).getPredicateName()
   ...         return self.name
 
 We can now create a predicate with the name '_lives in_' (that may replace

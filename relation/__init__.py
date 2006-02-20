@@ -29,6 +29,7 @@ from persistent import Persistent
 from zope.interface import implements
 from interfaces import IPredicate
 from interfaces import IRelation, IDyadicRelation, ITriadicRelation
+from interfaces import IRelatable
 
 class Relation(Persistent):
 
@@ -40,6 +41,12 @@ class Relation(Persistent):
 
     def validate(self, registry=None):
         return True
+
+    def checkRelatable(self, *objects):
+        for obj in objects:
+            if obj is not None and not IRelatable.providedBy(obj):
+                raise(ValueError, 'Objects to be used in relations '
+                        'must provide the IRelatable interface.')
     
 
 class DyadicRelation(Relation):
@@ -49,6 +56,7 @@ class DyadicRelation(Relation):
     def __init__(self, first, second):
         self.first = first
         self.second = second
+        self.checkRelatable(first, second)
 
 
 class TriadicRelation(Relation):
@@ -59,4 +67,5 @@ class TriadicRelation(Relation):
         self.first = first
         self.second = second
         self.third = third
+        self.checkRelatable(first, second, third)
 
