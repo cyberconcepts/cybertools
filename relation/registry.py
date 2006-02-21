@@ -45,15 +45,27 @@ class DummyRelationRegistry(object):
 
     def __init__(self):
         self.relations = []
+        self.objects = []
 
     def register(self, relation):
         if relation not in self.relations:
             self.relations.append(relation)
+        if relation not in self.objects:
+            self.objects.append(relation)
+        for attr in ('first', 'second', 'third',):
+            value = getattr(relation, attr, None)
+            if value is not None and value not in self.objects:
+                self.objects.append(value)
     
     def unregister(self, relation):
         if relation in self.relations:
             self.relations.remove(relation)
             notify(RelationInvalidatedEvent(relation))
+
+    def getUniqueIdForObject(self, obj):
+        if obj in self.objects:
+            return self.objects.index(obj)
+        return None
     
     def query(self, example=None, **kw):
         result = []
@@ -66,6 +78,8 @@ class DummyRelationRegistry(object):
             criteria['relationship'] = example
         criteria.update(kw)
         for r in self.relations:
+            if r is None:
+                continue
             hit = True
             for k in criteria:
                 if ((k == 'relationship'
@@ -99,6 +113,9 @@ class RelationRegistry(Catalog):
     def unregister(self, relation):
         self.unindex_doc(zapi.getUtility(IIntIds).getId(relation))
         notify(RelationInvalidatedEvent(relation))
+
+    def getUniqueIdForObject(self, obj):
+        return zapi.getUtility(IIntIds).getId(obj)
 
     def query(self, example=None, **kw):
         intIds = zapi.getUtility(IIntIds)

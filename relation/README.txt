@@ -159,6 +159,14 @@ It is also possible to remove a relation from the relation registry:
   >>> nyRels[0].first == kirk
   True
 
+The relation registry also provides unique ids for all relations
+registered and all objects taking part in these relations. This unique
+ids may be used e.g. if relationships or predicates are themselves
+content objects.
+
+  >>> relations.getUniqueIdForObject(kirk)
+  7
+
 
 Triadic Relations
 ~~~~~~~~~~~~~~~~~
@@ -303,6 +311,12 @@ a relation registry; it allows to query for more than one relationship:
   >>> len(getRelations(first=clark))
   2
   >>> len(getRelations(first=clark, relationships=[LivesIn]))
+  1
+
+The relation registry also supports the getUniqueIdForObject() method that
+just returns the intid of the object given:
+
+  >>> relations.getUniqueIdForObject(kirk)
   1
 
 

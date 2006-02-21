@@ -131,6 +131,11 @@ class IRelationRegistryUpdate(Interface):
         """ Remove the relation given from this registry.
         """
 
+    def getUniqueIdForObject(object):
+        """ Return an identifier for the object given that is unique at
+            least within the scope of this registry.
+        """
+
 
 class IRelationRegistryQuery(Interface):
     """ Interface for querying a relation registry.
@@ -154,5 +159,4 @@ class IRelationRegistry(IRelationRegistryUpdate, IRelationRegistryQuery):
     """ A registry for registering and searching relations typically
         implemented as a local utility .
     """
-
 
