@@ -33,6 +33,7 @@ try:
     from zope.app.component.hooks import setSite
     from zope.app.security.principalregistry import principalRegistry
     from zope.app import zapi
+    import transaction
     hasZope = True
 except:
     hasZope = False
@@ -70,23 +71,27 @@ class ZopeManagerChecker(object):
 
 def printTime():
     print 'twisted.manhole running:', time.strftime('%H:%M:%S')
-    reactor.callLater(60, printTime)
+    reactor.callLater(600, printTime)
 
 
 class Help(object):
     
     def __repr__(self):
         info = """
-        Use  dir()  to see what variables and functions are available.
+        Use `dir()`  to see what variables and functions are available.
         """
         zopeInfo = """
-        You may use  x = zapi.traverse(root, 'path/to/object')  to get an
+        You may use `x = zapi.traverse(root, 'path/to/object')`  to get an
         object in your folder hierarchy. Then you may call any method or
         access any attribute of this object.
         
         In order to get access to local utilities and adapters you may
-        issue a  setSite(root). Don't forget to call  setSite()  before
+        issue a `setSite(root)`. Don't forget to call `setSite()` before
         finishing your session in order to reset this setting.
+
+        If you change an object stored in the ZODB you should issue a
+        `transaction.commit()` to make your changes permanent or a
+        `transaction.abort()` to undo them.
         """
         return info + (hasZope and zopeInfo or '')
 
@@ -108,7 +113,7 @@ def startup(event=None, port=5001):
     d.update(locals())
     namespace = {}
     for key in ('__builtins__', 'connection', 'event', 'setSite', 'hasZope',
-                'zapi', 'root', '__doc__', 'help'):
+                'zapi', 'transaction', 'root', '__doc__', 'help'):
         if key in d:
             namespace[key] = d[key]
     # TODO: get admin password from somewhere else or use a real checker.
