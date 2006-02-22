@@ -63,9 +63,11 @@ class DummyRelationRegistry(object):
             notify(RelationInvalidatedEvent(relation))
 
     def getUniqueIdForObject(self, obj):
-        if obj in self.objects:
-            return self.objects.index(obj)
-        return None
+        if obj == '*': # wild card
+            return '*'
+        if obj not in self.objects:
+            self.objects.append(obj)
+        return self.objects.index(obj)
     
     def query(self, example=None, **kw):
         result = []
@@ -82,12 +84,18 @@ class DummyRelationRegistry(object):
                 continue
             hit = True
             for k in criteria:
-                if ((k == 'relationship'
-                        and r.getPredicateName() != criteria[k].getPredicateName())
-                 or (k != 'relationship'
-                        and (not hasattr(r, k) or getattr(r, k) != criteria[k]))):
-                    hit = False
-                    break
+                crit = criteria[k]
+                if k == 'relationship':
+                    critpn = crit.getPredicateName()
+                    if ((critpn.endswith('*')
+                                and not r.getPredicateName().startswith(critpn[:-1]))
+                            and r.getPredicateName() != critpn):
+                        hit = False
+                        break
+                else:
+                    if not hasattr(r, k) or getattr(r, k) != crit:
+                        hit = False
+                        break
             if hit:
                 result.append(r)
         return result
@@ -115,7 +123,9 @@ class RelationRegistry(Catalog):
         notify(RelationInvalidatedEvent(relation))
 
     def getUniqueIdForObject(self, obj):
-        return zapi.getUtility(IIntIds).getId(obj)
+        if obj == '*': # wild card
+            return '*'
+        return zapi.getUtility(IIntIds).queryId(obj)
 
     def query(self, example=None, **kw):
         intIds = zapi.getUtility(IIntIds)
@@ -136,12 +146,12 @@ class RelationRegistry(Catalog):
                 criteria[k] = intIds.getId(kw[k])
         for k in criteria:
             # set min, max
-            criteria[k] = (criteria[k], criteria[k])
+            value = criteria[k]
+            if k == 'relationship' and value.endswith('*'):
+                criteria[k] = (value[:-1], value[:-1] + '\x7f')
+            else:
+                criteria[k] = (value, value)
         return self.searchResults(**criteria)
-
-#BBB
-#RelationsRegistry = RelationRegistry
-
 
     
 class IIndexableRelation(Interface):
