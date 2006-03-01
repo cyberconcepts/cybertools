@@ -1,0 +1,43 @@
+<html metal:use-macro="context/@@standard_macros/view"
+    i18n:domain="zope">
+  <head>
+    <title i18n:translate="">ZODB Controller</title>
+  </head>
+  <body>
+    <div metal:fill-slot="body">
+
+      <tal:update condition="view/update" />
+
+      <div class="row" tal:condition="view/isOpen">
+        <div class="field" i18n:translate="">Manhole is open.</div>
+      </div>
+      <div class="row" tal:condition="not:view/isOpen">
+        <div class="field" i18n:translate="">Manhole is closed.</div>
+      </div>
+
+      <form action="." method="post" tal:attributes="action request/URL">
+        <input type="hidden" name="form_submitted" value="true" />
+        <div class="row">
+          <span class="label"
+                i18n:translate="">Port</span>:
+          <input type="text" size="5" name="manhole.port"
+                 tal:attributes="value view/port" />
+        </div>
+        <div class="row">
+          <input type="checkbox" size="5" name="manhole.setting" value="true" />
+          <span class="label" i18n:translate=""
+                tal:condition="not:view/isOpen">Open manhole</span>
+          <span class="label" i18n:translate=""
+                tal:condition="view/isOpen">Close manhole</span>
+        </div>
+        <div class="row">
+          <div class="controls">
+            <input type="submit" name="APPLY" value="Apply"
+                i18n:attributes="value apply-button"/>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </body>
+</html>

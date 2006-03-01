@@ -15,7 +15,10 @@ running the manhole script.
 
 In order to use it with Zope copy the cybertools.twisted-configure.zcml
 to the etc/package-includes directory of your Zope instance and restart
-Zope. You can then log in with ssh like shown above, using the username
+Zope. Open the manhole via the "Manhole Control" Tab of the "Manage process"
+menu.
+
+You can then log in with ssh like shown above, using the username
 and password of the zope.manager principal defined in your principals.zcml.
 
 After logging in use the `help` command to get more information.
@@ -26,12 +29,15 @@ $Id$
 from twisted.internet import reactor, protocol, defer
 from twisted.protocols import basic
 from twisted.cred import portal, checkers, credentials, error as credError
-from twisted.conch import manhole, manhole_ssh
+from twisted.conch import manhole as manhole, manhole_ssh
 from zope.interface import implements
 try:
     from zope.app.publication.zopepublication import ZopePublication
     from zope.app.component.hooks import setSite
     from zope.app.security.principalregistry import principalRegistry
+    from zope.app.security import settings
+    from zope.app.security.interfaces import IAuthentication
+    from zope.app.securitypolicy.principalrole import principalRoleManager
     from zope.app import zapi
     import transaction
     hasZope = True
@@ -41,10 +47,16 @@ import time
 import sys
 from cStringIO import StringIO
 
+listener = None
+factory = None
+printLog = None
+port = 5001
+
 
 def getManholeFactory(namespace, **passwords):
     realm = manhole_ssh.TerminalRealm()
     def getManhole(_):
+        #return manhole.ColoredManhole(namespace)
         return manhole.Manhole(namespace)
     realm.chainedProtocolFactory.protocolFactory = getManhole
     p = portal.Portal(realm)
@@ -60,18 +72,26 @@ class ZopeManagerChecker(object):
     credentialInterfaces = (credentials.IUsernamePassword,)
 
     def requestAvatarId(self, credentials):
-        manager = principalRegistry.getPrincipal('zope.manager')
         login = credentials.username
         password = credentials.password
-        if login == manager.getLogin() and manager.validate(password):
-            return defer.succeed(login)
+        # TODO: This should be based on the official Zope API stuff, e.g. via:
+        #principalRegistry = zapi.getUtility(IAuthentication)
+        principal = principalRegistry.getPrincipalByLogin(login)
+        if principal.validate(password):
+            roles = principalRoleManager.getRolesForPrincipal(principal.id)
+            for role, setting in roles:
+                if role == 'zope.Manager' and setting == settings.Allow:
+                    return defer.succeed(login)
+            return defer.fail(credError.UnauthorizedLogin(
+                        'Insufficient permissions'))
         return defer.fail(credError.UnauthorizedLogin(
                     'User/password not correct'))
 
 
 def printTime():
-    print 'twisted.manhole running:', time.strftime('%H:%M:%S')
-    reactor.callLater(600, printTime)
+    global printLog
+    print '***', time.strftime('%H:%M:%S'), '- twisted.manhole open ***'
+    printLog = reactor.callLater(600, printTime)
 
 
 class Help(object):
@@ -101,23 +121,32 @@ class Help(object):
 help = Help()
 
 
-def startup(event=None, port=5001):
-    global hasZope
+def open(port=5001, request=None):
+    global hasZope, factory, listener
     printTime()
     d = globals()
-    if hasZope and event is not None:
-        connection = event.database.open()
+    if hasZope and request is not None:
+        database = request.publication.db
+        connection = database.open()
         root = connection.root()[ZopePublication.root_name]
     else:
         hasZope = False
     d.update(locals())
     namespace = {}
     for key in ('__builtins__', 'connection', 'event', 'setSite', 'hasZope',
-                'zapi', 'transaction', 'root', '__doc__', 'help'):
+                'zapi', 'transaction', 'root', '__doc__', 'help',
+                'manholeFactory', 'context'):
         if key in d:
             namespace[key] = d[key]
     # TODO: get admin password from somewhere else or use a real checker.
-    reactor.listenTCP(port, getManholeFactory(namespace, admin='aaa'))
+    factory = getManholeFactory(namespace, admin='aaa')
+    listener = reactor.listenTCP(port, factory)
+
+def close():
+    global listener
+    listener.stopListening()
+    listener = None
+
 
 if __name__ == '__main__':
     port = 5001

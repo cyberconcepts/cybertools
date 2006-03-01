@@ -2,10 +2,17 @@
 
 <configure
    xmlns="http://namespaces.zope.org/zope"
+   xmlns:browser="http://namespaces.zope.org/browser"
    i18n_domain="zope"
    >
 
-  <subscriber handler="cybertools.twisted.manhole.startup"
-              for="zope.app.appsetup.interfaces.IDatabaseOpenedEvent" />
+  <browser:page
+      for="zope.app.applicationcontrol.interfaces.IApplicationControl"
+      name="manhole_control.html"
+      template="manhole_control.pt"
+      class=".manhole_control.ManholeControlView"
+      permission="zope.ManageApplication"
+      menu="zmi_views" title="Manhole Control"
+      />
 
 </configure>
