@@ -87,15 +87,14 @@ class DummyRelationRegistry(object):
                 crit = criteria[k]
                 if k == 'relationship':
                     critpn = crit.getPredicateName()
-                    if ((critpn.endswith('*')
-                                and not r.getPredicateName().startswith(critpn[:-1]))
-                            and r.getPredicateName() != critpn):
-                        hit = False
-                        break
+                    if critpn.endswith('*'):
+                        if not r.getPredicateName().startswith(critpn[:-1]):
+                            hit = False; break
+                    elif r.getPredicateName() != critpn:
+                        hit = False; break
                 else:
                     if not hasattr(r, k) or getattr(r, k) != crit:
-                        hit = False
-                        break
+                        hit = False; break
             if hit:
                 result.append(r)
         return result
