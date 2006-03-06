@@ -17,8 +17,8 @@
 #
 
 """
-Interfaces for a simple contact management framework to be used
-as an example for the cybertools.reporter package.
+Interfaces for an example for the cybertools.reporter package. This is
+based on the cybertools.contact package
 
 $Id$
 """
@@ -26,6 +26,6 @@ $Id$
 from zope.interface import Interface
 
 class IContactsDataSource(Interface):
-    """ A data source marker interface for contacts.
+    """ A data source marker interface for a collection of contacts.
     """
 

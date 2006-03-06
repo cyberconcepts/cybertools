@@ -17,32 +17,10 @@
 #
 
 """
-A set of simple application classes for contact management to be used
-as an example for the cybertools.reporter package.
+Interfaces for a simple contact management framework to be used
+as an example for some of the cybertools packages.
 
 $Id$
 """
 
-from zope.component import adapts
-from zope.interface import implements
-from cybertools.reporter.interfaces import IResultSet
-from cybertools.reporter.example.interfaces import IContactsDataSource
-
-
-class Person(object):
-    
-    def __init__(self, firstName, lastName, birthDate):
-        self.firstName = firstName
-        self.lastName = lastName
-        self.birthDate = birthDate
-
-
-class Contacts(object):
-
-    implements(IResultSet)
-    adapts(IContactsDataSource)
-
-    def __init__(self, context):
-        self.context = context
-
-        
+from zope.interface import Interface

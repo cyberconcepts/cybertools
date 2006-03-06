@@ -16,8 +16,8 @@ A Basic API for Reports and Listings
 Let's start with the Person class from the example package - we will
 then provide a listing of persons...
 
-  >>> from cybertools.reporter.example.contact import Person, Contacts
-  >>> from cybertools.reporter.example.interfaces import IContactsDataSource
+  >>> from cybertools.contact import Person, Contacts
+  >>> from cybertools.reporter.contact.interfaces import IContactsDataSource
 
   >>> import time
   >>> format = '%Y-%m-%d'
