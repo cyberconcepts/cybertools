@@ -18,20 +18,59 @@
 
 """
 A set of simple application classes for contact management to be used
-as an example for the cybertools.reporter package.
+as an example for some of the cybertools packages.
 
 $Id$
 """
 
 from zope.component import adapts
 from zope.interface import implements
+from cybertools.contact.interfaces import IPerson
+from datetime import date
 
 
 class Person(object):
+
+    implements(IPerson)
     
     def __init__(self, firstName, lastName, birthDate):
         self.firstName = firstName
         self.lastName = lastName
         self.birthDate = birthDate
+        self.moreFirstNames = []
+        self.personalAddress = 'mrs' # or 'mr', 'ms', None (unknown)
+        self.academicTitle = None
+        self.communicationInfos = []
+        self.addresses = {}         # keys: 'standard', ...?
+        self.affiliations = {}      # keys: 'employed', ...?
 
-        
+    @property
+    def age(self):
+        return (date.today() - self.birthDate).days/365.25
+
+
+class Address(object):
+
+    def __init__(self, title, lines, street, zipcode, city, country):
+        self.title = title
+        self.lines = lines      # a sequence of address lines
+        self.street = street
+        self.zipcode = zipcode
+        self.city = city
+        self.country = country  # 'de', 'at', 'us', ...
+
+
+class Institution(object):
+
+    def __init__(self, title):
+        self.title = title
+        self.addresses = {}
+
+
+class CommunicationInfo(object):
+
+    def __init__(self, commType, qualifier, address):
+        self.commType = commType    # e.g. 'email', 'phone', ...
+        self.qualifier = qualifier  # e.g. 'private', or institution
+        self.address = address      # the real address or number
+

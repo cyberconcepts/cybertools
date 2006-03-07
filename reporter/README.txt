@@ -20,17 +20,19 @@ then provide a listing of persons...
   >>> from cybertools.reporter.example.interfaces import IContactsDataSource
   >>> from cybertools.reporter.example.contact import Contacts
 
-  >>> import time
-  >>> format = '%Y-%m-%d'
+  >>> from datetime import date
   >>> pdata = ((u'John', u'Smith', '1956-08-01'),
   ...          (u'David', u'Waters', '1972-12-24'),
   ...          (u'Carla', u'Myers', '1981-10-11'))
-  >>> persons = DataSource([Person(f, s, time.strptime(b, format))
+  >>> persons = DataSource([Person(f, s, date(*[int(d) for d in b.split('-')]))
   ...                         for f, s, b in pdata])
   >>> directlyProvides(persons, IContactsDataSource)
 
   >>> ztapi.provideAdapter(IContactsDataSource, IResultSet, Contacts)
   >>> rset = IResultSet(persons)
+
+  >>> len(rset)
+  3
 
 For the browser presentation we can also use a browser view providing
 the result set with extended attributes:

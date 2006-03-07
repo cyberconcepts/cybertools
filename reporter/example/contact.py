@@ -23,10 +23,50 @@ cybertools.contact package
 $Id$
 """
 
+# TODO: move the generic stuff to cybertools.reporter.result
+
 from zope.component import adapts
 from zope.interface import implements
-from cybertools.reporter.interfaces import IResultSet
+from cybertools.reporter.interfaces import IResultSet, IRow, ICell
 from cybertools.reporter.example.interfaces import IContactsDataSource
+
+
+class Cell(object):
+
+    implements(ICell)
+
+    def __init__(self, field, value, row):
+        self.field = field
+        self.value = value
+        self.row = row
+
+    @property
+    def text(self):
+        return value
+
+    @property
+    def token(self):
+        return value
+
+    def sortKey(self):
+        return value
+
+
+class Row(object):
+
+    implements(IRow)
+
+    def __init__(self, context, resultSet):
+        self.context = context  # a single object (in this case)
+        self.resultSet = resultSet
+
+    @property
+    def cells(self):
+        schema = self.resultSet.schema
+        if schema is None:
+            return {}
+        return dict([(f.__name__, getattr(self.context, f.__name__))
+                        for f in schema.fields])
 
 
 class Contacts(object):
@@ -37,4 +77,14 @@ class Contacts(object):
     def __init__(self, context):
         self.context = context
 
-        
+    _schema = None
+    def setSchema(self, schema): self._schema = schema
+    def getSchema(self): return self._schema
+    schema = property(getSchema, setSchema)
+
+    @property
+    def rows(self):
+        return [Row(o, self) for o in iter(self.context)]
+
+    def __len__(self):
+        return len(self.rows)

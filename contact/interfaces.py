@@ -23,4 +23,10 @@ as an example for some of the cybertools packages.
 $Id$
 """
 
-from zope.interface import Interface
+from zope.interface import Interface, Attribute
+
+class IPerson(Interface):
+    """ Just a person...
+    """
+
+    age = Attribute('A float representing the age in years. Read-only.')
