@@ -36,10 +36,11 @@ class BaseType(object):
     def __eq__(self, other):
         return self.token == other.token
 
-    title = 'BaseType'
+    title = u'BaseType'
 
     @property
-    def token(self): return self.title.lower()
+    def token(self):
+        return str(self.title.lower().replace(' ', '_'))
 
     @property
     def tokenForSearch(self): return self.token
