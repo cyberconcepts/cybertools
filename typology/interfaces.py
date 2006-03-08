@@ -29,8 +29,9 @@ from zope.interface import Interface, Attribute
 
 
 class IType(Interface):
-    """ Associated with an object (typically as an adapter) giving
-        information about the object's type.
+    """ A collection of informations about a type; may be associated
+        with an object (typically as an adapter) specifying the object's
+        type.
     """
 
     title = schema.TextLine(title=u'Title',
@@ -44,8 +45,8 @@ class IType(Interface):
                 description=u'A fairly unique token that may be used '
                              'e.g. for identifying types via a catalog index')
     interfaceToProvide = GlobalObject(title=u'Interface to Provide',
-                description=u'An (optional) interface that objects of this '
-                             'type will provide')
+                description=u'An (optional) interface (or schema) that '
+                             'objects of this type will provide')
     factory = GlobalObject(title=u'Factory',
                 description=u'A factory (or class) that may be used for '
                              'creating an object of this type')
@@ -57,10 +58,38 @@ class IType(Interface):
                 title=u'Type Provider',
                 description=u'A usually long-living object that corresponds '
                              'to the type. Note that this object need not '
-                             'provide the IType interface itself')
+                             'provide the IType interface itself but it '
+                             'should be adaptable to ITypeProvider')
+    # possible extensions:
+    # subTypes
+    # parentTypes
 
 
 class ITypeManager(Interface):
     """ A utility or utility-like object (e.g. a container) that may
         manage (store, retrieve, assign) types.
     """
+
+    types = schema.Tuple(schema.Object(IType), unique=True,
+                title=u'Types',
+                description=u'A sequence of type objects managed by '
+                             'this type manager')
+
+    def listTypes(**criteria):
+        """ Return a sequence of type objects probably restricted via
+            a set of query criteria.
+        """
+
+    def getType(token):
+        """ Return a type object belonging to the token given.
+        """
+
+
+class ITypeProvider(Interface):
+    """ An object (probably used as an adapter) that may provide a
+        certain type object.
+    """
+
+    def getType():
+        """ Return the type object this type provider provides.
+        """

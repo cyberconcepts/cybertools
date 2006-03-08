@@ -1,14 +1,15 @@
-Quickstart Instructions
-=======================
+A Basic API for Dynamic Typing
+==============================
 
   ($Id$)
 
+The typology package offers a basic standard API for associating
+arbitrary objects with types that may then be used for controlling
+execution of code, helping with search interfaces or editing of
+object data.
+
   >>> from zope.app import zapi
   >>> from zope.app.testing import ztapi
-  >>> from zope.interface import directlyProvides
-
-A Basic API for Dynamic Typing
-==============================
 
   >>> from cybertools.typology.interfaces import IType, ITypeManager
 
@@ -29,29 +30,59 @@ Now we want to express that any person younger than 18 years is a
 child, and from 18 years on a person is an adult. (Note that this test
 will only work until November 2017 ;-))
 
-The example package gives us a class for this type that we use as an
-adapter to IPerson:
+The example package gives us a class (AgeGroup) for this type
+that we use as an adapter to IPerson. The type itself we specify as a
+subclass (IAgeGroup) of IType; thus we can associate different types
+to one object by providing adapters to different type interfaces.
 
-  >>> from cybertools.typology.example.person import BasicAgeGroup
-  >>> ztapi.provideAdapter(IPerson, IType, BasicAgeGroup)
-  >>> john_type = IType(persons[0])
-  >>> david_type = IType(persons[1])
-  >>> carla_type = IType(persons[2])
+In addition, the AgeGroup adapter makes use of an AgeGroupManager,
+a global utility that does the real work.
+
+  >>> from cybertools.typology.example.person import IAgeGroup, AgeGroup
+  >>> ztapi.provideAdapter(IPerson, IAgeGroup, AgeGroup)
+  >>> from cybertools.typology.example.person import IAgeGroupManager
+  >>> from cybertools.typology.example.person import AgeGroupManager
+  >>> ztapi.provideUtility(IAgeGroupManager, AgeGroupManager())
+
+  >>> john_type = IAgeGroup(persons[0])
+  >>> david_type = IAgeGroup(persons[1])
+  >>> carla_type = IAgeGroup(persons[2])
 
 We can now look what the type is telling us about the persons:
 
   >>> john_type.title
   u'Adult'
   >>> john_type.token
-  'contact.person.agetype.adult'
+  'contact.person.agegroup.adult'
   >>> david_type.token
-  'contact.person.agetype.adult'
+  'contact.person.agegroup.adult'
   >>> carla_type.token
-  'contact.person.agetype.child'
+  'contact.person.agegroup.child'
 
-Usually types are equal if they have the same token:
+In this case (and probably a lot of others) types are considered equal
+if they have the same token:
 
   >>> john_type == david_type
   True
   >>> john_type == carla_type
   False
+
+If we want to use this type information on a search form for retrieving
+only persons of a certain age group we need a list of available types
+(in fact that is an iterable source and, based on it, a vocabulary).
+
+This is where type managers come in. A type manager is a utility or
+another (possibly persistent) object knowing about the available types.
+
+  >>> typeManager = zapi.getUtility(IAgeGroupManager)
+  >>> types = typeManager.types
+  >>> [t.title for t in types]
+  [u'Child', u'Adult']
+  >>> types[0] == carla_type
+  True
+  >>> types[1] == john_type == david_type
+  True
+  
+  >>> t = typeManager.getType(carla_type.token)
+  >>> t.title
+  u'Child'

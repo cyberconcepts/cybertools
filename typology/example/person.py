@@ -23,38 +23,63 @@ cybertools.contact package
 $Id$
 """
 
-# TODO: move generic stuff to type.Type class
-
 from zope.component import adapts
 from zope.interface import implements
 from cybertools.contact.interfaces import IPerson
-from cybertools.typology.interfaces import IType
+from cybertools.typology.interfaces import IType, ITypeManager
+from cybertools.typology.type import BaseType, TypeManager
 
-class BasicAgeGroup(object):
 
-    implements(IType)
+# interfaces
+
+class IAgeGroup(IType):
+    """ A type interface for discerning childs and adults.
+    """
+
+
+class IAgeGroupManager(ITypeManager):
+    """ A type manager managing age groups.
+    """
+
+
+# implementations
+
+class AgeGroup(BaseType):
+
+    implements(IAgeGroup)
     adapts(IPerson)
-
-    def __init__(self, context):
-        self.context = context
-
-    def __eq__(self, other):
-        return self.token == other.token
 
     # IType attributes
 
     @property
     def title(self):
-        return self.isChild() and u'Child' or u'Adult'
+        return self.isChild and u'Child' or u'Adult'
 
     @property
-    def token(self): return 'contact.person.agetype.' + str(self.title.lower())
+    def token(self): return 'contact.person.agegroup.' + str(self.title.lower())
+
+    # helpers
 
     @property
-    def tokenForSearch(self): return self.token
-
-    # helper methods
-
     def isChild(self):
         return self.context.age < 18.0
+
+
+class AgeGroupTypeInfo(AgeGroup):
+    """ Age group type info object with fixed (not computed) isChild property.
+    """
+
+    isChild = None
+
+    def __init__(self, isChild):
+        self.isChild = isChild
+
+
+class AgeGroupManager(TypeManager):
+
+    implements(IAgeGroupManager)
+
+    @property
+    def types(self):
+        return tuple([AgeGroupTypeInfo(flag) for flag in (True, False)])
 
