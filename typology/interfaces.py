@@ -44,6 +44,11 @@ class IType(Interface):
     tokenForSearch = schema.ASCIILine(title=u'Token for Search',
                 description=u'A fairly unique token that may be used '
                              'e.g. for identifying types via a catalog index')
+    qualifiers = schema.List(title=u'Qualifiers',
+                description=u'A set of markers for a simple classifcation of '
+                             'types, e.g. for selecting with '
+                             'ITypeManager.listTypes()',
+                value_type=schema.ASCIILine())
     interfaceToProvide = GlobalObject(title=u'Interface to Provide',
                 description=u'An (optional) interface (or schema) that '
                              'objects of this type will provide')
@@ -78,6 +83,11 @@ class ITypeManager(Interface):
     def listTypes(**criteria):
         """ Return a sequence of type objects probably restricted via
             a set of query criteria.
+
+            A simple implementation would use keyword arguments like:
+            listTypes(include=('concept',), omit=('system',) where 'concept'
+            and 'system' would be elements in the qualifiers attributes
+            of the types.
         """
 
     def getType(token):

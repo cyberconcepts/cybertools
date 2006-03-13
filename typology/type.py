@@ -45,6 +45,7 @@ class BaseType(object):
     @property
     def tokenForSearch(self): return self.token
 
+    qualifiers = None
     interfaceToProvide = None
     factory = None
     defaultContainer = None
