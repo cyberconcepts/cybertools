@@ -15,7 +15,7 @@ from cybertools.relation.interfaces import IRelationRegistry
 from cybertools.relation.registry import RelationRegistry
 
 
-class IntIdsStub:
+class IntIdsStub(object):
     """A testing stub (mock utility) for IntIds."""
     implements(IIntIds)
 
@@ -25,13 +25,13 @@ class IntIdsStub:
     def getObject(self, uid):
         return self.objs[uid]
 
-    def getId(self, ob):
-        return self.objs.index(ob)
-
     def register(self, ob):
         if ob not in self.objs:
             self.objs.append(ob)
         return self.objs.index(ob)
+
+    getId = register
+    queryId = getId
 
     def unregister(self, ob):
         id = self.getId(ob)
