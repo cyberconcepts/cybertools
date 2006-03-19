@@ -59,6 +59,19 @@ We can now look what the type is telling us about the persons:
   >>> carla_type.token
   'contact.person.agegroup.child'
 
+  >>> carla_type.tokenForSearch
+  'contact.person.agegroup.child'
+  >>> carla_type.qualifiers is None
+  True
+  >>> carla_type.typeInterface is None
+  True
+  >>> carla_type.factory is None
+  True
+  >>> carla_type.defaultContainer is None
+  True
+  >>> carla_type.typeProvider is None
+  True
+
 In this case (and probably a lot of others) types are considered equal
 if they have the same token:
 

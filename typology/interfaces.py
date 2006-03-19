@@ -26,6 +26,7 @@ from zope.app.container.interfaces import IContainer
 from zope import schema
 from zope.configuration.fields import GlobalObject
 from zope.interface import Interface, Attribute
+from zope.interface.interfaces import IInterface
 
 
 class IType(Interface):
@@ -49,11 +50,14 @@ class IType(Interface):
                              'types, e.g. for selecting with '
                              'ITypeManager.listTypes()',
                 value_type=schema.ASCIILine())
-    interfaceToProvide = GlobalObject(title=u'Interface to Provide',
-                description=u'An (optional) interface (or schema) that '
-                             'objects of this type will provide')
-    factory = GlobalObject(title=u'Factory',
-                description=u'A factory (or class) that may be used for '
+    typeInterface = schema.Object(IInterface,
+                title=u'Interface to Provide',
+                description=u'An (optional) interface that objects of this '
+                             'type can be adapted to and that provides '
+                             'additional functionality, schema fields, etc')
+    factory = schema.Object(Interface,
+                title=u'Factory',
+                description=u'A factory (or class) that can be used for '
                              'creating an object of this type')
     defaultContainer = schema.Object(IContainer,
                 title=u'Default Container',
