@@ -9,23 +9,27 @@
     </title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <style type="text/css" media="all"
-           tal:content="string:@import url(${context/++resource++zope3_tablelayout.css});">
+           tal:content="string:@import url(${view/resourceBase}/zope3_tablelayout.css);">
       @import url(zope3_tablelayout.css);
     </style>
     <metal:block metal:define-slot="headers">
       <script type="text/javascript" src="zope3.js"
-              tal:attributes="src string:${context/++resource++zope3.js}" >
+              tal:attributes="src string:${view/resourceBase}/zope3.js" >
       </script>
       <span metal:use-macro="context/@@standard_macros/navigation_tree_js" />
     </metal:block>
     <metal:block define-slot="style_slot" />
-    <style type="text/css" media="all"
-           tal:content="string:@import url(${context/++resource++liquid.css});">
+    <style type="text/css" media="screen"
+           tal:content="string:@import url(${view/resourceBase}/liquid.css);">
       @import url(liquid.css);
+    </style>
+    <style type="text/css" media="print"
+           tal:content="string:@import url(${view/resourceBase}/print.css);">
+      @import url(print.css);
     </style>
     <metal:block define-slot="ecmascript_slot" />
     <link rel="icon" type="image/png"
-          tal:attributes="href context/++resource++favicon.png" />
+          tal:attributes="href string:${view/resourceBase}/favicon.png" />
   </head>
   
   <body tal:attributes="onload body_onload | nothing">
@@ -36,7 +40,7 @@
            tal:attributes="href string:${request/URL/1}"><img
                src="cyberconcepts.gif" height="75" border="0"
                alt="cyberconcepts IT-Consulting"
-               tal:attributes="src context/++resource++cyberconcepts.gif" /></a>
+               tal:attributes="src string:${view/resourceBase}/cyberconcepts.gif" /></a>
       </div>
     </div>
     <div id="menu">
@@ -63,17 +67,20 @@
           </a>
         </tal:block>
       </div>
-      <metal:content define-slot="body">
-      </metal:content>
+      
+      <metal:content define-slot="body">Here comes the body</metal:content>
+      
     </div>
+    
     <div id="sub-section">
-      <metal:sub define-slot="context_information">
-      </metal:sub>
+      <metal:sub define-slot="context_information"></metal:sub>
     </div>
+    
     <div id="footer" class="footer">
-      &copy; Copyright 2006, cyberconcepts IT-Consulting Dr. Helmut Merz
-      <metal:footer define-slot="footer">    
-      </metal:footer>
+      &copy; Copyright 2006, cyberconcepts IT-Consulting Dr. Helmut Merz<br />
+      <a href="#"
+         tal:attributes="href string:${view/menu/url}/impressum">Impressum</a>
+      <metal:footer define-slot="footer"></metal:footer>
     </div>
 
   </body>

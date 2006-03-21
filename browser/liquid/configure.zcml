@@ -19,6 +19,9 @@
   <resource name="liquid.css" file="liquid4.css"
             layer="liquid" />
 
+  <resource name="print.css" file="print.css"
+            layer="liquid" />
+
   <resource name="cyberconcepts.gif" file="cyc-logo03.gif"
             layer="liquid" />
 

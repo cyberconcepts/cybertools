@@ -1,0 +1,13 @@
+/*
+ $Id$
+
+*/
+
+#header, #menu, #subsection, #footer {
+    display: none;
+}
+
+#content {
+    width: 100%;
+    color: Black;
+}
