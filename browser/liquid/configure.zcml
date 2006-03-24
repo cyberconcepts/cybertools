@@ -17,6 +17,11 @@
         permission="zope.View"
         layer="liquid" />
 
+  <page for="*"
+        name="base_macros" template="view_macros.pt"
+        permission="zope.View"
+        layer="liquid" />
+
   <resource name="base.css" file="base.css"
             layer="liquid" />
 

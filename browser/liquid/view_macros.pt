@@ -36,7 +36,7 @@
     <link rel="icon" type="image/png"
           tal:attributes="href string:${resourceBase}favicon.png" />
   </head>
-  
+
   <body tal:attributes="onload body_onload | nothing">
     
     <div id="header">
@@ -83,9 +83,10 @@
     </div>
     
     <div id="footer" class="footer">
-      Powered by <b><a href="http://www.python.org">Python</a></b> &middot;
-      <b><a href="http://www.zope.org/DevHome/Wikis/DevSite/Projects/ComponentArchitecture/FrontPage">Zope 3</a></b>
-      <metal:footer define-slot="footer"></metal:footer>
+      <metal:footer define-slot="footer">
+        Powered by <b><a href="http://www.python.org">Python</a></b> &middot;
+        <b><a  href="http://www.zope.org/DevHome/Wikis/DevSite/Projects/ComponentArchitecture/FrontPage">Zope 3</a></b>
+      </metal:footer>
     </div>
 
   </body>
