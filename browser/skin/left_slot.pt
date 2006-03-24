@@ -1,7 +1,0 @@
-<div>
-  Headline
-</div>
-<div tal:repeat="viewlet options/viewlets">
-  <div tal:content="structure python: viewlet(viewlet=viewlet)">Left Slot
-  </div>
-</div>

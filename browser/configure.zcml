@@ -6,20 +6,13 @@
    i18n_domain="zope"
    >
 
-  <menu
-      id="mmain"
-      title="main Menu"
-      />
+  <page name="controller" for="*"
+        class="cybertools.browser.controller.Controller"
+        permission="zope.Public"
+        />
 
-  <menuItem
-      action="demo"
-      for="zope.interface.Interface"
-      menu="mmain"
-      title="Demo"
-      permission="zope.Public"
-      />
+  <!-- a tableless layout skin -->
 
-  <include package=".skin" />
   <include package=".liquid" />
 
 </configure>

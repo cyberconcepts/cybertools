@@ -6,7 +6,8 @@
    i18n_domain="zope"
    >
 
-  <layer name="liquid" />
+  <layer name="liquid"
+         interface="cybertools.browser.liquid.liquid" />
 
   <skin name="Liquid"
         layers="liquid rotterdam default" />
@@ -16,16 +17,13 @@
         permission="zope.View"
         layer="liquid" />
 
-  <resource name="liquid.css" file="liquid4.css"
+  <resource name="base.css" file="base.css"
             layer="liquid" />
 
   <resource name="print.css" file="print.css"
             layer="liquid" />
 
-  <resource name="cyberconcepts.gif" file="cyc-logo03.gif"
-            layer="liquid" />
-
-  <resource name="bg_cyberview.gif" file="bg_cyberview.gif"
+  <resource name="custom.css" file="custom.css"
             layer="liquid" />
 
 </configure>

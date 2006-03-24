@@ -1,5 +1,5 @@
-Using the CyberView Skin
-========================
+The Liquid Skin and Related Stuff
+=================================
 
 We first set up a test and working environment:
 
@@ -14,10 +14,10 @@ We first set up a test and working environment:
 We can now open a page using the CyberView skin:
     
     >>> browser.addHeader('Accept-Language', 'en-US')
-    >>> browser.open('http://localhost/++skin++CyberView')
+    >>> browser.open('http://localhost/++skin++Liquid')
     >>> print browser.headers
     Status: 200 Ok...
     
     >>> browser.url
-    'http://localhost/++skin++CyberView'
+    'http://localhost/++skin++Liquid'
     

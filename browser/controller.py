@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2005 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,13 +17,30 @@
 #
 
 """
-cybertools regions.
+Controller for views, templates, macros.
 
 $Id$
 """
 
-from zope.viewlet.interfaces import IViewletManager
+from zope.app import zapi
+from zope.cachedescriptors.property import Lazy
 
-class ILeft(IViewletManager):
-    """ Left slot.
-    """
+
+class Controller(object):
+
+    @Lazy
+    def macros(self):
+        return Macros(self)
+
+
+class Macros(object):
+
+    def __init__(self, controller):
+        self.controller = controller
+        self.context = controller.context
+        self.request = controller.request
+
+    @Lazy
+    def css(self):
+        return 'Here comes the CSS stuff...'
+    
