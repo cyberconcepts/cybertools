@@ -1,0 +1,15 @@
+<metal:css define-macro="css">
+  <style type="text/css" media="all"
+         tal:attributes="media macro/media"
+         tal:content="string:@import url(${resourceBase}${macro/resourceName});">
+      @import url(some.css);
+  </style>
+</metal:css>
+
+
+<metal:js define-macro="js">
+  <script type="text/javascript" src="node.js"
+          tal:attributes="src string:${resourceBase}${macro/resourceName}">
+  </script>
+</metal:js>
+

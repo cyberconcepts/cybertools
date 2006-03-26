@@ -6,7 +6,8 @@
    i18n_domain="zope"
    >
 
-  <page name="controller" for="*"
+  <page name="controller"
+        for="zope.app.publisher.interfaces.browser.IBrowserView"
         class="cybertools.browser.controller.Controller"
         permission="zope.Public"
         />

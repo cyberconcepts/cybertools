@@ -23,24 +23,63 @@ $Id$
 """
 
 from zope.app import zapi
+from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 
 
 class Controller(object):
 
+    def __init__(self, context, request):
+        self.view = context         # the controller is adapted to a view
+        self.context = context.context
+        self.request = request
+        self.skin = None            # may be overwritten by the view
+        context.controller = self   # notify the view
+
     @Lazy
     def macros(self):
         return Macros(self)
 
+    @Lazy
+    def resourceBase(self):
+        skinSetter = self.skin and ('/++skin++' + self.skin.__name__) or ''
+        # TODO: put '/@@' etc after path to site instead of directly after URL0
+        return self.request.URL[0] + skinSetter + '/@@/'
 
-class Macros(object):
+
+class Macros(dict):
+
+    # TODO: move to namedTemplate
+    standardTemplate = ViewPageTemplateFile('base_macros.pt')
 
     def __init__(self, controller):
         self.controller = controller
-        self.context = controller.context
-        self.request = controller.request
+
+    def register(self, slot, template=None, name=None, position=None, **kw):
+        if template is None:
+            template = self.standardTemplate
+        if name is None:
+            name = slot
+        macro = Macro(template, name, **kw)
+        if slot not in self:
+            self[slot] = []
+        if position is None:
+            self[slot].append(macro)
+        else:
+            self[slot].insert(position, macro)
+
+class Macro(object):
+
+    def __init__(self, template, name, **kw):
+        self.template = template
+        self.name = name
+        for k in kw:
+            setattr(self, k, kw[k])
 
     @Lazy
-    def css(self):
-        return 'Here comes the CSS stuff...'
-    
+    def macro(self):
+        return self.template.macros[self.name]
+
+    def __call__(self):
+        return self.macro
+

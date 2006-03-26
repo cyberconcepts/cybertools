@@ -11,7 +11,7 @@ We first set up a test and working environment:
     >>> browser = Browser()
     >>> browser.addHeader('Authorization', 'Basic mgr:mgrpw')
 
-We can now open a page using the CyberView skin:
+We can now open a page using the Liquid skin:
     
     >>> browser.addHeader('Accept-Language', 'en-US')
     >>> browser.open('http://localhost/++skin++Liquid')

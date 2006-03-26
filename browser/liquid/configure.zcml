@@ -22,13 +22,15 @@
         permission="zope.View"
         layer="liquid" />
 
-  <resource name="base.css" file="base.css"
-            layer="liquid" />
+  <page name="controller"
+        for="zope.app.publisher.interfaces.browser.IBrowserView"
+        class="cybertools.browser.liquid.controller.Controller"
+        permission="zope.Public"
+        layer="liquid"
+        />
 
-  <resource name="print.css" file="print.css"
-            layer="liquid" />
-
-  <resource name="custom.css" file="custom.css"
-            layer="liquid" />
+  <resource name="base.css"   file="base.css"   layer="liquid" />
+  <resource name="print.css"  file="print.css"  layer="liquid" />
+  <resource name="custom.css" file="custom.css" layer="liquid" />
 
 </configure>
