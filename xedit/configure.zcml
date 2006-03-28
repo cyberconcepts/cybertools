@@ -1,0 +1,19 @@
+<!-- $Id$ -->
+
+<configure
+   xmlns="http://namespaces.zope.org/browser"
+   xmlns:zope="http://namespaces.zope.org/zope"
+   i18n_domain="zope">
+
+  <pages for="loops.interfaces.IResource"
+         class=".browser.ExternalEditorView"
+         permission="zope.ManageContent">
+         
+    <page name="external_edit" attribute="load" />
+    <page name="save" attribute="save" />
+    <page name="lock" attribute="lock" />
+    <page name="unlock" attribute="unlock" />
+
+  </pages>
+
+</configure>
