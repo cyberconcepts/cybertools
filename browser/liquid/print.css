@@ -3,7 +3,7 @@
 
 */
 
-#header, #menu, #subsection, #footer {
+.top, #header, #menu, #subsection, #footer {
     display: none;
 }
 
