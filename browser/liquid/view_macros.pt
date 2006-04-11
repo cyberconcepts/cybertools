@@ -67,7 +67,6 @@
         </tal:block>
       </div>
 
-      <!--<h2 tal:content="controller/macros/css" />-->
       <metal:content define-slot="body">Here comes the body</metal:content>
       
     </div>
