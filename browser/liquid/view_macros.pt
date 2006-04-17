@@ -8,7 +8,7 @@
   
   <head metal:define-macro="head">
     <title metal:define-slot="title"
-           tal:content="options/title|view/title|context/title|default">
+           tal:content="options/title|view/headTitle|view/title|context/title|default">
       Powered by Zope 3
     </title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -22,7 +22,7 @@
       <tal:js repeat="macro controller/macros/js">
         <metal:css use-macro="macro" />
       </tal:js>
-      <span metal:use-macro="context/@@standard_macros/navigation_tree_js" />
+      <!--<span metal:use-macro="context/@@standard_macros/navigation_tree_js" />-->
     </metal:block>
     <metal:block define-slot="ecmascript_slot" />
 
