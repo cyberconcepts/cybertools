@@ -1,0 +1,18 @@
+<!-- $Id$ -->
+
+<configure
+   xmlns:zope="http://namespaces.zope.org/zope"
+   xmlns="http://namespaces.zope.org/browser"
+   i18n_domain="zope"
+   >
+
+  <layer name="loops" />
+
+  <skin name="Loops"
+        layers="loops rotterdam default" />
+    
+  <resource name="zope3_tablelayout.css" file="loops_layout.css" layer="loops" />
+  <resource name="favicon.png" file="loops_favicon.png" layer="loops" />
+  <resource name="zope3logo.gif" file="loops_logo.png" layer="loops" />
+
+</configure>

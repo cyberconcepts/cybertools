@@ -16,13 +16,13 @@
     <tal:css repeat="macro controller/macros/css">
       <metal:css use-macro="macro" />
     </tal:css>
-    <metal:block define-slot="ecmascript_slot" />
+    <metal:block define-slot="css_slot" />
 
     <metal:block metal:define-slot="headers">
       <tal:js repeat="macro controller/macros/js">
         <metal:css use-macro="macro" />
       </tal:js>
-      <!--<span metal:use-macro="context/@@standard_macros/navigation_tree_js" />-->
+      <ignore_metal:js use-macro="context/@@standard_macros/navigation_tree_js" />
     </metal:block>
     <metal:block define-slot="ecmascript_slot" />
 
@@ -44,7 +44,7 @@
 
     <div id="menu">
       <metal:menu define-slot="navigators">
-        <span metal:use-macro="context/@@standard_macros/navigation_tree_box" />
+        <ignore_metal:navtree use-macro="context/@@standard_macros/navigation_tree_box" />
         <div class="box" id="commonTasks"
              tal:define="view context/@@commonTasks|nothing"
              tal:condition="view/strip|nothing">

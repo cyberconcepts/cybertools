@@ -13,7 +13,10 @@
         />
 
   <!-- a tableless layout skin -->
-
   <include package=".liquid" />
+
+  <!-- a layout skin that may be used for sites employing the loops
+       package, but not depending on loops -->
+  <include package=".loops" />
 
 </configure>

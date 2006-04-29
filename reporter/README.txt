@@ -3,6 +3,8 @@ Quickstart Instructions
 
   ($Id$)
 
+TO DO...
+
   >>> from zope.app import zapi
   >>> from zope.app.testing import ztapi
   >>> from zope.interface import directlyProvides
@@ -38,3 +40,13 @@ For the browser presentation we can also use a browser view providing
 the result set with extended attributes:
 
   >>> #rsView = zapi.getMultiAdapter((context, TestRequest()), IBrowserView)
+
+The reporter package also includes facilities for sorting the rows in a
+result set and splitting a result into batches.
+
+Sorting
+-------
+
+Batching
+--------
+
