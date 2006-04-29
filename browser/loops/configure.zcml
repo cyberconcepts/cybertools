@@ -12,6 +12,8 @@
         layers="loops rotterdam default" />
     
   <resource name="zope3_tablelayout.css" file="loops_layout.css" layer="loops" />
+  <resource name="site_management_tablelayout.css"
+            file="loops_management_layout.css" layer="loops" />
   <resource name="favicon.png" file="loops_favicon.png" layer="loops" />
   <resource name="zope3logo.gif" file="loops_logo.png" layer="loops" />
 

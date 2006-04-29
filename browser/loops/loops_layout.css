@@ -11,7 +11,7 @@
 /* Basic Elements */
 
 body {
-    font: 85% Helvetica, Arial, sans-serif;
+    font: 85% Verdana, Lucida, Helvetica, Arial, sans-serif;
     background: White;
     /* color: Black; */
     color: #242424;
@@ -80,7 +80,7 @@ hr {
 h1, h2, h3, h4, h5, h6 {
     color: #242424;
     clear: left;
-    font: 100% bold Verdana, Helvetica, Arial, sans-serif;
+    font: 100% bold Verdana, Lucida, Helvetica, Arial, sans-serif;
     margin: 0;
     padding-top: 0.5em;
     border-bottom: 1px solid #344080;
@@ -164,7 +164,7 @@ textarea {
 }
 
 input {
-    font: normal 100% Verdana, Helvetica, Arial, sans-serif;
+    font: normal 100% Verdana, Lucida, Helvetica, Arial, sans-serif;
     color: #242424;
     vertical-align: middle;
     margin-bottom: 1px; /* IE bug fix */
@@ -172,7 +172,7 @@ input {
 }
 
 select {
-    font: normal 100% Verdana, Helvetica, Arial, sans-serif;
+    font: normal 100% Verdana, Lucida, Helvetica, Arial, sans-serif;
     vertical-align: top;
 }
 
@@ -286,6 +286,7 @@ pre {
 
 #top {
     border-bottom: 0.1em solid #b0b0b0;
+    padding-left: 8px;
 }
 
 #top #userDetails {
@@ -304,7 +305,6 @@ div#action {
 
 div#action ul {
     line-height: 16px;
-    /*color: #FFF;*/
     color: #344080;
     white-space: nowrap;
     float: right;
@@ -319,7 +319,6 @@ div#action li {
 }
 
 div#action li a {
-    /*color: #FFF;*/
     color: #344080;
     text-decoration: none;
     border-left: 1px solid #c8c4ff;
@@ -337,7 +336,7 @@ div#action li a:hover {
 
 #breadcrumbs {
     margin: 0;
-    padding: 5px 5px 5px 8px;
+    padding: 5px 5px 5px 12px;
 }
 
 #navigation {
@@ -348,7 +347,7 @@ div#action li a:hover {
 }
 
 #navigators {
-    padding: 10px 8px 0px 8px;
+    padding: 10px 12px 0px 12px;
 }
 
 /* slot boxes
@@ -645,7 +644,7 @@ div.message {
     background: #FFCE7B;
     border: 1px solid #FFA500;
     color: #242424;
-    font: bold 80% Verdana, Helvetica, Arial, sans-serif;
+    font: bold 80% Verdana, Lucida, Helvetica, Arial, sans-serif;
     margin: 2em 0em 1em 0em;
     padding: 0.5em 1em;
     vertical-align: middle;
@@ -660,7 +659,7 @@ div.message a {
  */
 div.page_error {
     background: #FFCE7B;
-    font: bold 80% Verdana, Helvetica, Arial, sans-serif;
+    font: bold 80% Verdana, Lucida, Helvetica, Arial, sans-serif;
     padding: 0.5em 1em;
     vertical-align: middle;
 }
@@ -669,7 +668,7 @@ div.bug {
     background: #FFCE7B;
     border: 1px solid #FFA500;
     color: #242424;
-    font: bold 80% Verdana, Helvetica, Arial, sans-serif;
+    font: bold 80% Verdana, Lucida, Helvetica, Arial, sans-serif;
     margin: 2em 1em 1em 0em;
     padding: 0.5em 1em;
     vertical-align: middle;
