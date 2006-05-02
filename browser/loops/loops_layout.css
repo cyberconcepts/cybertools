@@ -397,12 +397,12 @@ div.box h4 {
 }
 
 .box div.body div.even {
-    background: #EBEBE2;
     padding: 4px;
 }
 
 .box div.body div.odd {
     padding: 4px;
+    background: #EBEBE2;
 }
 
 .box div.body a:hover {
@@ -531,14 +531,12 @@ div.row div.error:before {
 .itemViews a.selected {
     background: #c8c4ff;
     border-bottom: #c8c4ff 1px solid;
-    /*color: White;*/
     font-weight: normal;
 }
 
 
 .itemViews a:hover {
     background-color: #c8c4ff;
-    /*color: White;*/
 }
 
 #viewspace {
