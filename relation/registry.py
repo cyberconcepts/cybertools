@@ -253,13 +253,15 @@ def invalidateRelations(context, event):
     # if not IRelatable.providedBy(event.object):
     #     return
     relations = []
-    #registry = zapi.queryUtility(IRelationRegistry)
     registries = zapi.getAllUtilitiesRegisteredFor(IRelationRegistry)
     for registry in registries:
         for attr in ('first', 'second', 'third'):
-            relations = registry.query(**{attr: context})
-            for relation in relations:
-                registry.unregister(relation)
+            try:
+                relations = registry.query(**{attr: context})
+                for relation in relations:
+                    registry.unregister(relation)
+            except KeyError:
+                pass
 
 def removeRelation(context, event):
     """ Handles IRelationInvalidatedEvent by removing the relation
