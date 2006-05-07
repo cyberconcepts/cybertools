@@ -1,3 +1,13 @@
+<metal:logo define-macro="logo">
+  <a href="#" name="logo" title="Home"
+     tal:attributes="href macro/href;
+                     title macro/title"><img
+               src="logo.gif" border="0" alt="Home"
+               tal:attributes="src string:${resourceBase}${macro/resourceName};
+                               alt macro/alt" /></a>
+</metal:logo>
+
+
 <metal:css define-macro="css">
   <style type="text/css" media="all"
          tal:attributes="media macro/media"

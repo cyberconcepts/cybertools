@@ -296,7 +296,7 @@ pre {
 }
 
 div#action {
-    height: 16px;
+    height: 1.35em;
     /*width: 100%;*/
     background-color: #c8c4ff;
     border-left: 1px solid #6478b0;
@@ -368,7 +368,7 @@ div.box h4 {
     color: #606060;
     padding: 0px 5px;
     display: block;
-    height: 18px;
+    /* height: 18px; */
 }
 
 .box div.body {

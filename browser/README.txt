@@ -3,8 +3,12 @@ Browser View Tools
 
 We first set up a test and working environment:
 
-    >>> from zope.app import zapi
-    >>> from zope.app.testing import ztapi
+  >>> from zope.app import zapi
+  >>> from zope.app.testing import ztapi
+    
+  >>> from zope import component, interface
+  >>> from zope.publisher.browser import TestRequest
+  >>> from zope.publisher.interfaces.browser import IBrowserRequest
 
 The View Controller
 -------------------
@@ -90,4 +94,44 @@ The pre-set collection of macros for a certain slot may be extended:
   >>> m5 = cssMacros[4]
   >>> print m5.name, m5.media, m5.resourceName
   css all node.css
+
+
+The View Configurator
+---------------------
+
+A view configurator is a multiadapter for a content object that provides
+a set of properties to be used for setting up special presentation
+characteristics of a page. Typical examples for such characteristics are
+
+- the skin to be used
+- the logo to show in the corner of the page
+
+The default configurator uses attribute annotations for retrieving view
+properties; that means that there could be form somewhere to edit those
+properties and store them in the content object's annotations.
+
+The configurator is called automatically from the controller if there is
+an appropriate adapter:
+
+  >>> from cybertools.browser.configurator import IViewConfigurator
+  >>> from cybertools.browser.configurator import ViewConfigurator
+  >>> component.provideAdapter(ViewConfigurator, (SomeObject, IBrowserRequest),
+  ...                          IViewConfigurator)
+  >>> controller = Controller(view, request)
+
+But this does not have any effect as long as there aren't any properties
+stored in the attribute annotations. So let's set a 'skinName' attribute:
+
+  >>> from zope.app.annotation.interfaces import IAttributeAnnotatable, IAnnotations
+  >>> from zope.app.annotation.attribute import AttributeAnnotations
+  >>> interface.classImplements(SomeObject, IAttributeAnnotatable)
+  >>> component.provideAdapter(AttributeAnnotations, (SomeObject,), IAnnotations)
+  >>> ann = IAnnotations(obj)
+  >>> setting = {'skinName': {'value': 'SuperSkin'}}
+  >>> from cybertools.browser.configurator import ANNOTATION_KEY
+  >>> ann[ANNOTATION_KEY] = setting
+
+  >>> controller = Controller(view, request)
+  >>> controller.skinName.value
+  'SuperSkin'
 

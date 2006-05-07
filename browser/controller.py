@@ -26,6 +26,8 @@ from zope.app import zapi
 from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 
+from cybertools.browser.configurator import IViewConfigurator, IMacroViewProperty
+
 
 class Controller(object):
 
@@ -34,6 +36,7 @@ class Controller(object):
         self.context = context.context
         self.request = request
         self.skin = None            # may be overwritten by the view
+        self.configure()
         context.controller = self   # notify the view
 
     @Lazy
@@ -45,6 +48,17 @@ class Controller(object):
         skinSetter = self.skin and ('/++skin++' + self.skin.__name__) or ''
         # TODO: put '/@@' etc after path to site instead of directly after URL0
         return self.request.URL[0] + skinSetter + '/@@/'
+
+    def configure(self):
+        configurator = zapi.queryMultiAdapter((self.context, self.request),
+                                              IViewConfigurator)
+        if configurator is not None:
+            for item in configurator.viewProperties:
+                if IMacroViewProperty.providedBy(item):
+                    self.macros.register(item.slot, item.template, item.name,
+                                         **item.params)
+                else:
+                    setattr(self, item.slot, item)
 
 
 class Macros(dict):

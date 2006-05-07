@@ -33,6 +33,10 @@ body {
     border-left: none;
 }
 
+div.box h4 {
+    height: auto;
+}
+
 .footer {
     text-align: center;
     border-top: 1px solid #ccc;
