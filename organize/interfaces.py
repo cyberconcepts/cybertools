@@ -17,24 +17,35 @@
 #
 
 """
-Interfaces for a simple contact management framework to be used
-as an example for some of the cybertools packages.
+Interfaces for organizational stuff like persons and addresses.
 
 $Id$
 """
 
 from zope.interface import Interface, Attribute
 from zope import schema
+from zope.i18nmessageid import MessageFactory
+
+_ = MessageFactory('zope')
+
 
 class IPerson(Interface):
     """ Resembles a human being with a name (first and last name),
         a birth date, and a set of addresses.
     """
 
-    firstName = schema.TextLine(title=u'The first name')
-    lastName = schema.TextLine(title=u'The last name or surname')
-    birthDate = schema.Date(title=u'The date of birth - '
-                    'should be a datetime.date object')
+    firstName = schema.TextLine(
+                    title=_(u'First name'),
+                    description=_(u'The first name'),
+                    required=False,)
+    lastName = schema.TextLine(
+                    title=_(u'Last name'),
+                    description=_(u'The last name or surname'),)
+    birthDate = schema.Date(
+                    title=_(u'Date of birth'),
+                    description=_(u'The date of birth - should be a '
+                                   'datetime.date object'),
+                    required=False,)
 
     addresses = Attribute('A mapping whose values provide the IAddress '
                     'interface')
