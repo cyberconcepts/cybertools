@@ -23,7 +23,7 @@ $Id$
 """
 
 from zope.app import zapi
-from zope.app.annotation.interfaces import IAttributeAnnotatable
+from zope.app.annotation.interfaces import IAttributeAnnotatable, IAnnotations
 from zope.app.annotation.attribute import AttributeAnnotations
 from zope.cachedescriptors.property import Lazy
 from zope.interface import Interface, Attribute, implements
@@ -61,7 +61,7 @@ class IMacroViewProperty(IViewProperty):
 
 ANNOTATION_KEY = 'cybertools.browser.configurator.ViewConfigurator'
 
-class ViewConfigurator(AttributeAnnotations):
+class ViewConfigurator(object):
     """ Simple/basic default adapter using attribute annotations as storage
         for view properties.
     """
@@ -69,23 +69,24 @@ class ViewConfigurator(AttributeAnnotations):
     implements(IViewConfigurator)
 
     def __init__(self, context, request):
-        AttributeAnnotations.__init__(self, context)
         self.context = context
         self.request = request
 
     @property
     def viewProperties(self):
-        propDefs = self.get(ANNOTATION_KEY, [])
-        result = []
-        for prop in propDefs:
-            vp = zapi.queryMultiAdapter((self.context, self.request),
-                                        IViewProperty, name=prop)
-            if vp is None:
-                vp = ViewProperty(self.context, self.request)
-            vp.slot = prop
-            vp.setParams(propDefs[prop])
-            result.append(vp)
-        return result
+        ann = IAnnotations(self.context)
+        propDefs = ann.get(ANNOTATION_KEY, {})
+        return [self.setupViewProperty(prop, propDef)
+                    for prop, propDef in propDefs.items() if propDef]
+
+    def setupViewProperty(self, prop, propDef):
+        vp = zapi.queryMultiAdapter((self.context, self.request),
+                                    IViewProperty, name=prop)
+        if vp is None:
+            vp = ViewProperty(self.context, self.request)
+        vp.slot = prop
+        vp.setParams(propDef)
+        return vp
 
 
 class ViewProperty(object):
@@ -101,6 +102,7 @@ class ViewProperty(object):
         self.params = {}
 
     def setParams(self, params):
+        params = dict(params)
         self.name = params.pop('name', '')
         self.value = params.pop('value', None)
         self.params = params
@@ -113,6 +115,7 @@ class MacroViewProperty(object):
     template = None
 
     def setParams(self, params):
+        params = dict(params)
         self.name = params.pop('name', '')
         self.template = params.pop('template', None)
         self.params = params

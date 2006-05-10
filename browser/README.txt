@@ -110,6 +110,10 @@ The default configurator uses attribute annotations for retrieving view
 properties; that means that there could be form somewhere to edit those
 properties and store them in the content object's annotations.
 
+  >>> from zope.app.annotation.interfaces import IAttributeAnnotatable, IAnnotations
+  >>> from zope.app.annotation.attribute import AttributeAnnotations
+  >>> component.provideAdapter(AttributeAnnotations, (SomeObject,), IAnnotations)
+
 The configurator is called automatically from the controller if there is
 an appropriate adapter:
 
@@ -122,10 +126,7 @@ an appropriate adapter:
 But this does not have any effect as long as there aren't any properties
 stored in the attribute annotations. So let's set a 'skinName' attribute:
 
-  >>> from zope.app.annotation.interfaces import IAttributeAnnotatable, IAnnotations
-  >>> from zope.app.annotation.attribute import AttributeAnnotations
   >>> interface.classImplements(SomeObject, IAttributeAnnotatable)
-  >>> component.provideAdapter(AttributeAnnotations, (SomeObject,), IAnnotations)
   >>> ann = IAnnotations(obj)
   >>> setting = {'skinName': {'value': 'SuperSkin'}}
   >>> from cybertools.browser.configurator import ANNOTATION_KEY
