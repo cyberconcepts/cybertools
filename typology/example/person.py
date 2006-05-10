@@ -18,7 +18,7 @@
 
 """
 Example classes for the cybertools.reporter package. These use the
-cybertools.contact package
+cybertools.organize package
 
 $Id$
 """
@@ -56,7 +56,7 @@ class AgeGroup(BaseType):
         return self.isChild and u'Child' or u'Adult'
 
     @property
-    def token(self): return 'contact.person.agegroup.' + str(self.title.lower())
+    def token(self): return 'organize.person.agegroup.' + str(self.title.lower())
 
     # helpers
 

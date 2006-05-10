@@ -13,7 +13,7 @@ object data.
 
   >>> from cybertools.typology.interfaces import IType, ITypeManager
 
-Let's start with the Person class from the cybertools.contact package -
+Let's start with the Person class from the cybertools.organize package -
 we will then apply dynamic typing to Person objects:
 
   >>> from cybertools.organize.interfaces import IPerson
@@ -53,14 +53,14 @@ We can now look what the type is telling us about the persons:
   >>> john_type.title
   u'Adult'
   >>> john_type.token
-  'contact.person.agegroup.adult'
+  'organize.person.agegroup.adult'
   >>> david_type.token
-  'contact.person.agegroup.adult'
+  'organize.person.agegroup.adult'
   >>> carla_type.token
-  'contact.person.agegroup.child'
+  'organize.person.agegroup.child'
 
   >>> carla_type.tokenForSearch
-  'contact.person.agegroup.child'
+  'organize.person.agegroup.child'
   >>> carla_type.qualifiers is None
   True
   >>> carla_type.typeInterface is None

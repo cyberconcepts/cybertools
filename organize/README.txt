@@ -1,6 +1,8 @@
 Organizations: Persons, Institutions, Addresses...
 ==================================================
 
+($Id$)
+
 Let's start with a Person:
 
   >>> from cybertools.organize.party import Person
