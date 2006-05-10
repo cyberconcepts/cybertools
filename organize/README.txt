@@ -1,7 +1,7 @@
 Organizations: Persons, Institutions, Addresses...
 ==================================================
 
-($Id$)
+  ($Id$)
 
 Let's start with a Person:
 
@@ -34,10 +34,9 @@ Addresses
 
 Let's create an address and assign it to a person:
 
-  >>> from contact.address import Address
-  >>> addr = Address('München'.decode('UTF-8'),
-  ...                'Bayerstraße 1'.decode('UTF-8'))
+  >>> from cybertools.organize.party import Address
+  >>> addr = Address(u'New York', u'Broadway 1')
   >>> john.addresses['standard'] = addr
   >>> john.addresses['standard'].street
-  u'Bayerstra\xdfe 1'
+  u'Broadway 1'
 

@@ -24,9 +24,21 @@ $Id$
 """
 
 from zope.interface import Interface, Attribute
+from zope import schema
 
 class IPerson(Interface):
-    """ Just a person...
+    """ Resembles a human being with a name (first and last name),
+        a birth date, and a set of addresses.
     """
 
-    age = Attribute('A float representing the age in years. Read-only.')
+    firstName = schema.TextLine(title=u'The first name')
+    lastName = schema.TextLine(title=u'The last name or surname')
+    birthDate = schema.Date(title=u'The date of birth - '
+                    'should be a datetime.date object')
+
+    addresses = Attribute('A mapping whose values provide the IAddress '
+                    'interface')
+
+    age = Attribute('The current age in full years, so this should '
+                    'be an integer calculated dynamically, i.e. a read-only '
+                    'attribute')

@@ -52,10 +52,9 @@ class Person(object):
 
 class Address(object):
 
-    def __init__(self, title, city, lines=[], street=u'',
+    def __init__(self, city, street=u'', lines=[],
                  zipcode=None, country=None):
-        self.title = title
-        self.lines = lines      # a sequence of address lines
+        self.lines = lines      # a sequence of additional address lines
         self.street = street
         self.zipcode = zipcode
         self.city = city
