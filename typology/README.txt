@@ -16,8 +16,8 @@ object data.
 Let's start with the Person class from the cybertools.contact package -
 we will then apply dynamic typing to Person objects:
 
-  >>> from cybertools.contact.interfaces import IPerson
-  >>> from cybertools.contact import Person
+  >>> from cybertools.organize.interfaces import IPerson
+  >>> from cybertools.organize.party import Person
 
   >>> from datetime import date
   >>> pdata = ((u'John', u'Smith', '1956-08-01'),

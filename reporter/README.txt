@@ -18,7 +18,7 @@ A Basic API for Reports and Listings
 Let's start with the Person class from the example package - we will
 then provide a listing of persons...
 
-  >>> from cybertools.contact import Person
+  >>> from cybertools.organize.party import Person
   >>> from cybertools.reporter.example.interfaces import IContactsDataSource
   >>> from cybertools.reporter.example.contact import Contacts
 

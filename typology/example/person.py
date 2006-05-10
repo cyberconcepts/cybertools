@@ -25,7 +25,7 @@ $Id$
 
 from zope.component import adapts
 from zope.interface import implements
-from cybertools.contact.interfaces import IPerson
+from cybertools.organize.interfaces import IPerson
 from cybertools.typology.interfaces import IType, ITypeManager
 from cybertools.typology.type import BaseType, TypeManager
 

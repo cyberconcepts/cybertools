@@ -23,21 +23,20 @@ as an example for some of the cybertools packages.
 $Id$
 """
 
-from zope.component import adapts
 from zope.interface import implements
-from cybertools.contact.interfaces import IPerson
 from datetime import date
+from cybertools.organize.interfaces import IPerson
 
 
 class Person(object):
 
     implements(IPerson)
     
-    def __init__(self, firstName, lastName, birthDate):
-        self.firstName = firstName
+    def __init__(self, lastName, firstName=u'', birthDate=None):
         self.lastName = lastName
+        self.firstName = firstName
         self.birthDate = birthDate
-        self.moreFirstNames = []
+        self.moreFirstNames = None
         self.personalAddress = 'mrs' # or 'mr', 'ms', None (unknown)
         self.academicTitle = None
         self.communicationInfos = []
@@ -46,12 +45,15 @@ class Person(object):
 
     @property
     def age(self):
-        return (date.today() - self.birthDate).days/365.25
+        if self.birthDate is None:
+            return None
+        return int((date.today() - self.birthDate).days/365.25)
 
 
 class Address(object):
 
-    def __init__(self, title, lines, street, zipcode, city, country):
+    def __init__(self, title, city, lines=[], street=u'',
+                 zipcode=None, country=None):
         self.title = title
         self.lines = lines      # a sequence of address lines
         self.street = street
