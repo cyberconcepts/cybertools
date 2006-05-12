@@ -45,9 +45,12 @@ class Person(object):
 
     @property
     def age(self):
+        return self.ageAt(date.today())
+
+    def ageAt(self, date):
         if self.birthDate is None:
             return None
-        return int((date.today() - self.birthDate).days/365.25)
+        return int((date - self.birthDate).days/365.25)
 
 
 class Address(object):

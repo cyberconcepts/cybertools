@@ -18,12 +18,15 @@ Let's start with a Person:
 
 A Person object knows the age of the person:
   
-  >>> john.age
-
+  >>> john.age is None
+  True
   >>> from datetime import date
   >>> john.birthDate = date(1980, 3, 25)
-  >>> john.age
+  >>> now = date(2006, 5, 12)
+  >>> john.ageAt(now)
   26
+  >>> john.age >= 26
+  True
 
   >>> john.firstName = u'John'
   >>> john.firstName
