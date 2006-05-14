@@ -543,7 +543,7 @@ div.row div.error:before {
     border-collapse: collapse;
     border: 1px solid #6478b0;
     margin: 0;
-    padding: 0 0px 10px 10px;
+    padding: 10px 10px 10px 10px;
 }
 
 table.listingdescription, table.listing {
