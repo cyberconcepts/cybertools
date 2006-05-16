@@ -17,4 +17,22 @@
   <resource name="favicon.png" file="loops_favicon.png" layer="loops" />
   <resource name="zope3logo.gif" file="loops_logo.png" layer="loops" />
 
+  <!-- login/logout stuff -->
+
+  <zope:adapter factory="zope.app.security.LogoutSupported" />
+
+  <page
+      name="login_logout" for="*"
+      class=".auth.LoginLogout"
+      permission="zope.Public"
+      layer="loops"
+      />
+
+  <page
+      name="loginForm.html" for="*"
+      template="loginform.pt"
+      permission="zope.Public"
+      layer="loops"
+      />
+
 </configure>
