@@ -1,6 +1,6 @@
 # $Id$
 
-import unittest
+import unittest, doctest
 from zope.testing.doctestunit import DocFileSuite
 from zope.app.testing import ztapi
 from zope.interface.verify import verifyClass
@@ -18,9 +18,10 @@ class TestReporter(unittest.TestCase):
 
 
 def test_suite():
+    flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
     return unittest.TestSuite((
                 unittest.makeSuite(TestReporter),
-                DocFileSuite('README.txt'),
+                DocFileSuite('README.txt', optionflags=flags),
             ))
 
 if __name__ == '__main__':

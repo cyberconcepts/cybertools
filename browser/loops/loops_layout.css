@@ -489,15 +489,26 @@ div.row div.label {
     clear: both;
 }
 
-div.row span.error {
-    background: red;
+div.error {
+    background: #ff80a0;
     color: white;
+    font-weight: bold;
     padding: 0.1em 0.5em 0.1em 0.5em; /* Same as .itemViews */
     border: 1px solid red; /* Same as .itemViews */
     margin: 0;
     float: left;
     clear: both;
 }
+
+div.summary {
+    background: #c8c4ff;
+    font-weight: bold;
+    padding: 0.1em 0.5em 0.1em 0.5em; /* Same as .itemViews */
+    border: 1px solid #6478b0; /* Same as .itemViews */
+    margin: 0;
+    margin-top: 1em;
+}
+
 /*
 div.row div.error:before {
     content: "\2190  "; /* Left pointing arrow */
