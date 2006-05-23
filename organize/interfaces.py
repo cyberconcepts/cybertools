@@ -47,9 +47,13 @@ class IPerson(Interface):
                                    'datetime.date object'),
                     required=False,)
 
+    age = schema.Int(
+            title=_(u'Age'),
+            description=_(u'The current age in full years, so this should '
+                           'be an integer calculated dynamically, i.e. a read-only '
+                           'attribute'),
+            readonly=True)
+    
     addresses = Attribute('A mapping whose values provide the IAddress '
-                    'interface')
+                          'interface')
 
-    age = Attribute('The current age in full years, so this should '
-                    'be an integer calculated dynamically, i.e. a read-only '
-                    'attribute')

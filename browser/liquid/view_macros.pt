@@ -55,7 +55,9 @@
         </div>
       </metal:menu>
     </div>
+    
     <div id="content">
+    
       <div class="itemViews" metal:define-slot="actions">
         <tal:block repeat="view context/@@view_get_menu/zmi_views">
           <a href=""
@@ -66,6 +68,8 @@
           </a>
         </tal:block>
       </div>
+
+      <metal:message metal:define-slot="message" />
 
       <metal:content define-slot="body">Here comes the body</metal:content>
       
