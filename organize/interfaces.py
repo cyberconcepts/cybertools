@@ -17,7 +17,7 @@
 #
 
 """
-Interfaces for organizational stuff like persons and addresses.
+Interfaces for organizational stuff like persons, addresses, tasks, ...
 
 $Id$
 """
@@ -27,6 +27,11 @@ from zope import schema
 from zope.i18nmessageid import MessageFactory
 
 _ = MessageFactory('zope')
+
+
+class SimpleList(schema.List): pass
+
+class LinesList(schema.List): pass
 
 
 class IPerson(Interface):
@@ -41,6 +46,15 @@ class IPerson(Interface):
     lastName = schema.TextLine(
                     title=_(u'Last name'),
                     description=_(u'The last name or surname'),)
+    email = schema.TextLine(
+                    title=_(u'E-Mail address'),
+                    description=_(u'The standard email address of the person'),)
+    phoneNumbers = SimpleList(
+                    value_type=schema.TextLine(),
+                    default=[],
+                    title=_(u'Phone numbers'),
+                    description=_(u'Note one or more phone numbers here'),
+                    required=False,)
     birthDate = schema.Date(
                     title=_(u'Date of birth'),
                     description=_(u'The date of birth - should be a '
@@ -48,12 +62,54 @@ class IPerson(Interface):
                     required=False,)
 
     age = schema.Int(
-            title=_(u'Age'),
-            description=_(u'The current age in full years, so this should '
-                           'be an integer calculated dynamically, i.e. a read-only '
-                           'attribute'),
-            readonly=True)
+                    title=_(u'Age'),
+                    description=_(u'The current age in full years'),
+                    readonly=True)
     
     addresses = Attribute('A mapping whose values provide the IAddress '
                           'interface')
+
+
+class IAddress(Interface):
+    """ A postal address of a person or institution.
+    """
+
+    street = schema.TextLine(
+                    title=_(u'Street, number'),
+                    description=_(u'Street and number'),
+                    required=False,)
+    zipcode = schema.TextLine(
+                    title=_(u'ZIP code'),
+                    description=_(u'ZIP code, postal code'),
+                    required=False,)
+    city = schema.TextLine(
+                    title=_(u'City'),
+                    description=_(u'Name of the city'),
+                    required=True,)
+    country = schema.TextLine(
+                    title=_(u'Country code'),
+                    description=_(u'International two-letter country code'),
+                    required=False,)
+    lines = LinesList(
+                    value_type=schema.TextLine(),
+                    default=[],
+                    title=_(u'Additional lines'),
+                    description=_(u'Additional address lines'),
+                    required=False,)
+
+
+class ITask(Interface):
+    """ A task has a start date, an optional end date, and is usually
+        assigned to one or more persons.
+    """
+
+    start = schema.Date(
+                    title=_(u'Start date'),
+                    description=_(u'The date when the task should start'),
+                    required=False,)
+    end = schema.Date(
+                    title=_(u'End date'),
+                    description=_(u'The date until that the task should be '
+                                   'finished'),
+                    required=False,)
 

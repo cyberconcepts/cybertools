@@ -17,15 +17,16 @@
 #
 
 """
-A set of simple application classes for contact management to be used
-as an example for some of the cybertools packages.
+A set of simple application classes for contact management; this may be used
+as an example for some of the cybertools packages, but may also be the base
+for some real life stuff.
 
 $Id$
 """
 
 from zope.interface import implements
 from datetime import date
-from cybertools.organize.interfaces import IPerson
+from cybertools.organize.interfaces import IPerson, IAddress
 
 
 class Person(object):
@@ -54,6 +55,8 @@ class Person(object):
 
 
 class Address(object):
+
+    implements(IAddress)
 
     def __init__(self, city, street=u'', lines=[],
                  zipcode=None, country=None):

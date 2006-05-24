@@ -17,14 +17,21 @@
 #
 
 """
-Task management classes.
+Some possibly useful widgets. Provide via configure.zcml if you want to
+use them.
 
 $Id$
 """
 
-from zope.component import adapts
-from zope.interface import implements
+from zope.app.form.browser.sequencewidget import SequenceDisplayWidget
 
 
-class Task(object):
+class SimpleListDisplayWidget(SequenceDisplayWidget):
+
+    tag = ''
+    itemTag = ''
+
+    def __call__(self):
+        contents = super(SimpleListDisplayWidget, self).__call__()
+        return contents.replace('\n', ' | ')
 
