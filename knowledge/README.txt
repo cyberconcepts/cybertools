@@ -49,7 +49,11 @@ programming with Python:
 Now we can ask what knowledge john is lacking if he would like to take
 the position offered:
 
-  >>> john.getMissingKnowledge(pos01) == (ooProg, pyOo,)
+  >>> missing = john.getMissingKnowledge(pos01)
+  >>> missing
+  (<...KnowledgeElement...>, <...KnowledgeElement...>)
+  
+  >>> missing == (ooProg, pyOo,)
   True  
 
 Luckily there are a few elearning content objects out there that
@@ -65,6 +69,10 @@ provide some of the knowledge needed:
 So that we are now able to find out what john has to study in order to
 fulfill the position offered:
 
-  >>> list(john.getProvidersNeeded(pos01))
+  >>> prov = list(john.getProvidersNeeded(pos01))
+  >>> len(prov)
+  2
+  >>> [d[0] for k, d in prov] == [doc01, doc02]
+  True
   
 

@@ -90,10 +90,10 @@ class IKnowing(Interface):
         """
 
     def getProvidersNeeded(position):
-        """ Return two tuples: first a tuple of knowledge providers that
-            provide knowledge needed for fulfilling the position given,
-            second a tuple with the requirements that could not
-            be met by the available knowledge providers.
+        """ Return a tuple of tuples: Each tuple has as its first element
+            a requirement of the position, the second element is a tuple
+            of the knowledge providers providing this knowledge
+            ((requirement, (provider, ...,)), ...).
         """
 
 

@@ -45,8 +45,20 @@ class Knowing(object):
         del obj._knowers[self]
 
     def getMissingKnowledge(self, position):
-        # to be done
-        return tuple(position.getRequirements())
+        knowledge = self.getKnowledge()
+        missing = []
+        toCheck = [k for k in position.getRequirements() if k not in knowledge]
+        while toCheck:
+            k = toCheck.pop()
+            missing.insert(0, k)
+            for d in k.getDependencies():
+                if d in knowledge or k in toCheck:
+                    continue
+                if d in missing:
+                    # TODO: rearrange missing, but care for cycles...
+                    continue
+                toCheck.append(d)
+        return tuple(missing)
 
     def getProvidersNeeded(self, position):
         return ((k, k.getProviders())
