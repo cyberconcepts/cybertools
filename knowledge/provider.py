@@ -40,7 +40,7 @@ class KnowledgeProvider(object):
         self._providedKnowledge[obj] = True
         obj._providers.add(self)
 
-    def removeDependency(self, obj):
+    def removeProvidedKnowledge(self, obj):
         del self._providedKnowledge[obj]
         del obj._providers[self]
 
