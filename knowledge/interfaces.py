@@ -84,21 +84,22 @@ class IKnowing(Interface):
             that constitute the knowledge of this object.
         """
 
-    def getMissingKnowledge(position):
+    def getMissingKnowledge(profile):
         """ Return a tuple of knowledge elements that this object
-            is missing for fulfilling the position given.
+            is missing for fulfilling the requirement profile given.
         """
 
-    def getProvidersNeeded(position):
+    def getProvidersNeeded(profile):
         """ Return a tuple of tuples: Each tuple has as its first element
-            a requirement of the position, the second element is a tuple
+            a requirement of the profile, the second element is a tuple
             of the knowledge providers providing this knowledge
             ((requirement, (provider, ...,)), ...).
         """
 
 
-class IPosition(Interface):
-    """ A position requires a certain knowledge.
+class IRequirementProfile(Interface):
+    """ A collection of certain knowledge e.g. needed to work on certain
+        position or for a certain task.
     """
 
     def getRequirements():
@@ -110,7 +111,7 @@ class IPosition(Interface):
             object requires.
         """
 
-    def removeKnowledge(element):
+    def removeRequirement(element):
         """ Remove the element given from the collection of elements
             this object requires.
         """
@@ -134,6 +135,4 @@ class IKnowledgeProvider(Interface):
         """ Remove the element given from the collection of elements
             this object provides.
         """
-
-
 

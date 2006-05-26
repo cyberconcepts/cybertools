@@ -23,12 +23,12 @@ $Id$
 """
 
 from zope.interface import implements
-from cybertools.knowledge.interfaces import IPosition
+from cybertools.knowledge.interfaces import IRequirementProfile
 
 
-class Position(object):
+class RequirementProfile(object):
 
-    implements(IPosition)
+    implements(IRequirementProfile)
     
     def __init__(self):
         self._requirements = {}
@@ -38,9 +38,7 @@ class Position(object):
 
     def requires(self, obj):
         self._requirements[obj] = True
-        obj._requiringPositions.add(self)
 
     def removeRequirement(self, obj):
         del self._requirements[obj]
-        del obj._requiringPositions[self]
 

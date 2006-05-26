@@ -37,7 +37,6 @@ class KnowledgeElement(object):
         self._children = set()
         self._dependents = set()
         self._knowers = set()
-        self._requiringPositions = set()
         self._providers = set()
 
     def setParent(self, obj):

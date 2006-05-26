@@ -39,17 +39,17 @@ Now we create a person that knows about basic Python programming:
   >>> john = Knowing()
   >>> john.knows(pyBasics)
 
-Next we have a position that requires knowledge in object-oriented
+Next we have a requirement profile for knowledge in object-oriented
 programming with Python:
 
-  >>> from cybertools.knowledge.position import Position
-  >>> pos01 = Position()
-  >>> pos01.requires(pyOo)
+  >>> from cybertools.knowledge.requirement import RequirementProfile
+  >>> req01 = RequirementProfile()
+  >>> req01.requires(pyOo)
 
 Now we can ask what knowledge john is lacking if he would like to take
-the position offered:
+a position with the requirement profile:
 
-  >>> missing = john.getMissingKnowledge(pos01)
+  >>> missing = john.getMissingKnowledge(req01)
   >>> missing
   (<...KnowledgeElement...>, <...KnowledgeElement...>)
   
@@ -69,10 +69,9 @@ provide some of the knowledge needed:
 So that we are now able to find out what john has to study in order to
 fulfill the position offered:
 
-  >>> prov = list(john.getProvidersNeeded(pos01))
+  >>> prov = list(john.getProvidersNeeded(req01))
   >>> len(prov)
   2
   >>> [d[0] for k, d in prov] == [doc01, doc02]
   True
   
-
