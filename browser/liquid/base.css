@@ -28,6 +28,10 @@ body {
 
 /* more general stuff */
 
+.top image {
+    margin-top: -1px;
+}
+
 div.box {
     margin: 12px 12px 8px 10px;
     border: 1px solid #ccc;
