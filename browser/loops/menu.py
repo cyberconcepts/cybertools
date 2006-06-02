@@ -23,10 +23,13 @@ $Id$
 """
 
 from zope.app.publisher. browser import menu
+from zope.app.securitypolicy.interfaces import IPrincipalRoleManager
+from zope.security import checkPermission
 
 class MenuAccessView(menu.MenuAccessView):
 
     def __getitem__(self, menuId):
         if menuId in ('zmi_actions', 'help_actions'):
-            return []
+            if not checkPermission('zope.ManageSite', self.context):
+                return []
         return super(MenuAccessView, self).__getitem__(menuId)
