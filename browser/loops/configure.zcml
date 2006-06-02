@@ -17,6 +17,14 @@
   <resource name="favicon.png" file="loops_favicon.png" layer="loops" />
   <resource name="zope3logo.gif" file="loops_logo.png" layer="loops" />
 
+  <!-- control management menu -->
+
+  <page for="zope.interface.Interface"
+        name="view_get_menu"
+        permission="zope.Public"
+        class=".menu.MenuAccessView"
+        allowed_interface="zope.app.publisher.interfaces.browser.IMenuAccessView"
+        />
   <!-- login/logout stuff -->
 
   <zope:adapter factory="zope.app.security.LogoutSupported" />
