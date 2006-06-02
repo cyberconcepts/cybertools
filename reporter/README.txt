@@ -35,10 +35,16 @@ We'll use a fairly simple Iterable:
 We are now ready to use the corresponding browser view:
 
   >>> from zope.publisher.browser import TestRequest
-  >>> form = dict(b_page=1, b_size=4)
+  >>> form = dict(b_page=2, b_size=4, b_overlap=1)
   >>> request = TestRequest(form=form)
   >>> from cybertools.reporter.browser.batch import BatchView
-  >>> bview = BatchView(it, request)
+  >>> bview = BatchView(None, request)
+  >>> bview.setup(it)
+  <...BatchView...>
+  >>> bview.items()
+  [3, 4, 5, 6]
+  >>> bview.last
+  {'url': 'http://127.0.0.1?b_page=5&b_size=4&b_overlap=1&b_orphan=0', 'title': 5}
 
 The real reporting stuff
 ------------------------

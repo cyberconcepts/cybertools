@@ -29,7 +29,15 @@ from zope.app.container.browser.contents import JustContents
 from zope.app.i18n import ZopeMessageFactory as _
 
 
-class OrderedContainerView(JustContents):
+class ContainerView(JustContents):
+
+    def checkMoveAction(self):
+        pass
+
+    orderable = False
+
+
+class OrderedContainerView(ContainerView):
     """ A view providing the necessary methods for moving sub-objects
         within an ordered container.
     """

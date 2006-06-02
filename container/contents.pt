@@ -52,8 +52,10 @@
         </tr>
         </metal:block>
 
-        <metal:block tal:define="supportsRename view/supportsRename"
-                     tal:repeat="item container_contents">
+        <metal:block tal:define="supportsRename view/supportsRename;
+                                 batch nocall:context/@@cybertools.reporter.batch;
+                                 batch python:batch.setup(container_contents)">
+          <tal:list repeat="item batch/items">
           <tr tal:define="oddrow repeat/item/odd; url item/url;
                           id_quoted item/id/url:quote"
               tal:attributes="class python:oddrow and 'even' or 'odd'" >
@@ -118,6 +120,43 @@
                       tal:content="modified"
                       i18n:translate="">&nbsp;</span></td>
           </tr>
+          </tal:list>
+          <metal:nav define-macro="batch_navigation_tr">
+            <tr class="batch_navigation"
+                style="border-top: 1px solid #ccc"
+                tal:condition="batch/showNavigation">
+              <td colspan="6"
+                style="text-align: center">
+                Pages: 
+                <metal:nav define-macro="batch_navigation"
+                           tal:define="first batch/first/title;
+                                       previous batch/previous/title;
+                                       current batch/current/title;
+                                       next batch/next/title;
+                                       last batch/last/title;">
+                  <a href="#"
+                     tal:attributes="href batch/first/url"
+                     tal:content="first"
+                     tal:condition="python: first != current">1</a>
+                  <span tal:condition="python: first &lt; previous-1">...</span>
+                  <a href="#"
+                     tal:attributes="href batch/previous/url"
+                     tal:content="batch/previous/title"
+                     tal:condition="python: first != previous and previous != current">2</a>
+                  <b tal:content="batch/current/title">3</b>
+                  <a href="#"
+                     tal:attributes="href batch/next/url"
+                     tal:content="batch/next/title"
+                     tal:condition="python: last != next and next != current">3</a>
+                  <span tal:condition="python: last > next+1">...</span>
+                  <a href="#"
+                     tal:attributes="href batch/last/url"
+                     tal:content="batch/last/title"
+                     tal:condition="python: last != current">5</a>
+                </metal:nav>
+              </td>
+            </tr>
+          </metal:nav>
         </metal:block>
 
         </tbody>

@@ -23,38 +23,62 @@ HTML providing template.
 $Id$
 """
 
+from zope.cachedescriptors.property import Lazy
 from cybertools.reporter.batch import Batch
 
 
 class BatchView(object):
 
-    def __init__(self, context, request):
+    def __init__(self, context, request, iterable=None):
         self.context = context
         self.request = request
-        form = request.form
+        if iterable is not None:
+            self.setup(iterable)
+
+    def setup(self, iterable):
+        form = self.request.form
         page = int(form.get('b_page', 1))
         size = int(form.get('b_size', 20))
         overlap = int(form.get('b_overlap', 0))
         orphan = int(form.get('b_orphan', 0))
-        self.batch = Batch(context, page-1, size, overlap, orphan)
+        self.batch = Batch(iterable, page-1, size, overlap, orphan)
+        return self
 
     def items(self):
-        return setupUrlParams(self.batch.items)
+        return self.batch.items
 
+    @Lazy
+    def current(self):
+        return self.info(self.batch.getIndexRelative(0))
+
+    @Lazy
     def first(self):
-        return setupUrlParams(self.batch.getIndexAbsolute(0))
+        return self.info(self.batch.getIndexAbsolute(0))
 
+    @Lazy
     def last(self):
-        return setupUrlParams(self.batch.getIndexAbsolute(-1))
+        return self.info(self.batch.getIndexAbsolute(-1))
 
+    @Lazy
     def previous(self):
-        return setupUrlParams(self.batch.getIndexRelative(1))
+        return self.info(self.batch.getIndexRelative(-1))
 
+    @Lazy
     def next(self):
-        return setupUrlParams(self.batch.getIndexRelative(-1))
+        return self.info(self.batch.getIndexRelative(1))
 
-    def setupUrlParams(self, page):
+    def urlParams(self, page):
+        batch = self.batch
         return ('?b_page=%i&b_size=%i&b_overlap=%i&b_orphan=%i'
-                    % (page, self.size, self.overlap, self.orphan) )
+                    % (page+1, batch.size, batch.overlap, batch.orphan) )
 
-    
+    def url(self, page):
+        return str(self.request.URL) + self.urlParams(page)
+
+    def info(self, page):
+        return {'title': page+1, 'url': self.url(page)}
+
+    def showNavigation(self):
+        return self.first['title'] != self.last['title']
+
+

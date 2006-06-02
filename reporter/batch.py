@@ -32,24 +32,29 @@ class Batch(object):
     lastPage = False
 
     def __init__(self, iterable, pageIndex=0, size=20, overlap=0, orphan=0):
-        self.iterable = list(iterable)
+        if type(iterable) not in (tuple, list):
+            iterable = list(iterable)
+        self.iterable = iterable
+        length = len(self.iterable)
+        self.pages = range(0, length, size-overlap)
+        if pageIndex >= len(self.pages):
+            pageIndex = len(self.pages) - 1
+        if pageIndex < 0:
+            pageIndex = 0
         self.pageIndex = pageIndex
         self.start = pageIndex * (size - overlap)
         self.size = self.actualSize = size
         self.overlap = overlap
         self.orphan = orphan
-        length = len(self.iterable)
-        self.pages = range(0, length, size-overlap)
-        lastPage = self.pages[-1]
+        if length == 0: lastPage = 0
+        else: lastPage = self.pages[-1]
         lastLen = length - lastPage
         if lastLen <= orphan + overlap:
-            del self.pages[-1]
+            if length > 0:
+                del self.pages[-1]
             if pageIndex == len(self.pages) - 1: #we're on the last page
                 self.actualSize = size + lastLen  #take over the orphans
-        if pageIndex >= len(self.pages) or pageIndex < 0:
-            self.items = []
-        else:
-            self.items = self.iterable[self.start:self.start+self.actualSize]
+        self.items = self.iterable[self.start:self.start+self.actualSize]
 
     def __getitem__(self, idx):
         return self.items[idx]
@@ -66,13 +71,13 @@ class Batch(object):
         if idx < 0:
             return 0
         if idx >= len(self.pages):
-            return len(self.pages) - 1
+            return max(len(self.pages) - 1, 0)
         return idx
         
     def getIndexAbsolute(self, idx=0):
         if idx < 0:
-            idx = len(self.pages) + idx
-        if idx < 0 or idx >= len(self.pages):
-            return None
+            idx = max(len(self.pages) + idx, 0)
+        #if idx < 0 or idx >= len(self.pages):
+        #    return None
         return idx
 

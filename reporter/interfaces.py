@@ -38,16 +38,16 @@ class IBatch(Interface):
     start = Attribute(u'The current start index of the batch in the parent iterable')
     
     def __getitem__(idx):
-        """ Return the item at index idx.
+        """ Return the item at index idx on the current page.
         """
 
     def next():
-        """ Return the next item in the batch. Raise StopIteration if
+        """ Return the next item on the current page. Raise StopIteration if
             the end of the batch is reached.
         """
 
     def __len__():
-        """ Return the number of items in the batch.
+        """ Return the number of items on the current page.
         """
 
     def getIndexRelative(relativePageNumber):

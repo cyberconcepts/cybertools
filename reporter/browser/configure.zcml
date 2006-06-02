@@ -1,0 +1,15 @@
+<!-- $Id$ -->
+
+<configure
+   xmlns="http://namespaces.zope.org/browser"
+   xmlns:zope="http://namespaces.zope.org/zope"
+   i18n_domain="zope">
+
+  <page
+      for="*"
+      name="cybertools.reporter.batch"
+      class="cybertools.reporter.browser.batch.BatchView"
+      permission="zope.View"
+      />
+
+</configure>
