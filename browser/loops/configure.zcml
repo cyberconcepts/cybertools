@@ -19,10 +19,11 @@
 
   <!-- control management menu -->
 
-  <page for="zope.interface.Interface"
+  <page for="*"
         name="view_get_menu"
         permission="zope.Public"
         class=".menu.MenuAccessView"
+        layer="loops"
         allowed_interface="zope.app.publisher.interfaces.browser.IMenuAccessView"
         />
   <!-- login/logout stuff -->
