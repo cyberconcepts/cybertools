@@ -44,7 +44,7 @@ We are now ready to use the corresponding browser view:
   >>> bview.items()
   [3, 4, 5, 6]
   >>> bview.last
-  {'url': 'http://127.0.0.1?b_page=5&b_size=4&b_overlap=1&b_orphan=0', 'title': 5}
+  {'url': 'http://127.0.0.1?b_size=4&b_overlap=1&b_page=5&b_orphan=0', 'title': 5}
 
 The real reporting stuff
 ------------------------

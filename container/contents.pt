@@ -9,6 +9,16 @@
           tal:attributes="action request/URL"
           tal:define="container_contents view/listContentInfo">
 
+      <metal:keep-batch define-macro="keep_batch_params">
+        <tal:param repeat="param python:('b_page', 'b_size', 'b_overlap', 'b_orphan')">
+            <input type="hidden"
+                tal:define="value request/?param|nothing"
+                tal:condition="value"
+                tal:attributes="name param;
+                                value value" />
+        </tal:param>
+      </metal:keep-batch>
+      
       <input type="hidden" name="type_name" value=""
              tal:attributes="value request/type_name"
              tal:condition="request/type_name|nothing"

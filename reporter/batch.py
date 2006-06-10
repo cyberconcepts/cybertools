@@ -77,7 +77,5 @@ class Batch(object):
     def getIndexAbsolute(self, idx=0):
         if idx < 0:
             idx = max(len(self.pages) + idx, 0)
-        #if idx < 0 or idx >= len(self.pages):
-        #    return None
         return idx
 

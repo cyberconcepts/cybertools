@@ -23,6 +23,7 @@ HTML providing template.
 $Id$
 """
 
+import urllib
 from zope.cachedescriptors.property import Lazy
 from cybertools.reporter.batch import Batch
 
@@ -69,8 +70,16 @@ class BatchView(object):
 
     def urlParams(self, page):
         batch = self.batch
-        return ('?b_page=%i&b_size=%i&b_overlap=%i&b_orphan=%i'
-                    % (page+1, batch.size, batch.overlap, batch.orphan) )
+        params = {'b_page': page + 1, 'b_size': batch.size,
+                  'b_overlap': batch.overlap, 'b_orphan': batch.orphan}
+        form = self.request.form
+        for p in form:
+            if p not in params:
+                break # we get UnicodeEncode errors here :-(
+                v = form.get(p)
+                if v:
+                    params[p] = v
+        return '?' + urllib.urlencode(params)
 
     def url(self, page):
         return str(self.request.URL) + self.urlParams(page)
