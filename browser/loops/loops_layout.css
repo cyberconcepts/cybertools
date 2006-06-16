@@ -304,7 +304,7 @@ div#action {
 }
 
 div#action ul {
-    line-height: 16px;
+    line-height: 1.5em;
     color: #344080;
     white-space: nowrap;
     float: right;
@@ -329,10 +329,10 @@ div#action li a:link {
     color: #344080;
 }
 
-div#action li a:hover {
+/* div#action li a:hover {
     color: #344080;
     background-color: #e0e0ff;
-}
+}*/
 
 #breadcrumbs {
     margin: 0;
