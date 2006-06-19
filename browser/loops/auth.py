@@ -24,12 +24,30 @@ $Id$
 
 import urllib
 from zope.app import zapi
+from zope.app.authentication.session import SessionCredentialsPlugin
+from zope.app.component import hooks
+from zope.app.i18n import ZopeMessageFactory as _
 from zope.app.security.browser.auth import LoginLogout as BaseLoginLogout
-from zope.cachedescriptors.property import Lazy
-from zope.i18n import translate
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
 from zope.app.security.interfaces import ILogoutSupported
-from zope.app.i18n import ZopeMessageFactory as _
+from zope.cachedescriptors.property import Lazy
+from zope.i18n import translate
+from zope.publisher.interfaces.http import IHTTPRequest
+
+
+class LoopsSessionCredentialsPlugin(SessionCredentialsPlugin):
+
+    def challenge(self, request):
+        if not IHTTPRequest.providedBy(request):
+            return False
+        site = hooks.getSite()
+        #camefrom = request.getURL() # wrong when object is not viewable
+        camefrom = request.getApplicationURL() + request['PATH_INFO']
+        url = '%s/@@%s?%s' % (zapi.absoluteURL(site, request),
+                              self.loginpagename,
+                              urllib.urlencode({'camefrom': camefrom}))
+        request.response.redirect(url)
+        return True
 
 
 class LoginLogout(BaseLoginLogout):

@@ -26,6 +26,7 @@
         layer="loops"
         allowed_interface="zope.app.publisher.interfaces.browser.IMenuAccessView"
         />
+  
   <!-- login/logout stuff -->
 
   <zope:adapter factory="zope.app.security.LogoutSupported" />
@@ -44,4 +45,19 @@
       layer="loops"
       />
 
+  <zope:utility
+      name="Loops Session Credentials"
+      provides="zope.app.authentication.interfaces.ICredentialsPlugin"
+      factory=".auth.LoopsSessionCredentialsPlugin"
+     />
+    
+  <zope:localUtility class=".auth.LoopsSessionCredentialsPlugin">
+
+    <zope:require
+        permission="zope.ManageServices"
+        interface="zope.app.authentication.session.IBrowserFormChallenger"
+        set_schema="zope.app.authentication.session.IBrowserFormChallenger" />
+
+  </zope:localUtility>
+  
 </configure>
