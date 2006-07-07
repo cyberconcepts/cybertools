@@ -63,6 +63,10 @@ class IType(Interface):
                 title=u'Default Container',
                 description=u'Where objects of this type will be created in '
                              'when no explicit container is given')
+    viewName = schema.ASCIILine(title=u'viewName',
+                description=u'Name of the default view to be used for '
+                             'objects of this type',
+                required=False)
     typeProvider = schema.Object(Interface,
                 title=u'Type Provider',
                 description=u'A usually long-living object that corresponds '

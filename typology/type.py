@@ -49,6 +49,7 @@ class BaseType(object):
     typeInterface = None
     factory = None
     defaultContainer = None
+    viewName = ''
     typeProvider = None
 
 
