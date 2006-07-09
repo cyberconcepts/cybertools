@@ -32,8 +32,11 @@ class State(object):
 
     implements(IState)
 
-    def __init__(self, value=1.0):
+    def __init__(self, value=0.0):
         self.value = value
+
+    def __repr__(self):
+        return '<State %0.1f>' % self.value
 
 
 class Transition(object):
@@ -44,7 +47,9 @@ class Transition(object):
         self.synapsis = synapsis
         self.factor = factor
 
-    def execute(self, state):
-        return State(state.value + self.synapsis.sender.state.value * self.factor)
+    def execute(self, transaction=None):
+        oldState = self.synapsis.receiver.getState(transaction)
+        senderState = self.synapsis.sender.getState(transaction)
+        return State(oldState.value + senderState.value * self.factor)
 
 

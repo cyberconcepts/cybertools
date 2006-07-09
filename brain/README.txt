@@ -18,17 +18,29 @@ when creating a synapsis:
   []
   >>> n01.receivers == [s0102]
   True
-  >>> n01.state.value
-  1.0
-  >>> n02.state.value
-  1.0
+  >>> n01.getState()
+  <State 0.0>
+  >>> n02.getState()
+  <State 0.0>
 
-When we trigger a neuron, all its receivers get triggered so that the
-receivers' state is updated:
+When we change the state of a neuron and notify it, all its receiver synapses
+get triggered so that the receiver neurons' states are updated:
 
-  >>> n01.trigger()
-  >>> n01.state.value
-  1.0
-  >>> n02.state.value
-  2.0
+  >>> from cybertools.brain.state import State
+  >>> n01.setState(State(1.0))
+  >>> n01.getState()
+  <State 1.0>
+  >>> n01.notify()
+  >>> n02.getState()
+  <State 1.0>
 
+To allow for concurrent (thread-safe) access to the brain all changes to
+the neurons' states is under the control of a transaction. If we end the
+current transaction all state changes will be forgotton:
+
+  >>> from cybertools.brain.transaction import endTransaction
+  >>> endTransaction()
+  >>> n01.getState()
+  <State 0.0>
+  >>> n02.getState()
+  <State 0.0>

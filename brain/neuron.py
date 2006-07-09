@@ -19,12 +19,13 @@
 """
 A simple basic implementation of Neuron and Synapsis.
 
-$Id: type.py 1129 2006-03-19 09:46:08Z helmutm $
+$Id$
 """
 
 from zope.interface import implements
 from cybertools.brain.interfaces import INeuron, ISynapsis
 from cybertools.brain.state import State, Transition
+from cybertools.brain.transaction import getTransaction
 
 
 class Synapsis(object):
@@ -33,10 +34,6 @@ class Synapsis(object):
 
     implements(ISynapsis)
 
-    sender = None
-    reciever = None
-    transition = None
-
     def __init__(self, sender, receiver):
         self.sender = sender
         sender.receivers.append(self)
@@ -44,28 +41,33 @@ class Synapsis(object):
         receiver.senders.append(self)
         self.transition = Transition(self)
 
+    def trigger(self, transaction=None):
+        receiver = self.receiver
+        receiver.setState(self.transition.execute(transaction), transaction)
+        receiver.notify(transaction)
+
 
 class Neuron(object):
 
     implements(INeuron)
 
-    state = None
-
     def __init__(self):
         self.senders = []
         self.receivers = []
         self.state = State()
-        self.active = False
 
-    def trigger(self):
-        if self.active:  # avoid cycles
-            return
-        self.active = True
-        state = self.state
-        for s in self.senders:
-            state = s.transition.execute(state)
-        self.state = state
+    def setState(self, state, transaction=None):
+        transaction = getTransaction(transaction)
+        transaction.setState(self, state)
+
+    def getState(self, transaction=None):
+        if transaction is None:
+            transaction = getTransaction(create=False)
+            if transaction is None:
+                return self.state
+        return transaction.getState(self)
+
+    def notify(self, transaction=None):
         for r in self.receivers:
-            r.receiver.trigger()
-        self.active = False
+            r.trigger(transaction)
 

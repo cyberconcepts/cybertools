@@ -34,24 +34,32 @@ class ISynapsis(Interface):
 
     transition = Attribute("A transition changes the sender neuron's state.")
 
+    def trigger(transaction=None):
+        """ Recalculate the receiver neuron's state by executing the
+            synapse's transition using the state of the sender neuron.
+        """
+
 
 class INeuron(Interface):
-
-    state = Attribute("The current state of the neuron")
 
     senders = Attribute("The sender synapses")
     receivers = Attribute("The receiver synapses")
 
-    def trigger():
+    def setState(state, transaction=None):
+        """ Set the neuron's state.
+        """
+
+    def getState(transaction=None):
+        """ Return the neuron's state.
+        """
+
+    def notify(transaction=None):
         """ Notifies the neuron that something has happened. This method
-            executes all transitions from all sender synapses in order to
-            calculate the neuron's new state;
-            then it should call the trigger() method on all downstream
-            (receiver)neurons.
+            calls the trigger() method on all downstream (receiver) synapses.
             In addition it may perform side effects like changing
             transition properties of adjacent synapses or even create new
             synapses or neurons; this side effects should happen before
-            triggering the receiver neurons.
+            triggering the receiver synapses.
         """
 
 
@@ -62,7 +70,12 @@ class IState(Interface):
 
 class ITransition(Interface):
 
-    def execute(state):
-        """ Transform state to a new state value and return it.
+    def execute(transaction=None):
+        """ Transform the receiver's state to a new state value and return it.
         """
+
+
+class ITransaction(Interface):
+    """ A transaction that keeps track of the neurons' states.
+    """
 
