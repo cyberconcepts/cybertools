@@ -17,38 +17,34 @@
 #
 
 """
-Base classes for state and state manipulations.
+Base classes for state and state manipulations using a float-based state.
 
 $Id$
 """
 
 from zope.interface import implements
-from cybertools.brain.interfaces import IState, IStateMerger, IStateTransformation
+from cybertools.brain.interfaces import IState, ITransition
 
 
 class State(object):
     """ The state of a neuron.
     """
 
-    def __init__(self, level=1.0):
-        self.level = level
+    implements(IState)
+
+    def __init__(self, value=1.0):
+        self.value = value
 
 
-class StateTransformation(object):
+class Transition(object):
+
+    implements(ITransition)
 
     def __init__(self, synapsis, factor=1.0):
         self.synapsis = synapsis
         self.factor = factor
 
-    def transform(self, state):
-        return State(state.level * self.factor)
+    def execute(self, state):
+        return State(state.value + self.synapsis.sender.state.value * self.factor)
 
-
-class StateMerger(object):
-
-    def __init__(self, neuron):
-        self.neuron = neuron
-
-    def merge(self, state, senderStates):
-        state.level += sum(st.level for st in senderStates)
 

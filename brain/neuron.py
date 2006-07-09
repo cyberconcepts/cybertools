@@ -24,46 +24,47 @@ $Id: type.py 1129 2006-03-19 09:46:08Z helmutm $
 
 from zope.interface import implements
 from cybertools.brain.interfaces import INeuron, ISynapsis
-from cybertools.brain.state import State, StateMerger, StateTransformation
+from cybertools.brain.state import State, Transition
 
 
 class Synapsis(object):
     """ A synapsis connects two neurons.
     """
 
+    implements(ISynapsis)
+
     sender = None
     reciever = None
-    transformation = None
+    transition = None
 
     def __init__(self, sender, receiver):
         self.sender = sender
         sender.receivers.append(self)
         self.receiver = receiver
         receiver.senders.append(self)
-        self.transformation = StateTransformation(self)
-
-    def transformSenderState(self):
-        return self.transformation.transform(self.sender.state)
+        self.transition = Transition(self)
 
 
 class Neuron(object):
 
+    implements(INeuron)
+
     state = None
-    stateMerger = None
 
     def __init__(self):
         self.senders = []
         self.receivers = []
         self.state = State()
-        self.stateMerger = StateMerger(self)
         self.active = False
 
     def trigger(self):
         if self.active:  # avoid cycles
             return
         self.active = True
-        senderStates = [s.transformSenderState() for s in self.senders]
-        self.stateMerger.merge(self.state, senderStates)
+        state = self.state
+        for s in self.senders:
+            state = s.transition.execute(state)
+        self.state = state
         for r in self.receivers:
             r.receiver.trigger()
         self.active = False

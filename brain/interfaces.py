@@ -32,8 +32,7 @@ class ISynapsis(Interface):
     sender = Attribute("The sender neuron for this synapsis")
     reciever = Attribute("The receiver neuron for this synapsis")
 
-    transformation = Attribute("A transformation is used to transform "
-                               "the sender neuron's state.")
+    transition = Attribute("A transition changes the sender neuron's state.")
 
 
 class INeuron(Interface):
@@ -43,13 +42,10 @@ class INeuron(Interface):
     senders = Attribute("The sender synapses")
     receivers = Attribute("The receiver synapses")
 
-    stateMerger = Attribute("Merges a state with a list of other states "
-                            "in order to create a new state.")
-
     def trigger():
         """ Notifies the neuron that something has happened. This method
-            should get the transformed states from all sender synapses
-            and merge them in order to calculate the neuron's new state;
+            executes all transitions from all sender synapses in order to
+            calculate the neuron's new state;
             then it should call the trigger() method on all downstream
             (receiver)neurons.
             In addition it may perform side effects like changing
@@ -64,16 +60,9 @@ class IState(Interface):
     """
 
 
-class IStateTransformation(Interface):
+class ITransition(Interface):
 
-    def transform(state):
+    def execute(state):
         """ Transform state to a new state value and return it.
         """
 
-
-class IStateMerger(Interface):
-
-    def merge(state, senderStates):
-        """ Transform state to a new value by taking into account a list
-            of sender neurons' states. This modifies state in-place.
-        """

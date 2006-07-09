@@ -18,12 +18,17 @@ when creating a synapsis:
   []
   >>> n01.receivers == [s0102]
   True
-  >>> n01.state.level
+  >>> n01.state.value
   1.0
-  >>> n02.state.level
+  >>> n02.state.value
   1.0
 
+When we trigger a neuron, all its receivers get triggered so that the
+receivers' state is updated:
+
   >>> n01.trigger()
-  >>> n02.state.level
+  >>> n01.state.value
+  1.0
+  >>> n02.state.value
   2.0
 
