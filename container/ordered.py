@@ -25,16 +25,9 @@ $Id$
 from zope.app import zapi
 from zope.app.container.ordered import OrderedContainer as BaseOrderedContainer
 from zope.cachedescriptors.property import Lazy
-from zope.app.container.browser.contents import JustContents
 from zope.app.i18n import ZopeMessageFactory as _
-
-
-class ContainerView(JustContents):
-
-    def checkMoveAction(self):
-        pass
-
-    orderable = False
+from zope.interface import Interface
+from base import ContainerView
 
 
 class OrderedContainerView(ContainerView):

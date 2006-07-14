@@ -84,8 +84,21 @@ class BatchView(object):
     def url(self, page):
         return str(self.request.URL) + self.urlParams(page)
 
+    def ajaxUrl(self, page):
+        try:
+            url = self.request.URL[-1]
+        except KeyError: # make DocTest/TestRequest happy
+            url = `self.request.URL`
+        return ''.join((url, '/@@ajax.inner.html', self.urlParams(page)))
+
+    def navOnClick(self, page):
+        return ("dojo.io.updateNode('body.contents', '%s'); "
+                "return false;" % self.ajaxUrl(page))
+
     def info(self, page):
-        return {'title': page+1, 'url': self.url(page)}
+        return {'title': page+1,
+                'url': self.url(page),
+                'navOnClick': self.navOnClick(page)}
 
     def showNavigation(self):
         return self.first['title'] != self.last['title']

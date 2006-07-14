@@ -1,0 +1,4 @@
+<tal:def define="macroName view/macroName;
+                 tpl view/template;">
+  <metal:use use-macro="tpl/macros/?macroName" />
+</tal:def>

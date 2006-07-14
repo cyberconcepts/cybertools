@@ -1,0 +1,14 @@
+<metal:def define-macro="main">
+
+  <script type="text/javascript">
+      djConfig = { isDebug: true };
+  </script>
+
+  <script type="text/javascript" src="ajax.dojo/dojo.js"
+          tal:attributes="src context/++resource++ajax.dojo/dojo.js" />
+
+  <script type="text/javascript">
+      dojo.require("dojo.io.*");
+  </script>
+
+</metal:def>

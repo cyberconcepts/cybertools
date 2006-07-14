@@ -1,0 +1,20 @@
+<!-- $Id$ -->
+
+<configure
+    xmlns="http://namespaces.zope.org/browser"
+    xmlns:zope="http://namespaces.zope.org/zope"
+    i18n_domain="zope">
+
+  <resourceDirectory
+      name="ajax.dojo"
+      directory="dojo"
+      />
+
+  <page
+      for="*"
+      name="ajax.dojo"
+      template="macros.pt"
+      permission="zope.Public"
+      />
+
+</configure>
