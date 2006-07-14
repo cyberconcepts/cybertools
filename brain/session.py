@@ -23,12 +23,12 @@ $Id$
 """
 
 from zope.interface import implements
-from cybertools.brain.interfaces import ITransaction
+from cybertools.brain.interfaces import ISession
 
 
-class Transaction(object):
+class Session(object):
 
-    implements(ITransaction)
+    implements(ISession)
 
     def __init__(self):
         self.states = {}
@@ -38,26 +38,4 @@ class Transaction(object):
 
     def getState(self, neuron):
         return self.states.get(neuron, neuron.state)
-
-
-transactions = []
-
-def getTransaction(transaction=None, create=True):
-    if transaction is None:
-        if transactions:
-            transaction = transactions[0]
-        elif create:
-            transaction = Transaction()
-            transactions.append(transaction)
-        else:
-            return None
-    return transaction
-
-def endTransaction(transaction=None):
-    if transaction is None:
-        if transactions:
-            del transactions[0]
-    else:
-        if transaction in transactions:
-            del transactions[transactions.index(transaction)]
 

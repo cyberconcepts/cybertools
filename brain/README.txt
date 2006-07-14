@@ -34,13 +34,21 @@ get triggered so that the receiver neurons' states are updated:
   >>> n02.getState()
   <State 1.0>
 
-To allow for concurrent (thread-safe) access to the brain all changes to
-the neurons' states is under the control of a transaction. If we end the
-current transaction all state changes will be forgotton:
+To allow for concurrent access to the brain by different clients
+simultaneously, the changes to the neurons' states may be under the control of
+a session:
 
-  >>> from cybertools.brain.transaction import endTransaction
-  >>> endTransaction()
+  >>> n01.setState(State())
+  >>> n02.setState(State())
+  >>> from cybertools.brain.session import Session
+  >>> session = Session()
+  >>> n01.setState(State(1.0), session)
   >>> n01.getState()
   <State 0.0>
+  >>> n01.getState(session)
+  <State 1.0>
+  >>> n01.notify(session)
   >>> n02.getState()
   <State 0.0>
+  >>> n02.getState(session)
+  <State 1.0>

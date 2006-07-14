@@ -47,9 +47,9 @@ class Transition(object):
         self.synapsis = synapsis
         self.factor = factor
 
-    def execute(self, transaction=None):
-        oldState = self.synapsis.receiver.getState(transaction)
-        senderState = self.synapsis.sender.getState(transaction)
+    def execute(self, session=None):
+        oldState = self.synapsis.receiver.getState(session)
+        senderState = self.synapsis.sender.getState(session)
         return State(oldState.value + senderState.value * self.factor)
 
 

@@ -25,7 +25,6 @@ $Id$
 from zope.interface import implements
 from cybertools.brain.interfaces import INeuron, ISynapsis
 from cybertools.brain.state import State, Transition
-from cybertools.brain.transaction import getTransaction
 
 
 class Synapsis(object):
@@ -41,10 +40,10 @@ class Synapsis(object):
         receiver.senders.append(self)
         self.transition = Transition(self)
 
-    def trigger(self, transaction=None):
+    def trigger(self, session=None):
         receiver = self.receiver
-        receiver.setState(self.transition.execute(transaction), transaction)
-        receiver.notify(transaction)
+        receiver.setState(self.transition.execute(session), session)
+        receiver.notify(session)
 
 
 class Neuron(object):
@@ -56,18 +55,18 @@ class Neuron(object):
         self.receivers = []
         self.state = State()
 
-    def setState(self, state, transaction=None):
-        transaction = getTransaction(transaction)
-        transaction.setState(self, state)
+    def setState(self, state, session=None):
+        if session is None:
+            self.state = state
+        else:
+            session.setState(self, state)
 
-    def getState(self, transaction=None):
-        if transaction is None:
-            transaction = getTransaction(create=False)
-            if transaction is None:
+    def getState(self, session=None):
+        if session is None:
                 return self.state
-        return transaction.getState(self)
+        return session.getState(self)
 
-    def notify(self, transaction=None):
+    def notify(self, session=None):
         for r in self.receivers:
-            r.trigger(transaction)
+            r.trigger(session)
 
