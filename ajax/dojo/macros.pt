@@ -5,10 +5,7 @@
   </script>
 
   <script type="text/javascript" src="ajax.dojo/dojo.js"
-          tal:attributes="src context/++resource++ajax.dojo/dojo.js" />
-
-  <script type="text/javascript">
-      dojo.require("dojo.io.*");
+          tal:attributes="src context/++resource++ajax.dojo/dojo.js">
   </script>
 
 </metal:def>
