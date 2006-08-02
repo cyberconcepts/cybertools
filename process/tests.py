@@ -8,13 +8,13 @@ $Id$
 
 import unittest, doctest
 from zope.testing.doctestunit import DocFileSuite
-from cybertools.process.definition import ProcessDefinition
+from cybertools.process.definition import Process
 
 class TestProcess(unittest.TestCase):
     "Basic tests for the process package."
 
     def testBasicStuff(self):
-        p = ProcessDefinition()
+        p = Process()
 
 
 def test_suite():

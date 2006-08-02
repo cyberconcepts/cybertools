@@ -31,63 +31,52 @@ _ = MessageFactory('zope')
 
 # process/workflow definitions
 
-class INode(Interface):
+class IActivity(Interface):
     """ A step of a process - typically a state that lets the process wait
         for a user interaction or an action that is executed automatically.
     """
 
-    process = Attribute('The process this node belongs to')
-    incoming = Attribute('Transitions that lead to this node')
-    outgoing = Attribute('Transitions that lead to the next nodes')
+    successors = Attribute('A set of activities following this activity')
     handlerName = Attribute('Name of an adapter that may handle the '
-                            'execution of this node')
+                            'execution of this activity')
+    qualifier = Attribute('A collection of strings giving additional '
+                          'information about an activity. '
+                          'May be used by an execution context '
+                          'for deciding which activity it will execute next')
 
-    def addTransition(destination):
-        """ Append a transition to the destination node given
-            to the collection of outgoing transitions.
+    def add(successor):
+        """ Append an activity to the collection of following activities.
         """
 
-    def execute(execution):
-        """ Execute a node in an execution context of a process instance;
-            if this node signifies a wait state this will create a work item.
-        """
-
-
-class ITransition(Interface):
-    """ A transition leading from one node (activity, state, action) to
-        the next.
-    """
-    source = Attribute('The node that triggered this transition')
-    destination = Attribute('The destination node of this transition')
-    qualifier = Attribute('A string giving a hint for the meaning of the '
-                          'transition. May be used by an execution context '
-                          'for deciding which transition it will transfer '
-                          'control to')
-
-    def take(execution):
-        """ Pass over the execution context from the source node to the
-            destination node.
+    def execute(execution=None):
+        """ Execute a activity in an execution context of a process instance;
+            if this activity signifies a wait state this will create a work item.
+            If the execution argument is None a new execution context will
+            be created. The execution context is returned.
         """
 
 
-class IProcessDefinition(Interface):
+class IProcess(Interface):
     """ The definition of a process or workflow.
     """
 
-    instances = Attribute('A collection of process instances created from '
-                          'this process definition')
-    startNode = Attribute('The start node of this process')
-    endNode = Attribute('The end node of this process')
+    startActivity = Attribute('The start activity of this process')
+
+    def execute():
+        """ Start the process (typically by executing its start activity).
+            Return the execution context.
+        """
 
 
 class IActionHandler(Interface):
     """ Will be called for handling process executions. Is typically
-        implemented as an adapter for INode.
+        implemented as an adapter for IActivity.
     """
 
     def handle(execution):
-        """ Handles the execution of a node in the execution context given.
+        """ Handles the execution of a activity in the execution context given.
         """
+
 
 # process execution
 
@@ -97,41 +86,36 @@ class IExecution(Interface):
         current states) of a process instance.
     """
 
-    instance = Attribute('The process instance this execution context belongs to')
-    currentNode = Attribute('The node the process instance is currently in')
+    currentActivity = Attribute('The activity this execution is currently in')
     workItem = Attribute('The work item the process instance is currently '
-                         'waiting for; None if the current node is not in a '
+                         'waiting for; None if the current activity is not in a '
                          'waiting state')
+    parent = Attribute('The execution context that has created this one '
+                       'e.g. because of a forking operation')
+    children = Attribute('A collection of execution contexts that have been '
+                         'created by this one')
 
-    def trigger(transitionQualifiers=None):
+    def trigger(qualifiers=None):
         """ A callback (handler) that will may be called by an action handler.
             This will typically lead to moving on the execution context
-            to an outgoing transition of the current node. The execution
-            context will use the transitionQualifiers to decide which outgoing
-            transition(s) to transfer control to.
-        """
-
-
-class IProcessInstance(Interface):
-    """ An executing process, i.e. an execution context that keeps track of
-        the currently active node(s) of the process.
-    """
-
-    process = Attribute('The process definition this instance is created from')
-    executions = Attribute('A collection of currently active execution contexts')
-
-    def execute():
-        """ Start the execution of the process with its start node;
-            return the execution context.
+            to a successor activity of the current activity. The execution
+            context will use the qualifiers argument to decide which
+            activities to transfer control to.
         """
 
 
 class IWorkItem(Interface):
-    """ An instance of an activity from a process definition.
+    """ A work item tells some external entity - typically a user - to
+        do something in order to let the process proceed.
     """
 
-    node = Attribute('The node this work item has been created from')
-    execution = Attribute('The execution context (and thus the process '
-                          'instance) that has create this work item')
+    activity = Attribute('The activity this work item has been created from')
+    execution = Attribute('The execution context that has created this work item')
+    done = Attribute('A Boolean attribute that is true if the work '
+                     'item has been submitted')
 
-
+    def submit(data={}):
+        """ Provide the work item with some data (optional) and have it
+            continue the process by triggering the execution context.
+            This should also set the `done` attribute to True.
+        """
