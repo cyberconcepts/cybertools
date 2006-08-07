@@ -2,7 +2,7 @@
  $Id$
 
  based on http://www.tjkdesign.com/articles/liquid/4.asp
- 
+
 */
 
 body {
@@ -14,12 +14,12 @@ body {
     color: #000040;
 }
 
-#header,#menu,#content,#sub-section,#footer {
-    overflow:hidden;
-    display:inline-block
+#global,#menu,#content,#sub-section,#footer {
+    overflow: hidden;
+    display: inline-block;
 }
 
-#header,#footer {width:100%}
+#global,#footer {width:100%}
 #menu,#content,#sub-section {float:left}
 #menu {width:20%}
 #content {width:67%}
