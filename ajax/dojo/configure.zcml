@@ -17,4 +17,19 @@
       permission="zope.Public"
       />
 
+  <page
+      for="*"
+      name="ajax.inner.html"
+      template="../innerHtml.pt"
+      permission="zope.ManageContent"
+      menu="zmi_views" title="Contents"
+      />
+
+  <!-- named template -->
+
+  <zope:adapter
+      factory="cybertools.ajax.innerHtml"
+      for="zope.publisher.interfaces.browser.IBrowserPublisher"
+      name="ajax.inner.html" />
+
 </configure>

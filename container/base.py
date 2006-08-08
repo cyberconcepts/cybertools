@@ -38,10 +38,10 @@ class ContainerView(JustContents):
 
     # informations for the ajax.inner.html view (template):
 
-    def template(self):
+    def innerHtml_template(self):
         basicView = zapi.getMultiAdapter((self.context, self.request),
                         Interface, name=u'contents.html')
         return basicView.index
 
-    macroName = 'contents'
+    innerHtml_macro = 'contents'
 

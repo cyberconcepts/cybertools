@@ -160,7 +160,7 @@
                      tal:condition="python: first != current">1</a>
                   <span tal:condition="python: first &lt; previous-1">...</span>
                   <a href="#"
-                     tal:attributes="xhref batch/previous/url;
+                     tal:attributes="href batch/previous/url;
                                      onclick batch/previous/navOnClick"
                      tal:content="batch/previous/title"
                      tal:condition="python: first != previous and previous != current">2</a>
