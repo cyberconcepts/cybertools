@@ -41,5 +41,6 @@ class Controller(BaseController):
             macros.register('css', resourceName=param[0], media=param[1])
 
     def setupJs(self):
+        return
         #self.macros['js'] = []
         self.macros.register('js', resourceName='zope3.js')

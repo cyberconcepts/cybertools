@@ -3,9 +3,9 @@
       i18n:domain="zope"
       tal:define="controller nocall:view/@@controller;
                   resourceBase controller/resourceBase">
-      
+
   <metal:block metal:define-slot="settings" />
-  
+
   <head metal:define-macro="head">
     <title metal:define-slot="title"
            tal:content="options/title|view/headTitle|view/title|context/title|default">
@@ -20,9 +20,8 @@
 
     <metal:block metal:define-slot="headers">
       <tal:js repeat="macro controller/macros/js">
-        <metal:css use-macro="macro" />
+        <metal:js use-macro="macro" />
       </tal:js>
-      <ignore_metal:js use-macro="context/@@standard_macros/navigation_tree_js" />
     </metal:block>
     <metal:block define-slot="ecmascript_slot" />
 
@@ -31,7 +30,7 @@
   </head>
 
   <body tal:attributes="onload body_onload | nothing">
-    
+
     <div id="global">
       <div class="top" metal:define-slot="top">
         <a href="#" name="top" metal:define-slot="logo"
@@ -54,9 +53,9 @@
         </div>
       </metal:menu>
     </div>
-    
+
     <div id="content">
-    
+
       <div class="itemViews" metal:define-slot="actions">
         <tal:block repeat="view context/@@view_get_menu/zmi_views">
           <a href=""
@@ -71,13 +70,13 @@
       <metal:message metal:define-slot="message" />
 
       <metal:content define-slot="body">Here comes the body</metal:content>
-      
+
     </div>
-    
+
     <div id="sub-section">
       <metal:sub define-slot="context_information"></metal:sub>
     </div>
-    
+
     <div id="footer" class="footer">
       <metal:footer define-slot="footer">
         Powered by <b><a href="http://www.python.org">Python</a></b> &middot;
