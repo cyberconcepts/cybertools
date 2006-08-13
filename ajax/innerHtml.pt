@@ -1,4 +1,1 @@
-<tal:def define="macroName view/innerHtml_macro;
-                 tpl nocall:view/innerHtml_template;">
-  <metal:use use-macro="tpl/macros/?macroName" />
-</tal:def>
+<metal:use use-macro="view/macro" />

@@ -25,11 +25,4 @@
       menu="zmi_views" title="Contents"
       />
 
-  <!-- named template -->
-
-  <zope:adapter
-      factory="cybertools.ajax.innerHtml"
-      for="zope.publisher.interfaces.browser.IBrowserPublisher"
-      name="ajax.inner.html" />
-
 </configure>

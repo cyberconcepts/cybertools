@@ -21,8 +21,6 @@ $Id$
 """
 
 from zope.app.pagetemplate import ViewPageTemplateFile
-from zope.formlib.namedtemplate import NamedTemplateImplementation
 
-innerHtml = NamedTemplateImplementation(
-                    ViewPageTemplateFile('innerHtml.pt'))
+innerHtml = ViewPageTemplateFile('innerHtml.pt')
 

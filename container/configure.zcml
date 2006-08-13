@@ -15,15 +15,6 @@
       />
 
   <page
-      for="zope.app.container.interfaces.IOrderedContainer"
-      name="ajax.inner.html"
-      template="../ajax/innerHtml.pt"
-      class="cybertools.container.ordered.OrderedContainerView"
-      permission="zope.ManageContent"
-      menu="zmi_views" title="Contents"
-      />
-
-  <page
       for="zope.app.container.interfaces.IContainer"
       name="contents.html"
       template="contents.pt"
@@ -36,7 +27,7 @@
       for="zope.app.container.interfaces.IContainer"
       name="ajax.inner.html"
       template="../ajax/innerHtml.pt"
-      class="cybertools.container.ordered.ContainerView"
+      class="cybertools.container.base.ContainerView"
       permission="zope.ManageContent"
       menu="zmi_views" title="Contents"
       />
