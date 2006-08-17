@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
       i18n:domain="zope"
       tal:define="controller nocall:view/@@controller;
-                  resourceBase controller/resourceBase">
+                  resourceBase controller/resourceBase;">
 
   <metal:block metal:define-slot="settings" />
 
@@ -29,7 +29,8 @@
           tal:attributes="href string:${resourceBase}favicon.png" />
   </head>
 
-  <body tal:attributes="onload body_onload | nothing">
+  <body tal:attributes="onload body_onload | nothing"
+        metal:define-macro="body">
 
     <div id="global">
       <div class="top" metal:define-slot="top">

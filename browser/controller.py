@@ -32,12 +32,14 @@ from cybertools.browser.configurator import IViewConfigurator, IMacroViewPropert
 class Controller(object):
 
     def __init__(self, context, request):
-        self.view = context         # the controller is adapted to a view
+        self.view = view = context         # the controller is adapted to a view
         self.context = context.context
         self.request = request
-        self.skin = None            # may be overwritten by the view
         self.configure()
-        context.controller = self   # notify the view
+        #self.view.setupController()
+        self.view.controller = self   # notify the view
+
+    skin = None         # may be overwritten by the view
 
     @Lazy
     def macros(self):
@@ -63,13 +65,21 @@ class Controller(object):
 
 class Macros(dict):
 
-    # TODO: move to namedTemplate
     standardTemplate = ViewPageTemplateFile('base_macros.pt')
 
     def __init__(self, controller):
         self.controller = controller
+        self['css'] = []
+        self['js'] = []
+        self.identifiers = set()
 
-    def register(self, slot, template=None, name=None, position=None, **kw):
+    def register(self, slot, template=None, name=None, position=None,
+                 identifier=None, **kw):
+        if identifier:
+            # make sure a certain resource is only registered once
+            if identifier in self.identifiers:
+                return
+            self.identifiers.add(identifier)
         if template is None:
             template = self.standardTemplate
         if name is None:

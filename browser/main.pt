@@ -1,0 +1,31 @@
+<metal:block define-macro="page"><metal:block define-slot="doctype"><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"></metal:block>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+      i18n:domain="zope"
+      tal:define="controller nocall:view/@@controller;
+                  resourceBase controller/resourceBase;
+                  body view/pageBody">
+
+  <head metal:define-macro="head">
+    <title metal:define-macro="title"
+           tal:content="options/title|view/headTitle|context/title|default">
+      Powered by Zope 3
+    </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <tal:css repeat="macro controller/macros/css">
+      <metal:css use-macro="macro" />
+    </tal:css>
+
+    <tal:js repeat="macro controller/macros/js">
+      <metal:js use-macro="macro" />
+    </tal:js>
+
+    <link rel="icon" type="image/png"
+          tal:attributes="href string:${resourceBase}favicon.png" />
+  </head>
+
+  <body tal:content="structure body"/>
+
+</html>
+</metal:block>
+

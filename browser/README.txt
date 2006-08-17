@@ -5,7 +5,7 @@ We first set up a test and working environment:
 
   >>> from zope.app import zapi
   >>> from zope.app.testing import ztapi
-    
+
   >>> from zope import component, interface
   >>> from zope.publisher.browser import TestRequest
   >>> from zope.publisher.interfaces.browser import IBrowserRequest
@@ -26,23 +26,24 @@ because this already provides some predefined stuff:
 
 Before creating a controller we have to set up a context object and
 a view:
-  
+
   >>> class SomeObject(object): pass
   >>> obj = SomeObject()
-  >>> class View(object):
-  ...     def __init__(self, context, request):
-  ...         self.context = context
-  ...         self.request = request
+  >>> from cybertools.browser.view import GenericView
+  >>> class View(GenericView):
+  ...     pass
   >>> from zope.publisher.browser import TestRequest
   >>> request = TestRequest()
   >>> view = View(obj, request)
-  
+
   >>> controller = Controller(view, request)
   >>> controller.view is view
   True
   >>> controller.context is obj
   True
   >>> controller.request is request
+  True
+  >>> request.annotations['cybertools.browser']['controller'] == controller
   True
 
 The controller registers itself with the view:

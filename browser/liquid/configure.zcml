@@ -11,7 +11,7 @@
 
   <skin name="Liquid"
         layers="liquid rotterdam default" />
-    
+
   <page for="*"
         name="skin_macros" template="view_macros.pt"
         permission="zope.View"

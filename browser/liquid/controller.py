@@ -28,9 +28,9 @@ from cybertools.browser.controller import Controller as BaseController
 class Controller(BaseController):
 
     def __init__(self, context, request):
-        super(Controller, self).__init__(context, request)
         self.setupCss()
         self.setupJs()
+        super(Controller, self).__init__(context, request)
 
     def setupCss(self):
         macros = self.macros

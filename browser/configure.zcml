@@ -6,6 +6,24 @@
    i18n_domain="zope"
    >
 
+  <page for="*"
+        name="main.html"
+        template="main.pt"
+        class="cybertools.browser.view.GenericView"
+        permission="zope.Public"
+        />
+
+  <page for="*"
+        name="cybertools.body_macros"
+        template="liquid/body.pt"
+        permission="zope.Public"
+        />
+
+  <page for="*"
+        name="body.html"
+        class="cybertools.browser.view.GenericView"
+        permission="zope.View"/>
+
   <page name="controller"
         for="zope.app.publisher.interfaces.browser.IBrowserView"
         class="cybertools.browser.controller.Controller"
