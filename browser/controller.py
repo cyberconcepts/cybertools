@@ -69,12 +69,10 @@ class Macros(dict):
 
     def __init__(self, controller):
         self.controller = controller
-        self['css'] = []
-        self['js'] = []
         self.identifiers = set()
 
-    def register(self, slot, template=None, name=None, position=None,
-                 identifier=None, **kw):
+    def register(self, slot, identifier=None, template=None, name=None,
+                 position=None, **kw):
         if identifier:
             # make sure a certain resource is only registered once
             if identifier in self.identifiers:
@@ -85,12 +83,15 @@ class Macros(dict):
         if name is None:
             name = slot
         macro = Macro(template, name, **kw)
-        if slot not in self:
-            self[slot] = []
+        entry = self.setdefault(slot, [])
         if position is None:
-            self[slot].append(macro)
+            entry.append(macro)
         else:
-            self[slot].insert(position, macro)
+            entry.insert(position, macro)
+
+    def __getitem__(self, key):
+        return self.get(key, [])
+
 
 class Macro(object):
 

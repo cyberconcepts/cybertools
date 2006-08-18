@@ -20,11 +20,15 @@
       <metal:js use-macro="macro" />
     </tal:js>
 
+    <tal:js repeat="macro controller/macros/js-execute">
+      <metal:js use-macro="macro" />
+    </tal:js>
+
     <link rel="icon" type="image/png"
           tal:attributes="href string:${resourceBase}favicon.png" />
   </head>
 
-  <body tal:content="structure body"/>
+  <body tal:content="structure body" />
 
 </html>
 </metal:block>

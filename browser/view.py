@@ -29,18 +29,27 @@ from zope.publisher.interfaces.browser import ISkin
 from zope.app.pagetemplate import ViewPageTemplateFile
 
 
+mainTemplate = ViewPageTemplateFile('main.pt')
+
+
 class UnboundTemplateFile(ViewPageTemplateFile):
 
     def __get__(self, instance, type):
         return self
 
 
-class GenericView(object):
+class BodyTemplateView(object):
+    """ Dummy view used for providing a body template.
+    """
 
-    index = ViewPageTemplateFile('main.pt')
     bodyTemplate = UnboundTemplateFile('liquid/body.pt')
 
-    menu = macro = skin = None
+
+class GenericView(object):
+
+    index = mainTemplate
+
+    template = macro = menu = skin = None
 
     def setController(self, controller):
         # make the (one and only controller) available via the request
@@ -66,10 +75,14 @@ class GenericView(object):
     def setupController(self):
         pass
 
+    @Lazy
+    def item(self):
+        return self
+
     def pageBody(self):
-        template = component.getMultiAdapter((self.context, self.request),
-                                             name='body.html').bodyTemplate
-        return template(self)
+        bodyTemplate = component.getMultiAdapter((self.context, self.request),
+                                                 name='body.html').bodyTemplate
+        return bodyTemplate(self)
 
     def setSkin(self, skinName):
         skin = None
@@ -78,9 +91,5 @@ class GenericView(object):
             if skin:
                 applySkin(self.request, skin)
         self.skin = skin
-
-    @Lazy
-    def item(self):
-        return self
 
 

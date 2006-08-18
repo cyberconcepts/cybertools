@@ -1,14 +1,67 @@
 Browser View Tools
 ==================
 
-We first set up a test and working environment:
-
-  >>> from zope.app import zapi
-  >>> from zope.app.testing import ztapi
-
   >>> from zope import component, interface
-  >>> from zope.publisher.browser import TestRequest
+  >>> from zope.interface import Interface, implements
   >>> from zope.publisher.interfaces.browser import IBrowserRequest
+
+The Generic View class
+----------------------
+
+GenericView is intended as the base class for application-specific views.
+The GenericView class itself provides only basic functionality, so you
+will have to subclass it. (An example can be found in loops.browser - see
+the common and node modules there.)
+
+Let's start with a dummy content object and create a view on it:
+
+  >>> class SomeObject(object):
+  ...     implements(Interface)
+  >>> obj = SomeObject()
+
+  >>> from cybertools.browser.view import GenericView
+  >>> class View(GenericView): pass
+
+  >>> from zope.publisher.browser import TestRequest
+  >>> request = TestRequest()
+  >>> view = View(obj, request)
+
+Via the `template` and `macro` attributes one may control the presentation of
+the view - in fact the rendering of a certain content object is achieved
+by providing an appropriate macro for its view.
+
+The view also may provide a special skin and a menu.
+
+All these attributes default to None:
+
+  >>> view.template is None
+  True
+  >>> view.macro is None
+  True
+  >>> view.skin is None
+  True
+  >>> view.menu is None
+  True
+
+The `item` attribute may be used to delegate to another view; it defaults to
+self:
+
+  >>> view.item is view
+  True
+
+There is a method for setting the skin that will be called when the controller
+attribute is set, see below:
+
+  >>> view.setSkin(None)
+
+When the view is called, the standard main template (main.pt) is rendered;
+this template in turn calls the view's pageBody() method to render the
+body.
+
+This pageBody() method returns the rendered body by accessing another view
+(default: BodyTemplateView) that provides a corresponding template in its
+bodyTemplate attribute.
+
 
 The View Controller
 -------------------
@@ -23,18 +76,6 @@ Controller class. Let's use the Controller sub-class from the Liquid skin
 because this already provides some predefined stuff:
 
   >>> from cybertools.browser.liquid.controller import Controller
-
-Before creating a controller we have to set up a context object and
-a view:
-
-  >>> class SomeObject(object): pass
-  >>> obj = SomeObject()
-  >>> from cybertools.browser.view import GenericView
-  >>> class View(GenericView):
-  ...     pass
-  >>> from zope.publisher.browser import TestRequest
-  >>> request = TestRequest()
-  >>> view = View(obj, request)
 
   >>> controller = Controller(view, request)
   >>> controller.view is view
@@ -72,7 +113,7 @@ controller object to get an updated setting:
   >>> controller.resourceBase
   'http://127.0.0.1/++skin++dummy/@@/'
 
-The controller may be used as a provider for content elements using
+The controller may be used as a provider for HTML elements using
 ZPT macros:
 
   >>> cssMacros = controller.macros['css']
@@ -87,14 +128,33 @@ Calling a macro provided by Controller.macros[] returns the real ZPT macro:
   >>> m1()
   [...base_macros.pt...css...]
 
-The pre-set collection of macros for a certain slot may be extended:
+The pre-set collection of macros for a certain slot may be extended
+(this may be done by overriding the view's setupController() method, e.g.):
 
-  >>> controller.macros.register('css', resourceName='node.css', media='all')
+  >>> controller.macros.register('css', 'node.css', resourceName='node.css', media='all')
   >>> len(controller.macros['css'])
   5
   >>> m5 = cssMacros[4]
   >>> print m5.name, m5.media, m5.resourceName
   css all node.css
+
+If an identifier is given (the second parameter) a certain macro is only
+registered once; note: the first setting will not be overridden!
+
+  >>> controller.macros.register('css', 'node.css', resourceName='node.css')
+  >>> len(controller.macros['css'])
+  5
+
+We can also access slots that are not predefined:
+
+  >>> controller.macros['js.execute']
+  []
+
+  >>> jsCall = 'dojo.require("dojo.widget.Editor")'
+  >>> controller.macros.register('js-execute', jsCall, jsCall=jsCall)
+  >>> dojoCall = controller.macros['js-execute'][0]
+  >>> dojoCall()
+  [...base_macros.pt...macro/jsCall...]
 
 
 The View Configurator

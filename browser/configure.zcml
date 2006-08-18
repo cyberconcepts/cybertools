@@ -21,7 +21,7 @@
 
   <page for="*"
         name="body.html"
-        class="cybertools.browser.view.GenericView"
+        class="cybertools.browser.view.BodyTemplateView"
         permission="zope.View"/>
 
   <page name="controller"

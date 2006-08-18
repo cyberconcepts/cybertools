@@ -36,11 +36,12 @@ class Controller(BaseController):
         macros = self.macros
         params = [('zope3_tablelayout.css', 'all'),
                   ('base.css', 'screen'),
-                  ('custom.css', 'all'), ('print.css', 'print')]
+                  ('custom.css', 'all'),
+                  ('print.css', 'print')]
         for param in params:
-            macros.register('css', resourceName=param[0], media=param[1])
+            macros.register('css', identifier=param[0],
+                            resourceName=param[0], media=param[1])
 
     def setupJs(self):
         return
-        #self.macros['js'] = []
-        self.macros.register('js', resourceName='zope3.js')
+        #self.macros.register('js', resourceName='zope3.js')
