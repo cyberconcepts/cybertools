@@ -28,7 +28,7 @@
         <div tal:omit-tag=""
              tal:condition="python:principal != 'zope.anybody' and 'SUBMIT' in request">
             <span tal:define="dummy python:
-                request.response.redirect(request.get('camefrom', request.URL[-1]))" />
+                request.response.redirect(request.get('camefrom') or request.URL[-1])" />
         </div>
         <div class="row">
             <div class="label" i18n:translate="">User Name</div>
