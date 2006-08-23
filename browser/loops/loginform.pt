@@ -23,11 +23,12 @@
     <p i18n:translate="" tal:condition="python: principal != 'zope.anybody'">
       You are not authorized to perform this action. However, you may login as a
       different user who is authorized.</p>
-    <form action="" method="post">
+    <form action="." method="post"
+          tal:attributes="action request/URL">
         <div tal:omit-tag=""
              tal:condition="python:principal != 'zope.anybody' and 'SUBMIT' in request">
             <span tal:define="dummy python:
-                request.response.redirect(request.get('camefrom', ''))" />
+                request.response.redirect(request.get('camefrom', request.URL[-1]))" />
         </div>
         <div class="row">
             <div class="label" i18n:translate="">User Name</div>
@@ -42,9 +43,9 @@
                 <input type="password" name="password"/>
             </div>
         </div>
-    
+
         <div class="row">
-            <input class="form-element" type="submit" 
+            <input class="form-element" type="submit"
                    name="SUBMIT" value="Log in" i18n:attributes="value login-button" />
         </div>
         <input type="hidden" name="camefrom"

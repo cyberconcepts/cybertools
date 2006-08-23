@@ -43,6 +43,8 @@ class LoopsSessionCredentialsPlugin(SessionCredentialsPlugin):
         site = hooks.getSite()
         #camefrom = request.getURL() # wrong when object is not viewable
         camefrom = request.getApplicationURL() + request['PATH_INFO']
+        if 'login' in camefrom:
+            camefrom = '/'.join(camefrom.split('/')[:-1])
         url = '%s/@@%s?%s' % (zapi.absoluteURL(site, request),
                               self.loginpagename,
                               urllib.urlencode({'camefrom': camefrom}))
