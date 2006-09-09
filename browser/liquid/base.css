@@ -14,8 +14,12 @@ body {
     color: #000040;
 }
 
-#global,#menu,#content,#sub-section,#footer {
+#global,#menu,#sub-section,#footer {
     overflow: hidden;
+    display: inline-block;
+}
+
+#content {
     display: inline-block;
 }
 
