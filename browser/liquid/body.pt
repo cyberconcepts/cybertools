@@ -12,18 +12,9 @@
     </div>
 
     <div id="menu">
-      <metal:menu define-macro="navigators">
-          <div class="box">
-            <h4>Navigation</h4>
-            <tal:menu define="item nocall:view/menu;
-                              level level|python: 1"
-                      condition="nocall:item">
-              <div class="body">
-                <metal:menu use-macro="views/node_macros/menu" />
-              </div>
-            </tal:menu>
-          </div>
-      </metal:menu>
+      <tal:portlet repeat="macro controller/macros/portlet_left">
+        <metal:portlet use-macro="macro" />
+      </tal:portlet>
     </div>
 
     <div id="content" define-macro="content">
@@ -40,8 +31,9 @@
     </div>
 
     <div id="sub-section" define-macro="sub-section">
-      <metal:sub define-slot="sub-section">
-      </metal:sub>
+      <tal:portlet repeat="macro controller/macros/portlet_right">
+        <metal:portlet use-macro="macro" />
+      </tal:portlet>
     </div>
 
     <div id="footer" class="footer" define-macro="footer">

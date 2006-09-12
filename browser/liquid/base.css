@@ -25,9 +25,9 @@ body {
 
 #global,#footer {width:100%}
 #menu,#content,#sub-section {float:left}
-#menu {width:20%}
+#menu {width:18%}
 #content {width:67%}
-#sub-section {width:12.9%}
+#sub-section {width:15%}
 #footer {clear:left}
 
 /* more general stuff */

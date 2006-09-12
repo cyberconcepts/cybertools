@@ -28,3 +28,21 @@
     <script tal:content="macro/jsCall"></script>
 </metal:js>
 
+
+<metal:portlet define-macro="portlet_left">
+    <div metal:use-macro="macro/template/macros/portlet" />
+</metal:portlet>
+
+<metal:portlet define-macro="portlet_right">
+    <div metal:use-macro="macro/template/macros/portlet" />
+</metal:portlet>
+
+<metal:portlet define-macro="portlet">
+    <div class="box">
+      <h4 tal:content="macro/title"
+          i18n:translate="">Navigation</h4>
+      <div class="body">
+           <div metal:use-macro="macro/subMacro" />
+      </div>
+    </div>
+</metal:portlet>
