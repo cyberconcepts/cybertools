@@ -101,7 +101,6 @@
                      tal:attributes="href
                                  string:${url}/@@SelectedManagementView.html"
                      tal:content="item/id"
-                     i18n:translate=""
                      >foo</a
                   ><a href="#"
                      tal:attributes="href
@@ -120,12 +119,10 @@
                                  string:${request/URL}?retitle_id=${id_quoted}"
                  tal:condition="item/retitleable"
                  tal:content="item/title|default"
-                 i18n:translate=""
                  >&nbsp;&nbsp;&nbsp;&nbsp;</a>
               <span
                  tal:condition="item/plaintitle"
                  tal:content="item/title|default"
-                 i18n:translate=""
                  >&nbsp;&nbsp;&nbsp;&nbsp;</span>
             </td>
 

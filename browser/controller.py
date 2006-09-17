@@ -22,7 +22,7 @@ Controller for views, templates, macros.
 $Id$
 """
 
-from zope.app import zapi
+from zope import component
 from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 
@@ -52,12 +52,19 @@ class Controller(object):
         return self.request.URL[0] + skinSetter + '/@@/'
 
     def configure(self):
-        configurator = zapi.queryMultiAdapter((self.context, self.request),
+        #configurator = component.queryMultiAdapter((self.context, self.request),
+        #                                           IViewConfigurator)
+        # idea: collect multiple configurators:
+        configurators = component.getAdapters((self.context, self.request),
                                               IViewConfigurator)
-        if configurator is not None:
-            for item in configurator.viewProperties:
+        for conf in configurators:
+            configurator = conf[1]
+        #if configurator is not None:
+            #for item in configurator.viewProperties:
+            for item in configurator.getActiveViewProperties():
                 if IMacroViewProperty.providedBy(item):
-                    self.macros.register(item.slot, item.template, item.name,
+                    self.macros.register(item.slot, item.idenitifier,
+                                         item.template, item.name,
                                          **item.params)
                 else:
                     setattr(self, item.slot, item)

@@ -160,7 +160,7 @@ We can also access slots that are not predefined:
 The View Configurator
 ---------------------
 
-A view configurator is a multiadapter for a content object that provides
+A view configurator is typically a multiadapter for a content object that provides
 a set of properties to be used for setting up special presentation
 characteristics of a page. Typical examples for such characteristics are
 
@@ -168,7 +168,7 @@ characteristics of a page. Typical examples for such characteristics are
 - the logo to show in the corner of the page
 
 The default configurator uses attribute annotations for retrieving view
-properties; that means that there could be form somewhere to edit those
+properties; that means that there could be a form somewhere to edit those
 properties and store them in the content object's annotations.
 
   >>> from zope.app.annotation.interfaces import IAttributeAnnotatable, IAnnotations
@@ -196,4 +196,13 @@ stored in the attribute annotations. So let's set a 'skinName' attribute:
   >>> controller = Controller(view, request)
   >>> controller.skinName.value
   'SuperSkin'
+
+Another way of providing view configurations is using a view configurator
+as a utility, this can be used for setting view properties by certain
+packages.
+
+  >>> from cybertools.browser.configurator import GlobalViewConfigurator
+  >>> component.provideUtility(GlobalViewConfigurator())
+
+  >>> gvc = component.getUtility(IViewConfigurator)
 

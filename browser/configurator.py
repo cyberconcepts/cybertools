@@ -40,6 +40,11 @@ class IViewConfigurator(Interface):
 
     viewProperties = Attribute('A sequence of IViewProperty objects')
 
+    def getActiveViewProperties(self):
+        """ Return a selection of this configurator's view properties
+            that are to be considered active in the current context.
+        """
+
 
 class IViewProperty(Interface):
 
@@ -78,6 +83,16 @@ class ViewConfigurator(object):
         propDefs = ann.get(ANNOTATION_KEY, {})
         return [self.setupViewProperty(prop, propDef)
                     for prop, propDef in propDefs.items() if propDef]
+        # idea: include properties from GlobalViewConfigurator;
+        # there also may be other view configurators e.g. based on
+        # the class (or some sort of type) of the context object.
+        # Also the view properties may be filtered by permission
+        # or other conditions.
+        # Note: collecting configurators may be solved by getting
+        # multiple configurators (+ utilities) in the controller!
+
+    def getActiveViewProperties(self):
+        return self.viewProperties
 
     def setupViewProperty(self, prop, propDef):
         vp = zapi.queryMultiAdapter((self.context, self.request),
@@ -87,6 +102,19 @@ class ViewConfigurator(object):
         vp.slot = prop
         vp.setParams(propDef)
         return vp
+
+
+class GlobalViewConfigurator(object):
+    """ A global utility that allows the registration of view properties.
+    """
+
+    implements(IViewConfigurator)
+
+    def __init__(self):
+        self.viewProperties = []
+
+    def getActiveViewProperties(self):
+        return self.viewProperties
 
 
 class ViewProperty(object):
@@ -117,5 +145,6 @@ class MacroViewProperty(object):
     def setParams(self, params):
         params = dict(params)
         self.name = params.pop('name', '')
+        self.identifier = params.pop('identifier', name)
         self.template = params.pop('template', None)
         self.params = params
