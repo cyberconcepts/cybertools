@@ -206,3 +206,39 @@ packages.
 
   >>> gvc = component.getUtility(IViewConfigurator)
 
+
+Processing form input
+---------------------
+
+GenericView also provides an update() method that may be called from
+templates that might receive form information.
+
+  >>> view.update()
+  True
+
+Real work can only be done by an adapter to GenericView that provides the
+IFormController interface with its update(). There also must be a
+form variable (typically coming from a hidden field) with the name
+'form.action' that provides the name under which the form controller is
+registered.
+
+  >>> from cybertools.browser.controller import IFormController, FormController
+  >>> class MyController(FormController):
+  ...     def update(self):
+  ...         print 'updating...'
+
+  >>> component.provideAdapter(MyController, (View, IBrowserRequest),
+  ...                          IFormController, name='save')
+
+  >>> request = TestRequest(form={'form.action': 'save'})
+  >>> view = View(obj, request)
+  >>> view.update()
+  updating...
+  True
+
+The update() method will only be executed once:
+
+  >>> view.update()
+  True
+
+

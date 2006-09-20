@@ -3,6 +3,7 @@
       i18n:domain="zope"
       tal:define="controller nocall:view/@@controller;
                   resourceBase controller/resourceBase;
+                  dummy view/update;
                   body view/pageBody">
 
   <head metal:define-macro="head">

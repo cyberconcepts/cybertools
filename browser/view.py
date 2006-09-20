@@ -51,6 +51,8 @@ class GenericView(object):
 
     template = macro = menu = skin = None
 
+    _updated = False
+
     def setController(self, controller):
         # make the (one and only controller) available via the request
         viewAnnotations = self.request.annotations.setdefault('cybertools.browser', {})
@@ -68,11 +70,30 @@ class GenericView(object):
     def __init__(self, context, request):
         self.context = context
         self.request = request
+        #cont = self.controller  # check: leads to strange AttributeError in doctest
+        #if cont is not None:
+        #    self.setupController()
 
     def __call__(self, *args, **kw):
         return self.index(*args, **kw)
 
+    #def render(self, *args, **kw):
+    #    return self.index(*args, **kw)
+
+    def update(self):
+        if not self._updated:
+            action = self.request.form.get('form.action')
+            if action:
+                fc = component.getMultiAdapter((self, self.request),
+                                               name=action)
+                fc.update()
+        self._updated = True
+        return True
+
     def setupController(self):
+        """ May be called by __init__() if there is already a controller
+            or when the controller is set. May be implemented by subclass.
+        """
         pass
 
     @Lazy
