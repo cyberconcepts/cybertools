@@ -23,7 +23,6 @@ $Id$
 """
 
 from zope import component
-from zope.interface import Interface, implements
 from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 
@@ -117,30 +116,4 @@ class Macro(object):
 
     def __call__(self):
         return self.macro
-
-
-# form processing:
-# the part of the model/view/controller pattern that deals with
-# form input
-
-class IFormController(Interface):
-    """ Used as a named adapter by GenericView for processing form input.
-    """
-
-    def update():
-        """ Processing form input...
-        """
-
-
-class FormController(object):
-
-    implements(IFormController)
-
-    def __init__(self, context, request):
-        self.view = view = context         # the controller is adapted to a view
-        self.context = context.context
-        self.request = request
-
-    def update(self):
-        pass
 

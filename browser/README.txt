@@ -222,7 +222,7 @@ form variable (typically coming from a hidden field) with the name
 'form.action' that provides the name under which the form controller is
 registered.
 
-  >>> from cybertools.browser.controller import IFormController, FormController
+  >>> from cybertools.browser.form import IFormController, FormController
   >>> class MyController(FormController):
   ...     def update(self):
   ...         print 'updating...'
