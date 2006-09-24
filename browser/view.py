@@ -68,7 +68,7 @@ class GenericView(object):
     controller = property(getController, setController)
 
     def __init__(self, context, request):
-        self.context = context
+        self.context = self.__parent__ = context
         self.request = request
         #cont = self.controller  # check: leads to strange AttributeError in doctest
         #if cont is not None:
