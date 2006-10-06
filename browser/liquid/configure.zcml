@@ -29,6 +29,7 @@
         layer="liquid"
         />
 
+  <resource name="zope3_tablelayout.css" file="zope3_tablelayout.css" layer="liquid" />
   <resource name="base.css"   file="base.css"   layer="liquid" />
   <resource name="print.css"  file="print.css"  layer="liquid" />
   <resource name="custom.css" file="custom.css" layer="liquid" />
