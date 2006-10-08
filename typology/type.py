@@ -32,9 +32,10 @@ class BaseType(object):
 
     def __init__(self, context):
         self.context = context
+        self.options = {}
 
     def __eq__(self, other):
-        return self.token == other.token
+        return IType.providedBy(other) and self.token == other.token
 
     title = u'BaseType'
 
