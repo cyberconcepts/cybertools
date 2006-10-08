@@ -39,8 +39,7 @@ class FileSystemStorage(object):
 
     def getDir(self, address, subDir=None):
         subDir = subDir or self.subDir
-        paths = [p for p in (self.rootDir, subDir, address) if p]
-        return os.path.sep.join(paths)
+        return os.path.join(self.rootDir, subDir, address)
 
     def setData(self, address, data, params={}):
         subDir = params.get('subdirectory')

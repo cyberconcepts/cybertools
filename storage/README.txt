@@ -9,8 +9,8 @@ Controlling the storage of data
   >>> directory = os.path.dirname(storage.__file__)
 
   >>> from cybertools.storage.filesystem import explicitDirectoryStorage
-  >>> storage = explicitDirectoryStorage(os.path.sep.join((directory, 'testdata')))
+  >>> storage = explicitDirectoryStorage(os.path.join(directory, 'testdata'))
   >>> storage.getDir('demo')
-  '/.../cybertools/storage/testdata/demo'
+  '/home/.../cybertools/storage/testdata/demo'
 
 
