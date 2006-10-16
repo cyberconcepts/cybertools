@@ -32,7 +32,6 @@ class BaseType(object):
 
     def __init__(self, context):
         self.context = context
-        self.options = {}
 
     def __eq__(self, other):
         return IType.providedBy(other) and self.token == other.token
@@ -52,6 +51,10 @@ class BaseType(object):
     defaultContainer = None
     viewName = ''
     typeProvider = None
+
+    @property
+    def options(self):
+        return []
 
 
 class TypeManager(object):

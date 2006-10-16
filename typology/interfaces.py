@@ -73,9 +73,11 @@ class IType(Interface):
                              'to the type. Note that this object need not '
                              'provide the IType interface itself but it '
                              'should be adaptable to ITypeProvider')
-    options = schema.Dict(title=u'Options',
-                description=u'A mapping of optional settings to be used for '
+    options = schema.List(title=u'Options',
+                description=u'A list of optional settings to be used for '
                              'application or environment specific purposes')
+    optionsDict = Attribute('The options transformed to a dictionary')
+
     # possible extensions:
     # subTypes
     # parentTypes

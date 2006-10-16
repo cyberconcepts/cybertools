@@ -28,7 +28,7 @@
     <link rel="icon" type="image/png"
           tal:attributes="href string:${resourceBase}favicon.png" />
 
-    <base href="." tal:attributes="href view/url|string:">
+    <base href="." tal:attributes="href request/URL">
   </head>
 
   <body tal:content="structure body" />

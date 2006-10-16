@@ -76,5 +76,9 @@ table.listing th {
     border-bottom-width: 2px;
 }
 
+pre {
+    background-color: #f4f4f4;
+}
+
 #footer { border-bottom: none; }
 
