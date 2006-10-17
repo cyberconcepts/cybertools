@@ -399,10 +399,6 @@ div.box h4 {
     padding: 4px;
 }
 
-.box div.body a:hover {
-    text-decoration: underline;
-}
-
 .box .content {
     padding: 0.5em;
 }

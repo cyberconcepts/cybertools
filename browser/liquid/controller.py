@@ -36,8 +36,8 @@ class Controller(BaseController):
         macros = self.macros
         params = [('zope3_tablelayout.css', 'all'),
                   ('base.css', 'screen'),
-                  ('custom.css', 'all'),
-                  ('print.css', 'print')]
+                  ('print.css', 'print'),
+                  ('custom.css', 'all')]
         for param in params:
             macros.register('css', identifier=param[0],
                             resourceName=param[0], media=param[1])
