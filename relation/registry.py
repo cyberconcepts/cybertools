@@ -24,6 +24,7 @@ $Id$
 
 from persistent import Persistent
 from persistent.interfaces import IPersistent
+from zope import component
 from zope.interface import Interface, Attribute, implements
 from zope.app import zapi
 from zope.app.catalog.catalog import Catalog
@@ -54,9 +55,13 @@ class DummyRelationRegistry(object):
             self.objects.append(relation)
         for attr in ('first', 'second', 'third',):
             value = getattr(relation, attr, None)
-            if value is not None and value not in self.objects:
-                self.objects.append(value)
-    
+            if value is not None:
+                intids = component.queryUtility(IIntIds)
+                if intids is not None:
+                    intids.register(value)
+                elif value not in self.objects:
+                    self.objects.append(value)
+
     def unregister(self, relation):
         if relation in self.relations:
             self.relations.remove(relation)
@@ -65,10 +70,13 @@ class DummyRelationRegistry(object):
     def getUniqueIdForObject(self, obj):
         if obj == '*': # wild card
             return '*'
+        intids = component.queryUtility(IIntIds)
+        if intids is not None:
+            return intids.register(obj)
         if obj not in self.objects:
             self.objects.append(obj)
         return self.objects.index(obj)
-    
+
     def query(self, example=None, **kw):
         result = []
         criteria = {}
@@ -116,7 +124,7 @@ class RelationRegistry(Catalog):
             # Allow the IntIds utility to get a DB connection:
             relation.__parent__ = self
         self.index_doc(zapi.getUtility(IIntIds).register(relation), relation)
-    
+
     def unregister(self, relation):
         self.unindex_doc(zapi.getUtility(IIntIds).getId(relation))
         notify(RelationInvalidatedEvent(relation))
@@ -152,7 +160,7 @@ class RelationRegistry(Catalog):
                 criteria[k] = (value, value)
         return self.searchResults(**criteria)
 
-    
+
 class IIndexableRelation(Interface):
     """ Provides the attributes needed for indexing relation objects in
         a catalog-based registry.
@@ -238,7 +246,7 @@ def setRelationSingle(relation, forSecond=True):
         registry.unregister(oldRel)
     registry.register(relation)
 
-        
+
 # events and handlers
 
 class RelationInvalidatedEvent(ObjectEvent):
