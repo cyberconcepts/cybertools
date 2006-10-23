@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2005 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -90,11 +90,10 @@ class TrackingStorage(BTreeContainer):
             trackNum = int(trackId)
             self.indexTrack(trackNum, self[trackId])
 
-    def getUserTrack(self, taskId, runId, userName):
+    def getUserTracks(self, taskId, runId, userName):
         if not runId:
             runId = self.currentRuns.get(taskId)
-        tracks = self.query(taskId=taskId, runId=runId, userName=userName)
-        return tracks and tracks[0] or None
+        return self.query(taskId=taskId, runId=runId, userName=userName)
 
     def query(self, **kw):
         result = None

@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2005 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -58,9 +58,9 @@ class ITrackingStorage(Interface):
             userName, timeFrom, timeTo.
         """
 
-    def getUserTrack(taskId, runId, userName):
-        """ Return the user track data corresponding to the user name and
-            task id given. If no run id is given use the current one.
+    def getUserTracks(taskId, runId, userName):
+        """ Return the user tracks corresponding to the user name and
+            task id given. If a 0 run id is given use the current one.
         """
 
     def getUserNames(taskId):

@@ -7,11 +7,12 @@ User tracking in the loops framework
   >>> from cybertools.tracking.btree import TrackingStorage
 
   >>> tracks = TrackingStorage()
-  >>> runId = tracks.startRun('a001')
-  >>> tracks.saveUserTrack('a001', runId, 'u1', {'somekey': 'somevalue'})
+  >>> tracks.saveUserTrack('a001', 0, 'u1', {'somekey': 'somevalue'})
   '0000001'
-  >>> t1 = tracks.getUserTrack('a001', runId, 'u1')
-  >>> t1.data
+  >>> t1 = tracks.getUserTracks('a001', 0, 'u1')
+  >>> len(t1)
+  1
+  >>> t1[0].data
   {'somekey': 'somevalue'}
   >>> tracks.getUserNames('a001')
   ['u1']
@@ -28,6 +29,14 @@ User tracking in the loops framework
   >>> result = tracks.query(userName='u1')
   >>> len(result)
   2
+
+What happens if we store more than on record for one set of keys?
+
+  >>> tracks.saveUserTrack('a001', 0, 'u1', {'somekey': 'newvalue'})
+  '0000003'
+  >>> t2 = tracks.getUserTracks('a001', 0, 'u1')
+  >>> [t.data for t in t2]
+  [{'somekey': 'somevalue'}, {'somekey': 'newvalue'}]
 
 The tracks of a tracking store may be reindexed:
 
