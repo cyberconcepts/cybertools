@@ -2,6 +2,8 @@
 Indexed Collections for Various Purposes
 ========================================
 
+$Id$
+
 Multikey Dictionaries
 =====================
 
