@@ -61,4 +61,4 @@ Index entries that are present in the stored dictionaries must always match:
 
   >>> registry[('edit.html', None, None, 'Custom')] = 'edit.html for Custom skin'
 
-  >>> registry.get(('edit.html', 'task', 'bugfixes'))
+  >>> registry.get(('edit.html', 'task', 'bugfixes', ''))
