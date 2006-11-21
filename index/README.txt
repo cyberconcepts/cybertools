@@ -56,9 +56,11 @@ Index entries that are present in the stored dictionaries must always match:
   >>> registry[('index.html', 'topic', 'zope3', 'Custom')]
   'index.html for type "topic"'
 
-  >>> registry.get(('edit.html', 'task', 'bugfixes', 'Custom'))
+  >>> registry.get(('edit.html', 'task', 'bugfixes', 'Custom')) is None
+  True
 
 
   >>> registry[('edit.html', None, None, 'Custom')] = 'edit.html for Custom skin'
 
-  >>> registry.get(('edit.html', 'task', 'bugfixes', ''))
+  >>> registry.get(('edit.html', 'task', 'bugfixes', '')) is None
+  True
