@@ -68,8 +68,9 @@ class MultiKeyDict(dict):
             for r in rList:
                 skip = False
                 for nx, kx in enumerate(r[0]):
-                    if kx and kx != key[nx]: # if stored key elements are present
-                        skip = True          # they must match
+                    # if stored key elements are present they must match
+                    if kx and (len(key) <= nx or kx != key[nx]):
+                        skip = True
                         break
                 if skip:
                     continue
