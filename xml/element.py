@@ -36,8 +36,8 @@ class Element(object):
             result.append(base.text)
         for c in base.getchildren():
             result.append(Element(c))
-        if base.tail:
-            result.append(base.tail)
+            if c.tail: # the children's tails belong to this element
+                result.append(c.tail)
         return result
 
     @property
@@ -59,10 +59,11 @@ class Element(object):
         for c in children:
             if isinstance(c, Element):
                 base.append(c.baseElement)
-            elif not base:
-                base.text = base.text and '\n'.join(base.text, c) or c
-            else:
-                base.tail = base.tail and '\n'.join(base.tail, c) or c
+            elif not base: # no children yet, so it's the first text node
+                base.text = base.text and ' '.join((base.text, c)) or c
+            else:  # if there are children, append text to the last child's tail
+                lastChild = base.getchildren()[-1]
+                lastChild.tail = lastChild.tail and ' '.join((lastChild.tail, c)) or c
         for a in attributes:
             if a.endswith('_'):
                 attr = a[:-1]

@@ -28,7 +28,8 @@ The elements generator lets you easily create snippets of XML or XHTML:
     </body>
   </html>
 
-An XML element thus created may be converted to an ElementTree:
+An XML element thus created may be converted to an ElementTree (the standard
+implementation in fact uses an lxml.etree structure as its basis):
 
   >>> doc.renderTree()
   '<html><head><title>Page Title</title></head><body><div class="top">The top bar</div><div class="body">The body stuff</div></body></html>'
@@ -91,4 +92,12 @@ just by accessing an element's attributes:
   ...     p = div2.p(text, style='font-size: 80%;')
   >>> print doc.render()
   <html>...<p...>...</p>...
+
+  >>> x = p('Some more text').b('bold text')
+  >>> x = p('and normal again')
+  >>> print p.render()
+  <p...>...home...Some more text
+    <b>...bold text...</b>
+    ...and normal again
+  </p>
 
