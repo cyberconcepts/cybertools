@@ -23,63 +23,55 @@ $Id$
 """
 
 _not_found = object()
-_default = object()
 
 class MultiKeyDict(dict):
 
     def __init__(self, **kw):
         super(MultiKeyDict, self).__init__(**kw)
-        self.singleKeyDict = {}
+        self.submapping = {}
 
     def __setitem__(self, key, value):
         assert type(key) is tuple
-        super(MultiKeyDict, self).__setitem__(key, value)
-        for n, k in enumerate(key):
-            if k:
-                entry = self.singleKeyDict.setdefault((n, k), [])
-                if value not in entry:
-                    entry.append((key, value))
+        k0 = key[0]
+        if len(key) > 1:
+            sub = self.submapping.setdefault(k0, MultiKeyDict())
+            sub[key[1:]] = value
+        base = super(MultiKeyDict, self).__setitem__(k0, value)
 
     def __getitem__(self, key):
-        r = self.get(key, _default)
-        if r is _default:
+        r = self.get(key, _not_found)
+        if r is _not_found:
             raise KeyError(key)
         return r
 
     def get(self, key, default=None):
         assert type(key) is tuple
-        kl = list(key)
-        while kl:
-            r = super(MultiKeyDict, self).get(tuple(kl), _not_found)
-            if r is not _not_found:
-                return r
-            kl.pop()
-        return default
-
-    def get(self, key, default=None):
-        assert type(key) is tuple
-        firstTry = super(MultiKeyDict, self).get(key, _not_found)
-        # fast return for full match:
-        if firstTry is not _not_found:
-            return firstTry
-        collector = {}
-        for n, k in enumerate(key):
-            rList = self.singleKeyDict.get((n, k), [])
-            for r in rList:
-                skip = False
-                for nx, kx in enumerate(r[0]):
-                    # if stored key elements are present they must match
-                    if kx and (len(key) <= nx or kx != key[nx]):
-                        skip = True
-                        break
-                if skip:
-                    continue
-                entry = collector.setdefault(r[1], [])
-                entry.append(n)
-        if not collector:
+        k0 = key[0]
+        rsub = _not_found
+        r0 = super(MultiKeyDict, self).get(k0, _not_found)
+        if r0 is _not_found:
+            r0 = self.getFallback(k0)
+        if r0 is _not_found:
             return default
-        #print 'collector', collector
-        results = sorted((-len(value), value, o) for o, value in collector.items())
-        #print 'sorted', results
-        return results[0][2]
+        if len(key) > 1:
+            sub = self.submapping.get(k0, _not_found)
+            if sub is _not_found:
+                sub = self.getSubmappingFallback(key)
+            if sub is not _not_found:
+                rsub = sub.get(key[1:], _not_found)
+                if rsub is _not_found:
+                    return default
+            else:
+                rsub = _not_found
+        result = rsub is _not_found and r0 or rsub
+        return result is _not_found and default or result
 
+    def getFallback(self, key):
+        return super(MultiKeyDict, self).get(None, _not_found)
+
+    def getSubmappingFallback(self, key):
+        return self.submapping.get(None, _not_found)
+
+    def __repr__(self):
+        return ('<MultiKeyDict %s; submapping: %s>'
+                % (super(MultiKeyDict, self).__repr__(), `self.submapping`))

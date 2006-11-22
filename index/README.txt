@@ -27,7 +27,7 @@ objects only partly fitting the requested key:
   >>> registry[('index.html', 'topic', 'zope3', 'Custom')]
   'global index.html'
 
-  >>> registry[('index.html', 'topic',)] = 'index.html for type "topic"'
+  >>> registry[('index.html', 'topic', None, None)] = 'index.html for type "topic"'
 
   >>> registry[('index.html', 'topic', 'zope3', 'Custom')]
   'index.html for type "topic"'
@@ -59,8 +59,7 @@ Index entries that are present in the stored dictionaries must always match:
   >>> registry.get(('edit.html', 'task', 'bugfixes', 'Custom')) is None
   True
 
-
   >>> registry[('edit.html', None, None, 'Custom')] = 'edit.html for Custom skin'
 
-  >>> registry.get(('edit.html', 'task', 'bugfixes')) is None
+  >>> registry.get(('edit.html', 'task', 'bugfixes', '')) is None
   True
