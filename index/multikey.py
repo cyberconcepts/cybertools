@@ -26,12 +26,16 @@ _not_found = object()
 
 class MultiKeyDict(dict):
 
-    def __init__(self, **kw):
+    def __init__(self, keylen=None, **kw):
         super(MultiKeyDict, self).__init__(**kw)
         self.submapping = {}
+        self.keylen = keylen
 
     def __setitem__(self, key, value):
         assert type(key) is tuple
+        if self.keylen is None:
+            self.keylen = len(key)
+        assert len(key) == self.keylen
         k0 = key[0]
         if len(key) > 1:
             sub = self.submapping.setdefault(k0, MultiKeyDict())
@@ -46,6 +50,7 @@ class MultiKeyDict(dict):
 
     def get(self, key, default=None):
         assert type(key) is tuple
+        assert len(key) == self.keylen
         k0 = key[0]
         rsub = _not_found
         r0 = super(MultiKeyDict, self).get(k0, _not_found)
@@ -57,12 +62,12 @@ class MultiKeyDict(dict):
             sub = self.submapping.get(k0, _not_found)
             if sub is _not_found:
                 sub = self.getSubmappingFallback(key)
-            if sub is not _not_found:
+            if sub is _not_found:
+                rsub = _not_found
+            else:
                 rsub = sub.get(key[1:], _not_found)
                 if rsub is _not_found:
                     return default
-            else:
-                rsub = _not_found
         result = rsub is _not_found and r0 or rsub
         return result is _not_found and default or result
 

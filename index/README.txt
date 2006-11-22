@@ -12,17 +12,14 @@ A MultiKeyDict is a dictionary that expects its keys to be tuples.
   >>> from cybertools.index.multikey import MultiKeyDict
   >>> registry = MultiKeyDict()
 
-  >>> registry[('index.html',)] = 'global index.html'
+  >>> registry[('index.html', None, None, None)] = 'global index.html'
 
-  >>> registry[('index.html',)]
+  >>> registry[('index.html', None, None, None)]
   'global index.html'
 
 So this would be nothing special - any dictionary is able to provide this
 functionality; but a MultiKeyDict has some fallback mechanisms for retrieving
 objects only partly fitting the requested key:
-
-  >>> registry.get(('index.html', 'topic', 'zope3', 'Custom'))
-  'global index.html'
 
   >>> registry[('index.html', 'topic', 'zope3', 'Custom')]
   'global index.html'
@@ -45,13 +42,12 @@ The more on the left a matching key part is the higher is its priority:
   >>> registry[('index.html', 'task', 'bugfixes', 'Custom')]
   'Global index.html for Custom skin'
 
+Index entries that are present in the stored dictionaries must always match:
 
   >>> registry[('edit.html', 'topic', 'zope3', 'Custom')] = 'very special edit.html'
 
   >>> registry[('index.html', 'task', 'bugfixes', 'Custom')]
   'Global index.html for Custom skin'
-
-Index entries that are present in the stored dictionaries must always match:
 
   >>> registry[('index.html', 'topic', 'zope3', 'Custom')]
   'index.html for type "topic"'
@@ -63,3 +59,7 @@ Index entries that are present in the stored dictionaries must always match:
 
   >>> registry.get(('edit.html', 'task', 'bugfixes', '')) is None
   True
+
+  >>> registry[('edit.html', 'task', 'bugfixes', 'Custom')]
+  'edit.html for Custom skin'
+
