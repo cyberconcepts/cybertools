@@ -28,8 +28,8 @@ class MultiKeyDict(dict):
 
     def __init__(self, keylen=None, **kw):
         super(MultiKeyDict, self).__init__(**kw)
-        self.submapping = {}
         self.keylen = keylen
+        self.data = {}
 
     def __setitem__(self, key, value):
         assert type(key) is tuple
@@ -37,10 +37,11 @@ class MultiKeyDict(dict):
             self.keylen = len(key)
         assert len(key) == self.keylen
         k0 = key[0]
+        sub = None
         if len(key) > 1:
-            sub = self.submapping.setdefault(k0, MultiKeyDict(self.keylen-1))
+            sub = MultiKeyDict(self.keylen-1)
             sub[key[1:]] = value
-        super(MultiKeyDict, self).__setitem__(k0, value)
+        self.data[k0] = MultiKeyDictEntry(value, sub)
 
     def __getitem__(self, key):
         r = self.get(key, _not_found)
@@ -53,26 +54,21 @@ class MultiKeyDict(dict):
         assert len(key) == self.keylen
         k0 = key[0]
         rsub = _not_found
-        r0 = super(MultiKeyDict, self).get(k0, _not_found)
+        r0 = self.data.get(k0, _not_found)
         if r0 is _not_found:
             r0 = self.getFallback(k0)
         if r0 is _not_found:
             return default
         if len(key) > 1:
-            sub = self.submapping.get(k0, _not_found)
-            if sub is _not_found:
-                sub = self.getSubmappingFallback(key)
-            if sub is _not_found:
-                rsub = _not_found
-            else:
-                rsub = sub.get(key[1:], _not_found)
-                if rsub is _not_found:
-                    return default
-        result = rsub is _not_found and r0 or rsub
-        return result is _not_found and default or result
+            sub = r0.submapping
+            rsub = sub.get(key[1:], _not_found)
+            if rsub is _not_found:
+                return default      # !!! leads to backtracking !!!
+            return rsub
+        return rsub is _not_found and r0.value or rsub
 
     def getFallback(self, key):
-        return super(MultiKeyDict, self).get(None, _not_found)
+        return self.data.get(None, _not_found)
 
     def getSubmappingFallback(self, key):
         return self.submapping.get(None, _not_found)
@@ -81,3 +77,9 @@ class MultiKeyDict(dict):
         return ('<MultiKeyDict %s; submapping: %s>'
                 % (super(MultiKeyDict, self).__repr__(), `self.submapping`))
 
+
+class MultiKeyDictEntry(object):
+
+    def __init__(self, value, submapping):
+        self.value = value
+        self.submapping = submapping
