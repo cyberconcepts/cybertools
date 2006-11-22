@@ -38,9 +38,9 @@ class MultiKeyDict(dict):
         assert len(key) == self.keylen
         k0 = key[0]
         if len(key) > 1:
-            sub = self.submapping.setdefault(k0, MultiKeyDict())
+            sub = self.submapping.setdefault(k0, MultiKeyDict(self.keylen-1))
             sub[key[1:]] = value
-        base = super(MultiKeyDict, self).__setitem__(k0, value)
+        super(MultiKeyDict, self).__setitem__(k0, value)
 
     def __getitem__(self, key):
         r = self.get(key, _not_found)
@@ -80,3 +80,4 @@ class MultiKeyDict(dict):
     def __repr__(self):
         return ('<MultiKeyDict %s; submapping: %s>'
                 % (super(MultiKeyDict, self).__repr__(), `self.submapping`))
+
