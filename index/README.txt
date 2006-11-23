@@ -42,7 +42,7 @@ The more on the left a matching key part is the higher is its priority:
   >>> registry[('index.html', 'task', 'bugfixes', 'Custom')]
   'Global index.html for Custom skin'
 
-Index entries that are present in the stored dictionaries must always match:
+Index entries that are present in the stored dictionary must always match:
 
   >>> registry[('edit.html', 'topic', 'zope3', 'Custom')] = 'very special edit.html'
 
@@ -62,4 +62,3 @@ Index entries that are present in the stored dictionaries must always match:
 
   >>> registry[('edit.html', 'task', 'bugfixes', 'Custom')]
   'edit.html for Custom skin'
-
