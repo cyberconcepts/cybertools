@@ -15,7 +15,7 @@ calls a `main` macro and fills a slot there. But at least the template
 implementation is decoupled from the view, so we are able to put a lot of
 generic functionality into the view.
 
-But in order to make a ZPT work we need a Zope-compatible request, so we use
+In order to make a ZPT work we need a Zope-compatible request, so we use
 the standard Zope 3 TestRequest.
 
   >>> from zope.publisher.browser import TestRequest
@@ -23,5 +23,5 @@ the standard Zope 3 TestRequest.
   >>> from cybertools.web.view import View
   >>> view = View(None, TestRequest())
   >>> view.render()
-  u'<html...>...<body...>...</body>...</html>...'
+  u'< html...>...<body...>...</body>...</html>...'
 

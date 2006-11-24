@@ -23,6 +23,7 @@ $Id$
 """
 
 from zope.app.pagetemplate import ViewPageTemplateFile
+from zope.cachedescriptors.property import Lazy
 from cybertools.web import template
 
 
@@ -30,6 +31,21 @@ class Template(template.Template):
 
     zpt = ViewPageTemplateFile('content.pt')
 
+    macroTemplate = ViewPageTemplateFile('main.pt')
+
+    skin = None
+
+    @Lazy
+    def main_macro(self):
+        return self.macroTemplate.macros['page']
+
+    @Lazy
+    def resourceBase(self):
+        skinSetter = self.skin and ('/++skin++' + self.skin.__name__) or ''
+        # TODO: put '/@@' etc after path to site instead of directly after URL0
+        return self.request.URL[0] + skinSetter + '/@@/'
+
     def render(self, *args, **kw):
+        kw['template'] = self
         return self.zpt(*args, **kw)
 

@@ -1,14 +1,14 @@
-<html x_metal:use-macro="context/@@skin_macros/page"
+<html metal:use-macro="options/template/main_macro"
       i18n:domain="zope">
 <head></head>
 <body>
 
 
-  <x_metal:body fill-slot="body">
+  <metal:body fill-slot="body">
     <div>
       This is the body
     </div>
-  </x_metal:body>
+  </metal:body>
 
 
 </body>

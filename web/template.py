@@ -22,6 +22,9 @@ Generic template base class.
 $Id$
 """
 
+from zope.app.traversing.adapters import DefaultTraversable
+from zope import component
+
 
 class Template(object):
 
@@ -33,3 +36,4 @@ class Template(object):
     def render(self, *args, **kw):
         return u''
 
+component.provideAdapter(DefaultTraversable, (Template,))
