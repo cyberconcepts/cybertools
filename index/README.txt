@@ -62,3 +62,13 @@ Index entries that are present in the stored dictionary must always match:
 
   >>> registry[('edit.html', 'task', 'bugfixes', 'Custom')]
   'edit.html for Custom skin'
+
+If you don't know any more what entries we had added to the registry just
+query its items() method:
+
+  >>> registry.items()
+  ((('edit.html', 'topic', 'zope3', 'Custom'), 'very special edit.html'),
+   (('edit.html', None, None, 'Custom'), 'edit.html for Custom skin'),
+   (('index.html', None, None, None), 'global index.html'),
+   (('index.html', None, None, 'Custom'), 'Global index.html for Custom skin'),
+   (('index.html', 'topic', None, None), 'index.html for type "topic"'))

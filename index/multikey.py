@@ -53,7 +53,7 @@ class MultiKeyDict(object):
         assert type(key) is tuple
         assert len(key) == self.keylen
         mapping = self.mapping
-        for n, k in enumerate(key):
+        for k in key:
             entry = mapping.get(k, _not_found)
             if entry == _not_found:
                 entry = self._fallback(mapping, k)
@@ -65,3 +65,14 @@ class MultiKeyDict(object):
     def _fallback(self, mapping, key):
         return mapping.get(None, _not_found)
 
+    def items(self):
+        result = []
+        self._step(result, (), self.mapping)
+        return tuple(result)
+
+    def _step(self, result, entry, value):
+        if len(entry) < self.keylen:
+            for k, v in value.items():
+                self._step(result, entry+(k,), v)
+        else:
+            result.append((entry, value))
