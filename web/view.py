@@ -22,24 +22,21 @@ Generic view base class.
 $Id$
 """
 
-from cybertools.web.template import Template
+from zope.cachedescriptors.property import Lazy
+from cybertools.web.zpt.template import Template
 
 
 class View(object):
 
     templateFactory = Template
 
-    _template = None
-
     def __init__(self, context, request):
         self.context = context
         self.request = request
 
-    @property
+    @Lazy
     def template(self):
-        if self._template is None and self.templateFactory:
-            self._template = self.templateFactory(self)
-        return self._template
+        return self.templateFactory(self)
 
     def render(self, *args, **kw):
         return self.template.render(*args, **kw)

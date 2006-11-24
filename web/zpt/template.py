@@ -17,19 +17,19 @@
 #
 
 """
-Generic template base class.
+ZPT-based template base class.
 
 $Id$
 """
 
+from zope.app.pagetemplate import ViewPageTemplateFile
+from cybertools.web import template
 
-class Template(object):
 
-    def __init__(self, view):
-        self.view = view
-        self.context = view.context
-        self.request = view.request
+class Template(template.Template):
+
+    zpt = ViewPageTemplateFile('content.pt')
 
     def render(self, *args, **kw):
-        return u''
+        return self.zpt(*args, **kw)
 

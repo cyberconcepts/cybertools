@@ -23,5 +23,5 @@ the standard Zope 3 TestRequest.
   >>> from cybertools.web.view import View
   >>> view = View(None, TestRequest())
   >>> view.render()
-  u'<html...<body>...</body>...</html>...'
+  u'<html...>...<body...>...</body>...</html>...'
 
