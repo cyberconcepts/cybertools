@@ -1,0 +1,15 @@
+<html x_metal:use-macro="context/@@skin_macros/page"
+      i18n:domain="zope">
+<head></head>
+<body>
+
+
+  <x_metal:body fill-slot="body">
+    <div>
+      This is the body
+    </div>
+  </x_metal:body>
+
+
+</body>
+</html>
