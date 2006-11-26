@@ -1,0 +1,10 @@
+<!-- $Id$ -->
+
+<configure
+    xmlns:zope="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="zope">
+
+  <zope:include package=".zpt" />
+
+</configure>
