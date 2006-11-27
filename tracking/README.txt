@@ -44,7 +44,7 @@ It is also possible to retrieve the last entry for a set of keys directliy:
   <Track ['a001', 1, 'u1', ...]: {'somekey': 'newvalue'}>
 
 Instead of creating a new track object for each call one can also replace
-an existing one (if present). The replace entry is always the last one
+an existing one (if present). The replaced entry is always the last one
 for a given set of keys:
 
   >>> tracks.saveUserTrack('a001', 0, 'u1', {'somekey': 'newvalue2'}, replace=True)
