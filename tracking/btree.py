@@ -63,12 +63,20 @@ class TrackingStorage(BTreeContainer):
         if taskId in self.currentRuns:
             del self.currentRuns[taskId]
 
-    def saveUserTrack(self, taskId, runId, userName, data):
+    def saveUserTrack(self, taskId, runId, userName, data, replace=False):
         if not runId:
             runId = self.currentRuns.get(taskId) or self.startRun(taskId)
-        self.trackNum += 1
-        trackNum = self.trackNum
-        trackId = self.idFromNum(trackNum)
+        trackNum = 0
+        if replace:
+            track = self.getLastUserTrack(taskId, runId, userName)
+            if track:
+                trackId = str(track.__name__)
+                trackNum = int(trackId)
+                del self[trackId]
+        if not trackNum:
+            self.trackNum += 1
+            trackNum = self.trackNum
+            trackId = self.idFromNum(trackNum)
         timeStamp = int(time.time())
         track = Track(taskId, runId, userName, timeStamp, data)
         self[trackId] = track
@@ -95,6 +103,12 @@ class TrackingStorage(BTreeContainer):
             runId = self.currentRuns.get(taskId)
         return self.query(taskId=taskId, runId=runId, userName=userName)
 
+    def getLastUserTrack(self, taskId, runId, userName):
+        tracks = self.getUserTracks(taskId, runId, userName)
+        if tracks:
+            return sorted(tracks, key=lambda x: x.timeStamp)[-1]
+        else: return None
+
     def query(self, **kw):
         result = None
         for idx in kw:
@@ -110,7 +124,7 @@ class TrackingStorage(BTreeContainer):
         return result and [self[self.idFromNum(r)] for r in result] or set()
 
     def intersect(self, r1, r2):
-        return r1 and intersection(r1, r2) or r2
+        return r1 is None and r2 or intersection(r1, r2)
 
     def getUserNames(self, taskId):
         return sorted(self.taskUsers.get(taskId, []))

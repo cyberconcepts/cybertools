@@ -63,6 +63,12 @@ class ITrackingStorage(Interface):
             task id given. If a 0 run id is given use the current one.
         """
 
+    def getLastUserTrack(taskId, runId, userName):
+        """ Return the last user track (that with the highest timestamp value)
+            corresponding to the user name and task id given.
+            If a 0 run id is given use the current one.
+        """
+
     def getUserNames(taskId):
         """ Return all user names (user ids) that have tracks for the
             task given.

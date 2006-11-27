@@ -38,6 +38,27 @@ What happens if we store more than on record for one set of keys?
   >>> [t.data for t in t2]
   [{'somekey': 'somevalue'}, {'somekey': 'newvalue'}]
 
+It is also possible to retrieve the last entry for a set of keys directliy:
+
+  >>> tracks.getLastUserTrack('a001', 0, 'u1')
+  <Track ['a001', 1, 'u1', ...]: {'somekey': 'newvalue'}>
+
+Instead of creating a new track object for each call one can also replace
+an existing one (if present). The replace entry is always the last one
+for a given set of keys:
+
+  >>> tracks.saveUserTrack('a001', 0, 'u1', {'somekey': 'newvalue2'}, replace=True)
+  '0000003'
+  >>> t3 = tracks.getUserTracks('a001', 0, 'u1')
+  >>> [t.data for t in t3]
+  [{'somekey': 'somevalue'}, {'somekey': 'newvalue2'}]
+
+  >>> tracks.saveUserTrack('a001', 0, 'u2', {'somekey': 'user2'}, replace=True)
+  '0000004'
+  >>> t4 = tracks.getUserTracks('a001', 0, 'u2')
+  >>> [t.data for t in t4]
+  [{'somekey': 'user2'}]
+
 The tracks of a tracking store may be reindexed:
 
   >>> tracks.reindexTracks()
