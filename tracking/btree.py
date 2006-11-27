@@ -60,8 +60,10 @@ class TrackingStorage(BTreeContainer):
         return self.runId
 
     def stopRun(self, taskId):
-        if taskId in self.currentRuns:
+        runId = self.currentRuns.get(taskId)
+        if runId:
             del self.currentRuns[taskId]
+        return runId
 
     def saveUserTrack(self, taskId, runId, userName, data, replace=False):
         if not runId:
