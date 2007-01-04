@@ -1,0 +1,102 @@
+==========================
+A Simple Adapter Framework
+==========================
+
+$Id$
+
+To work with adapters we need at least two classes, one for objects
+that we want to adapt to (the adapter's `context`) and one for the adapters.
+
+  >>> class Content(object):
+  ...     pass
+
+  >>> class StateAdapter(object):
+  ...     def __init__(self, context):
+  ...         self.context = context
+  ...     def setState(self, state):
+  ...         self.context._state = state
+  ...     def getState(self):
+  ...         return getattr(self.context, '_state', 'initial')
+
+In order to use the adapters in a flexible way we create adapter objects
+by using an adapter factory. The stateful factory is intended to create
+adapters that allow setting and retrieving the state of objects.
+
+  >>> from cybertools.util.adapter import AdapterFactory
+  >>> stateful = AdapterFactory()
+
+We can now register our StateAdapter class with the `stateful` AdapterFactory.
+We have to tell the factory which class of adapted objects a certain
+adapter class is responsible for.
+
+  >>> stateful.register(StateAdapter, Content)
+
+Now we are ready to create an object of the Content class
+
+  >>> c1 = Content()
+
+and a corresponding `stateful` adapter:
+
+  >>> c1State = stateful(c1)
+
+The adapter can now be used to access the Content object's state:
+
+  >>> c1State.getState()
+  'initial'
+  >>> c1State.setState('visible')
+  >>> c1State.getState()
+  'visible'
+
+The procedure also works with subclasses of the Content class.
+
+  >>> class SpecialContent(Content):
+  ...     pass
+
+  >>> sc1 = SpecialContent()
+  >>> sc1State = stateful(sc1)
+  >>> sc1State.getState()
+  'initial'
+  >>> sc1State.setState('public')
+  >>> sc1State.getState()
+  'public'
+
+But if we try to use an adapter factory for objects for which there is
+no adapter registered we get back None.
+
+  >>> class UnknownContent(object):
+  ...     pass
+
+  >>> uc1 = UnknownContent()
+  >>> uc1State = stateful(uc1)
+  >>> uc1State is None
+  True
+
+Class adapters as factories
+---------------------------
+
+There is a special case that can be handled with an adapter factory:
+creating objects via an adapter to a class. An example for this is
+a class that creates objects by loading them from a file or database,
+so this would be a storage adapter class.
+
+In our example we avoid reading from disk or from a database but just
+create the object wanted by using the context's constructor.
+
+  >>> class ContentLoader(object):
+  ...     def __init__(self, context):
+  ...         self.context = context
+  ...     def load(self):
+  ...         return Content()
+
+  >>> storage = AdapterFactory()
+  >>> storage.register(ContentLoader, Content)
+
+In this case we get the adapter from the adapter factory by providing
+it with the context class (instead of an instance of it like in the
+example above.
+
+  >>> loader = storage(Content)
+  >>> c2 = loader.load()
+  >>> c2
+  <Content object ...>
+

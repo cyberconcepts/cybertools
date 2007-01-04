@@ -1,0 +1,54 @@
+================
+Smart Properties
+================
+
+$Id$
+
+lzprop
+======
+
+The `lzprop` decorator allows the declaration of lazy properties - attributes
+that are calculated only on first access, and then just once. This is
+extremely useful when working with objects of a limited lifetime (e.g.
+adapters) that provide results from expensive calculations.
+
+We use a simple class with one lazy property that tracks the calculation
+by printing an informative message:
+
+    >>> from cybertools.util.property import lzprop
+
+    >>> class Demo(object):
+    ...     base = 6
+    ...     @lzprop
+    ...     def value(self):
+    ...         print 'calculating'
+    ...         return self.base * 7
+
+    >>> demo = Demo()
+
+When we first access the `value` attribute the corresponding method will be
+called:
+
+    >>> demo.value
+    calculating
+    42
+
+On subsequent accesses the previously calculated value will be returned:
+
+    >>> demo.value
+    42
+    >>> demo.base = 15
+    >>> demo.value
+    42
+
+Let's make sure the value is really calculated upon first access (and not
+already during compilation or object creation):
+
+    >>> demo2 = Demo()
+    >>> demo2.base = 15
+    >>> demo2.value
+    calculating
+    105
+    >>> demo2.value
+    105
+
