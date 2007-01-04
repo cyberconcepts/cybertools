@@ -35,13 +35,7 @@ class AdapterFactory(object):
         """
         self._registry[(adapted, name)] = adapter
 
-    def __call__(self, obj, name=''):
-        """ Return an adapter instance on `obj` with the `name` given.
-            if obj is a class use this class for the adapter lookup, else
-            use obj's class.
-            If there isn't an adapter directly for the class
-            check also for its base classes.
-        """
+    def queryAdapter(self, obj, name):
         class_ = type(obj) is type and obj or obj.__class__
         adapter = None
         while adapter is None and class_:
@@ -49,4 +43,14 @@ class AdapterFactory(object):
             if adapter is None:
                 bases = class_.__bases__
                 class_ = bases and bases[0] or None
+        return adapter
+
+    def __call__(self, obj, name=''):
+        """ Return an adapter instance on `obj` with the `name` given.
+            if obj is a class use this class for the adapter lookup, else
+            use obj's class.
+            If there isn't an adapter directly for the class
+            check also for its base classes.
+        """
+        adapter = self.queryAdapter(obj, name)
         return adapter is not None and adapter(obj) or None
