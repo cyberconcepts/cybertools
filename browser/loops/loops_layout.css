@@ -28,6 +28,11 @@ body {
     scrollbar-arrow-color: Black;
 }
 
+textarea, input, select {
+    font-family: Verdana, Arial, Helvetica, "sans serif";
+    font-size: 100%;
+}
+
 table {
     border-collapse: collapse;
     font-size: 100%;
@@ -244,7 +249,7 @@ pre {
 /*  Styles for xmltree
 */
 
-#navtreecontents {  
+#navtreecontents {
     padding-right: 35px;
 }
 
@@ -281,7 +286,7 @@ pre {
 }
 
 
-/* Structural elements 
+/* Structural elements
 */
 
 #top {

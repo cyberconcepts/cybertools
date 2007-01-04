@@ -17,7 +17,7 @@
 #
 
 """
-Generic view base class.
+Generic base classes for web-based views.
 
 $Id$
 """
@@ -28,12 +28,15 @@ from cybertools.view.web.zpt.template import Template
 
 
 class View(base.View):
+    """ A generic web-based view - not necessarily HTML-/browser-based.
+    """
 
-    templateFactory = Template
 
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
+class BrowserView(View):
+    """ A browser-based view (i.e. a view using HTML as presentation language).
+    """
+
+    templateFactory = None
 
     @Lazy
     def template(self):
@@ -41,4 +44,20 @@ class View(base.View):
 
     def render(self, *args, **kw):
         return self.template.render(*args, **kw)
+
+
+class Page(BrowserView):
+    """ A browser-based view that renders a full web page.
+    """
+
+    templateFactory = Template
+
+    def setUp(self):
+        super(Page, self).setUp()
+        self.add(Content)
+
+
+class Content(BrowserView):
+    """ A browser-based view that renders the content region of a web page.
+    """
 

@@ -30,7 +30,16 @@ class View(object):
     def __init__(self, context, request):
         self.context = context
         self.request = request
+        self.parentView = self.rootView = None
+        self.childViews = []
+        self.setUp()
+
+    def setUp(self):
+        pass
 
     def render(self, *args, **kw):
-        return ''
+        raise NotImplementedError
+
+    def add(self, factory):
+        self.childViews.append(factory(self.context, self.request))
 

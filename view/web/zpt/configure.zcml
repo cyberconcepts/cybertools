@@ -8,7 +8,7 @@
   <browser:page
       for="*"
       name="dummy.html"
-      class="cybertools.view.web.base.View"
+      class="cybertools.view.web.base.Page"
       attribute="render"
       permission="zope.View"
       />
