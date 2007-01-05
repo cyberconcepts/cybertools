@@ -38,6 +38,10 @@ storages = AdapterFactory()
 
 class PersistentObject(Persistent):
 
+    implements(IContained)
+
+    __parent__ = __name__ = None
+
     def update(self, data):
         self.__dict__.update(data)
 
@@ -49,10 +53,10 @@ class Adapter(object):
 
     persistentFactory = PersistentObject
 
+    persistent = address = uid = None
+
     def __init__(self, context):
         self.context = context
-        self.persistent = None
-        self.address = None
 
     def save(self, address=None):
         intids = component.getUtility(IIntIds)
@@ -70,27 +74,29 @@ class Adapter(object):
             else:
                 persistent = self.persistentFactory()
                 container[name] = persistent
-                persistent.__name__ = name
-                persistent.__parent__ = container
                 uid = intids.register(persistent)
         else:
             uid = intids.getId(persistent)
         persistent.update(self.context.__dict__)
         persistent._p_changed = True
         self.persistent = persistent
+        self.uid = uid
         return uid
 
     def load(self, address=None):
+        intids = component.getUtility(IIntIds)
+        if self.uid is not None:  # if ever possible we use the intId
+            address = self.uid
         if type(address) is int:  # seems to be an intId
-            intids = component.getUtility(IIntIds)
             persistent = intids.getObject(address)
             self.address = getPath(persistent)
         else:
             if self.address is None:
-                self.address = address
+                self.address = address  # lets
             else:
                 address = self.address
             persistent = traverse(getSite(), address)
+            self.uid = intids.register(persistent)
         t = type(self.context)
         factory = t is type and self.context or t
         obj = self.context = factory()
