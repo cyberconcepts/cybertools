@@ -33,9 +33,9 @@ We can save the object in the storage by getting a storage adapter
 from the corresponding factory in the `manager` module and calling
 `save()` on it.
 
-  >>> from cybertools.storage.pzope.manager import storages
+  >>> from cybertools.storage.pzope.base import storages
   >>> persistent = storages(c1)
-  >>> c1Uid = persistent.save('c1')
+  >>> c1Uid = persistent.save('/c1')
 
 For loading an object we get a storage adapter to the object's class and
 call `load()` on it, providing the UID we had got back when saving the
@@ -45,6 +45,13 @@ object.
   >>> c2 = persistent.load(c1Uid)
   >>> c2.title
   'changed'
+
+If an object has been stored to the storage or loaded from it it has got
+an `address` attribut that will be used for subsequent accesses to the
+storage.
+
+  >>> persistent.address
+  u'/c1'
 
 
 Fin de partie
