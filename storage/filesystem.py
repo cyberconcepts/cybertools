@@ -23,6 +23,7 @@ $Id$
 """
 
 import os
+import cybertools
 from zope.interface import implements
 from cybertools.storage.interfaces import IExternalStorage
 
@@ -47,6 +48,7 @@ class FileSystemStorage(object):
         f = open(fn, 'wb')
         f.write(data)
         f.close()
+        print 'cybertools.storage: file %s written' % fn
 
     def getData(self, address, params={}):
         subDir = params.get('subdirectory')
@@ -63,5 +65,7 @@ def explicitDirectoryStorage(dirname):
 
 
 def instanceVarSubdirectoryStorage(dirname=DEFAULT_DIRECTORY):
-    instanceHome = '';
-    return FileSystemStorage(instanceHome, dirname)
+    instanceHome = os.path.dirname(os.path.dirname(os.path.dirname(
+                        os.path.dirname(cybertools.__file__))))
+    varDir = os.path.join(instanceHome, 'var');
+    return FileSystemStorage(varDir, dirname)

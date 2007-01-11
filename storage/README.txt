@@ -13,4 +13,7 @@ Controlling the storage of data
   >>> storage.getDir('demo')
   '/home/.../cybertools/storage/testdata/demo'
 
-
+  >>> from cybertools.storage.filesystem import instanceVarSubdirectoryStorage
+  >>> storage = instanceVarSubdirectoryStorage()
+  >>> storage.getDir('demo')
+  '.../var/extfiles/demo'
