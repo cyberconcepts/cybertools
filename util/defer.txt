@@ -1,0 +1,59 @@
+==================
+Deferred Execution
+==================
+
+$Id$
+
+  >>> from cybertools.util.defer import Deferred
+
+To show what deferreds are about we need two classes.
+
+The first one will be doing some time-consuming work, or may be it waits
+for some event - as in this case simulated by calling the `nowItsTime()`
+method. As the function or object that calls the `work()` method
+- let's call it the client should not have to wait, this method immediately
+returns a Deferred object.
+
+Later on, when the work is finished, the Deferred's `callback()`
+method will be called, thus notifying the client.
+
+  >>> class Worker(object):
+  ...
+  ...     def work(self):
+  ...         self.deferred = Deferred()
+  ...         print 'Worker: work started'
+  ...         return self.deferred
+  ...
+  ...     def nowItsTime(self):
+  ...         self.deferred.callback('Work completed')
+
+The second class, the client, gives the worker object some work;
+in order to get notified when the work is finished it registers a
+callback method with the deferred object coming back from the
+`work()` call.
+
+  >>> class Client(object):
+  ...
+  ...     def run(self, worker):
+  ...         deferred = worker.work()
+  ...         deferred.addCallback(self.showResult)
+  ...         print 'Client: The worker seems to be working now...'
+  ...
+  ...     def showResult(self, result):
+  ...         print 'Result:', result
+
+So we now create a worker and a client, and let the client run:
+
+  >>> w = Worker()
+  >>> client = Client()
+  >>> client.run(w)
+  Worker: work started
+  Client: The worker seems to be working now...
+
+Working, working,...
+
+Work will be completed when its time:
+
+  >>> w.nowItsTime()
+  Result: Work completed
+

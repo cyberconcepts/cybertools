@@ -92,7 +92,7 @@ class Adapter(object):
             self.address = getPath(persistent)
         else:
             if self.address is None:
-                self.address = address  # lets
+                self.address = address
             else:
                 address = self.address
             persistent = traverse(getSite(), address)
