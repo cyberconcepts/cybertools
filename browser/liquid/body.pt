@@ -1,4 +1,5 @@
-<div metal:define-macro="body"
+<div class="body"
+     metal:define-macro="body"
      tal:define="controller nocall:view/controller;
                  resourceBase controller/resourceBase;">
 

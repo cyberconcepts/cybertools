@@ -28,7 +28,7 @@ body {
     scrollbar-arrow-color: Black;
 }
 
-textarea, input, select {
+input, select {
     font-family: Verdana, Arial, Helvetica, "sans serif";
     font-size: 100%;
 }
