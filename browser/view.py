@@ -25,7 +25,7 @@ $Id$
 from zope import component
 from zope.interface import Interface, implements
 from zope.cachedescriptors.property import Lazy
-from zope.publisher.interfaces.browser import ISkin
+from zope.publisher.interfaces.browser import IBrowserSkinType
 from zope.app.pagetemplate import ViewPageTemplateFile
 
 
@@ -108,7 +108,7 @@ class GenericView(object):
     def setSkin(self, skinName):
         skin = None
         if skinName:
-            skin = component.queryUtility(ISkin, skinName)
+            skin = component.queryUtility(IBrowserSkinType, skinName)
             if skin:
                 applySkin(self.request, skin)
         self.skin = skin

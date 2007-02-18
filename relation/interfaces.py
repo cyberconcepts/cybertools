@@ -23,7 +23,7 @@ $Id$
 """
 
 from zope.interface import Interface, Attribute
-from zope.app.event.interfaces import IObjectEvent
+from zope.component.interfaces import IObjectEvent
 
 
 # relation interfaces
@@ -31,7 +31,7 @@ from zope.app.event.interfaces import IObjectEvent
 class IRelation(Interface):
     """ Base interface for relations.
     """
-    
+
     def getPredicateName():
         """ Return the predicate of this relation as a string that may be
             used for indexing.
@@ -41,7 +41,7 @@ class IRelation(Interface):
         """ Return True if this relation is valid.
 
             If the registry argument is provided the check should be done
-            with respect to this relation registry, e.g. to 
+            with respect to this relation registry, e.g. to
         """
 
 
@@ -54,8 +54,8 @@ class IMonadicRelation(IRelation):
     """
 
     first = Attribute('First and only object that belongs to the relation.')
-        
-    
+
+
 class IDyadicRelation(IRelation):
     """ Relation connecting two objects.
     """
@@ -63,11 +63,11 @@ class IDyadicRelation(IRelation):
     first = Attribute('First object that belongs to the relation.')
     second = Attribute('Second object that belongs to the relation.')
 
-    
+
 class ITriadicRelation(IDyadicRelation):
     """ Relation connecting three objects.
     """
-    
+
     third = Attribute('Third object that belongs to the relation.')
 
 
@@ -90,14 +90,14 @@ class IAttributeRelation(IDyadicRelation):
 
 class IPredicate(Interface):
     """ A predicate signifies a relationship. This may be implemented
-        directly as a relation class, or the relation object may 
+        directly as a relation class, or the relation object may
         hold the predicate as an attribute.
     """
-    
+
     def getPredicateName():
         """ Return this predicate as a string that may be used for indexing.
         """
-        
+
 
 # event interfaces
 
@@ -117,7 +117,7 @@ class IRelatable(Interface):
 
 
 # relation registry interfaces
-    
+
 class IRelationRegistryUpdate(Interface):
     """ Interface for registering and unregistering relations with a
         relation registry.
@@ -148,7 +148,7 @@ class IRelationRegistryQuery(Interface):
             search criteria, i.e. its predicate and first, second or third
             attribute will be used for searching, or explicit criteria
             via keyword arguments.
-            
+
             Example for using keyword criteria:
                 rr.queryRelations(first=someObject, second=anotherObject,
                                   relationship=SomeRelationClass)

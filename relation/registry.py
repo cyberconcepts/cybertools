@@ -30,9 +30,9 @@ from zope.app import zapi
 from zope.app.catalog.catalog import Catalog
 from zope.app.catalog.field import FieldIndex
 from zope.app.intid.interfaces import IIntIds
-from zope.app.location.interfaces import ILocation
+from zope.location.interfaces import ILocation
 from zope.event import notify
-from zope.app.event.objectevent import ObjectEvent
+from zope.component.interfaces import ObjectEvent
 from zope.security.proxy import removeSecurityProxy
 
 from interfaces import IRelationRegistry, IRelationInvalidatedEvent
@@ -198,7 +198,7 @@ def getRelations(first=None, second=None, third=None, relationships=None):
         The relationships parameter expects a sequence of relationships
         (relation classes or predicate objects).
     """
-    registry = zapi.getUtility(IRelationRegistry)
+    registry = component.getUtility(IRelationRegistry)
     query = {}
     if first is not None: query['first'] = first
     if second is not None: query['second'] = second

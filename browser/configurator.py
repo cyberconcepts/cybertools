@@ -23,8 +23,8 @@ $Id$
 """
 
 from zope.app import zapi
-from zope.app.annotation.interfaces import IAttributeAnnotatable, IAnnotations
-from zope.app.annotation.attribute import AttributeAnnotations
+from zope.annotation.interfaces import IAttributeAnnotatable, IAnnotations
+from zope.annotation.attribute import AttributeAnnotations
 from zope.cachedescriptors.property import Lazy
 from zope.interface import Interface, Attribute, implements
 from zope.component import adapts

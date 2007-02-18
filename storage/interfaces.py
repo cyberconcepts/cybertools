@@ -38,6 +38,6 @@ class IExternalStorage(Interface):
     def getData(address, params=None):
         """ Retrieve the data from the address specified, using the
             (optional) params argument that may give more information on
-            where and how to the data can be found.
+            where and how the data can be found.
         """
 
