@@ -23,21 +23,27 @@ $Id$
 """
 
 from zope.app import zapi
-from zope.event import notify
-from zope.app.event.objectevent import ObjectModifiedEvent
+from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
+from zope.event import notify
+from zope.lifecycleevent import ObjectModifiedEvent
 from zope.security.proxy import removeSecurityProxy
 
 
 class ExternalEditorView(object):
 
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
     # TODO: don't access context.data directly but via an IReadFile adapter
 
-    def load(self):
+    def load(self, url=None):
         context = removeSecurityProxy(self.context)
         data = context.data
         r = []
-        r.append('url:' + zapi.absoluteURL(context, self.request))
+        r.append('url:' + (url or zapi.absoluteURL(context, self.request)))
+        r.append('content_type:' + str(context.contentType))
         r.append('meta_type:' + '.'.join((context.__module__, context.__class__.__name__)))
         auth = self.request.get('_auth')
         if auth:
@@ -59,7 +65,7 @@ class ExternalEditorView(object):
         if data:
             self.context.data = data
             notify(ObjectModifiedEvent)
-        
+
     def lock(self):
         pass
 
