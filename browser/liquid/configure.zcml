@@ -6,32 +6,42 @@
    i18n_domain="zope"
    >
 
-  <layer name="liquid"
+  <!--<layer name="liquid"
          interface="cybertools.browser.liquid.liquid" />
 
   <skin name="Liquid"
-        layers="liquid rotterdam default" />
+        layers="liquid rotterdam default" />-->
+
+  <zope:interface
+      interface="cybertools.browser.liquid.Liquid"
+      type="zope.publisher.interfaces.browser.IBrowserSkinType"
+      name="Liquid"
+      />
 
   <page for="*"
         name="skin_macros" template="view_macros.pt"
         permission="zope.View"
-        layer="liquid" />
+        layer="cybertools.browser.liquid.liquid" />
 
   <page for="*"
         name="base_macros" template="view_macros.pt"
         permission="zope.View"
-        layer="liquid" />
+        layer="cybertools.browser.liquid.liquid" />
 
   <page name="controller"
         for="zope.app.publisher.interfaces.browser.IBrowserView"
         class="cybertools.browser.liquid.controller.Controller"
         permission="zope.Public"
-        layer="liquid"
+        layer="cybertools.browser.liquid.liquid"
         />
 
-  <resource name="zope3_tablelayout.css" file="zope3_tablelayout.css" layer="liquid" />
-  <resource name="base.css"   file="base.css"   layer="liquid" />
-  <resource name="print.css"  file="print.css"  layer="liquid" />
-  <resource name="custom.css" file="custom.css" layer="liquid" />
+  <resource name="zope3_tablelayout.css" file="zope3_tablelayout.css"
+        layer="cybertools.browser.liquid.liquid" />
+  <resource name="base.css"   file="base.css"
+        layer="cybertools.browser.liquid.liquid" />
+  <resource name="print.css"  file="print.css"
+        layer="cybertools.browser.liquid.liquid" />
+  <resource name="custom.css" file="custom.css"
+        layer="cybertools.browser.liquid.liquid" />
 
 </configure>

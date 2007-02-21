@@ -6,16 +6,26 @@
    i18n_domain="zope"
    >
 
-  <layer name="loops" />
+  <!--<layer name="loops" />
 
   <skin name="Loops"
-        layers="loops rotterdam default" />
+        layers="loops rotterdam default" />-->
 
-  <resource name="zope3_tablelayout.css" file="loops_layout.css" layer="loops" />
+  <zope:interface
+      interface="cybertools.browser.loops.Loops"
+      type="zope.publisher.interfaces.browser.IBrowserSkinType"
+      name="Loops"
+      />
+
+  <resource name="zope3_tablelayout.css" file="loops_layout.css"
+            layer="cybertools.browser.loops.Loops" />
   <resource name="site_management_tablelayout.css"
-            file="loops_management_layout.css" layer="loops" />
-  <resource name="favicon.png" file="loops_favicon.png" layer="loops" />
-  <resource name="zope3logo.gif" file="loops_logo.png" layer="loops" />
+            file="loops_management_layout.css"
+            layer="cybertools.browser.loops.Loops" />
+  <resource name="favicon.png" file="loops_favicon.png"
+            layer="cybertools.browser.loops.Loops" />
+  <resource name="zope3logo.gif" file="loops_logo.png"
+            layer="cybertools.browser.loops.Loops" />
 
   <!-- control management menu -->
 
@@ -23,7 +33,7 @@
         name="view_get_menu"
         permission="zope.Public"
         class=".menu.MenuAccessView"
-        layer="loops"
+        layer="cybertools.browser.loops.Loops"
         allowed_interface="zope.app.publisher.interfaces.browser.IMenuAccessView"
         />
 
@@ -35,14 +45,14 @@
       name="login_logout" for="*"
       class=".auth.LoginLogout"
       permission="zope.Public"
-      layer="loops"
+      layer="cybertools.browser.loops.Loops"
       />
 
   <page
       name="loginForm.html" for="*"
       template="loginform.pt"
       permission="zope.Public"
-      layer="loops"
+      layer="cybertools.browser.loops.Loops"
       />
 
   <zope:utility
