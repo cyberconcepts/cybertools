@@ -19,31 +19,16 @@
 """
 Base classes for text transformations.
 
-Based on code provided by zc.index.
+Based on code provided by zc.index and TextIndexNG3.
 
 $Id$
 """
 
 
-__docformat__ = "reStructuredText"
-
 import os, shutil, sys, tempfile
+import logging
 from zope.interface import implements
 from cybertools.text.interfaces import ITextTransform, IFileTransform
-
-def haveProgram(name):
-    """Return true if the program `name` is available."""
-    if sys.platform.lower().startswith("win"):
-        extensions = (".com", ".exe", ".bat")
-    else:
-        extensions = ("",)
-    execpath = os.environ.get("PATH", "").split(os.path.pathsep)
-    for path in execpath:
-        for ext in extensions:
-            fn = os.path.join(path, name + ext)
-            if os.path.isfile(fn):
-                return True
-    return False
 
 
 class BaseTransform(object):
@@ -54,11 +39,9 @@ class BaseTransform(object):
         self.context = context
         self.text = None
 
-    def __call__(self, f):
+    def __call__(self, fr):
         if self.text is None:
-            fr = open(f, 'r')
             self.text = fr.read()
-            fr.close()
         return self.text
 
 
@@ -66,22 +49,45 @@ class BaseFileTransform(BaseTransform):
 
     implements(IFileTransform)
 
+    extension = '.txt'
+
     def __call__(self, fr):
         if self.text is None:
-            #fr = f.open("rb")
             dirname = tempfile.mkdtemp()
             filename = os.path.join(dirname, "temp" + self.extension)
             try:
                 fw = open(filename, "wb")
                 shutil.copyfileobj(fr, fw)
-                #fr.close()
                 fw.close()
                 text = self.extract(dirname, filename)
             finally:
                 shutil.rmtree(dirname)
+                #fr.close()
             self.text = text
         return self.text
 
     def extract(self, dirname, filename):
         raise ValueError('Method extract() has to be implemented by subclass.')
 
+    def execute(self, com):
+        try:
+            import win32pipe
+            result = win32pipe.popen(com).read()
+        except ImportError:
+            result = os.popen(com).read()
+        return result
+
+    def checkAvailable(self, name, logMessage=''):
+        if sys.platform.lower().startswith("win"):
+            extensions = (".com", ".exe", ".bat")
+        else:
+            extensions = ("",)
+        execpath = os.environ.get("PATH", "").split(os.path.pathsep)
+        for path in execpath:
+            for ext in extensions:
+                fn = os.path.join(path, name + ext)
+                if os.path.isfile(fn):
+                    return True
+        if logMessage:
+            logging.getLogger('zope.server').warn(logMessage)
+        return False
