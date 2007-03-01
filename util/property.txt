@@ -7,7 +7,7 @@ $Id$
 lzprop
 ======
 
-The `lzprop` decorator allows the declaration of lazy properties - attributes
+The ``@lzprop`` decorator allows the declaration of lazy properties - attributes
 that are calculated only on first access, and then just once. This is
 extremely useful when working with objects of a limited lifetime (e.g.
 adapters) that provide results from expensive calculations.
@@ -52,3 +52,102 @@ already during compilation or object creation):
     >>> demo2.value
     105
 
+
+rwproperty
+==========
+
+:Author:   Philipp von Weitershausen
+:Email:    philikon@philikon.de
+:License:  Zope Public License, v2.1
+
+Goal
+----
+
+There should be a way to declare a read & write property and still use
+the compact and easy decorator spelling.  The read & write properties
+should be as easy to use as the read-only property.  We explicitly
+don't want that immediately called function that really just helps us
+name the attribute and create a local scope for the getter and setter.
+
+
+Read & write property
+---------------------
+
+Read & write properties work like regular properties.  You simply
+define a method and then apply a decorator, except that you now don't
+use ``@property`` but ``@getproperty`` to mark the getter and
+``@setproperty`` to mark the setter:
+
+  >>> from cybertools.util.property import getproperty, setproperty, delproperty
+
+  >>> class JamesBrown(object):
+  ...     @getproperty
+  ...     def feel(self):
+  ...         return self._feel
+  ...     @setproperty
+  ...     def feel(self, feel):
+  ...         self._feel = feel
+
+  >>> i = JamesBrown()
+  >>> i.feel
+  Traceback (most recent call last):
+  ...
+  AttributeError: 'JamesBrown' object has no attribute '_feel'
+
+  >>> i.feel = "good"
+  >>> i.feel
+  'good'
+
+The order in which getters and setters are declared doesn't matter:
+
+  >>> class JamesBrown(object):
+  ...     @setproperty
+  ...     def feel(self, feel):
+  ...         self._feel = feel
+  ...     @getproperty
+  ...     def feel(self):
+  ...         return self._feel
+
+  >>> i = JamesBrown()
+  >>> i.feel = "good"
+  >>> i.feel
+  'good'
+
+Of course, deleters are also possible:
+
+  >>> class JamesBrown(object):
+  ...     @setproperty
+  ...     def feel(self, feel):
+  ...         self._feel = feel
+  ...     @getproperty
+  ...     def feel(self):
+  ...         return self._feel
+  ...     @delproperty
+  ...     def feel(self):
+  ...         del self._feel
+
+  >>> i = JamesBrown()
+  >>> i.feel = "good"
+  >>> del i.feel
+  >>> i.feel
+  Traceback (most recent call last):
+  ...
+  AttributeError: 'JamesBrown' object has no attribute '_feel'
+
+
+Edge cases
+----------
+
+There might be a case where you're using a flavour of read & write
+properties and already have a non-property attribute of the same name
+defined:
+
+  >>> class JamesBrown(object):
+  ...     feel = "good"
+  ...     @getproperty
+  ...     def feel(self):
+  ...         return "so good"
+  ...
+  Traceback (most recent call last):
+  ...
+  TypeError: read & write properties cannot be mixed with other attributes except regular property objects.
