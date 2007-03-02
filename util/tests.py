@@ -21,6 +21,7 @@ def test_suite():
         doctest.DocFileSuite('adapter.txt', optionflags=flags),
         doctest.DocFileSuite('defer.txt', optionflags=flags),
         doctest.DocFileSuite('property.txt', optionflags=flags),
+        doctest.DocFileSuite('jeep.txt', optionflags=flags),
         ))
 
 if __name__ == '__main__':

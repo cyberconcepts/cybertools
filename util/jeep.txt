@@ -1,0 +1,89 @@
+==============================
+Jeep - a General Purpose Class
+==============================
+
+$Id$
+
+  >>> from cybertools.util.jeep import Jeep
+  >>> jeep = Jeep()
+
+  >>> jeep.first = 'first value'
+  >>> jeep.second = 'second value'
+
+  >>> jeep.first
+  'first value'
+
+In addition to the usual access via dot notation all attributes can be
+accessed via dictionary notation:
+
+The third type of interface provided by Jeep objects is the sequence or
+iterator interface. Converting a jeep object to a list iterates over the
+keys:
+
+  >>> list(jeep)
+  ['first', 'second']
+
+Direct index access to certain entries gives the corresponding value,
+not the key:
+
+  >>> jeep[1]
+  'second value'
+
+Changing Jeep Objects
+---------------------
+
+Assignment by dictionary or attribute access appends the newly assigned
+attribute:
+
+  >>> jeep['third'] = 'third value'
+  >>> jeep.third
+  'third value'
+
+  >>> list(jeep)
+  ['first', 'second', 'third']
+
+Assigning a new value to an already existing attribute does not change the
+order but only changes the attribute's value
+
+  >>> jeep.second = 'new second value'
+  >>> list(jeep)
+  ['first', 'second', 'third']
+  >>> jeep[1]
+  'new second value'
+
+More Dictionary Methods
+-----------------------
+
+  >>> jeep.keys()
+  ['first', 'second', 'third']
+
+  >>> jeep.values()
+  ['first value', 'new second value', 'third value']
+
+  >>> jeep.items()
+  [('first', 'first value'), ('second', 'new second value'), ('third', 'third value')]
+
+  >>> jeep.get('second')
+  'new second value'
+
+  >>> jeep.get('fourth', 'default')
+  'default'
+
+  >>> jeep.get('fourth') is None
+  True
+
+  >>> jeep['fourth']
+  Traceback (most recent call last):
+  ...
+  KeyError: 'fourth'
+
+  >>> dict(jeep)
+  {'second': 'new second value', 'third': 'third value', 'first': 'first value'}
+
+Constructors
+------------
+
+  >>> jeep2 = Jeep((('f', '1st'), ('s', '2nd'), ('t', '3rd')))
+  >>> list(jeep2)
+  ['f', 's', 't']
+
