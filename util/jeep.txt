@@ -65,13 +65,10 @@ More Dictionary Methods
 
   >>> jeep.get('second')
   'new second value'
-
   >>> jeep.get('fourth', 'default')
   'default'
-
   >>> jeep.get('fourth') is None
   True
-
   >>> jeep['fourth']
   Traceback (most recent call last):
   ...
@@ -79,6 +76,60 @@ More Dictionary Methods
 
   >>> dict(jeep)
   {'second': 'new second value', 'third': 'third value', 'first': 'first value'}
+
+More Methods and Operators
+--------------------------
+
+  >>> 'third' in jeep
+  True
+
+  >>> jeep.pop()
+  'third value'
+  >>> len(jeep)
+  2
+
+  >>> 'third' in jeep
+  False
+
+  >>> jeep.index('second')
+  1
+  >>> jeep.index('third')
+  Traceback (most recent call last):
+  ...
+  ValueError: ...not in list
+
+Sequence Additions with Named Objects
+-------------------------------------
+
+Objects that have a ``__name__`` attribute can be appended
+to a Jeep object as the dictionary key can be obtained from these attribute.
+
+  >>> class Term(object):
+  ...     def __init__(self, token, title=None, value=None):
+  ...         self.__name__ = self.token = token
+  ...         self.title = title or token
+  ...         self.value = value or title or token
+
+  >>> t1 = Term('term1', 'title 1')
+  >>> jeep.append(t1)
+  >>> list(jeep)
+  ['first', 'second', 'term1']
+  >>> jeep.term1.title
+  'title 1'
+
+  >>> jeep.insert(1, Term('term2', 'title 2'))
+  >>> list(jeep)
+  ['first', 'term2', 'second', 'term1']
+  >>> jeep[1].title
+  'title 2'
+
+Inserting or appending an object with a name that's already present raises
+an exception:
+
+  >>> jeep.append(t1)
+  Traceback (most recent call last):
+  ...
+  ValueError: ...already present
 
 Constructors
 ------------
