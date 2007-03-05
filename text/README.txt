@@ -17,6 +17,17 @@ The test files are in a subdirectory of the text package:
   >>> from cybertools import text
   >>> testdir = os.path.join(os.path.dirname(text.__file__), 'testfiles')
 
+HTML
+----
+
+  >>> from cybertools.text.html import htmlToText
+  >>> html = open(os.path.join(testdir, 'selfhtml.html')).read()
+  >>> text = htmlToText(html)
+  >>> '<p>' in html
+  True
+  >>> '<p>' in text
+  False
+
 PDF Files
 ---------
 
