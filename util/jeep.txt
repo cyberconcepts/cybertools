@@ -17,11 +17,12 @@ In addition to the usual access via dot notation all attributes can be
 accessed via dictionary notation:
 
 The third type of interface provided by Jeep objects is the sequence or
-iterator interface. Converting a jeep object to a list iterates over the
-keys:
+iterator interface. Converting a jeep object to a list iterates over its
+values (that is different from the dictionary behaviour, but is what
+you want usually; use the ``.keys()`` method to get at the keys, see below):
 
   >>> list(jeep)
-  ['first', 'second']
+  ['first value', 'second value']
 
 Direct index access to certain entries gives the corresponding value,
 not the key:
@@ -40,14 +41,14 @@ attribute:
   'third value'
 
   >>> list(jeep)
-  ['first', 'second', 'third']
+  ['first value', 'second value', 'third value']
 
 Assigning a new value to an already existing attribute does not change the
 order but only changes the attribute's value
 
   >>> jeep.second = 'new second value'
   >>> list(jeep)
-  ['first', 'second', 'third']
+  ['first value', 'new second value', 'third value']
   >>> jeep[1]
   'new second value'
 
@@ -112,13 +113,13 @@ to a Jeep object as the dictionary key can be obtained from these attribute.
 
   >>> t1 = Term('term1', 'title 1')
   >>> jeep.append(t1)
-  >>> list(jeep)
+  >>> jeep.keys()
   ['first', 'second', 'term1']
   >>> jeep.term1.title
   'title 1'
 
   >>> jeep.insert(1, Term('term2', 'title 2'))
-  >>> list(jeep)
+  >>> jeep.keys()
   ['first', 'term2', 'second', 'term1']
   >>> jeep[1].title
   'title 2'
@@ -136,5 +137,5 @@ Constructors
 
   >>> jeep2 = Jeep((('f', '1st'), ('s', '2nd'), ('t', '3rd')))
   >>> list(jeep2)
-  ['f', 's', 't']
+  ['1st', '2nd', '3rd']
 

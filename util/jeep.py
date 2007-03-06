@@ -41,7 +41,7 @@ class Jeep(object):
 
     def __iter__(self):
         for key in self._sequence:
-            yield key
+            yield self[key]
 
     def __setattr__(self, attr, value):
         if not attr in self._attributes:
@@ -71,13 +71,14 @@ class Jeep(object):
         return getattr(self, key, _notfound) is not _notfound
 
     def keys(self):
-        return list(self)
+        return [key for key in self._sequence]
 
     def values(self):
+        return list(self)
         return [self[k] for k in self]
 
     def items(self):
-        return [(k, self[k]) for k in self]
+        return [(k, self[k]) for k in self._sequence]
 
     def get(self, key, default=None):
         return getattr(self, key, default)
@@ -86,17 +87,12 @@ class Jeep(object):
         return self._sequence.index(key)
 
     def append(self, obj):
-        key = getattr(obj, '__name__', _notfound)
-        if key is _notfound:
-            raise AttributeError("No '__name__' attribute present")
-        if key in self:
-            raise ValueError("Object already present")
-        self[key] = obj
+        self.insert(len(self), obj)
 
     def insert(self, idx, obj):
-        key = getattr(obj, '__name__', _notfound)
+        key = getattr(obj, '__name__', getattr(obj, 'name', _notfound))
         if key is _notfound:
-            raise AttributeError("No '__name__' attribute present")
+            raise AttributeError("No name attribute present")
         if key in self:
             raise ValueError("Object already present")
         self._sequence.insert(idx, key)
