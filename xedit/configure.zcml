@@ -5,12 +5,21 @@
    xmlns:zope="http://namespaces.zope.org/zope"
    i18n_domain="zope">
 
+  <zope:view for="*" name="LOCK"
+      type="zope.publisher.interfaces.http.IHTTPRequest"
+      factory="cybertools.xedit.handler.NullLOCK"
+      permission="zope.Public" allowed_attributes="LOCK" />
+  <zope:view for="*" name="UNLOCK"
+      type="zope.publisher.interfaces.http.IHTTPRequest"
+      factory="cybertools.xedit.handler.NullLOCK"
+      permission="zope.Public" allowed_attributes="UNLOCK" />
+
   <resource name="edit.gif" file="edit.gif" />
-  
+
   <pages for="loops.interfaces.IResource"
          class=".browser.ExternalEditorView"
          permission="zope.ManageContent">
-         
+
     <page name="external_edit" attribute="load" />
     <!--
     <page name="save" attribute="save" />

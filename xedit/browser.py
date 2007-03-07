@@ -74,7 +74,8 @@ class ExternalEditorView(object):
 
     def setHeaders(self, size):
         response = self.request.response
-        response.setHeader('Content-Type', 'application/x-zope-xedit')
+        response.setHeader('Content-Type', 'application/x-zope-edit')
+        #response.setHeader('Content-Type', 'application/x-zope-xedit')
         response.setHeader('Content-Length', size)
 
 
