@@ -17,10 +17,9 @@
 #
 
 """
-Searchable text support for Portable Document Format (PDF) files.
+Searchable text support for MS Word (.doc) files.
 
-This uses the pdftotext command from xpdf to perform the extraction.
-interface definitions for text transformations.
+This uses the wvware command to perform the extraction.
 
 Based on code provided by zc.index and TextIndexNG3.
 

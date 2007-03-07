@@ -66,3 +66,32 @@ Word Documents
   89
   >>> u'lamb' in words
   True
+
+PowerPoint Presentations
+------------------------
+
+  >>> from cybertools.text.ppt import PptTransform
+  >>> transform = PptTransform(None)
+  >>> f = open(os.path.join(testdir, 'mary.ppt'))
+  >>> result = transform(f)
+  >>> print log
+  >>> words = result.split()
+  >>> len(words)
+  102
+  >>> u'lamb' in words
+  True
+
+Excel Spreadsheets
+------------------
+
+  >>> from cybertools.text.xls import XlsTransform
+  >>> transform = XlsTransform(None)
+  >>> f = open(os.path.join(testdir, 'mary.xls'))
+  >>> result = transform(f)
+  >>> print log
+  >>> words = result.split()
+  >>> len(words)
+  89
+  >>> u'lamb' in words
+  True
+
