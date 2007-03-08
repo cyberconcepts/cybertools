@@ -67,6 +67,20 @@ Word Documents
   >>> u'lamb' in words
   True
 
+RTF Files
+---------
+
+  >>> from cybertools.text.rtf import RtfTransform
+  >>> transform = RtfTransform(None)
+  >>> f = open(os.path.join(testdir, 'mary.rtf'))
+  >>> result = transform(f)
+  >>> print log
+  >>> words = result.split()
+  >>> len(words)
+  90
+  >>> u'lamb' in words
+  True
+
 PowerPoint Presentations
 ------------------------
 
