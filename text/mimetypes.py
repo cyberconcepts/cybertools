@@ -24,6 +24,7 @@ $Id$
 
 extensions = {
     'application/msword': 'doc',
+    'application/pdf': 'pdf',
     'application/vnd.ms-excel': 'xls',
     'application/vnd.ms-powerpoint': 'ppt',
     'application/vnd.oasis.opendocument.presentation': 'odp',
