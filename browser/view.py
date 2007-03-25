@@ -57,7 +57,7 @@ class GenericView(object):
         # make the (one and only controller) available via the request
         viewAnnotations = self.request.annotations.setdefault('cybertools.browser', {})
         viewAnnotations['controller'] = controller
-        if getattr(controller, 'skinName', None):
+        if getattr(controller, 'skinName', None) and controller.skinName.value:
             self.setSkin(controller.skinName.value)
         controller.skin = self.skin
         # this is the place to register special macros with the controller:
@@ -75,7 +75,11 @@ class GenericView(object):
         #    self.setupController()
 
     def __call__(self, *args, **kw):
+        # this is useful for a top-level page only
         return self.index(*args, **kw)
+
+    def setupSubviews(self):
+        pass
 
     #def render(self, *args, **kw):
     #    return self.index(*args, **kw)

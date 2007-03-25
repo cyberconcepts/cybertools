@@ -41,8 +41,8 @@ class LoopsSessionCredentialsPlugin(SessionCredentialsPlugin):
         if not IHTTPRequest.providedBy(request):
             return False
         site = hooks.getSite()
-        #camefrom = request.getURL() # wrong when object is not viewable
-        camefrom = request.getApplicationURL() + request['PATH_INFO']
+        camefrom = request.getURL() # wrong when object is not viewable
+        #camefrom = request.getApplicationURL() + request['PATH_INFO']
         if 'login' in camefrom:
             camefrom = '/'.join(camefrom.split('/')[:-1])
         url = '%s/@@%s?%s' % (zapi.absoluteURL(site, request),

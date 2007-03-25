@@ -25,17 +25,18 @@ $Id$
 from persistent import Persistent
 from persistent.interfaces import IPersistent
 from zope import component
+from zope.component import adapts
 from zope.interface import Interface, Attribute, implements
-from zope.app import zapi
-from zope.app.catalog.catalog import Catalog
+from zope.app.catalog.catalog import Catalog, ResultSet
 from zope.app.catalog.field import FieldIndex
 from zope.app.intid.interfaces import IIntIds
 from zope.location.interfaces import ILocation
 from zope.event import notify
 from zope.component.interfaces import ObjectEvent
 from zope.security.proxy import removeSecurityProxy
+from zope.traversing.api import getName, getParent
 
-from interfaces import IRelationRegistry, IRelationInvalidatedEvent
+from interfaces import IRelationRegistry, IRelationInvalidatedEvent, IRelation
 
 
 class DummyRelationRegistry(object):
@@ -123,25 +124,35 @@ class RelationRegistry(Catalog):
         if getattr(relation, '__parent__', None) is None:
             # Allow the IntIds utility to get a DB connection:
             relation.__parent__ = self
-        self.index_doc(zapi.getUtility(IIntIds).register(relation), relation)
+        self.index_doc(component.getUtility(IIntIds).register(relation), relation)
 
     def unregister(self, relation):
-        self.unindex_doc(zapi.getUtility(IIntIds).getId(relation))
+        self.unindex_doc(component.getUtility(IIntIds).getId(relation))
         notify(RelationInvalidatedEvent(relation))
 
     def getUniqueIdForObject(self, obj):
         if obj == '*': # wild card
             return '*'
-        return zapi.getUtility(IIntIds).queryId(obj)
+        return component.getUtility(IIntIds).queryId(obj)
+
+    def apply(self, criteria):
+        for k in criteria:
+            # set min, max
+            value = criteria[k]
+            if k == 'relationship' and value.endswith('*'):
+                criteria[k] = (value[:-1], value[:-1] + '\x7f')
+            else:
+                criteria[k] = (value, value)
+        return super(RelationRegistry, self).apply(criteria)
 
     def query(self, example=None, **kw):
-        intIds = zapi.getUtility(IIntIds)
+        intids = component.getUtility(IIntIds)
         criteria = {}
         if example is not None:
             for attr in ('first', 'second', 'third',):
                 value = getattr(example, attr, None)
                 if value is not None:
-                    criteria[attr] = intIds.getId(value)
+                    criteria[attr] = intids.getId(value)
             pn = example.getPredicateName()
             if pn:
                 criteria['relationship'] = pn
@@ -150,15 +161,9 @@ class RelationRegistry(Catalog):
             if k == 'relationship':
                 criteria[k] = kw[k].getPredicateName()
             else:
-                criteria[k] = intIds.getId(kw[k])
-        for k in criteria:
-            # set min, max
-            value = criteria[k]
-            if k == 'relationship' and value.endswith('*'):
-                criteria[k] = (value[:-1], value[:-1] + '\x7f')
-            else:
-                criteria[k] = (value, value)
-        return self.searchResults(**criteria)
+                criteria[k] = intids.getId(kw[k])
+        results = self.apply(criteria)
+        return ResultSet(results, intids)
 
 
 class IIndexableRelation(Interface):
@@ -173,6 +178,7 @@ class IndexableRelationAdapter(object):
     """
 
     implements(IIndexableRelation)
+    adapts(IRelation)
 
     def __init__(self, context):
         self.context = context
@@ -184,7 +190,7 @@ class IndexableRelationAdapter(object):
     def __getattr__(self, attr):
         value = getattr(self.context, attr)
         if IPersistent.providedBy(value):
-            return zapi.getUtility(IIntIds).getId(value)
+            return component.getUtility(IIntIds).getId(value)
         else:
             return value
 
@@ -226,7 +232,7 @@ def getRelationSingle(obj=None, relationship=None, forSecond=True):
         return None
     if len(rels) > 1:
         raise ValueError('Multiple hits when only one relation expected: '
-                '%s, relationship: %s' % (zapi.getName(obj),
+                '%s, relationship: %s' % (getName(obj),
                                         relationship.getPredicateName()))
     return list(rels)[0]
 
@@ -237,7 +243,7 @@ def setRelationSingle(relation, forSecond=True):
     """
     first = relation.first
     second = relation.second
-    registry = zapi.getUtility(IRelationRegistry)
+    registry = component.getUtility(IRelationRegistry)
     if forSecond:
         rels = list(registry.query(second=second, relationship=relation))
     else:
@@ -261,7 +267,7 @@ def invalidateRelations(context, event):
     # if not IRelatable.providedBy(event.object):
     #     return
     relations = []
-    registries = zapi.getAllUtilitiesRegisteredFor(IRelationRegistry)
+    registries = component.getAllUtilitiesRegisteredFor(IRelationRegistry)
     for registry in registries:
         for attr in ('first', 'second', 'third'):
             try:
@@ -277,10 +283,10 @@ def removeRelation(context, event):
         from its container (if appropriate) and the IntIds utility.
     """
     if ILocation.providedBy(context):
-        parent = zapi.getParent(context)
+        parent = getParent(context)
         if parent is not None:
             del parent[context]
-    intids = zapi.getUtility(IIntIds)
+    intids = component.getUtility(IIntIds)
     intids.unregister(context)
 
 def setupIndexes(context, event):
