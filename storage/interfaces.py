@@ -22,7 +22,16 @@ interface definitions for storage utilities.
 $Id$
 """
 
-from zope.interface import Interface
+from zope.interface import Interface, Attribute
+
+
+class IStorageInfo(Interface):
+    """ Provides information about the storage of an object.
+    """
+
+    storageName = Attribute('Name of a utility that is used for storage of the object')
+    storageParams = Attribute('Dictionary with storage parameters, e.g. a '
+                        'directory name')
 
 
 class IExternalStorage(Interface):
@@ -40,4 +49,7 @@ class IExternalStorage(Interface):
             (optional) params argument that may give more information on
             where and how the data can be found.
         """
+
+    # TODO: provide file and/or iterator access methods
+    # read, write, close, __iter__
 
