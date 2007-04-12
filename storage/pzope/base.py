@@ -27,7 +27,7 @@ from zope.interface import implements
 from zope.app.component.hooks import getSite
 from zope.app.container.interfaces import IContained
 from zope.app.intid.interfaces import IIntIds
-from zope.app.traversing.api import traverse, getPath
+from zope.traversing.api import traverse, getPath
 from persistent import Persistent
 
 from cybertools.util.adapter import AdapterFactory
