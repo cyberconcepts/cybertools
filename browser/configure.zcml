@@ -19,11 +19,6 @@
         permission="zope.Public"
         />
 
-  <page for="*"
-        name="body.html"
-        class="cybertools.browser.view.BodyTemplateView"
-        permission="zope.View"/>
-
   <page name="controller"
         for="zope.app.publisher.interfaces.browser.IBrowserView"
         class="cybertools.browser.controller.Controller"
@@ -32,6 +27,12 @@
 
   <!-- a tableless layout skin -->
   <include package=".liquid" />
+
+  <page for="*"
+        name="body.html"
+        class="cybertools.browser.view.BodyTemplateView"
+        permission="zope.View"
+        layer="cybertools.browser.liquid.liquid"/>
 
   <!-- a layout skin that may be used for sites employing the loops
        package, but not depending on loops -->
