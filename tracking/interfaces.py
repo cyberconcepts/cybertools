@@ -54,17 +54,18 @@ class ITrackingStorage(Interface):
         """ Create a new run for the task given and return its id.
         """
 
-    def stopRun(taskId, runId=0, finish=True):
+    def stopRun(taskId=None, runId=0, finish=True):
         """ Stop/finish a run.
             If the runId is 0 use the task's current run.
             If the run is the task's current one remove it from the set
             of current runs.
             Set the run's ``finished`` flag to the value of the ``finish``
             argument.
-            Return the real runId.
+            Return the real runId; return 0 if there is no run for the
+            parameters given.
         """
 
-    def getRun(runId, taskId=None):
+    def getRun(taskId=None, runId=0):
         """ Return the run object identified by ``runId``. Return None
             if there is no corresponding run.
             If ``runId`` is 0 and a ``taskId`` is given return the

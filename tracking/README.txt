@@ -1,6 +1,6 @@
-====================================
-User tracking in the loops framework
-====================================
+=========================
+User/Interaction tracking
+=========================
 
   ($Id$)
 
@@ -92,9 +92,37 @@ We still have access to older runs.
 
 We can also retrieve a run object with the run's data.
 
-  >>> run = tracks.getRun(3)
-  >>> run
+  >>> tracks.getRun(runId=3)
   <Run 3, ..., ..., False>
+
+We can also use the taskId for retrieving a task's current run.
+
+  >>> tracks.getRun(taskId='a001')
+  <Run 3, ..., ..., False>
+
+When we stop a run explicitly it is marked as ``finished``.
+
+  >>> tracks.stopRun('a001')
+  3
+  >>> tracks.getRun(runId=3)
+  <Run 3, ..., ..., True>
+  >>> tracks.getRun(runId=3).finished
+  True
+
+Stopping a run removes it from the set of current runs, so the associated
+task hasn't got a current run any longer:
+
+  >>> tracks.getRun('a001') is None
+  True
+
+We can also mark earlier runs by stopping them.
+
+  >>> tracks.getRun(runId=2)
+  <Run 2, ..., ..., False>
+  >>> tracks.stopRun('a001', 2)
+  2
+  >>> tracks.getRun(runId=2)
+  <Run 2, ..., ..., True>
 
 
 Fin de partie
