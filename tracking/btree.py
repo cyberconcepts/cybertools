@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 #
 
 """
-BTree-based implementation of user tracking.
+BTree-based implementation of user interaction tracking.
 
 $Id$
 """
@@ -29,10 +29,27 @@ from zope.app.container.btree import BTreeContainer
 from zope.index.field import FieldIndex
 
 from persistent import Persistent
-from BTrees import OOBTree
+from BTrees import OOBTree, IOBTree
 from BTrees.IFBTree import intersection
 
-from interfaces import ITrackingStorage, ITrack
+from interfaces import IRun, ITrackingStorage, ITrack
+
+
+class Run(object):
+
+    implements(IRun)
+
+    id = start = end = 0
+    finished = False
+
+    def __init__(self, id):
+        self.id = id
+
+    def __repr__(self):
+        return '<Run %s>' % ', '.join((str(self.id),
+                                       timeStamp2ISO(self.start),
+                                       timeStamp2ISO(self.end),
+                                       str(self.finished)))
 
 
 class TrackingStorage(BTreeContainer):
@@ -48,6 +65,7 @@ class TrackingStorage(BTreeContainer):
         self.indexes = OOBTree.OOBTree()
         for idx in self.indexAttributes:
             self.indexes[idx] = FieldIndex()
+        self.runs = IOBTree.IOBTree()
         self.currentRuns = OOBTree.OOBTree()
         self.taskUsers = OOBTree.OOBTree()
 
@@ -56,18 +74,36 @@ class TrackingStorage(BTreeContainer):
 
     def startRun(self, taskId):
         self.runId += 1
-        self.currentRuns[taskId] = self.runId
-        return self.runId
-
-    def stopRun(self, taskId):
-        runId = self.currentRuns.get(taskId)
-        if runId:
-            del self.currentRuns[taskId]
+        runId = self.runId
+        self.currentRuns[taskId] = runId
+        run = self.runs[runId] = Run(runId)
+        run.start = run.end = getTimeStamp()
         return runId
+
+    def stopRun(self, taskId, runId=0, finish=True):
+        currentRun = self.currentRuns.get(taskId)
+        runId = runId or currentRun
+        if runId and runId == currentRun:
+            del self.currentRuns[taskId]
+        run = self.getRun(runId)
+        if run is not None:
+            run.end = getTimeStamp()
+            run.finished = finish
+            return runId
+
+    def getRun(self, runId=0, taskId=None):
+        if taskId and not runId:
+            runId = self.currentRuns.get(taskId)
+        if runId:
+            return self.runs.get(runId)
 
     def saveUserTrack(self, taskId, runId, userName, data, replace=False):
         if not runId:
             runId = self.currentRuns.get(taskId) or self.startRun(taskId)
+        run = self.getRun(runId)
+        if run is None:
+            raise ValueError('Invalid run: %i.' % runId)
+        run.end = getTimeStamp()
         trackNum = 0
         if replace:
             track = self.getLastUserTrack(taskId, runId, userName)
@@ -79,8 +115,7 @@ class TrackingStorage(BTreeContainer):
             self.trackNum += 1
             trackNum = self.trackNum
             trackId = self.idFromNum(trackNum)
-        timeStamp = int(time.time())
-        track = Track(taskId, runId, userName, timeStamp, data)
+        track = Track(taskId, runId, userName, getTimeStamp(), data)
         self[trackId] = track
         self.indexTrack(trackNum, track)
         return trackId
@@ -161,3 +196,5 @@ class Track(Persistent):
 def timeStamp2ISO(ts):
     return time.strftime('%Y-%m-%d %H:%M', time.gmtime(ts))
 
+def getTimeStamp():
+    return int(time.time())

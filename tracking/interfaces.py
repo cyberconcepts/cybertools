@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -28,6 +28,16 @@ from zope import schema
 
 # user interaction tracking
 
+class IRun(Interface):
+    """ A set of interactions, sort of a session.
+    """
+
+    id = Attribute('A unique integer that identifies a run within a tracking storage')
+    start = Attribute('Timestamp of run creation')
+    end = Attribute('Timestamp of last interaction or of stopping the run')
+    finished = Attribute('Boolean that is set to True if run was finished explicitly')
+
+
 class ITrack(Interface):
     """ Result data from the interactions of a user with an task.
     """
@@ -41,16 +51,33 @@ class ITrackingStorage(Interface):
     """
 
     def startRun(taskId):
-        """ Creates a new run for the task given and return its id.
+        """ Create a new run for the task given and return its id.
         """
 
-    def stopRun(taskId):
-        """ Remove the current run entry for the task given.
+    def stopRun(taskId, runId=0, finish=True):
+        """ Stop/finish a run.
+            If the runId is 0 use the task's current run.
+            If the run is the task's current one remove it from the set
+            of current runs.
+            Set the run's ``finished`` flag to the value of the ``finish``
+            argument.
+            Return the real runId.
         """
 
-    def saveUserTrack(taskId, runId, userName, data):
+    def getRun(runId, taskId=None):
+        """ Return the run object identified by ``runId``. Return None
+            if there is no corresponding run.
+            If ``runId`` is 0 and a ``taskId`` is given return the
+            current run of the task.
+        """
+
+    def saveUserTrack(taskId, runId, userName, data, replace=False):
         """ Save the data given (typically a mapping object) to the user track
             corresponding to the user name, task id, and run id given.
+            If the runId is 0 use the task's current run.
+            If the ``replace`` flag is set, the new track replaces the last
+            one for the given set of keys.
+            Return the new track item's id.
         """
 
     def query(**criteria):
