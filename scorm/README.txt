@@ -10,7 +10,7 @@ In order to work with the SCORM API we first need a tracking storage.
   >>> tracks = TrackingStorage()
 
 We can now create a ScormAPI adapter. Note that this adapter is stateless
-as it is usually created anew upon each request.
+as usually a new instance is created upon each request.
 
   >>> from cybertools.scorm.base import ScormAPI
   >>> api = ScormAPI(tracks, 'a001', 0, 'user1')
@@ -31,7 +31,7 @@ Then we can set some values.
 
 Depending on the data elements the values entered are kept together in
 one track or stored in separate track objects. So there is a separate
-track for each interaction and one track for all the other elements.
+track for each interaction and one additional track for all the other elements.
 
   >>> for t in sorted(tracks.values(), key=lambda x: x.timeStamp):
   ...     print t.data
@@ -48,3 +48,17 @@ to care about the storage in different track objects.
   ('q007', '0')
   >>> api.getValue('cmi.interactions.1.result')
   ('incorrect', '0')
+
+We can also query special elements like _count and _children.
+
+  >>> api.getValue('cmi.objectives._count')
+  (0, '0')
+  >>> api.getValue('cmi.interactions._count')
+  (2, '0')
+
+  >>> api.getValue('cmi.interactions._children')
+  (('id', 'type', 'objectives', 'timestamp', 'correct_responses',
+    'weighting', 'learner_response', 'result', 'latency', 'description'), '0')
+  >>> api.getValue('cmi.objectives.5.score._children')
+  (('scaled', 'raw', 'min', 'max'), '0')
+

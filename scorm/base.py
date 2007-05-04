@@ -31,6 +31,19 @@ from cybertools.tracking.btree import TrackingStorage
 
 OK = '0'
 
+_children = {
+    'cmi.comments_from_learner': ('comment', 'location', 'timestamp'),
+    'cmi.comments_from_lms': ('comment', 'location', 'timestamp'),
+    'cmi.interactions': ('id', 'type', 'objectives', 'timestamp',
+            'correct_responses', 'weighting', 'learner_response',
+            'result', 'latency', 'description'),
+    'cmi.learner_preference': ('audio_level', 'language',
+            'delivery_speed', 'audio_captioning'),
+    'cmi.objectives': ('id', 'score', 'success_status', 'completion_status',
+            'description'),
+    'score': ('scaled', 'raw', 'min', 'max'),
+}
+
 
 class ScormAPI(object):
     """ ScormAPI objects are temporary adapters created by
@@ -81,8 +94,18 @@ class ScormAPI(object):
 
     def getValue(self, element):
         tracks = self.storage.getUserTracks(self.taskId, self.runId, self.userId)
+        if element.endswith('._count'):
+            base = element[:-len('._count')]
+            if element.startswith('cmi.interactions.'):
+                return self._countSubtracks(tracks, base), OK
+            else:
+                data = self._getTrackData(tracks, '')
+                return self._countSubelements(data, base), OK
+        if element.endswith('_children'):
+            base = element[:-len('._children')]
+            return self._getChildren(base)
         prefix, key = self._splitKey(element)
-        data = self._getTrackData(tracks, prefix) or {}
+        data = self._getTrackData(tracks, prefix)
         if key in data:
             return data[key], OK
         else:
@@ -103,8 +126,26 @@ class ScormAPI(object):
         return '', element
 
     def _getTrackData(self, tracks, prefix):
-        track = None
         for tr in reversed(sorted(tracks, key=lambda x: x.timeStamp)):
             if tr and tr.data.get('key_prefix', None) == prefix:
                 return tr.data
         return {}
+
+    def _countSubelements(self, data, element):
+        result = set()
+        for key in data:
+            if key.startswith(element) and key not in result:
+                result.add(key)
+        return len(result)
+
+    def _countSubtracks(self, tracks, base):
+        return len([tr for tr in tracks if tr.data.get('key_prefix').startswith(base)])
+
+    def _getChildren(self, base):
+        if base.endswith('.score'):
+            base = 'score'
+        if base in _children:
+            return _children[base], OK
+        else:
+            return '', '401'
+
