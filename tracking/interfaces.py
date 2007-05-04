@@ -72,11 +72,11 @@ class ITrackingStorage(Interface):
             current run of the task.
         """
 
-    def saveUserTrack(taskId, runId, userName, data, replace=False):
+    def saveUserTrack(taskId, runId, userName, data, update=False):
         """ Save the data given (typically a mapping object) to the user track
             corresponding to the user name, task id, and run id given.
             If the runId is 0 use the task's current run.
-            If the ``replace`` flag is set, the new track replaces the last
+            If the ``update`` flag is set, the new track updates the last
             one for the given set of keys.
             Return the new track item's id.
         """

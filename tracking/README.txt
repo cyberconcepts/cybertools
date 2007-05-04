@@ -56,13 +56,13 @@ Instead of creating a new track object for each call one can also replace
 an existing one (if present). The replaced entry is always the last one
 for a given set of keys.
 
-  >>> tracks.saveUserTrack('a001', 0, 'u1', {'somekey': 'newvalue2'}, replace=True)
+  >>> tracks.saveUserTrack('a001', 0, 'u1', {'somekey': 'newvalue2'}, update=True)
   '0000003'
   >>> t3 = tracks.getUserTracks('a001', 0, 'u1')
   >>> [t.data for t in t3]
   [{'somekey': 'somevalue'}, {'somekey': 'newvalue2'}]
 
-  >>> tracks.saveUserTrack('a001', 0, 'u2', {'somekey': 'user2'}, replace=True)
+  >>> tracks.saveUserTrack('a001', 0, 'u2', {'somekey': 'user2'}, update=True)
   '0000004'
   >>> t4 = tracks.getUserTracks('a001', 0, 'u2')
   >>> [t.data for t in t4]
@@ -123,8 +123,4 @@ We can also mark earlier runs by stopping them.
   2
   >>> tracks.getRun(runId=2)
   <Run 2, ..., ..., True>
-
-
-Fin de partie
-=============
 

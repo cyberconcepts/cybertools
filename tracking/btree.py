@@ -100,7 +100,7 @@ class TrackingStorage(BTreeContainer):
             return self.runs.get(runId)
         return None
 
-    def saveUserTrack(self, taskId, runId, userName, data, replace=False):
+    def saveUserTrack(self, taskId, runId, userName, data, update=False):
         if not runId:
             runId = self.currentRuns.get(taskId) or self.startRun(taskId)
         run = self.getRun(runId=runId)
@@ -108,17 +108,19 @@ class TrackingStorage(BTreeContainer):
             raise ValueError('Invalid run: %i.' % runId)
         run.end = getTimeStamp()
         trackNum = 0
-        if replace:
+        if update:
             track = self.getLastUserTrack(taskId, runId, userName)
             if track:
                 trackId = str(track.__name__)
                 trackNum = int(trackId)
-                del self[trackId]
+                track.data.update(data)
+                self.indexTrack(trackNum, track)
+                return trackId
         if not trackNum:
             self.trackNum += 1
             trackNum = self.trackNum
             trackId = self.idFromNum(trackNum)
-        track = Track(taskId, runId, userName, getTimeStamp(), data)
+        track = Track(taskId, runId, userName, data)
         self[trackId] = track
         self.indexTrack(trackNum, track)
         return trackId
@@ -183,11 +185,15 @@ class Track(Persistent):
     def metadata(self):
         return dict((attr, getattr(self, attr)) for attr in self.metadata_attributes)
 
-    def __init__(self, taskId, runId, userName, timeStamp, data={}):
+    def __init__(self, taskId, runId, userName, data={}):
         self.taskId = taskId
         self.runId = runId
         self.userName = userName
-        self.timeStamp = timeStamp
+        self.timeStamp = getTimeStamp()
+        self.data = data
+
+    def update(self, data):
+        self.timeStamp = getTimeStamp()
         self.data = data
 
     def __repr__(self):
