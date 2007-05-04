@@ -38,3 +38,13 @@ track for each interaction and one track for all the other elements.
   {'id': 'q007', 'key_prefix': 'cmi.interactions.0', 'result': 'correct'}
   {'cmi.comments_from_learner': 'Hello SCORM', 'key_prefix': ''}
   {'id': 'q009', 'key_prefix': 'cmi.interactions.1', 'result': 'incorrect'}
+
+Using the getValue() method we can retrieve certain values without having
+to care about the storage in different track objects.
+
+  >>> api.getValue('cmi.comments_from_learner')
+  ('Hello SCORM', '0')
+  >>> api.getValue('cmi.interactions.0.id')
+  ('q007', '0')
+  >>> api.getValue('cmi.interactions.1.result')
+  ('incorrect', '0')
