@@ -27,11 +27,15 @@ from zope.interface import Interface, Attribute
 
 class IStorageInfo(Interface):
     """ Provides information about the storage of an object.
+        Used typically as an adapter.
     """
 
     storageName = Attribute('Name of a utility that is used for storage of the object')
     storageParams = Attribute('Dictionary with storage parameters, e.g. a '
                         'directory name')
+    externalAddress = Attribute('Relative address within the external storage')
+    uniqueAddress = Attribute('Full address that uniquely identifies the object. '
+                              'Read-only')
 
 
 class IExternalStorage(Interface):
@@ -53,3 +57,8 @@ class IExternalStorage(Interface):
     # TODO: provide file and/or iterator access methods
     # read, write, close, __iter__
 
+    def getUniqueAddress(address, params=None):
+        """ Return a unique (complete) address of the object that may
+            be used to check if two addresses reference the same external
+            object.
+        """

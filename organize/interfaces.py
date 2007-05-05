@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 #
 
 """
-Interfaces for organizational stuff like persons, addresses, tasks, ...
+Interfaces for organizational stuff like persons, addresses, tasks, services...
 
 $Id$
 """
@@ -29,10 +29,14 @@ from zope.i18nmessageid import MessageFactory
 _ = MessageFactory('zope')
 
 
+# schema fields
+
 class SimpleList(schema.List): pass
 
 class LinesList(schema.List): pass
 
+
+# persons, addresses, ...
 
 class IPerson(Interface):
     """ Resembles a human being with a name (first and last name),
@@ -65,7 +69,7 @@ class IPerson(Interface):
                     title=_(u'Age'),
                     description=_(u'The current age in full years'),
                     readonly=True)
-    
+
     addresses = Attribute('A mapping whose values provide the IAddress '
                           'interface')
 
@@ -98,6 +102,8 @@ class IAddress(Interface):
                     required=False,)
 
 
+# tasks
+
 class ITask(Interface):
     """ A task has a start date, an optional end date, and is usually
         assigned to one or more persons.
@@ -112,4 +118,82 @@ class ITask(Interface):
                     description=_(u'The date until that the task should be '
                                    'finished'),
                     required=False,)
+
+
+# services
+
+
+class IService(Interface):
+    """ A general service definition or a group of service instances,
+        e.g. a regular bus service or a series of trainings.
+    """
+
+
+class IServiceInstance(Interface):
+    """ A concrete service instance that clients may register with.
+    """
+
+    service = Attribute('The service this object is an instance of.')
+
+    seats = schema.Int(
+                    title=_(u'Number of Seats'),
+                    description=_(u'The capacity (maximum number of clients) '
+                        'of this service; a negative number means: '
+                        'no restriction, i.e. unlimited capacity.'),
+                    required=False,)
+
+    availableSeats = Attribute('Available capacity, i.e. number of seats '
+                        'still available; a negative number means: '
+                        'no restriction, i.e. unlimited capacity. '
+                        'Read-only attribute')
+
+    serviceProviders = Attribute('A collection of one or more service providers.')
+
+    resources = Attribute('A collection of one or more resources.')
+
+    registrations = Attribute('A collection of client registrations.')
+
+    def register(client):
+        """ Register a client with this service. Return an IRegistration
+            object if the registration is successful, otherwise
+            (e.g. if no seat is available) return None.
+        """
+
+
+class IScheduledServiceInstance(IServiceInstance):
+    """ A service instance that starts at a certain date/time and
+        usually ends a certain time later.
+    """
+
+    start = schema.Date(
+                    title=_(u'Start date/time'),
+                    description=_(u'The date/time when the service starts'),
+                    required=False,)
+    end = schema.Date(
+                    title=_(u'End date/time'),
+                    description=_(u'The date/time when the service ends'),
+                    required=False,)
+
+    duration = Attribute('Time delta between start and end date/time.')
+
+
+class IRegistration(Interface):
+    """ Information about the registration of a client with a service.
+    """
+
+    client = Attribute('The client registered')
+
+
+class IResource(Interface):
+    """ A resource is needed by a service to be able to work, e.g. a
+        room or a bus. A resource may have a limited capacity so that
+        at a certain time it may only be used by services to certain
+        extent.
+    """
+
+
+class IServiceProvider(Interface):
+    """ An entity, e.g. a person or an institution, that is responsible
+        for providing a service or a service instance.
+    """
 

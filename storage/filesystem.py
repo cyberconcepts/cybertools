@@ -67,6 +67,10 @@ class FileSystemStorage(object):
         f.close()
         return data
 
+    def getUniqueAddress(self, address, params={}):
+        subDir = params.get('subdirectory')
+        return self.getDir(address, subDir)
+
 
 class FSSDataManager(object):
 

@@ -1,7 +1,11 @@
+==================================================
 Organizations: Persons, Institutions, Addresses...
 ==================================================
 
   ($Id$)
+
+Persons and Addresses
+=====================
 
 Let's start with a Person:
 
@@ -17,7 +21,7 @@ Let's start with a Person:
   {}
 
 A Person object knows the age of the person:
-  
+
   >>> john.age is None
   True
   >>> from datetime import date
@@ -43,3 +47,8 @@ Let's create an address and assign it to a person:
   >>> john.addresses['standard'].street
   u'Broadway 1'
 
+
+Service Management
+==================
+
+  >>> from cybertools.organize.service import ServiceInstance
