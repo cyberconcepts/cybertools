@@ -122,30 +122,29 @@ class ITask(Interface):
 
 # services
 
-
-class IService(Interface):
-    """ A general service definition or a group of service instances,
+class IServiceGroup(Interface):
+    """ A group of related services or a general service definition,
         e.g. a regular bus service or a series of trainings.
     """
 
 
-class IServiceInstance(Interface):
-    """ A concrete service instance that clients may register with.
+class IService(Interface):
+    """ A service that clients may register with.
     """
 
-    service = Attribute('The service this object is an instance of.')
+    serviceGroup = Attribute('The service group this object is an instance of.')
 
-    seats = schema.Int(
-                    title=_(u'Number of Seats'),
+    capacity = schema.Int(
+                    title=_(u'Capacity'),
                     description=_(u'The capacity (maximum number of clients) '
                         'of this service; a negative number means: '
                         'no restriction, i.e. unlimited capacity.'),
                     required=False,)
 
-    availableSeats = Attribute('Available capacity, i.e. number of seats '
+    availableCapacity = Attribute('Available capacity, i.e. number of seats '
                         'still available; a negative number means: '
-                        'no restriction, i.e. unlimited capacity. '
-                        'Read-only attribute')
+                        'no restriction, i.e. unlimited capacity; '
+                        'read-only')
 
     serviceProviders = Attribute('A collection of one or more service providers.')
 
@@ -156,12 +155,12 @@ class IServiceInstance(Interface):
     def register(client):
         """ Register a client with this service. Return an IRegistration
             object if the registration is successful, otherwise
-            (e.g. if no seat is available) return None.
+            (e.g. if the service's capacity is exhausted) return None.
         """
 
 
-class IScheduledServiceInstance(IServiceInstance):
-    """ A service instance that starts at a certain date/time and
+class IScheduledService(IService):
+    """ A service that starts at a certain date/time and
         usually ends a certain time later.
     """
 
@@ -187,13 +186,12 @@ class IRegistration(Interface):
 class IResource(Interface):
     """ A resource is needed by a service to be able to work, e.g. a
         room or a bus. A resource may have a limited capacity so that
-        at a certain time it may only be used by services to certain
+        at a certain time it may only be used by services to a certain
         extent.
     """
 
 
 class IServiceProvider(Interface):
-    """ An entity, e.g. a person or an institution, that is responsible
-        for providing a service or a service instance.
+    """ A party, that is responsible for providing a service.
     """
 

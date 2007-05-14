@@ -51,4 +51,4 @@ Let's create an address and assign it to a person:
 Service Management
 ==================
 
-  >>> from cybertools.organize.service import ServiceInstance
+  >>> from cybertools.organize.service import Service
