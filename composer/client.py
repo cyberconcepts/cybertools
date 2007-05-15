@@ -24,33 +24,18 @@ $Id$
 
 from zope.interface import implements
 
-from cybertools.composer.interfaces import IInstance, IClient
-
-
-class Instance(object):
-
-    implements(IInstance)
-
-    parent = None
-    template = None
-
-    def __init__(self, parent, template):
-        self.parent = parent
-        self.template = template
-
-    def applyTemplate(self, *args, **kw):
-        raise ValueError('To be implemented by subclass')
+from cybertools.composer.interfaces import IClient
 
 
 class Client(object):
 
     implements(IClient)
 
-    def __init__(self, context):
+    def __init__(self, context, template):
         self.context = context
+        self.template = template
         self.instances = []
 
-    def applyTemplates(self, *args, **kw):
-        for inst in self.instances:
-            inst.applyTemplate(*args, **kw)
+    def applyTemplate(self, *args, **kw):
+        raise ValueError('To be implemented by subclass')
 

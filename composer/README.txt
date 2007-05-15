@@ -5,7 +5,7 @@ Composer - Building Complex Structures with Templates or Schemas
   ($Id$)
 
   >>> from cybertools.composer.base import Element, Compound, Template
-  >>> from cybertools.composer.client import Instance, Client
+  >>> from cybertools.composer.client import Client
 
 We set up a very simple demonstration system using a PC configurator.
 We start with two classes denoting a configuration and a simple
@@ -40,21 +40,16 @@ We need another class denoting the product that will be created.
 
   >>> c001 = Product('c001')
 
-The real stuff will be done by an instance that connects the product
-(via the client) with the template.
+The real stuff will be done by a client adpater that connects the product
+with the template.
 
-  >>> class ConfigurationInstance(Instance):
+  >>> class ConfigurationAdapter(Client):
   ...     def applyTemplate(self):
   ...         for c in self.template.components:
-  ...             print c, self.parent.context.parts.get(c.name, '-')
+  ...             print c, self.context.parts.get(c.name, '-')
 
-In this case we can directly use the basic client adapter for setting up the
-connection. As we have only one template we also associate only one
-instance with the client.
-
-  >>> client = Client(c001)
-  >>> client.instances.append(ConfigurationInstance(client, desktop))
-  >>> client.applyTemplates()
+  >>> client = ConfigurationAdapter(c001, desktop)
+  >>> client.applyTemplate()
   case -
   mainboard -
   cpu -
@@ -63,7 +58,7 @@ instance with the client.
 If we have configured a CPU for our configuration this will be listed.
 
   >>> c001.parts['cpu'] = Product('z80')
-  >>> client.applyTemplates()
+  >>> client.applyTemplate()
   case -
   mainboard -
   cpu z80

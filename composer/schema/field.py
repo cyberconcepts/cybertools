@@ -17,40 +17,21 @@
 #
 
 """
-Basic classes for a complex template structures.
+Schema fields
 
 $Id$
 """
 
 from zope.interface import implements
 
-from cybertools.composer.interfaces import IComponent, IElement, ICompound
-from cybertools.composer.interfaces import ITemplate
-from cybertools.util.jeep import Jeep
+from cybertools.composer.base import Component, Element, Compound
+from cybertools.composer.base import Template
 
 
-class Component(object):
+class Field(Component):
 
-    implements(IComponent)
-
-
-class Element(Component):
-
-    implements(IElement)
-
-
-class Compound(Component):
-
-    implements(ICompound)
-
-    def __init__(self):
-        self.parts = Jeep()
-
-
-class Template(object):
-
-    implements(ITemplate)
-
-    def __init__(self):
-        self.components = Jeep()
+    def __init__(self, name, title=None, **kw):
+        assert name
+        self.name = self.__name__ = name
+        self.title = title is None and name or title
 

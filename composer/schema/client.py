@@ -17,40 +17,22 @@
 #
 
 """
-Basic classes for a complex template structures.
+Client classes for schemas.
 
 $Id$
 """
 
 from zope.interface import implements
 
-from cybertools.composer.interfaces import IComponent, IElement, ICompound
-from cybertools.composer.interfaces import ITemplate
-from cybertools.util.jeep import Jeep
+from cybertools.composer.client import Client
 
 
-class Component(object):
+class Editor(Client):
 
-    implements(IComponent)
-
-
-class Element(Component):
-
-    implements(IElement)
-
-
-class Compound(Component):
-
-    implements(ICompound)
-
-    def __init__(self):
-        self.parts = Jeep()
-
-
-class Template(object):
-
-    implements(ITemplate)
-
-    def __init__(self):
-        self.components = Jeep()
+    def applyTemplate(self, data={}, *args, **kw):
+        for c in self.template.components:
+            # save data (if available) in context
+            # build sequence of fields with data from context
+            # or directly use request...
+            print c.name, getattr(self.context, c.name, '-')
 
