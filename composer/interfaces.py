@@ -55,18 +55,18 @@ class ITemplate(Interface):
                       'object is built upon')
 
 
-# client side
+# instances
 
-class IClient(Interface):
-    """ Represents an object that uses a set of templates via its instances.
+class IInstance(Interface):
+    """ Represents (adapts) an object that uses a template.
     """
 
-    context = Attribute('Object this client adapter has been created for')
+    context = Attribute('Object this instance adapter has been created for')
     template = Attribute('The template to be used for this client')
 
     def applyTemplate(*args, **kw):
-        """ Apply the template using the client's context. Note that this
-            method is just an example - client classes may define
+        """ Apply the template using the instance's context. Note that this
+            method is just an example - instance classes may define
             other methods that provide more specific actions.
         """
 

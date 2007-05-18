@@ -17,22 +17,25 @@
 #
 
 """
-Client classes for schemas.
+Base classes to be used for client adapters.
 
 $Id$
 """
 
 from zope.interface import implements
 
-from cybertools.composer.client import Client
+from cybertools.composer.interfaces import IInstance
 
 
-class Editor(Client):
+class Instance(object):
 
-    def applyTemplate(self, data={}, *args, **kw):
-        for c in self.template.components:
-            # save data (if available) in context
-            # build sequence of fields with data from context
-            # or directly use request...
-            print c.name, getattr(self.context, c.name, '-')
+    implements(IInstance)
+
+    def __init__(self, context, template):
+        self.context = context
+        self.template = template
+        self.instances = []
+
+    def applyTemplate(self, *args, **kw):
+        raise ValueError('To be implemented by subclass')
 
