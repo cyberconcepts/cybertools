@@ -30,10 +30,10 @@ from cybertools.composer.interfaces import IInstance
 class Instance(object):
 
     implements(IInstance)
+    template = None
 
-    def __init__(self, context, template):
+    def __init__(self, context):
         self.context = context
-        self.template = template
         self.instances = []
 
     def applyTemplate(self, *args, **kw):

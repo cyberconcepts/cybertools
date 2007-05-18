@@ -62,7 +62,7 @@ class IInstance(Interface):
     """
 
     context = Attribute('Object this instance adapter has been created for')
-    template = Attribute('The template to be used for this client')
+    template = Attribute('The template to be used for this instance')
 
     def applyTemplate(*args, **kw):
         """ Apply the template using the instance's context. Note that this

@@ -48,7 +48,8 @@ with the template.
   ...         for c in self.template.components:
   ...             print c, self.context.parts.get(c.name, '-')
 
-  >>> inst = ConfigurationAdapter(c001, desktop)
+  >>> inst = ConfigurationAdapter(c001)
+  >>> inst.template = desktop
   >>> inst.applyTemplate()
   case -
   mainboard -
