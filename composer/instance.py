@@ -30,11 +30,21 @@ from cybertools.composer.interfaces import IInstance
 class Instance(object):
 
     implements(IInstance)
-    template = None
+
+    templateKey = 'composer.template'
 
     def __init__(self, context):
         self.context = context
         self.instances = []
+
+    def setTemplate(self, template):
+        templates = getattr(self.context, '__templates__', {})
+        templates.setdefault(self.templateKey, template)
+        self.context.__templates__ = templates
+    def getTemplate(self):
+        templates = getattr(self.context, '__templates__', {})
+        return templates.get(self.templateKey, None)
+    template = property(getTemplate, setTemplate)
 
     def applyTemplate(self, *args, **kw):
         raise ValueError('To be implemented by subclass')

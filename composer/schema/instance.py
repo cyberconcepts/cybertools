@@ -29,6 +29,8 @@ from cybertools.composer.instance import Instance
 
 class Editor(Instance):
 
+    templateKey = 'schema.editor'
+
     def applyTemplate(self, data={}, *args, **kw):
         for c in self.template.components:
             # save data (if available) in context
