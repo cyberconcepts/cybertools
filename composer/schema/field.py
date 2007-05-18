@@ -23,15 +23,17 @@ $Id$
 """
 
 from zope.interface import implements
+from zope import schema
 
 from cybertools.composer.base import Component, Element, Compound
 from cybertools.composer.base import Template
 
 
-class Field(Component):
+class Field(Component, schema.Field):
 
     def __init__(self, name, title=None, **kw):
         assert name
         self.name = self.__name__ = name
-        self.title = title is None and name or title
+        title = title is None and name or title
+        super(Field, self).__init__(title, __name__=name, **kw)
 

@@ -10,11 +10,11 @@ Schema and Field Management
 We start with setting up a schema with fields.
 
   >>> serviceSchema = Schema()
-  >>> serviceSchema.components.append(Field('title'))
-  >>> serviceSchema.components.append(Field('description'))
-  >>> serviceSchema.components.append(Field('start'))
-  >>> serviceSchema.components.append(Field('end'))
-  >>> serviceSchema.components.append(Field('capacity'))
+  >>> serviceSchema.components.append(Field(u'title'))
+  >>> serviceSchema.components.append(Field(u'description'))
+  >>> serviceSchema.components.append(Field(u'start'))
+  >>> serviceSchema.components.append(Field(u'end'))
+  >>> serviceSchema.components.append(Field(u'capacity'))
 
 For using a schema we need some class that we can use for creating
 objects.

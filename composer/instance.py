@@ -31,7 +31,7 @@ class Instance(object):
 
     implements(IInstance)
 
-    templateKey = 'composer.template'
+    aspect = 'composer.default'
 
     def __init__(self, context):
         self.context = context
@@ -39,11 +39,11 @@ class Instance(object):
 
     def setTemplate(self, template):
         templates = getattr(self.context, '__templates__', {})
-        templates.setdefault(self.templateKey, template)
+        templates.setdefault(self.aspect, template)
         self.context.__templates__ = templates
     def getTemplate(self):
         templates = getattr(self.context, '__templates__', {})
-        return templates.get(self.templateKey, None)
+        return templates.get(self.aspect, None)
     template = property(getTemplate, setTemplate)
 
     def applyTemplate(self, *args, **kw):
