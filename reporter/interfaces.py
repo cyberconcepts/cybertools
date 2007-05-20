@@ -26,46 +26,6 @@ import zope
 from zope.interface import Interface, Attribute
 
 
-# iterable stuff for batching, sorting, filtering of results
-
-
-class IBatch(Interface):
-    """ Represents a part (sort of a slice) of an iterable.
-    """
-
-    iterable = Attribute(u'The iterable this batch belongs to')
-
-    start = Attribute(u'The current start index of the batch in the parent iterable')
-
-    def __getitem__(idx):
-        """ Return the item at index idx on the current page.
-        """
-
-    def next():
-        """ Return the next item on the current page. Raise StopIteration if
-            the end of the batch is reached.
-        """
-
-    def __len__():
-        """ Return the number of items on the current page.
-        """
-
-    def getIndexRelative(relativePageNumber):
-        """ Return the absolute page index based on the current page of
-            the batch object.
-            Using +1 or -1 retrieves the next or previous batch.
-            If a page before the first one is addressed return 0,
-            if a page after the last one is addressed return the index
-            of the last page.
-        """
-
-    def getIndexAbsolute(pageNumber):
-        """ Return the absolute page index.
-            0 addresses the first batch page, -1 the last.
-            Return None if the corresponding page does not exist.
-        """
-
-
 # result sets, rows, cells...
 
 class IResultSet(Interface):
@@ -121,5 +81,44 @@ class IDataSource(Interface):
 
     def __iter__():
         """ Return an iterable that provides the data to be evaluated.
+        """
+
+
+# iterable stuff for batching, sorting, filtering of results
+
+class IBatch(Interface):
+    """ Represents a part (sort of a slice) of an iterable.
+    """
+
+    iterable = Attribute(u'The iterable this batch belongs to')
+
+    start = Attribute(u'The current start index of the batch in the parent iterable')
+
+    def __getitem__(idx):
+        """ Return the item at index idx on the current page.
+        """
+
+    def next():
+        """ Return the next item on the current page. Raise StopIteration if
+            the end of the batch is reached.
+        """
+
+    def __len__():
+        """ Return the number of items on the current page.
+        """
+
+    def getIndexRelative(relativePageNumber):
+        """ Return the absolute page index based on the current page of
+            the batch object.
+            Using +1 or -1 retrieves the next or previous batch.
+            If a page before the first one is addressed return 0,
+            if a page after the last one is addressed return the index
+            of the last page.
+        """
+
+    def getIndexAbsolute(pageNumber):
+        """ Return the absolute page index.
+            0 addresses the first batch page, -1 the last.
+            Return None if the corresponding page does not exist.
         """
 

@@ -65,8 +65,8 @@ class Row(object):
         schema = self.resultSet.schema
         if schema is None:
             return {}
-        return dict([(f.__name__, getattr(self.context, f.__name__))
-                        for f in schema.fields])
+        for f in schema.fields:
+            yield Cell(f, getattr(self.context, f.__name__), self)
 
 
 class ResultSet(object):
@@ -74,13 +74,11 @@ class ResultSet(object):
     implements(IResultSet)
     adapts(IDataSource)
 
+    schema = None
+    view = None
+
     def __init__(self, context):
         self.context = context
-
-    _schema = None
-    def setSchema(self, schema): self._schema = schema
-    def getSchema(self): return self._schema
-    schema = property(getSchema, setSchema)
 
     @property
     def rows(self):
