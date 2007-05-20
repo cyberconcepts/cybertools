@@ -63,8 +63,6 @@ class Row(object):
     @property
     def cells(self):
         schema = self.resultSet.schema
-        if schema is None:
-            return {}
         for f in schema.fields:
             yield Cell(f, getattr(self.context, f.__name__), self)
 
