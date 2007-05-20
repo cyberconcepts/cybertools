@@ -1,0 +1,41 @@
+<!-- $Id$ -->
+
+<metal:detail define-macro="detail">
+    <h2 tal:content="item/title">Something</h2><br />
+    <table>
+      <tr tal:repeat="cell item/cells">
+        <td><span tal:content="cell/title"
+                  i18n:translate="" />Fieldname:</td>
+        <td tal:content="cell/text">Value</td>
+      </tr>
+    </table>
+</metal:detail>
+
+
+<metal:listing define-macro="listing"
+               tal:define="result item/resultSet">
+        <h2 tal:content="item/title">Something</h2><br />
+        <table class="listing">
+          <tr>
+            <th tal:repeat="field result/schema"
+                tal:content="field/title"
+                i18n:translate="">Fieldname</th>
+          </tr>
+          <tal:items repeat="row result/rows">
+            <tal:item define="class python: repeat['row'].odd() and 'even' or 'odd'">
+              <tr tal:attributes="class class">
+                <td valign="top"
+                    repeat="cell row/cells">
+                  <a href="#"
+                     tal:omit-tag="not: cell/url"
+                     tal:attributes="href cell/url;
+                                     title cell/urlTitle">
+                    <span tal:replace="cell/text">Value</span>
+                  </a>
+                </td>
+              </tr>
+            </tal:item>
+          </tal:items>
+        </table>
+</metal:listing>
+

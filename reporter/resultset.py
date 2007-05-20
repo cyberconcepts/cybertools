@@ -27,8 +27,8 @@ $Id$
 
 from zope.component import adapts
 from zope.interface import implements
+from cybertools.reporter.interfaces import IDataSource
 from cybertools.reporter.interfaces import IResultSet, IRow, ICell
-from cybertools.reporter.example.interfaces import IContactsDataSource
 
 
 class Cell(object):
@@ -69,10 +69,10 @@ class Row(object):
                         for f in schema.fields])
 
 
-class Contacts(object):
+class ResultSet(object):
 
     implements(IResultSet)
-    adapts(IContactsDataSource)
+    adapts(IDataSource)
 
     def __init__(self, context):
         self.context = context
@@ -84,7 +84,6 @@ class Contacts(object):
 
     @property
     def rows(self):
-        return [Row(o, self) for o in iter(self.context)]
+        for o in iter(self.context):
+            yield Row(o, self)
 
-    def __len__(self):
-        return len(self.rows)

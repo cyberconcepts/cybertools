@@ -36,7 +36,7 @@ class IBatch(Interface):
     iterable = Attribute(u'The iterable this batch belongs to')
 
     start = Attribute(u'The current start index of the batch in the parent iterable')
-    
+
     def __getitem__(idx):
         """ Return the item at index idx on the current page.
         """
@@ -74,38 +74,37 @@ class IResultSet(Interface):
         (fields, cells).
     """
 
-    schema = zope.schema.Iterable(title=u'Schema',
-                    description=u'Collection of field specifications based '
-                                 'on the interfaces defined by zope.schema.')
-    rows = zope.schema.Iterable(title=u'Rows',
-                    description=u'Sequence of row objects')
+    schema = Attribute(u'Collection of field specifications from zope.schema.')
+    rows = Attribute(u'Sequence of row objects.')
+
+    view = Attribute(u'The view the result set was created for.')
 
 
 class IRow(Interface):
     """ A sequence of cells containing the real data objects.
     """
 
-    cells = zope.schema.Dict(zope.schema.ASCIILine(),
-                    title=u'Cells',
-                    description=u'Mapping of data elements addressed by a name '
-                                 'that is the key to the mapping.')
+    cells = Attribute(u'Mapping of data elements addressed by field names.')
+
+    value = Attribute(u'The object that is the base of this row.')
 
     resultSet = Attribute('The result set this row belongs to.')
+    schema = Attribute(u'The schema of the result set this row belongs to')
 
 
 class ICell(Interface):
     """ A single cell of a listing or table.
     """
 
-    text = zope.schema.Text(title=u'Text',
-                    description=u'Text to be displayed')
-    value = zope.schema.Object(Interface,
-                    title=u'Value',
-                    description=u'The real object, often identical to text.')
-    token = zope.schema.ASCIILine(title=u'Token',
-                    description=u'May be used to identify a cell within'
-                                 'the result set, e.g. in forms')
+    text = Attribute(u'Text to be displayed.')
+    value = Attribute(u'The real object, often identical to text.')
+    token = Attribute(u'May be used to identify a cell within '
+                       'the result set, e.g. in forms.')
+    url = Attribute(u'An optional URL for a link to place on the cell.')
+    # string:${view/url}/.target${row/uniqueId}
+    urlTitle = Attribute(u'Optional title for this link.')
 
+    title = Attribute('The title of the schema field this cell belongs to.')
     row = Attribute('The row this cell belongs to.')
 
     def sortKey():
