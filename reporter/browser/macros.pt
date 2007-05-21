@@ -17,7 +17,7 @@
         <h2 tal:content="item/title">Something</h2><br />
         <table class="listing">
           <tr>
-            <th tal:repeat="field result/schema"
+            <th tal:repeat="field result/schema/fields"
                 tal:content="field/title"
                 i18n:translate="">Fieldname</th>
           </tr>
@@ -25,7 +25,7 @@
             <tal:item define="class python: repeat['row'].odd() and 'even' or 'odd'">
               <tr tal:attributes="class class">
                 <td valign="top"
-                    repeat="cell row/cells">
+                    tal:repeat="cell row/cells">
                   <a href="#"
                      tal:omit-tag="not:cell/url"
                      tal:attributes="href cell/url;

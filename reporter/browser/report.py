@@ -26,6 +26,7 @@ from zope import interface, component
 from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 
+from cybertools.reporter.resultset import ResultSet
 from loops.browser.common import BaseView
 
 
@@ -38,7 +39,7 @@ class DetailView(BaseView):
 
     @Lazy
     def macro(self):
-        return self.template.macros('detail')
+        return self.template.macros['detail']
 
     @Lazy
     def resultSet(self):
@@ -56,10 +57,9 @@ class ListingView(BaseView):
 
     @Lazy
     def macro(self):
-        return self.template.macros('listing')
+        return self.template.macros['listing']
 
     @Lazy
     def resultSet(self):
-        result = ResultSet()
-        return result
+        return ResultSet(self.context)
 

@@ -42,12 +42,14 @@ empty.
   >>> list(r1.cells)
   []
 
+So let's assign a schema to the result set.
+
   >>> from cybertools.composer.schema.schema import Schema
   >>> from cybertools.composer.schema.field import Field
   >>> rset.schema = Schema(Field(u'firstName'), Field(u'lastName'), Field(u'birthDate'))
   >>> r1 = rset.rows.next()
   >>> [c.text for c in r1.cells]
-  ['Smith', 'John', '1956-08-01']
+  [u'Smith', u'John', u'1956-08-01']
 
 For the browser presentation we can also use a browser view providing
 the result set with extended attributes:

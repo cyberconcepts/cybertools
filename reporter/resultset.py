@@ -44,7 +44,9 @@ class Cell(object):
 
     @property
     def text(self):
-        return str(self.value)
+        if isinstance(self.value, unicode):
+            return self.value
+        return unicode(str(self.value))
 
     @property
     def token(self):
