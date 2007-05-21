@@ -35,6 +35,20 @@ then provide a listing of persons...
   >>> len(list(rset.rows))
   3
 
+As we have not yet provided a schema for the result set the rows are
+empty.
+
+  >>> r1 = rset.rows.next()
+  >>> list(r1.cells)
+  []
+
+  >>> from cybertools.composer.schema.schema import Schema
+  >>> from cybertools.composer.schema.field import Field
+  >>> rset.schema = Schema(Field(u'firstName'), Field(u'lastName'), Field(u'birthDate'))
+  >>> r1 = rset.rows.next()
+  >>> [c.text for c in r1.cells]
+  ['Smith', 'John', '1956-08-01']
+
 For the browser presentation we can also use a browser view providing
 the result set with extended attributes:
 

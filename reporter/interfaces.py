@@ -46,7 +46,7 @@ class IRow(Interface):
 
     cells = Attribute(u'Mapping of data elements addressed by field names.')
 
-    value = Attribute(u'The object that is the base of this row.')
+    context = Attribute(u'The object that is the base of this row.')
 
     resultSet = Attribute('The result set this row belongs to.')
     schema = Attribute(u'The schema of the result set this row belongs to')
@@ -56,6 +56,8 @@ class ICell(Interface):
     """ A single cell of a listing or table.
     """
 
+    field = Attribute(u'The schema field the cell belongs to.')
+
     text = Attribute(u'Text to be displayed.')
     value = Attribute(u'The real object, often identical to text.')
     token = Attribute(u'May be used to identify a cell within '
@@ -64,12 +66,12 @@ class ICell(Interface):
     # string:${view/url}/.target${row/uniqueId}
     urlTitle = Attribute(u'Optional title for this link.')
 
-    title = Attribute('The title of the schema field this cell belongs to.')
     row = Attribute('The row this cell belongs to.')
 
     def sortKey():
         """ Returns a value (typically a string or a sequence) that will
-            be used for comparing cells in order to sort rows.
+            be used for comparing cells in order to sort rows on the
+            corresponding column.
         """
 
 

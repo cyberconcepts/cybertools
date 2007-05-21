@@ -4,7 +4,7 @@
     <h2 tal:content="item/title">Something</h2><br />
     <table>
       <tr tal:repeat="cell item/cells">
-        <td><span tal:content="cell/title"
+        <td><span tal:content="cell/field/title"
                   i18n:translate="" />Fieldname:</td>
         <td tal:content="cell/text">Value</td>
       </tr>
@@ -27,7 +27,7 @@
                 <td valign="top"
                     repeat="cell row/cells">
                   <a href="#"
-                     tal:omit-tag="not: cell/url"
+                     tal:omit-tag="not:cell/url"
                      tal:attributes="href cell/url;
                                      title cell/urlTitle">
                     <span tal:replace="cell/text">Value</span>

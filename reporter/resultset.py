@@ -27,6 +27,8 @@ $Id$
 
 from zope.component import adapts
 from zope.interface import implements
+
+from cybertools.composer.schema.schema import Schema
 from cybertools.reporter.interfaces import IDataSource
 from cybertools.reporter.interfaces import IResultSet, IRow, ICell
 
@@ -42,14 +44,25 @@ class Cell(object):
 
     @property
     def text(self):
-        return value
+        return str(self.value)
 
     @property
     def token(self):
-        return value
+        return self.value
 
     def sortKey(self):
-        return value
+        return self.value
+
+    @property
+    def url(self):
+        view = self.row.resultSet.view
+        if view is None:
+            return ''
+        return IAbsoluteURL(self.row, view.request, name=field.__name__)
+
+    @property
+    def urlTitle(self):
+        return ''
 
 
 class Row(object):
@@ -57,14 +70,17 @@ class Row(object):
     implements(IRow)
 
     def __init__(self, context, resultSet):
-        self.context = context  # a single object (in this case)
+        self.context = context
         self.resultSet = resultSet
 
     @property
+    def schema(self):
+        return self.resultSet.schema
+
+    @property
     def cells(self):
-        schema = self.resultSet.schema
-        for f in schema.fields:
-            yield Cell(f, getattr(self.context, f.__name__), self)
+        for f in self.resultSet.schema.fields:
+            yield Cell(f, getattr(self.context, f.name), self)
 
 
 class ResultSet(object):
@@ -72,11 +88,11 @@ class ResultSet(object):
     implements(IResultSet)
     adapts(IDataSource)
 
-    schema = None
     view = None
 
     def __init__(self, context):
         self.context = context
+        self.schema = Schema()
 
     @property
     def rows(self):
