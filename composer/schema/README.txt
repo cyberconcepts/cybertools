@@ -4,17 +4,18 @@ Schema and Field Management
 
   ($Id$)
 
-  >>> from cybertools.composer.schema.schema import Schema
-  >>> from cybertools.composer.schema.field import Field
+  >>> from cybertools.composer.schema import Schema
+  >>> from cybertools.composer.schema import Field
 
 We start with setting up a schema with fields.
 
-  >>> serviceSchema = Schema()
-  >>> serviceSchema.components.append(Field(u'title'))
-  >>> serviceSchema.components.append(Field(u'description'))
-  >>> serviceSchema.components.append(Field(u'start'))
-  >>> serviceSchema.components.append(Field(u'end'))
-  >>> serviceSchema.components.append(Field(u'capacity'))
+  >>> serviceSchema = Schema(
+  ...     Field(u'title', renderFactory=None),
+  ...     Field(u'description'),
+  ...     Field(u'start'),
+  ...     Field(u'end'),
+  ...     Field(u'capacity'),
+  ... )
 
 For using a schema we need some class that we can use for creating
 objects.

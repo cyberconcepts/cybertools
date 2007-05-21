@@ -43,7 +43,7 @@ class DetailView(BaseView):
 
     @Lazy
     def resultSet(self):
-        result = ResultSet()
+        result = ResultSet(self.context)
         return result
 
     @Lazy

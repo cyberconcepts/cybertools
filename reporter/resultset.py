@@ -44,9 +44,12 @@ class Cell(object):
 
     @property
     def text(self):
-        if isinstance(self.value, unicode):
-            return self.value
-        return unicode(str(self.value))
+        value = self.value
+        if value:
+            if isinstance(value, unicode):
+                return value
+            return unicode(str(value))
+        return u''
 
     @property
     def token(self):
@@ -55,16 +58,7 @@ class Cell(object):
     def sortKey(self):
         return self.value
 
-    @property
-    def url(self):
-        view = self.row.resultSet.view
-        if view is None:
-            return ''
-        return IAbsoluteURL(self.row, view.request, name=field.__name__)
-
-    @property
-    def urlTitle(self):
-        return ''
+    url = urlTitle = u''
 
 
 class Row(object):
@@ -82,7 +76,8 @@ class Row(object):
     @property
     def cells(self):
         for f in self.resultSet.schema.fields:
-            yield Cell(f, getattr(self.context, f.name), self)
+            rf = f.renderFactory or Cell
+            yield rf(f, getattr(self.context, f.name), self)
 
 
 class ResultSet(object):

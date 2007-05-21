@@ -33,6 +33,7 @@ class Editor(Instance):
 
     def applyTemplate(self, data={}, *args, **kw):
         for c in self.template.components:
+            # TODO: implement the real stuff
             # save data (if available) in context
             # build sequence of fields with data from context
             # or directly use request...

@@ -31,9 +31,10 @@ from cybertools.composer.base import Template
 
 class Field(Component, schema.Field):
 
-    def __init__(self, name, title=None, **kw):
+    def __init__(self, name, title=None, renderFactory=None, **kw):
         assert name
         self.name = self.__name__ = name
         title = title is None and name or title
+        self.renderFactory = renderFactory  # use for rendering field content
         super(Field, self).__init__(title, __name__=name, **kw)
 
