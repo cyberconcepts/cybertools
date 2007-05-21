@@ -30,4 +30,11 @@ from cybertools.composer.base import Template
 
 class Schema(Template):
 
-    pass
+    def __init__(self, *fields):
+        super(Schema, self).__init__()
+        for f in fields:
+            self.components.append(f)
+
+    @property
+    def fields(self):
+        return self.components
