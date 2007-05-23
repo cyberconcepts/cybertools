@@ -43,12 +43,12 @@ class DetailView(BaseView):
 
     @Lazy
     def resultSet(self):
-        result = ResultSet(self.context)
+        result = ResultSet([self.context])
         return result
 
     @Lazy
     def cells(self):
-        return self.resultSet.rows.next()
+        return self.resultSet.rows.next().cells
 
 
 class ListingView(BaseView):

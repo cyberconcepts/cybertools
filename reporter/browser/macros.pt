@@ -1,12 +1,22 @@
 <!-- $Id$ -->
 
-<metal:detail define-macro="detail">
+<metal:detail define-macro="detail"
+              tal:define="result item/resultSet">
     <h2 tal:content="item/title">Something</h2><br />
     <table>
       <tr tal:repeat="cell item/cells">
-        <td><span tal:content="cell/field/title"
-                  i18n:translate="" />Fieldname:</td>
-        <td tal:content="cell/text">Value</td>
+        <td width="20%">
+          <span tal:content="cell/field/title"
+                i18n:translate="">Fieldname</span>:
+        </td>
+        <td>
+          <a href="#"
+             tal:omit-tag="not:cell/url"
+             tal:attributes="href cell/url;
+                             title cell/urlTitle">
+            <span tal:content="cell/text">Value</span>
+          </a>
+        </td>
       </tr>
     </table>
 </metal:detail>
