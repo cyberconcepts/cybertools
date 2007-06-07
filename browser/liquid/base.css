@@ -76,6 +76,20 @@ table.listing th {
     border-bottom-width: 2px;
 }
 
+.button {
+    margin: 1em 0 1em 0;
+}
+
+.button a {
+    padding: 2px 4px 2px 4px;
+    background-color: #e8e8e8;
+    text-decoration: None;
+    color: Black;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #f4f4f4 #989898 #989898 #f4f4f4;
+}
+
 pre {
     background-color: #f4f4f4;
 }
