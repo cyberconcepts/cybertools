@@ -31,6 +31,9 @@ class Instance(object):
 
     implements(IInstance)
 
+    templateStorage = dict
+    templateAttributeName = '__ctc_templates__'
+
     aspect = 'composer.default'
 
     def __init__(self, context):
@@ -38,11 +41,12 @@ class Instance(object):
         self.instances = []
 
     def setTemplate(self, template):
-        templates = getattr(self.context, '__templates__', {})
+        templates = getattr(self.context,
+                            self.templateAttributeName, self.templateStorage())
         templates.setdefault(self.aspect, template)
-        self.context.__templates__ = templates
+        setattr(self.context, self.templateAttributeName, templates)
     def getTemplate(self):
-        templates = getattr(self.context, '__templates__', {})
+        templates = getattr(self.context, self.templateAttributeName, {})
         return templates.get(self.aspect, None)
     template = property(getTemplate, setTemplate)
 

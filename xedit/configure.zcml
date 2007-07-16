@@ -16,17 +16,17 @@
 
   <resource name="edit.gif" file="edit.gif" />
 
-  <pages for="loops.interfaces.IResource"
+  <!--<pages for="*"
          class=".browser.ExternalEditorView"
          permission="zope.ManageContent">
 
     <page name="external_edit" attribute="load" />
-    <!--
+
     <page name="save" attribute="save" />
     <page name="lock" attribute="lock" />
-    <page name="unlock" attribute="unlock" />-->
+    <page name="unlock" attribute="unlock" />
 
-  </pages>
+  </pages>-->
 
   <page for="*"
         name="xedit_macros"

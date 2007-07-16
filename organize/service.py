@@ -17,21 +17,20 @@
 #
 
 """
-Service instance classes.
+Service management classes.
 
 $Id$
 """
 
 from zope.interface import implements
 
-from cybertools.organize.interfaces import IService
-from cybertools.organize.interfaces import IScheduledService
+from cybertools.organize.interfaces import IServiceManager
+from cybertools.organize.interfaces import IService, IScheduledService
 
 
-class Registration(object):
+class ServiceManager(object):
 
-    def __init__(self, client):
-        self.client = client
+    implements(IServiceManager)
 
 
 class Service(object):
@@ -59,4 +58,10 @@ class Service(object):
 class ScheduledService(Service):
 
     implements(IScheduledService)
+
+
+class Registration(object):
+
+    def __init__(self, client):
+        self.client = client
 

@@ -65,6 +65,9 @@ class StatesDefinition(object):
         return [ self._transitions[t] for t in self._states[state].transitions ]
 
 
+def registerStatesDefinition(id, definition):
+    statesDefinitions[id] = definition
+
 statesDefinitions = {
     'default': StatesDefinition(),
 }

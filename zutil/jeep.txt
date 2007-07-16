@@ -1,0 +1,141 @@
+==============================
+Jeep - a General Purpose Class
+==============================
+
+$Id$
+
+  >>> from cybertools.zutil.jeep import Jeep
+  >>> jeep = Jeep()
+
+  >>> jeep.first = 'first value'
+  >>> jeep.second = 'second value'
+
+  >>> jeep.first
+  'first value'
+
+In addition to the usual access via dot notation all attributes can be
+accessed via dictionary notation:
+
+The third type of interface provided by Jeep objects is the sequence or
+iterator interface. Converting a jeep object to a list iterates over its
+values (that is different from the dictionary behaviour, but is what
+you want usually; use the ``.keys()`` method to get at the keys, see below):
+
+  >>> list(jeep)
+  ['first value', 'second value']
+
+Direct index access to certain entries gives the corresponding value,
+not the key:
+
+  >>> jeep[1]
+  'second value'
+
+Changing Jeep Objects
+---------------------
+
+Assignment by dictionary or attribute access appends the newly assigned
+attribute:
+
+  >>> jeep['third'] = 'third value'
+  >>> jeep.third
+  'third value'
+
+  >>> list(jeep)
+  ['first value', 'second value', 'third value']
+
+Assigning a new value to an already existing attribute does not change the
+order but only changes the attribute's value
+
+  >>> jeep.second = 'new second value'
+  >>> list(jeep)
+  ['first value', 'new second value', 'third value']
+  >>> jeep[1]
+  'new second value'
+
+More Dictionary Methods
+-----------------------
+
+  >>> jeep.keys()
+  ['first', 'second', 'third']
+
+  >>> jeep.values()
+  ['first value', 'new second value', 'third value']
+
+  >>> jeep.items()
+  [('first', 'first value'), ('second', 'new second value'), ('third', 'third value')]
+
+  >>> jeep.get('second')
+  'new second value'
+  >>> jeep.get('fourth', 'default')
+  'default'
+  >>> jeep.get('fourth') is None
+  True
+  >>> jeep['fourth']
+  Traceback (most recent call last):
+  ...
+  KeyError: 'fourth'
+
+  >>> dict(jeep)
+  {'second': 'new second value', 'third': 'third value', 'first': 'first value'}
+
+More Methods and Operators
+--------------------------
+
+  >>> 'third' in jeep
+  True
+
+  >>> jeep.pop()
+  'third value'
+  >>> len(jeep)
+  2
+
+  >>> 'third' in jeep
+  False
+
+  >>> jeep.index('second')
+  1
+  >>> jeep.index('third')
+  Traceback (most recent call last):
+  ...
+  ValueError: ...not in list
+
+Sequence Additions with Named Objects
+-------------------------------------
+
+Objects that have a ``__name__`` attribute can be appended
+to a Jeep object as the dictionary key can be obtained from these attribute.
+
+  >>> class Term(object):
+  ...     def __init__(self, token, title=None, value=None):
+  ...         self.__name__ = self.token = token
+  ...         self.title = title or token
+  ...         self.value = value or title or token
+
+  >>> t1 = Term('term1', 'title 1')
+  >>> jeep.append(t1)
+  >>> jeep.keys()
+  ['first', 'second', 'term1']
+  >>> jeep.term1.title
+  'title 1'
+
+  >>> jeep.insert(1, Term('term2', 'title 2'))
+  >>> jeep.keys()
+  ['first', 'term2', 'second', 'term1']
+  >>> jeep[1].title
+  'title 2'
+
+Inserting or appending an object with a name that's already present raises
+an exception:
+
+  >>> jeep.append(t1)
+  Traceback (most recent call last):
+  ...
+  ValueError: ...already present
+
+Constructors
+------------
+
+  >>> jeep2 = Jeep((('f', '1st'), ('s', '2nd'), ('t', '3rd')))
+  >>> list(jeep2)
+  ['1st', '2nd', '3rd']
+

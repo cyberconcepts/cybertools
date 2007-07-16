@@ -122,6 +122,13 @@ class ITask(Interface):
 
 # services
 
+class IServiceManager(Interface):
+    """ A manager or container for a set of services.
+    """
+
+    services = Attribute('A collection of services managed by this object.')
+
+
 class IServiceGroup(Interface):
     """ A group of related services or a general service definition,
         e.g. a regular bus service or a series of trainings.

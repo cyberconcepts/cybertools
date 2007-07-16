@@ -17,7 +17,7 @@
 #
 
 """
-Basic classes for a complex template structures.
+Basic classes for complex template structures.
 
 $Id$
 """
@@ -43,14 +43,18 @@ class Compound(Component):
 
     implements(ICompound)
 
+    componentStorage = Jeep
+
     def __init__(self):
-        self.parts = Jeep()
+        self.parts = self.componentStorage()
 
 
 class Template(object):
 
     implements(ITemplate)
 
+    componentStorage = Jeep
+
     def __init__(self):
-        self.components = Jeep()
+        self.components = self.componentStorage()
 
