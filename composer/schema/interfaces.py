@@ -22,6 +22,51 @@ Schemas and Fields.
 $Id$
 """
 
+from zope import schema
 from zope.interface import Interface, Attribute
+from zope.i18nmessageid import MessageFactory
 
+from cybertools.composer.interfaces import ITemplate, IComponent
+
+_ = MessageFactory('zope')
+
+
+class ISchema(ITemplate):
+    """ Represents an ordered sequence of fields.
+    """
+
+    fields = Attribute('The components the schema is built up of. '
+                'Should be a sequence of IField objects.')
+
+
+class IField(IComponent):
+    """ May be used for data entry or display.
+    """
+
+    name = schema.ASCII(
+                    title=_(u'Fieldname'),
+                    description=_(u'The internal name of the field'),
+                    required=True,)
+    title = schema.TextLine(
+                    title=_(u'Title'),
+                    description=_(u'The title or label of the field'),
+                    required=True,)
+    description = schema.Text(
+                    title=_(u'Description'),
+                    description=_(u'A more lengthy description of the field'),
+                    required=False,)
+    fieldType = schema.Choice(
+                    title=_(u'Field type'),
+                    description=_(u'The type of the field'),
+                    required=True,
+                    default='textline',
+                    values=('textline', 'textarea', 'date'))
+    defaultValue = schema.TextLine(
+                    title=_(u'Default'),
+                    description=_(u'Value with which to pre-set the field contents'),
+                    required=False,)
+    required = schema.Bool(
+                    title=_(u'Required'),
+                    description=_(u'Must a value been entered into this field?'),
+                    required=False,)
 

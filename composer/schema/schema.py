@@ -26,9 +26,12 @@ from zope.interface import implements
 
 from cybertools.composer.base import Component, Element, Compound
 from cybertools.composer.base import Template
+from cybertools.composer.schema.interfaces import ISchema
 
 
 class Schema(Template):
+
+    implements(ISchema)
 
     def __init__(self, *fields):
         super(Schema, self).__init__()

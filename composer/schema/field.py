@@ -25,11 +25,13 @@ $Id$
 from zope.interface import implements
 from zope import schema
 
-from cybertools.composer.base import Component, Element, Compound
-from cybertools.composer.base import Template
+from cybertools.composer.base import Component
+from cybertools.composer.schema.interfaces import IField
 
 
-class Field(Component, schema.Field):
+class Field(Component):
+
+    implements(IField)
 
     def __init__(self, name, title=None, renderFactory=None, **kw):
         assert name

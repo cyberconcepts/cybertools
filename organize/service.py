@@ -37,7 +37,7 @@ class Service(object):
 
     implements(IService)
 
-    def __init__(self, seats=-1):
+    def __init__(self, capacity=-1):
         self.capacity = capacity
         self.registrations = []
 
