@@ -21,26 +21,33 @@ A general purpose (thus 'Jeep') class that provides most of the interfaces
 of sequences and dictionaries and in addition allows attribute access to
 the dictionary entries.
 
+This is the Zope-based persistent variant of the Jeep class.
+
 $Id$
 """
 
+from persistent import Persistent
 from persistent.list import PersistentList
 from BTrees.OOBTree import OOBTree
+from zope.app.container.interfaces import IContainer
+from zope.interface import implements
 
 _notfound = object()
 _nodefault = object()
 
 
-class Jeep(object):
+class Jeep(Persistent):
+
+    implements(IContainer)
 
     _attributes = ('_sequence', '_mapping')
 
     def __init__(self, seq=[]):
-        self._sequence = PersistentList()
-        self._mapping = OOBTree()
-        for item in seq:
-            attr, value = item
-            setattr(self, attr, value)
+        sequence = self._sequence = PersistentList()
+        mapping = self._mapping = OOBTree()
+        for attr, value in seq:
+            sequence.append(attr)
+            mapping[attr] = value
 
     def __len__(self):
         return len(self._sequence)
@@ -60,7 +67,7 @@ class Jeep(object):
 
     def __setattr__(self, attr, value):
         if attr in self._attributes:
-            object.__setattr__(self, attr, value)
+            super(Jeep, self).__setattr__(attr, value)
         else:
             if getattr(self, attr, _notfound) is _notfound:
                 self._sequence.append(attr)
@@ -86,6 +93,8 @@ class Jeep(object):
 
     def __contains__(self, key):
         return getattr(self, key, _notfound) is not _notfound
+
+    has_key = __contains__
 
     def keys(self):
         return [key for key in self._sequence]

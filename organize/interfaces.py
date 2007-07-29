@@ -128,6 +128,18 @@ class IServiceManager(Interface):
 
     services = Attribute('A collection of services managed by this object.')
 
+    clients = Attribute('A collection of client objects (e.g. persons) '
+                        'that have registered or want to register for '
+                        'services managed by this service manager.')
+
+    clientSchemas = Attribute('An optional collection of schema objects '
+                        'that describe the data fields of the client '
+                        'objects.')
+
+    def addClient(client):
+        """ Add the client object given to the collection of clients.
+        """
+
 
 class IServiceGroup(Interface):
     """ A group of related services or a general service definition,
@@ -181,6 +193,24 @@ class IScheduledService(IService):
                     required=False,)
 
     duration = Attribute('Time delta between start and end date/time.')
+
+
+class IClient(Interface):
+    """ An fairly abstract interface for objects to be used as clients
+        for services.
+    """
+
+    manager = Attribute('The object that cares for this client.')
+
+
+class IClientFactory(Interface):
+    """ Creates client objects.
+    """
+
+    def __call__(data):
+        """ Creates and returns a client object built from the
+            data set provided.
+        """
 
 
 class IRegistration(Interface):

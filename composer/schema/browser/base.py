@@ -17,46 +17,18 @@
 #
 
 """
-Basic classes for complex template structures.
+Basic browser view classes for composer.schema.
 
 $Id$
 """
 
-from zope.interface import implements
+from zope.cachedescriptors.property import Lazy
 
-from cybertools.composer.interfaces import IComponent, IElement, ICompound
-from cybertools.composer.interfaces import ITemplate
-from cybertools.util.jeep import Jeep
+from cybertools.composer.instance import Instance
 
 
-class Component(object):
+class SchemaView(object):
 
-    implements(IComponent)
-
-
-class Element(Component):
-
-    implements(IElement)
-
-
-class Compound(Component):
-
-    implements(ICompound)
-
-    componentStorage = Jeep
-
-    def __init__(self):
-        self.parts = self.componentStorage()
-
-
-class Template(object):
-
-    implements(ITemplate)
-
-    componentStorage = Jeep
-    components = None
-
-    def __init__(self):
-        if self.componentStorage is not None:
-            self.components = self.componentStorage()
-
+    @Lazy
+    def fields(self):
+        return self.context.fields

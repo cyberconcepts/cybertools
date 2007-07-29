@@ -52,7 +52,7 @@ class ITemplate(Interface):
     """
 
     components = Attribute('An ordered sequence of the components this '
-                      'object is built upon')
+                    'object is built upon')
 
 
 # instances
@@ -62,9 +62,9 @@ class IInstance(Interface):
     """
 
     context = Attribute('Object this instance adapter has been created for')
-    template = Attribute('The template to be used for this instance')
+    template = Attribute('A template to be used for this instance')
     aspect = Attribute('A dotted name that helps to store and retrieve the '
-                       'template.')
+                    'template.')
 
     def applyTemplate(*args, **kw):
         """ Apply the template using the instance's context. Note that this

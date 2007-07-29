@@ -33,7 +33,12 @@ class Schema(Template):
 
     implements(ISchema)
 
-    def __init__(self, *fields):
+    name = u''
+    manager = None
+
+    def __init__(self, *fields, **kw):
+        self.name = kw.get('name', u'')
+        self.manager = kw.get('manager', None)
         super(Schema, self).__init__()
         for f in fields:
             self.components.append(f)

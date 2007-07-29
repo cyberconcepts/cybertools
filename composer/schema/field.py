@@ -35,8 +35,15 @@ class Field(Component):
 
     def __init__(self, name, title=None, renderFactory=None, **kw):
         assert name
-        self.name = self.__name__ = name
-        title = title is None and name or title
+        self.__name__ = name
+        title = title or u''
         self.renderFactory = renderFactory  # use for rendering field content
         super(Field, self).__init__(title, __name__=name, **kw)
 
+    @property
+    def name(self):
+        return self.__name__
+
+    @property
+    def title(self):
+        return self.title or self.name

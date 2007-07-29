@@ -38,6 +38,9 @@ class ISchema(ITemplate):
     fields = Attribute('The components the schema is built up of. '
                 'Should be a sequence of IField objects.')
 
+    manager = Attribute('A manager object that may provide special '
+                'features, e.g. a factory of o')
+
 
 class IField(IComponent):
     """ May be used for data entry or display.

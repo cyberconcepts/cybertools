@@ -31,10 +31,10 @@ class Jeep(object):
     _attributes = ('_sequence',)
 
     def __init__(self, seq=[]):
-        self._sequence = []
-        for item in seq:
-            attr, value = item
-            setattr(self, attr, value)
+        sequence = self._sequence = []
+        for attr, value in seq:
+            sequence.append(attr)
+            object.__setattr__(self, attr, value)
 
     def __len__(self):
         return len(self._sequence)
@@ -47,11 +47,11 @@ class Jeep(object):
         if not attr in self._attributes:
             if getattr(self, attr, _notfound) is _notfound:
                 self._sequence.append(attr)
-        object.__setattr__(self, attr, value)
+        super(Jeep, self).__setattr__(attr, value)
 
     def __delattr__(self, attr):
         del self._sequence[self.index(attr)]
-        object.__delattr__(self, attr)
+        super(Jeep, self).__delattr__(attr)
 
     def __getitem__(self, key):
         if type(key) in (int, long):

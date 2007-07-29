@@ -1,0 +1,19 @@
+<!-- $Id$ -->
+
+<configure
+   xmlns="http://namespaces.zope.org/browser"
+   xmlns:zope="http://namespaces.zope.org/zope"
+   i18n_domain="zope">
+
+  <page
+      for="cybertools.composer.schema.interfaces.ISchema"
+      name="index.html"
+      class="cybertools.composer.schema.browser.base.SchemaView"
+      permission="zope.View"
+      />
+
+  <defaultView
+        name="index.html"
+        for="cybertools.composer.schema.interfaces.ISchema" />
+
+</configure>

@@ -31,25 +31,25 @@ class Instance(object):
 
     implements(IInstance)
 
-    templateStorage = dict
-    templateAttributeName = '__ctc_templates__'
+    templateFactory = dict
+    templateAttributeName = '__ctc_template__'
 
     aspect = 'composer.default'
 
     def __init__(self, context):
         self.context = context
-        self.instances = []
 
-    def setTemplate(self, template):
-        templates = getattr(self.context,
-                            self.templateAttributeName, self.templateStorage())
-        templates.setdefault(self.aspect, template)
-        setattr(self.context, self.templateAttributeName, templates)
+    def setTemplate(self, temp):
+        template = getattr(self.context,
+                           self.templateAttributeName,
+                           self.templateFactory())
+        template.setdefault(self.aspect, temp)
+        setattr(self.context, self.templateAttributeName, template)
     def getTemplate(self):
-        templates = getattr(self.context, self.templateAttributeName, {})
-        return templates.get(self.aspect, None)
+        template = getattr(self.context, self.templateAttributeName, {})
+        return template.get(self.aspect, [])
     template = property(getTemplate, setTemplate)
 
-    def applyTemplate(self, *args, **kw):
+    def applyTemplates(self, *args, **kw):
         raise ValueError('To be implemented by subclass')
 
