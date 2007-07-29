@@ -58,7 +58,7 @@ class ITemplate(Interface):
 # instances
 
 class IInstance(Interface):
-    """ Represents (adapts) an object that uses a template.
+    """ Represents (adapts) an object (a client) that uses a template.
     """
 
     context = Attribute('Object this instance adapter has been created for')

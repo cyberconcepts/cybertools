@@ -73,3 +73,32 @@ class IField(IComponent):
                     description=_(u'Must a value been entered into this field?'),
                     required=False,)
 
+
+# clients
+
+class IClient(Interface):
+    """ An fairly abstract interface for objects to be used as clients
+        for other objects (e.g. services).
+    """
+
+    manager = Attribute('The object that cares for this client.')
+
+
+class IClientFactory(Interface):
+    """ Creates client objects.
+    """
+
+    def __call__():
+        """ Creates and returns a client object.
+        """
+
+
+class IClientManager(Interface):
+    """ Cares for a client typically providing schemas.
+    """
+
+    clientSchemas = Attribute('A collection of schema objects '
+                        'that describe the data fields of the client '
+                        'objects.')
+
+

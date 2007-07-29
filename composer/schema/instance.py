@@ -17,14 +17,18 @@
 #
 
 """
-Client classes for schemas.
+Instance adapter classes for schemas.
 
 $Id$
 """
 
+from BTrees.OOBTree import OOBTree
+from zope.component import adapts
 from zope.interface import implements
 
 from cybertools.composer.instance import Instance
+from cybertools.composer.interfaces import IInstance
+from cybertools.composer.schema.interfaces import IClient
 
 
 class Editor(Instance):
@@ -38,4 +42,35 @@ class Editor(Instance):
             # build sequence of fields with data from context
             # or directly use request...
             print c.name, getattr(self.context, c.name, '-')
+
+
+class ClientInstanceAdapter(object):
+
+    implements(IInstance)
+    adapts(IClient)
+
+    baseAspect = 'schema.client.'
+    schema = 'default'
+
+    @property
+    def aspect(self):
+        return self.baseAspect + self.schema
+
+    @property
+    def template(self):
+        return self.context.manager.clientSchemas.get(self.schema, None)
+
+    def __init__(self, context):
+        self.context = context
+
+    def applyTemplate(self, data={}, schema='default', **kw):
+        if getattr(self.context, 'attributes', None) is None:
+            self.context.attributes = OOBTree()
+        self.schema = schema
+        template = self.template
+        attributes = self.context.attributes.setdefault(self.aspect, OOBTree())
+        if template is not None:
+            for c in template.components:
+                name = c.name
+                attributes[name] = data.get(name, u'')
 
