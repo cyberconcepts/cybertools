@@ -132,10 +132,6 @@ class IServiceManager(Interface):
                         'that have registered or want to register for '
                         'services managed by this service manager.')
 
-    clientSchemas = Attribute('An optional collection of schema objects '
-                        'that describe the data fields of the client '
-                        'objects.')
-
     def addClient(client):
         """ Add the client object given to the collection of clients.
         """

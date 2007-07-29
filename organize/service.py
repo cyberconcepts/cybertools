@@ -29,14 +29,14 @@ from zope.interface import implements
 from cybertools.composer.interfaces import IInstance
 from cybertools.util.jeep import Jeep
 
+from cybertools.composer.schema.interfaces import IClientManager
 from cybertools.organize.interfaces import IServiceManager
-from cybertools.organize.interfaces import IClient, IClientFactory
 from cybertools.organize.interfaces import IService, IScheduledService
 
 
 class ServiceManager(object):
 
-    implements(IServiceManager)
+    implements(IServiceManager, IClientManager)
 
     servicesFactory = list
     clientSchemasFactory = Jeep
@@ -88,57 +88,6 @@ class Service(object):
 class ScheduledService(Service):
 
     implements(IScheduledService)
-
-
-class Client(object):
-
-    implements(IClient)
-
-    def __init__(self, manager):
-        self.manager = manager
-
-
-class ClientFactory(object):
-
-    implements(IClientFactory)
-    adapts(IServiceManager)
-
-    def __init__(self, context):
-        self.context = context
-
-    def __call__(self):
-        return Client(self.context)
-
-
-class ClientInstanceAdapter(object):
-
-    implements(IInstance)
-    adapts(IClient)
-
-    baseAspect = 'service.client.'
-    schema = 'default'
-
-    @property
-    def aspect(self):
-        return self.baseAspect + self.schema
-
-    @property
-    def template(self):
-        return self.context.manager.clientSchemas.get(self.schema, None)
-
-    def __init__(self, context):
-        self.context = context
-
-    def applyTemplate(self, data={}, schema='default', **kw):
-        if getattr(self.context, 'attributes', None) is None:
-            self.context.attributes = OOBTree()
-        self.schema = schema
-        template = self.template
-        attributes = self.context.attributes.setdefault(self.aspect, OOBTree())
-        if template is not None:
-            for c in template.components:
-                name = c.name
-                attributes[name] = data.get(name, u'')
 
 
 class Registration(object):
