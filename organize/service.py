@@ -58,7 +58,6 @@ class ServiceManager(object):
         name = self.generateClientName(client)
         self.clients[name] = client
         client.__name__ = name
-        client.__parent__ = self
         return name
 
     def generateClientName(self, client):
