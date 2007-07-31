@@ -35,11 +35,14 @@ class ISchema(ITemplate):
     """ Represents an ordered sequence of fields.
     """
 
+    name = Attribute('An internal name of the schema; will be used '
+                'to identify data fields of instance objects that '
+                'are associated with this schema.')
     fields = Attribute('The components the schema is built up of. '
                 'Should be a sequence of IField objects.')
-
     manager = Attribute('A manager object that may provide special '
-                'features, e.g. a factory of o')
+                'features, e.g. a factory for objects to be associated '
+                'with this schema.')
 
 
 class IField(IComponent):
@@ -47,31 +50,31 @@ class IField(IComponent):
     """
 
     name = schema.ASCII(
-                    title=_(u'Fieldname'),
-                    description=_(u'The internal name of the field'),
-                    required=True,)
+                title=_(u'Fieldname'),
+                description=_(u'The internal name of the field'),
+                required=True,)
     title = schema.TextLine(
-                    title=_(u'Title'),
-                    description=_(u'The title or label of the field'),
-                    required=True,)
+                title=_(u'Title'),
+                description=_(u'The title or label of the field'),
+                required=True,)
     description = schema.Text(
-                    title=_(u'Description'),
-                    description=_(u'A more lengthy description of the field'),
-                    required=False,)
+                title=_(u'Description'),
+                description=_(u'A more lengthy description of the field'),
+                required=False,)
     fieldType = schema.Choice(
-                    title=_(u'Field type'),
-                    description=_(u'The type of the field'),
-                    required=True,
-                    default='textline',
-                    values=('textline', 'textarea', 'date'))
+                title=_(u'Field type'),
+                description=_(u'The type of the field'),
+                required=True,
+                default='textline',
+                values=('textline', 'textarea', 'date'))
     defaultValue = schema.TextLine(
-                    title=_(u'Default'),
-                    description=_(u'Value with which to pre-set the field contents'),
-                    required=False,)
+                title=_(u'Default'),
+                description=_(u'Value with which to pre-set the field contents'),
+                required=False,)
     required = schema.Bool(
-                    title=_(u'Required'),
-                    description=_(u'Must a value been entered into this field?'),
-                    required=False,)
+                title=_(u'Required'),
+                description=_(u'Must a value been entered into this field?'),
+                required=False,)
 
 
 # clients
@@ -97,8 +100,14 @@ class IClientManager(Interface):
     """ Cares for a client typically providing schemas.
     """
 
+    clients = Attribute('A collection of client objects (e.g. persons) '
+                'associated with this client manager.')
     clientSchemas = Attribute('A collection of schema objects '
-                        'that describe the data fields of the client '
-                        'objects.')
+                'that describe the data fields of the client '
+                'objects.')
+
+    def addClient(client):
+        """ Add the client object given to the collection of clients.
+        """
 
 

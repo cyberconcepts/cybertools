@@ -128,19 +128,13 @@ class IServiceManager(Interface):
 
     services = Attribute('A collection of services managed by this object.')
 
-    clients = Attribute('A collection of client objects (e.g. persons) '
-                        'that have registered or want to register for '
-                        'services managed by this service manager.')
-
-    def addClient(client):
-        """ Add the client object given to the collection of clients.
-        """
-
 
 class IServiceGroup(Interface):
     """ A group of related services or a general service definition,
         e.g. a regular bus service or a series of trainings.
     """
+
+    services = Attribute('A collection of services belonging to this object.')
 
 
 class IService(Interface):
@@ -148,23 +142,18 @@ class IService(Interface):
     """
 
     serviceGroup = Attribute('The service group this object is an instance of.')
-
     capacity = schema.Int(
-                    title=_(u'Capacity'),
-                    description=_(u'The capacity (maximum number of clients) '
+                title=_(u'Capacity'),
+                description=_(u'The capacity (maximum number of clients) '
                         'of this service; a negative number means: '
                         'no restriction, i.e. unlimited capacity.'),
-                    required=False,)
-
+                required=False,)
     availableCapacity = Attribute('Available capacity, i.e. number of seats '
-                        'still available; a negative number means: '
-                        'no restriction, i.e. unlimited capacity; '
-                        'read-only')
-
+                'still available; a negative number means: '
+                'no restriction, i.e. unlimited capacity; '
+                'read-only')
     serviceProviders = Attribute('A collection of one or more service providers.')
-
     resources = Attribute('A collection of one or more resources.')
-
     registrations = Attribute('A collection of client registrations.')
 
     def register(client):
@@ -180,14 +169,13 @@ class IScheduledService(IService):
     """
 
     start = schema.Date(
-                    title=_(u'Start date/time'),
-                    description=_(u'The date/time when the service starts'),
-                    required=False,)
+                title=_(u'Start date/time'),
+                description=_(u'The date/time when the service starts'),
+                required=False,)
     end = schema.Date(
-                    title=_(u'End date/time'),
-                    description=_(u'The date/time when the service ends'),
-                    required=False,)
-
+                title=_(u'End date/time'),
+                description=_(u'The date/time when the service ends'),
+                required=False,)
     duration = Attribute('Time delta between start and end date/time.')
 
 

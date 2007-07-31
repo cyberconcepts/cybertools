@@ -22,13 +22,60 @@ Basic browser view classes for composer.schema.
 $Id$
 """
 
+from zope import component
 from zope.cachedescriptors.property import Lazy
+from zope.traversing.browser import absoluteURL
 
-from cybertools.composer.instance import Instance
+from cybertools.composer.interfaces import IInstance
+from cybertools.composer.schema.interfaces import IClientFactory
 
 
 class SchemaView(object):
 
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+        self.clientName = None
+
     @Lazy
     def fields(self):
         return self.context.fields
+
+    @Lazy
+    def data(self):
+        form = self.request.form
+        clientName = self.clientName = form.get('id')
+        if not clientName:
+            return {}
+        manager = self.context.manager
+        client = manager.clients.get(clientName)
+        if client is None:
+            return {}
+        instance = IInstance(client)
+        instance.template = self.context
+        return instance.applyTemplate()
+
+    def update(self):
+        form = self.request.form
+        if not form.get('action'):
+            return True
+        manager = self.context.manager
+        clientName = form.get('id')
+        if clientName:
+            client = manager.clients.get(clientName)
+            if client is None:
+                # TODO: provide error message (?)
+                return True
+        else:
+            client = IClientFactory(manager)()
+            clientName = self.clientName = manager.addClient(client)
+        instance = component.getAdapter(client, IInstance, name='editor')
+        instance.template = self.context
+        instance.applyTemplate(form)
+        self.request.response.redirect(self.nextUrl)
+        return False
+
+    @Lazy
+    def nextUrl(self):
+        url = absoluteURL(self.context, self.request)
+        return '%s/thank_you?id=%s' % (url, self.clientName)

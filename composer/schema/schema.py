@@ -38,7 +38,7 @@ class Schema(Template):
 
     def __init__(self, *fields, **kw):
         self.name = kw.get('name', u'')
-        self.manager = kw.get('manager', None)
+        self.manager = self.__parent__ = kw.get('manager', None)
         super(Schema, self).__init__()
         for f in fields:
             self.components.append(f)
@@ -46,3 +46,7 @@ class Schema(Template):
     @property
     def fields(self):
         return self.components
+
+    @property
+    def __name__(self):
+        return self.name

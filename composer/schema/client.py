@@ -22,6 +22,7 @@ Client implementations.
 $Id$
 """
 
+from persistent import Persistent
 from zope.component import adapts
 from zope.interface import implements
 
@@ -29,11 +30,11 @@ from cybertools.composer.schema.interfaces import IClient
 from cybertools.composer.schema.interfaces import IClientManager, IClientFactory
 
 
-class Client(object):
+class Client(Persistent):
 
     implements(IClient)
 
-    def __init__(self, manager):
+    def __init__(self, manager=None):
         self.manager = manager
 
 
