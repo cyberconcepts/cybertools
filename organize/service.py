@@ -54,6 +54,9 @@ class ServiceManager(object):
     def clients(self):
         return self.clientsFactory()
 
+    def getClients(self):
+        return self.clients
+
     def addClient(self, client):
         name = self.generateClientName(client)
         self.clients[name] = client
@@ -96,4 +99,9 @@ class Registration(object):
 
     def __init__(self, client):
         self.client = client
+
+
+class RegistrationTemplate(object):
+
+    pass
 

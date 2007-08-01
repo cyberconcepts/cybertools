@@ -37,8 +37,12 @@ class Schema(Template):
     manager = None
 
     def __init__(self, *fields, **kw):
-        self.name = kw.get('name', u'')
-        self.manager = self.__parent__ = kw.get('manager', None)
+        name = kw.get('name', None)
+        if name is not None:
+            self.name = name
+        manager = kw.get('manager', None)
+        if manager is not None:
+            self.manager = self.__parent__ = manager
         super(Schema, self).__init__()
         for f in fields:
             self.components.append(f)
@@ -50,3 +54,6 @@ class Schema(Template):
     @property
     def __name__(self):
         return self.name
+
+    def getManager(self):
+        return self.manager

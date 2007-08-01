@@ -24,7 +24,6 @@ $Id$
 
 from zope import component
 from zope.cachedescriptors.property import Lazy
-from zope.traversing.browser import absoluteURL
 
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.interfaces import IClientFactory
@@ -32,10 +31,11 @@ from cybertools.composer.schema.interfaces import IClientFactory
 
 class SchemaView(object):
 
+    clientName = None
+
     def __init__(self, context, request):
         self.context = context
         self.request = request
-        self.clientName = None
 
     @Lazy
     def fields(self):
@@ -43,12 +43,17 @@ class SchemaView(object):
 
     @Lazy
     def data(self):
-        form = self.request.form
-        clientName = self.clientName = form.get('id')
+        return self.getData()
+
+    def getData(self):
+        if not self.clientName:
+            form = self.request.form
+            self.clientName = form.get('id')
+        clientName = self.clientName
         if not clientName:
             return {}
-        manager = self.context.manager
-        client = manager.clients.get(clientName)
+        manager = self.context.getManager()
+        client = manager.getClients().get(clientName)
         if client is None:
             return {}
         instance = IInstance(client)
@@ -57,14 +62,15 @@ class SchemaView(object):
 
     def update(self):
         form = self.request.form
+        if not self.clientName:
+            self.clientName = form.get('id')
+        clientName = self.clientName
         if not form.get('action'):
             return True
-        manager = self.context.manager
-        clientName = form.get('id')
+        manager = self.context.getManager()
         if clientName:
-            client = manager.clients.get(clientName)
+            client = manager.getClients().get(clientName)
             if client is None:
-                # TODO: provide error message (?)
                 return True
         else:
             client = IClientFactory(manager)()
@@ -72,10 +78,12 @@ class SchemaView(object):
         instance = component.getAdapter(client, IInstance, name='editor')
         instance.template = self.context
         instance.applyTemplate(form)
-        self.request.response.redirect(self.nextUrl)
-        return False
+        return True
+        #self.request.response.redirect(self.nextUrl)
+        #return False
 
     @Lazy
     def nextUrl(self):
+        from zope.traversing.browser import absoluteURL
         url = absoluteURL(self.context, self.request)
-        return '%s/thank_you?id=%s' % (url, self.clientName)
+        return '%s/thankyou.html?id=%s' % (url, self.clientName)

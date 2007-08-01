@@ -16,4 +16,11 @@
         name="index.html"
         for="cybertools.composer.schema.interfaces.ISchema" />
 
+  <page
+      for="cybertools.composer.schema.interfaces.ISchema"
+      name="thankyou.html"
+      class="cybertools.composer.schema.browser.base.SchemaView"
+      permission="zope.View"
+      />
+
 </configure>
