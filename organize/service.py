@@ -32,6 +32,7 @@ from cybertools.util.jeep import Jeep
 from cybertools.composer.schema.interfaces import IClientManager
 from cybertools.organize.interfaces import IServiceManager
 from cybertools.organize.interfaces import IService, IScheduledService
+from cybertools.organize.interfaces import IRegistration, IRegistrationTemplate
 
 
 class ServiceManager(object):
@@ -97,11 +98,13 @@ class ScheduledService(Service):
 
 class Registration(object):
 
+    implements(IRegistration)
+
     def __init__(self, client):
         self.client = client
 
 
 class RegistrationTemplate(object):
 
-    pass
+    implements(IRegistrationTemplate)
 

@@ -204,6 +204,11 @@ class IRegistration(Interface):
     client = Attribute('The client registered')
 
 
+class IRegistrationTemplate(Interface):
+    """ Provides and processes data for a service registration form.
+    """
+
+
 class IResource(Interface):
     """ A resource is needed by a service to be able to work, e.g. a
         room or a bus. A resource may have a limited capacity so that
