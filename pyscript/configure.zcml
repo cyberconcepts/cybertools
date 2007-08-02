@@ -1,0 +1,81 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="zope">
+
+  <interface
+      interface=".interfaces.IPythonPage"
+      type="zope.app.content.interfaces.IContentType"
+      />
+
+  <class class=".script.PythonPage">
+      <factory
+        id="cybertools.pyscript.PythonPage"
+        title="Python Page"
+        description="A simple, content-based Python Page"
+        />
+    <require
+        permission="zope.View"
+        interface=".interfaces.IPythonPage"
+        />
+    <require
+        permission="zope.ManageContent"
+        set_attributes="source contentType"
+        />
+    <implements
+        interface="zope.annotation.interfaces.IAttributeAnnotatable"
+        />
+  </class>
+
+
+  <!-- browser directives -->
+
+  <browser:page
+      name="index.html"
+      for=".interfaces.IPythonPage"
+      class=".browser.PythonPageEval"
+      attribute="index"
+      permission="zope.View"
+      />
+
+  <browser:addform
+      label="Add Python Page"
+      name="AddPythonPage.html"
+      schema=".interfaces.IPythonPage"
+      content_factory=".script.PythonPage"
+      permission="zope.ManageContent"
+      />
+
+  <browser:addMenuItem
+      class=".script.PythonPage"
+      title="Python Page"
+      description="An Python Page"
+      permission="zope.ManageContent"
+      view="AddPythonPage.html"
+      />
+
+  <browser:editform
+      for=".interfaces.IPythonPage"
+      schema=".interfaces.IPythonPage"
+      name="edit.html"
+      label="Edit Python Page"
+      class=".browser.PythonPageEditView"
+      template="edit.pt"
+      permission="zope.ManageContent"
+      menu="zmi_views" title="Edit"
+      />
+
+
+  <!-- Preview view - requires zope.app.preview -->
+
+  <configure package="zope.app.preview">
+    <browser:page
+        for="cybertools.pyscript.interfaces.IPythonPage"
+        name="preview.html"
+        template="preview.pt"
+        permission="zope.ManageContent"
+        menu="zmi_views" title="Preview"
+        />
+  </configure>
+
+</configure>
