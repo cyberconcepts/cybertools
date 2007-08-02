@@ -49,6 +49,10 @@ class IScormAPI(Interface):
     runId = Attribute('Run ID (integer)')
     userId = Attribute('User ID')
 
+    def init(taskId, runId, userId):
+        """ Set the basic attributes with one call.
+        """
+
     def initialize(parameter):
         """ Corresponds to API.Initialize('').
             Return CMIErrorCode.

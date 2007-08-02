@@ -10,10 +10,14 @@ In order to work with the SCORM API we first need a tracking storage.
   >>> tracks = TrackingStorage()
 
 We can now create a ScormAPI adapter. Note that this adapter is stateless
-as usually a new instance is created upon each request.
+as usually a new instance is created upon each request. In order to comply
+with Zope's adapter protocol the constructor can only have one argument,
+the context, i.e. the tracking storage. Therefore we have to set the
+basic attributes of the adapter with a separate ``init()`` call.
 
   >>> from cybertools.scorm.base import ScormAPI
-  >>> api = ScormAPI(tracks, 'a001', 0, 'user1')
+  >>> api = ScormAPI(tracks)
+  >>> api.init('a001', 0, 'user1')
 
 The first step is always the initialize() call - though in our case it
 does not do anything.

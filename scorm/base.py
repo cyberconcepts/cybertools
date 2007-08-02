@@ -22,11 +22,13 @@ Base classes for providing a generic SCORM-compliant API.
 $Id$
 """
 
+from zope import component
+from zope.component import adapts
 from zope import interface
 from zope.interface import implements
 
 from cybertools.scorm.interfaces import IScormAPI
-from cybertools.tracking.btree import TrackingStorage
+from cybertools.tracking.interfaces import ITrackingStorage
 
 
 OK = '0'
@@ -51,12 +53,15 @@ class ScormAPI(object):
     """
 
     implements(IScormAPI)
+    adapts(ITrackingStorage)
 
-    def __init__(self, storage, taskId, runId, userId):
+    def __init__(self, context):
+        self.context = context
+
+    def init(self, taskId, runId, userId):
         self.taskId = taskId
         self.runId = runId
         self.userId = userId
-        self.storage = storage
 
     def initialize(self, parameter=''):
         # Note that the run has already been started upon SCO launch, the runId
@@ -66,20 +71,20 @@ class ScormAPI(object):
     def terminate(self, parameter=''):
         rc = self.commit()
         if rc == OK:
-            self.storage.stopRun(self.taskId, self.runId)
+            self.context.stopRun(self.taskId, self.runId)
         return rc
 
     def commit(self, parameter=''):
         return OK
 
     def setValue(self, element, value):
-        tracks = self.storage.getUserTracks(self.taskId, self.runId, self.userId)
+        tracks = self.context.getUserTracks(self.taskId, self.runId, self.userId)
         prefix, key = self._splitKey(element)
         data = self._getTrackData(tracks, prefix) or {}
         update = bool(data)
         data['key_prefix'] = prefix
         data.update({key: value})
-        self.storage.saveUserTrack(self.taskId, self.runId, self.userId, data,
+        self.context.saveUserTrack(self.taskId, self.runId, self.userId, data,
                                    update=update)
         return OK
 
@@ -93,7 +98,7 @@ class ScormAPI(object):
         return OK
 
     def getValue(self, element):
-        tracks = self.storage.getUserTracks(self.taskId, self.runId, self.userId)
+        tracks = self.context.getUserTracks(self.taskId, self.runId, self.userId)
         if element.endswith('._count'):
             base = element[:-len('._count')]
             if element.startswith('cmi.interactions.'):
