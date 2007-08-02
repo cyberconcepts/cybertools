@@ -1,0 +1,13 @@
+<!-- $Id$ -->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="zope">
+
+  <adapter factory="cybertools.composer.schema.client.ClientFactory" />
+  <adapter factory="cybertools.composer.schema.instance.ClientInstance" />
+  <adapter factory="cybertools.composer.schema.instance.ClientInstanceEditor"
+           name="editor" />
+
+</configure>
