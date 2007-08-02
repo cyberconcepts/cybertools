@@ -96,8 +96,7 @@ class PythonPage(Contained, Persistent):
                                                self.__filename())
         kw['request'] = request
         kw['script'] = self
-        kw['untrusted_output'] = output
-        kw['printed'] = output
+        kw['untrusted_output'] = kw['printed'] = output
         kw['context'] = getParent(self)
         kw['script_result'] = None
         self._v_compiled(kw)
@@ -113,12 +112,12 @@ class Function(object):
 
     def __init__(self, source, filename='<string>'):
         lines = []
-        lines.insert(0, 'def dummy():')
+        lines.insert(0, 'def dummy(): \n    pass')
         for line in source.splitlines():
             lines.append('    ' + line)
         lines.append('script_result = dummy()')
         source = '\n'.join(lines)
-        print source
+        #print source
         self.code = compile(source, filename, 'exec')
 
     def __call__(self, globals):

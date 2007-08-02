@@ -15,20 +15,18 @@
 
 $Id$
 """
-import unittest
 
+import unittest, doctest
 import zope.component
 from zope.interface import implements
-from zope.testing.doctestunit import DocTestSuite
+from zope.location.traversing import LocationPhysicallyLocatable
+from zope.testing.doctestunit import DocFileSuite
 from zope.traversing.interfaces import IContainmentRoot
 from zope.traversing.interfaces import IPhysicallyLocatable
 from zope.traversing.adapters import RootPhysicallyLocatable
-from zope.location.traversing import LocationPhysicallyLocatable
-
 from zope.app.container.contained import Contained
-#from zope.app.interpreter.interfaces import IInterpreter
-#from zope.app.interpreter.python import PythonInterpreter
 from zope.app.testing import placelesssetup, ztapi
+
 
 class Root(Contained):
     implements(IContainmentRoot)
@@ -36,10 +34,9 @@ class Root(Contained):
     __parent__ = None
     __name__ = 'root'
 
+
 def setUp(test):
     placelesssetup.setUp()
-    sm = zope.component.getGlobalSiteManager()
-    #sm.registerUtility(PythonInterpreter, IInterpreter, 'text/server-python')
 
     ztapi.provideAdapter(None, IPhysicallyLocatable,
                          LocationPhysicallyLocatable)
@@ -47,10 +44,10 @@ def setUp(test):
                          RootPhysicallyLocatable)
 
 
-
 def test_suite():
+    flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
     return unittest.TestSuite((
-        DocTestSuite('cybertools.pyscript',
+        DocFileSuite('README.txt', optionflags=flags,
                      setUp=setUp, tearDown=placelesssetup.tearDown),
         ))
 

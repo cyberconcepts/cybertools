@@ -24,6 +24,7 @@ $Id$
 
 from zope.interface import Interface
 from zope import schema
+from zope.app.i18n import ZopeMessageFactory as _
 
 
 class IPythonPage(Interface):
