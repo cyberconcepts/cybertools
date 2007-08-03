@@ -24,6 +24,8 @@ $Id$
 
 from zope.interface import Interface
 from zope import schema
+from zope.app.container.constraints import contains
+from zope.app.container.interfaces import IContainer
 from zope.app.i18n import ZopeMessageFactory as _
 
 
@@ -56,3 +58,15 @@ class IPythonScript(Interface):
         variables. Furthermore, the variables `script` and `context` (which is
         the container of the script) will be added.
         """
+
+
+class IScriptContainer(IContainer):
+    """ A container for Python scripts.
+    """
+
+    contains(IPythonScript)
+
+    def updateGlobals(globs):
+        """ Put additional variable bindings into the globals dictionary.
+        """
+

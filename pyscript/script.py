@@ -31,7 +31,7 @@ from zope.app.container.contained import Contained
 from zope.interface import implements
 from zope.app.i18n import ZopeMessageFactory as _
 
-from cybertools.pyscript.interfaces import IPythonScript
+from cybertools.pyscript.interfaces import IPythonScript, IScriptContainer
 
 
 class PythonScript(Contained, Persistent):
@@ -94,11 +94,14 @@ class PythonScript(Contained, Persistent):
         if self._v_compiled is None:
             self._v_compiled = Function(self.__prepared_source,
                                                self.__filename())
+        parent = getParent(self)
         kw['request'] = request
         kw['script'] = self
         kw['untrusted_output'] = kw['printed'] = output
-        kw['context'] = getParent(self)
+        kw['context'] = parent
         kw['script_result'] = None
+        if IScriptContainer.providedBy(parent):
+            parent.updateGlobals(kw)
         self._v_compiled(kw)
         result = kw['script_result']
         if result == output:
