@@ -4,19 +4,19 @@
     i18n_domain="zope">
 
   <interface
-      interface=".interfaces.IPythonPage"
+      interface=".interfaces.IPythonScript"
       type="zope.app.content.interfaces.IContentType"
       />
 
-  <class class=".script.PythonPage">
+  <class class=".script.PythonScript">
       <factory
-        id="cybertools.pyscript.PythonPage"
+        id="cybertools.pyscript.PythonScript"
         title="Python Page"
-        description="A simple, content-based Python Page"
+        description="A simple, content-based Python Script"
         />
     <require
         permission="zope.View"
-        interface=".interfaces.IPythonPage"
+        interface=".interfaces.IPythonScript"
         />
     <require
         permission="zope.ManageContent"
@@ -32,34 +32,34 @@
 
   <browser:page
       name="index.html"
-      for=".interfaces.IPythonPage"
-      class=".browser.PythonPageEval"
+      for=".interfaces.IPythonScript"
+      class=".browser.PythonScriptEval"
       attribute="index"
       permission="zope.View"
       />
 
   <browser:addform
-      label="Add Python Page"
-      name="AddPythonPage.html"
-      schema=".interfaces.IPythonPage"
-      content_factory=".script.PythonPage"
+      label="Add Python Script"
+      name="AddPythonScript.html"
+      schema=".interfaces.IPythonScript"
+      content_factory=".script.PythonScript"
       permission="zope.ManageContent"
       />
 
   <browser:addMenuItem
-      class=".script.PythonPage"
+      class=".script.PythonScript"
       title="Python Page"
       description="An Python Page"
       permission="zope.ManageContent"
-      view="AddPythonPage.html"
+      view="AddPythonScript.html"
       />
 
   <browser:editform
-      for=".interfaces.IPythonPage"
-      schema=".interfaces.IPythonPage"
+      for=".interfaces.IPythonScript"
+      schema=".interfaces.IPythonScript"
       name="edit.html"
       label="Edit Python Page"
-      class=".browser.PythonPageEditView"
+      class=".browser.PythonScriptEditView"
       template="edit.pt"
       permission="zope.ManageContent"
       menu="zmi_views" title="Edit"
@@ -70,7 +70,7 @@
 
   <configure package="zope.app.preview">
     <browser:page
-        for="cybertools.pyscript.interfaces.IPythonPage"
+        for="cybertools.pyscript.interfaces.IPythonScript"
         name="preview.html"
         template="preview.pt"
         permission="zope.ManageContent"

@@ -31,20 +31,20 @@ from zope.app.container.contained import Contained
 from zope.interface import implements
 from zope.app.i18n import ZopeMessageFactory as _
 
-from cybertools.pyscript.interfaces import IPythonPage
+from cybertools.pyscript.interfaces import IPythonScript
 
 
-class PythonPage(Contained, Persistent):
+class PythonScript(Contained, Persistent):
     """Persistent Python Page - Content Type
     """
 
-    implements(IPythonPage)
+    implements(IPythonScript)
 
     _v_compiled = None
 
     def __init__(self, source=u'', contentType=u'text/plain'):
         """Initialize the object."""
-        super(PythonPage, self).__init__()
+        super(PythonScript, self).__init__()
         self.source = source
         self.contentType = contentType
 
@@ -80,7 +80,7 @@ class PythonPage(Contained, Persistent):
                 source = source.encode('ascii')
             except UnicodeEncodeError:
                 return self._tripleQuotedString.sub(_print_usrc, source)
-        return self._tripleQuotedString.sub(r"\1print u\2\3", source)
+        return self._tripleQuotedString.sub(r"\1print \2\3", source)
 
 
     def getSource(self):
@@ -102,7 +102,7 @@ class PythonPage(Contained, Persistent):
         self._v_compiled(kw)
         result = kw['script_result']
         if result == output:
-            result = result.getvalue()
+            result = result.getvalue().decode('unicode-escape')
         return result
 
 
@@ -122,9 +122,7 @@ class Function(object):
 
     def __call__(self, globals):
         globals['__builtins__'] = SafeBuiltins
-        #fct = new.function(self.code, globals)
         exec self.code in globals, None
-        #return fct()
 
 
 def _print_usrc(match):
@@ -132,4 +130,4 @@ def _print_usrc(match):
     raw = match.group(2)
     if raw:
         return match.group(1)+'print '+`string`
-    return match.group(1)+'print u'+match.group(3).encode('unicode-escape')
+    return match.group(1)+'print '+match.group(3).encode('unicode-escape')

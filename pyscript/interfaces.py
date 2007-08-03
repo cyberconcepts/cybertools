@@ -27,8 +27,8 @@ from zope import schema
 from zope.app.i18n import ZopeMessageFactory as _
 
 
-class IPythonPage(Interface):
-    """Python Page
+class IPythonScript(Interface):
+    """Python Script, derived from zope.app.pythonpage.PythonPage.
 
     The Python Page acts as a simple content type that allows you to execute
     Python in content space. Additionally, if you have a free-standing

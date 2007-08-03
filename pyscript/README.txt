@@ -1,22 +1,22 @@
-============
-Python Pages
-============
+==============
+Python Scripts
+==============
 
-Persistent Python Page - Content Type
+Persistent Python Scripts
 
 Examples:
 
   >>> from cybertools.pyscript.tests import Root
-  >>> from cybertools.pyscript.script import PythonPage
+  >>> from cybertools.pyscript.script import PythonScript
 
-  >>> pp = PythonPage()
+  >>> pp = PythonScript()
   >>> pp.__parent__ = Root()
   >>> pp.__name__ = 'pp'
   >>> request = None
 
 Test that can produce the correct filename
 
-  >>> pp._PythonPage__filename()
+  >>> pp._PythonScript__filename()
   u'/pp'
 
 A simple test that checks that any lone-standing triple-quotes are
@@ -24,50 +24,49 @@ being printed.
 
   >>> pp.setSource(u"'''<html>...</html>'''\nreturn printed")
   >>> pp(request)
-  '<html>...</html>\n'
+  u'<html>...</html>\n'
 
 Make sure that strings with prefixes work.
 
-  >>> pp.setSource(ur"ur'''test\r'''" + "\nreturn printed")
+  >>> pp.setSource(ur"ur'''test\\r'''" + "\nreturn printed")
   >>> pp(request)
-  'test\\r\n'
+  u'test\\r\n'
 
 Make sure that Windows (\r\n) line ends also work.
 
   >>> pp.setSource(u"if 1 == 1:\r\n\r\n   '''<html>...</html>'''\nreturn printed")
   >>> pp(request)
-  '<html>...</html>\n'
+  u'<html>...</html>\n'
 
 Make sure that unicode strings work as expected.
 
-  >>> #pp.setSource(u"u'''\u0442\u0435\u0441\u0442'''")
-  >>> #pp(request)
-
-u'\u0442\u0435\u0441\u0442\n'
+  >>> pp.setSource(u"u'''\u0442\u0435\u0441\u0442'''\nreturn printed")
+  >>> pp(request)
+  u'\u0442\u0435\u0441\u0442\n'
 
 Make sure that multi-line strings work.
 
   >>> pp.setSource(u"u'''test\ntest\ntest'''\nreturn printed")
   >>> pp(request)
-  'test\n...test\n...test\n'
+  u'test\n...test\n...test\n'
 
 Here you can see a simple Python command...
 
   >>> pp.setSource(u"print u'<html>...</html>'\nreturn printed")
   >>> pp(request)
-  '<html>...</html>\n'
+  u'<html>...</html>\n'
 
 ... and here a triple quote with some variable replacement.
 
   >>> pp.setSource(u"'''<html>%s</html>''' %x\nreturn printed")
   >>> pp(request, x='test')
-  '<html>test</html>\n'
+  u'<html>test</html>\n'
 
 Make sure that the context of the page is available.
 
   >>> pp.setSource(u"'''<html>%s</html>''' %context.__name__\nreturn printed")
   >>> pp(request)
-  '<html>root</html>\n'
+  u'<html>root</html>\n'
 
 Make sure that faulty syntax is interpreted correctly.
 

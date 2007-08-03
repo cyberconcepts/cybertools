@@ -20,17 +20,20 @@ from zope.app.form.browser.editview import EditView
 from zope.app.i18n import ZopeMessageFactory as _
 
 
-class PythonPageEval(object):
-    """Evaluate the Python Page."""
+class PythonScriptEval(object):
+    """Evaluate the Python Script."""
 
     def index(self, **kw):
         """Call a Python Page"""
         self.request.response.setHeader('content-type',
                                         self.context.contentType)
-        return str(self.context(self.request, **kw))
+        result = self.context(self.request, **kw)
+        if type(result) is unicode:
+            return result
+        return unicode(result)
 
 
-class PythonPageEditView(EditView):
+class PythonScriptEditView(EditView):
     """Edit View Class for Python Page."""
 
     syntaxError = None
