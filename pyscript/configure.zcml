@@ -48,8 +48,8 @@
 
   <browser:addMenuItem
       class=".script.PythonScript"
-      title="Python Page"
-      description="An Python Page"
+      title="Python Script"
+      description="An Python Script"
       permission="zope.ManageContent"
       view="AddPythonScript.html"
       />
@@ -58,7 +58,7 @@
       for=".interfaces.IPythonScript"
       schema=".interfaces.IPythonScript"
       name="edit.html"
-      label="Edit Python Page"
+      label="Edit Python Script"
       class=".browser.PythonScriptEditView"
       template="edit.pt"
       permission="zope.ManageContent"

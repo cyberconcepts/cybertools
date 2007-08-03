@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Python Page Browser Views
+"""Python Script Browser Views
 
 $Id$
 """
@@ -24,7 +24,7 @@ class PythonScriptEval(object):
     """Evaluate the Python Script."""
 
     def index(self, **kw):
-        """Call a Python Page"""
+        """Call a Python Script"""
         self.request.response.setHeader('content-type',
                                         self.context.contentType)
         result = self.context(self.request, **kw)
@@ -34,14 +34,14 @@ class PythonScriptEval(object):
 
 
 class PythonScriptEditView(EditView):
-    """Edit View Class for Python Page."""
+    """Edit View Class for Python Script."""
 
     syntaxError = None
 
     def update(self):
         """Update the content with the HTML form data."""
         try:
-            status = super(PythonPageEditView, self).update()
+            status = super(PythonScriptEditView, self).update()
         except SyntaxError, err:
             self.syntaxError = err
             status = _('A syntax error occurred.')
