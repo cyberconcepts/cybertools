@@ -24,14 +24,50 @@ from cStringIO import StringIO
 from persistent import Persistent
 from zope.proxy import removeAllProxies
 from zope.security.untrustedpython.builtins import SafeBuiltins
-from zope.security.untrustedpython.rcompile import compile
+#from zope.security.untrustedpython.rcompile import compile
 from zope.traversing.api import getParent, getPath
 from zope.app.container.contained import Contained
-#from zope.app.interpreter.interfaces import IInterpreter
 from zope.interface import implements
 from zope.app.i18n import ZopeMessageFactory as _
 
 from cybertools.pyscript.interfaces import IPythonScript, IScriptContainer
+
+
+import compiler.pycodegen
+import RestrictedPython.RCompile
+from RestrictedPython.SelectCompiler import ast
+from zope.security.untrustedpython.rcompile import RestrictionMutator as BaseRM
+
+unrestricted_objects = ('rpy', 'r')
+
+def compile(text, filename, mode):
+    if not isinstance(text, basestring):
+        raise TypeError("Compiled source must be string")
+    gen = RExpression(text, str(filename), mode)
+    gen.compile()
+    return gen.getCode()
+
+class RExpression(RestrictedPython.RCompile.RestrictedCompileMode):
+
+    CodeGeneratorClass = compiler.pycodegen.ExpressionCodeGenerator
+
+    def __init__(self, source, filename, mode = "eval"):
+        self.mode = mode
+        RestrictedPython.RCompile.RestrictedCompileMode.__init__(
+            self, source, filename)
+        self.rm = RestrictionMutator()
+
+class RestrictionMutator(BaseRM):
+
+    unrestricted_objects = unrestricted_objects
+
+    def visitGetattr(self, node, walker):
+        _getattr_name = ast.Name("getattr")
+        node = walker.defaultVisitNode(node)
+        if node.expr.name in self.unrestricted_objects:
+            return node     # no protection
+        return ast.CallFunc(_getattr_name,
+                            [node.expr, ast.Const(node.attrname)])
 
 
 class PythonScript(Contained, Persistent):
