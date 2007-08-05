@@ -39,7 +39,10 @@ class RegistrationTemplateView(object):
 
     @Lazy
     def services(self):
-        return self.context.services
+        return self.getServices()
+
+    def getServices(self):
+        return self.context.getServices().values()
 
     def getRegistrations(self):
         if not self.clientName:
@@ -55,6 +58,9 @@ class RegistrationTemplateView(object):
         regs = IClientRegistrations(client)
         regs.template = self.context
         return regs.getRegistrations()
+
+    def getRegistratedServicesTokens(self):
+        return [r.service.token for r in self.getRegistrations()]
 
     def update(self):
         form = self.request.form
@@ -73,9 +79,9 @@ class RegistrationTemplateView(object):
             clientName = self.clientName = manager.addClient(client)
         regs = IClientRegistrations(client)
         regs.template = self.context
-        allServices = self.context.services.values()
+        allServices = self.getServices()
         oldServices = [r.service for r in regs.getRegistrations()]
-        newServices = [manager.services[token]
+        newServices = [manager.getServices()[token]
                        for token in form.get('service_tokens', [])]
         regs.register(newServices)
         toDelete = [s for s in oldServices

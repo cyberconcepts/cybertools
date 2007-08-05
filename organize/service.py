@@ -55,6 +55,9 @@ class ServiceManager(object):
         if self.clientSchemasFactory is not None:
             self.clientSchemas = self.clientSchemasFactory()
 
+    def getServices(self):
+        return self.services
+
     @Lazy
     def clients(self):
         return self.clientsFactory()
@@ -87,6 +90,9 @@ class Service(object):
 
     @property
     def token(self):
+        return self.getToken()
+
+    def getToken(self):
         return self.name
 
     @property
@@ -137,7 +143,11 @@ class RegistrationTemplate(object):
 
     @property
     def services(self):
-        return self.manager.services
+        return self.getServices()
+
+    def getServices(self):
+        # TODO: Restrict according to the objects selection criteria
+        return self.getManager().getServices()
 
     def getManager(self):
         return self.manager
@@ -162,7 +172,7 @@ class ClientRegistrations(object):
             service.unregister(self.context)
 
     def getRegistrations(self):
-        for service in self.template.services:
+        for service in self.template.getServices():
             for reg in service.registrations.values():
                 if self.context == reg.client:
                     yield reg
