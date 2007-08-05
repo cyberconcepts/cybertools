@@ -141,7 +141,11 @@ class IService(Interface):
     """ A service that clients may register with.
     """
 
-    serviceGroup = Attribute('The service group this object is an instance of.')
+    category = schema.TextLine(
+                title=_(u'Category'),
+                description=_(u'A tokenized term characterizing the type of '
+                        'this service, e.g. an event or a transport.'),
+                required=False,)
     capacity = schema.Int(
                 title=_(u'Capacity'),
                 description=_(u'The capacity (maximum number of clients) '
@@ -152,6 +156,13 @@ class IService(Interface):
                 'still available; a negative number means: '
                 'no restriction, i.e. unlimited capacity; '
                 'read-only')
+
+    token = Attribute('A name unique within the manager of this service '
+                'used for identifying the service e.g. in forms.')
+    serviceGroup = Attribute('The service group this object is an instance of.')
+    classification = Attribute('A sequence of tokenized terms characterizing '
+                'this service within a hierarchy of concepts.')
+
     serviceProviders = Attribute('A collection of one or more service providers.')
     resources = Attribute('A collection of one or more resources.')
     registrations = Attribute('A collection of client registrations.')
@@ -160,6 +171,10 @@ class IService(Interface):
         """ Register a client with this service. Return an IRegistration
             object if the registration is successful, otherwise
             (e.g. if the service's capacity is exhausted) return None.
+        """
+
+    def unregister(client):
+        """ Remove the client from this service's registrations.
         """
 
 
@@ -205,8 +220,41 @@ class IRegistration(Interface):
 
 
 class IRegistrationTemplate(Interface):
-    """ Provides and processes data for a service registration form.
+    """ A content object controlling access to service registrations
+        of a certain client.
+
+        The client should be accessed via an IClientRegistrations adapter.
     """
+
+    # TODO: provide fields for criteria for selecting the services
+    #       that should be handled by this object, e.g. service
+    #       category/ies or classification(s).
+
+    manager = Attribute('The service manager this object belongs to.')
+    services = Attribute('A collection of services to which this '
+                'object provides access. This may be all or part '
+                'of the services managed by the manager.')
+
+
+class IClientRegistrations(Interface):
+    """ Provides access to a client object and allows to manage its service
+        registrations.
+    """
+
+    template = Attribute('A regstration template that is used '
+                'for controlling the registration process.')
+
+    def register(services):
+        """ Register the client for the services given.
+        """
+
+    def unregister(services):
+        """ Remove the client from the services given.
+        """
+
+    def getRegistrations():
+        """ Return the client's service registrations.
+        """
 
 
 class IResource(Interface):

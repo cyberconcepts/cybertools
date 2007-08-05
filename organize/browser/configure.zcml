@@ -1,0 +1,19 @@
+<!-- $Id$ -->
+
+<configure
+   xmlns="http://namespaces.zope.org/browser"
+   xmlns:zope="http://namespaces.zope.org/zope"
+   i18n_domain="zope">
+
+  <page
+      for="cybertools.organize.interfaces.IClientRegistrations"
+      name="index.html"
+      class="cybertools.organize.browser.service.ClientRegistrationsView"
+      permission="zope.View"
+      />
+
+  <defaultView
+        name="index.html"
+        for="cybertools.organize.interfaces.IClientRegistrations" />
+
+</configure>

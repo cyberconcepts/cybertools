@@ -29,19 +29,23 @@ from zope.interface import implements
 from cybertools.composer.interfaces import IInstance
 from cybertools.util.jeep import Jeep
 
-from cybertools.composer.schema.interfaces import IClientManager
+from cybertools.composer.schema.interfaces import IClientManager, IClient
 from cybertools.organize.interfaces import IServiceManager
 from cybertools.organize.interfaces import IService, IScheduledService
 from cybertools.organize.interfaces import IRegistration, IRegistrationTemplate
+from cybertools.organize.interfaces import IClientRegistrations
 
 
 class ServiceManager(object):
 
     implements(IServiceManager, IClientManager)
 
-    servicesFactory = list
+    servicesFactory = Jeep
     clientSchemasFactory = Jeep
     clientsFactory = OOBTree
+
+    services = None
+    clients = None
 
     clientNum = 0
 
@@ -73,9 +77,17 @@ class Service(object):
 
     implements(IService)
 
-    def __init__(self, capacity=-1):
+    registrationsFactory = OOBTree
+
+    def __init__(self, name=None, capacity=-1):
+        self.name = name
         self.capacity = capacity
-        self.registrations = []
+        if self.registrationsFactory is not None:
+            self.registrations = self.registrationsFactory()
+
+    @property
+    def token(self):
+        return self.name
 
     @property
     def availableCapacity(self):
@@ -84,11 +96,19 @@ class Service(object):
         return self.capacity - len(self.registrations)
 
     def register(self, client):
+        clientName = client.__name__
+        if clientName in self.registrations:
+            return self.registrations[clientName]
         if self.availableCapacity:
-            reg = Registration(client)
-            self.registrations.append(reg)
+            reg = Registration(client, self)
+            self.registrations[clientName] = reg
             return reg
         return None
+
+    def unregister(self, client):
+        clientName = client.__name__
+        if clientName in self.registrations:
+            del self.registrations[clientName]
 
 
 class ScheduledService(Service):
@@ -96,15 +116,54 @@ class ScheduledService(Service):
     implements(IScheduledService)
 
 
+# registration
+
 class Registration(object):
 
     implements(IRegistration)
 
-    def __init__(self, client):
+    def __init__(self, client, service):
         self.client = client
+        self.service = service
 
 
 class RegistrationTemplate(object):
 
     implements(IRegistrationTemplate)
+
+    def __init__(self, name=None, manager=None):
+        self.name = name
+        self.manager = manager
+
+    @property
+    def services(self):
+        return self.manager.services
+
+    def getManager(self):
+        return self.manager
+
+
+class ClientRegistrations(object):
+
+    implements(IClientRegistrations)
+    adapts(IClient)
+
+    template = None
+
+    def __init__(self, context):
+        self.context = context
+
+    def register(self, services):
+        for service in services:
+            service.register(self.context)
+
+    def unregister(self, services):
+        for service in services:
+            service.unregister(self.context)
+
+    def getRegistrations(self):
+        for service in self.template.services:
+            for reg in service.registrations.values():
+                if self.context == reg.client:
+                    yield reg
 
