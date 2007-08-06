@@ -25,17 +25,12 @@ $Id$
 from zope import component
 from zope.cachedescriptors.property import Lazy
 
+from cybertools.composer.schema.browser.common import BaseView
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.interfaces import IClientFactory
 
 
-class SchemaView(object):
-
-    clientName = None
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
+class SchemaView(BaseView):
 
     @Lazy
     def fields(self):
@@ -78,12 +73,7 @@ class SchemaView(object):
         instance = component.getAdapter(client, IInstance, name='editor')
         instance.template = self.context
         instance.applyTemplate(form)
-        return True
-        #self.request.response.redirect(self.nextUrl)
-        #return False
+        #return True
+        self.request.response.redirect(self.nextUrl())
+        return False
 
-    @Lazy
-    def nextUrl(self):
-        from zope.traversing.browser import absoluteURL
-        url = absoluteURL(self.context, self.request)
-        return '%s/thankyou.html?id=%s' % (url, self.clientName)

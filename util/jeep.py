@@ -105,3 +105,20 @@ class Jeep(object):
         delattr(self, key)
         return value
 
+    def find(self, obj):
+        if isinstance(obj, basestring):
+            key = obj
+        else:
+            key = getattr(obj, '__name__', getattr(obj, 'name', _notfound))
+            if key is _notfound:
+                raise AttributeError("No name attribute present")
+        if key in self:
+            return self._sequence.index(key)
+        else:
+            return -1
+
+    def index(self, obj):
+        idx = self.find(obj)
+        if idx < 0:
+            raise ValueError('list.index(x): x not in list')
+        return idx

@@ -8,7 +8,7 @@
   <page
       for="cybertools.composer.schema.interfaces.ISchema"
       name="index.html"
-      class="cybertools.composer.schema.browser.base.SchemaView"
+      class="cybertools.composer.schema.browser.schema.SchemaView"
       permission="zope.View"
       />
 
@@ -19,7 +19,7 @@
   <page
       for="cybertools.composer.schema.interfaces.ISchema"
       name="thankyou.html"
-      class="cybertools.composer.schema.browser.base.SchemaView"
+      class="cybertools.composer.schema.browser.schema.SchemaView"
       permission="zope.View"
       />
 

@@ -58,6 +58,9 @@ class ServiceManager(object):
     def getServices(self):
         return self.services
 
+    def getClientSchemas(self):
+        return self.clientSchemas
+
     @Lazy
     def clients(self):
         return self.clientsFactory()
@@ -138,8 +141,8 @@ class RegistrationTemplate(object):
     implements(IRegistrationTemplate)
 
     def __init__(self, name=None, manager=None):
-        self.name = name
-        self.manager = manager
+        self.name = self.__name__ = name
+        self.manager = self.__parent__ = manager
 
     @property
     def services(self):

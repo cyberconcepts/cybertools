@@ -26,16 +26,11 @@ from zope import component
 from zope.cachedescriptors.property import Lazy
 
 from cybertools.organize.interfaces import IClientRegistrations
+from cybertools.composer.schema.browser.common import BaseView
 from cybertools.composer.schema.interfaces import IClientFactory
 
 
-class RegistrationTemplateView(object):
-
-    clientName = None
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
+class RegistrationTemplateView(BaseView):
 
     @Lazy
     def services(self):
@@ -87,12 +82,6 @@ class RegistrationTemplateView(object):
         toDelete = [s for s in oldServices
                       if s in allServices and s not in newServices]
         regs.unregister(toDelete)
-        return True
-        #self.request.response.redirect(self.nextUrl)
-        #return False
-
-    @Lazy
-    def nextUrl(self):
-        from zope.traversing.browser import absoluteURL
-        url = absoluteURL(self.context, self.request)
-        return '%s/thankyou.html?id=%s' % (url, self.clientName)
+        #return True
+        self.request.response.redirect(self.nextUrl())
+        return False
