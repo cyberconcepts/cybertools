@@ -1,0 +1,26 @@
+===========================
+Generate Unique Identifiers
+===========================
+
+$Id$
+
+  >>> from cybertools.util.uid import generateUid
+
+  >>> generateUid(seed=42)
+  '5MdsLTYmogAeWfbrLDBY8l'
+
+  >>> generateUid(seed=42)
+  '5MdsLTYmogAeWfbrLDBY8l'
+
+  >>> def checkIt(id):
+  ...     return id != '5MdsLTYmogAeWfbrLDBY8l'
+
+  >>> generateUid(check=checkIt, seed=42)
+  '15pahuNd5rxoekvZSMGAl1'
+
+  >>> generateUid(lowerCaseOnly=True, seed=42)
+  'b8lhps8li07acdu7i0w01b0rh'
+
+  >>> generateUid()
+  '...'
+
