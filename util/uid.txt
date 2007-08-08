@@ -24,3 +24,11 @@ $Id$
   >>> generateUid()
   '...'
 
+  >>> generateUid(base=64, seed=42)
+  '2ZRA3X1CsqQhO0cn-zInCt'
+
+  >>> generateUid(base=99, seed=42)
+  Traceback (most recent call last):
+  ...
+  ValueError: The base argument may not exceed 64, but is 99.
+

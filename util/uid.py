@@ -31,6 +31,8 @@ bits = 128
 def generateUid(check=None, lowerCaseOnly=False, bits=bits, seed=None, base=62):
     """ Generates a unique ID.
     """
+    if base > 64:
+        raise ValueError('The base argument may not exceed 64, but is %i.' % base)
     random.seed(seed)
     OK = False
     base = lowerCaseOnly and min(base, 36) or base
@@ -48,5 +50,8 @@ def strBase(n, base):
     return ''.join(reversed([toChar(n) for n in (result or [0])]))
 
 def toChar(n):
-    return n < 10 and chr(48+n) or n < 36 and chr(87+n) or chr(29+n)
+    return (n < 10 and chr(48+n)
+         or n < 36 and chr(87+n)
+         or n < 62 and chr(29+n)
+         or ('-', '_')[n-62])
 
