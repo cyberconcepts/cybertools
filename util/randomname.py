@@ -25,8 +25,6 @@ $Id$
 import random
 
 
-bits = 128
-
 charList = ([chr(i) for i in range(48, 58)]
           + [chr(i) for i in range(97, 123)]
           + [chr(i) for i in range(65, 91)]
@@ -34,7 +32,7 @@ charList = ([chr(i) for i in range(48, 58)]
 )
 
 
-def generateName(check=None, lowerCaseOnly=False, bits=bits, seed=None, base=62):
+def generateName(check=None, lowerCaseOnly=False, bits=128, base=62, seed=None):
     """ Generates an unguessable random name.
     """
     if base > 64:
