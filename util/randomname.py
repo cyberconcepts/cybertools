@@ -27,6 +27,12 @@ import random
 
 bits = 128
 
+charList = ([chr(i) for i in range(48, 58)]
+          + [chr(i) for i in range(97, 123)]
+          + [chr(i) for i in range(65, 91)]
+          + ['-', '_']
+)
+
 
 def generateName(check=None, lowerCaseOnly=False, bits=bits, seed=None, base=62):
     """ Generates an unguessable random name.
@@ -47,11 +53,5 @@ def strBase(n, base):
     while n > 0:
         n, r = divmod(n, base)
         result.append(r)
-    return ''.join(reversed([toChar(n) for n in (result or [0])]))
-
-def toChar(n):
-    return (n < 10 and chr(48+n)
-         or n < 36 and chr(87+n)
-         or n < 62 and chr(29+n)
-         or ('-', '_')[n-62])
+    return ''.join(reversed([charList[n] for n in (result or [0])]))
 
