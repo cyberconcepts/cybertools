@@ -22,7 +22,7 @@ def test_suite():
         doctest.DocFileSuite('defer.txt', optionflags=flags),
         doctest.DocFileSuite('property.txt', optionflags=flags),
         doctest.DocFileSuite('jeep.txt', optionflags=flags),
-        doctest.DocFileSuite('uid.txt', optionflags=flags),
+        doctest.DocFileSuite('randomname.txt', optionflags=flags),
         ))
 
 if __name__ == '__main__':

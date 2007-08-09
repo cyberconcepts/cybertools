@@ -1,0 +1,34 @@
+=========================================================
+Generate Random Names Suitable as Unguessable Identifiers
+=========================================================
+
+$Id$
+
+  >>> from cybertools.util.randomname import generateName
+
+  >>> generateName(seed=42)
+  '5MdsLTYmogAeWfbrLDBY8l'
+
+  >>> generateName(seed=42)
+  '5MdsLTYmogAeWfbrLDBY8l'
+
+  >>> def checkIt(id):
+  ...     return id != '5MdsLTYmogAeWfbrLDBY8l'
+
+  >>> generateName(check=checkIt, seed=42)
+  '15pahuNd5rxoekvZSMGAl1'
+
+  >>> generateName(lowerCaseOnly=True, seed=42)
+  'b8lhps8li07acdu7i0w01b0rh'
+
+  >>> generateName()
+  '...'
+
+  >>> generateName(base=64, seed=42)
+  '2ZRA3X1CsqQhO0cn-zInCt'
+
+  >>> generateName(base=99, seed=42)
+  Traceback (most recent call last):
+  ...
+  ValueError: The base argument may not exceed 64, but is 99.
+

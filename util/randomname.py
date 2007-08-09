@@ -28,8 +28,8 @@ import random
 bits = 128
 
 
-def generateUid(check=None, lowerCaseOnly=False, bits=bits, seed=None, base=62):
-    """ Generates a unique ID.
+def generateName(check=None, lowerCaseOnly=False, bits=bits, seed=None, base=62):
+    """ Generates an unguessable random name.
     """
     if base > 64:
         raise ValueError('The base argument may not exceed 64, but is %i.' % base)
