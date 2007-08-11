@@ -57,6 +57,7 @@ class TrackingStorage(BTreeContainer):
     implements(ITrackingStorage)
 
     trackNum = runId = 0
+    runs = None
 
     indexAttributes = ('taskId', 'runId', 'userName', 'timeStamp')
 
@@ -94,6 +95,8 @@ class TrackingStorage(BTreeContainer):
         return 0
 
     def getRun(self, taskId=None, runId=0):
+        if self.runs is None:
+            self.runs = IOBTree.IOBTree()
         if taskId and not runId:
             runId = self.currentRuns.get(taskId)
         if runId:
