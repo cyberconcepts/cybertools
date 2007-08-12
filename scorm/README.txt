@@ -29,7 +29,7 @@ Then we can set some values.
 
   >>> rc = api.setValue('cmi.interactions.0.id', 'q007')
   >>> rc = api.setValue('cmi.interactions.0.result', 'correct')
-  >>> rc = api.setValue('cmi.comments_from_learner', 'Hello SCORM')
+  >>> rc = api.setValue('cmi.comments_from_learner.comment', 'Hello SCORM')
   >>> rc = api.setValue('cmi.interactions.1.id', 'q009')
   >>> rc = api.setValue('cmi.interactions.1.result', 'incorrect')
 
@@ -40,13 +40,13 @@ track for each interaction and one additional track for all the other elements.
   >>> for t in sorted(tracks.values(), key=lambda x: x.timeStamp):
   ...     print t.data
   {'id': 'q007', 'key_prefix': 'cmi.interactions.0', 'result': 'correct'}
-  {'cmi.comments_from_learner': 'Hello SCORM', 'key_prefix': ''}
+  {'cmi.comments_from_learner.comment': 'Hello SCORM', 'key_prefix': ''}
   {'id': 'q009', 'key_prefix': 'cmi.interactions.1', 'result': 'incorrect'}
 
 Using the getValue() method we can retrieve certain values without having
 to care about the storage in different track objects.
 
-  >>> api.getValue('cmi.comments_from_learner')
+  >>> api.getValue('cmi.comments_from_learner.comment')
   ('Hello SCORM', '0')
   >>> api.getValue('cmi.interactions.0.id')
   ('q007', '0')
@@ -66,3 +66,40 @@ We can also query special elements like _count and _children.
   >>> api.getValue('cmi.objectives.5.score._children')
   (('scaled', 'raw', 'min', 'max'), '0')
 
+We may also update existing tracks using the ``setValue()`` method.
+
+  >>> rc = api.setValue('cmi.comments_from_learner.location', 'q007')
+  >>> for t in sorted(tracks.values(), key=lambda x: x.timeStamp):
+  ...     print t.data
+  {'id': 'q007', 'key_prefix': 'cmi.interactions.0', 'result': 'correct'}
+  {'cmi.comments_from_learner.location': 'q007',
+   'cmi.comments_from_learner.comment': 'Hello SCORM', 'key_prefix': ''}
+  {'id': 'q009', 'key_prefix': 'cmi.interactions.1', 'result': 'incorrect'}
+
+With the ``setValues()`` method we may set more than one element with
+one call. (This is not a SCORM-compliant call but is provided for efficiency
+reasons as it allows us to update a bunch of elements with just one
+XML-RPC call.)
+
+  >>> data = {'cmi.interactions.2.result': 'correct',
+  ...         'cmi.interactions.2.learner_response': 'my answer',
+  ... }
+  >>> rc = api.setValues(data)
+
+  >>> for t in sorted(tracks.values(), key=lambda x: x.timeStamp):
+  ...     print t.data
+  {'id': 'q007', 'key_prefix': 'cmi.interactions.0', 'result': 'correct'}
+  {'cmi.comments_from_learner.location': 'q007',
+   'cmi.comments_from_learner.comment': 'Hello SCORM', 'key_prefix': ''}
+  {'id': 'q009', 'key_prefix': 'cmi.interactions.1', 'result': 'incorrect'}
+  {'result': 'correct', 'key_prefix': 'cmi.interactions.2',
+   'learner_response': 'my answer'}
+
+  >>> api.getValue('cmi.interactions.2.result')
+  ('correct', '0')
+  >>> api.getValue('cmi.interactions.2.learner_response')
+  ('my answer', '0')
+  >>> api.getValue('cmi.comments_from_learner.comment')
+  ('Hello SCORM', '0')
+  >>> api.getValue('cmi.comments_from_learner.location')
+  ('q007', '0')

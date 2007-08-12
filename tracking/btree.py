@@ -113,18 +113,21 @@ class TrackingStorage(BTreeContainer):
         trackNum = 0
         if update:
             track = self.getLastUserTrack(taskId, runId, userName)
-            if track:
-                trackId = str(track.__name__)
-                trackNum = int(trackId)
-                track.data.update(data)
-                self.indexTrack(trackNum, track)
-                return trackId
+            if track is not None:
+                return self.updateTrack(track, data)
         if not trackNum:
             self.trackNum += 1
             trackNum = self.trackNum
             trackId = self.idFromNum(trackNum)
         track = Track(taskId, runId, userName, data)
         self[trackId] = track
+        self.indexTrack(trackNum, track)
+        return trackId
+
+    def updateTrack(self, track, data):
+        trackId = str(track.__name__)
+        trackNum = int(trackId)
+        track.update(data)
         self.indexTrack(trackNum, track)
         return trackId
 
@@ -152,7 +155,8 @@ class TrackingStorage(BTreeContainer):
         tracks = self.getUserTracks(taskId, runId, userName)
         if tracks:
             return sorted(tracks, key=lambda x: x.timeStamp)[-1]
-        else: return None
+        else:
+            return None
 
     def query(self, **kw):
         result = None
@@ -195,8 +199,10 @@ class Track(Persistent):
         self.timeStamp = getTimeStamp()
         self.data = data
 
-    def update(self, data):
+    def update(self, newData):
         self.timeStamp = getTimeStamp()
+        data = self.data
+        data.update(newData)
         self.data = data
 
     def __repr__(self):

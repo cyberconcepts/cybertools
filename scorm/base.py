@@ -80,18 +80,20 @@ class ScormAPI(object):
     def setValue(self, element, value):
         tracks = self.context.getUserTracks(self.taskId, self.runId, self.userId)
         prefix, key = self._splitKey(element)
-        data = self._getTrackData(tracks, prefix) or {}
-        update = bool(data)
-        data['key_prefix'] = prefix
-        data.update({key: value})
-        self.context.saveUserTrack(self.taskId, self.runId, self.userId, data,
-                                   update=update)
+        track = self._getTrack(tracks, prefix)
+        data = track is not None and track.data or {}
+        data[key] = value
+        if track is None:
+            data['key_prefix'] = prefix
+            self.context.saveUserTrack(self.taskId, self.runId, self.userId, data)
+        else:
+            self.context.updateTrack(track, data)
         return OK
 
     def setValues(self, mapping={}, **kw):
         mapping.update(kw)
         # TODO: optimize, i.e. retrieve existing tracks only once.
-        for key, value in mapping:
+        for key, value in mapping.items():
             rc = self.setValue(key, value)
             if rc != OK:
                 return rc
@@ -104,13 +106,18 @@ class ScormAPI(object):
             if element.startswith('cmi.interactions.'):
                 return self._countSubtracks(tracks, base), OK
             else:
-                data = self._getTrackData(tracks, '')
-                return self._countSubelements(data, base), OK
+                track = self._getTrack(tracks, '')
+                if track is None:
+                    return 0, OK
+                return self._countSubelements(track.data, base), OK
         if element.endswith('_children'):
             base = element[:-len('._children')]
             return self._getChildren(base)
         prefix, key = self._splitKey(element)
-        data = self._getTrackData(tracks, prefix)
+        track = self._getTrack(tracks, prefix)
+        if track is None:
+            return '', '403'
+        data = track.data
         if key in data:
             return data[key], OK
         else:
@@ -130,11 +137,11 @@ class ScormAPI(object):
             return '.'.join(parts[:3]), '.'.join(parts[3:])
         return '', element
 
-    def _getTrackData(self, tracks, prefix):
+    def _getTrack(self, tracks, prefix):
         for tr in reversed(sorted(tracks, key=lambda x: x.timeStamp)):
             if tr and tr.data.get('key_prefix', None) == prefix:
-                return tr.data
-        return {}
+                return tr
+        return None
 
     def _countSubelements(self, data, element):
         result = set()
