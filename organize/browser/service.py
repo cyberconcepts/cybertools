@@ -30,6 +30,16 @@ from cybertools.composer.schema.browser.common import BaseView
 from cybertools.composer.schema.interfaces import IClientFactory
 
 
+class ServiceView(object):
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def getRegistrations(self):
+        return self.context.registrations
+
+
 class RegistrationTemplateView(BaseView):
 
     @Lazy

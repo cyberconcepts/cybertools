@@ -22,6 +22,7 @@ Service management classes.
 $Id$
 """
 
+from time import time
 from BTrees.OOBTree import OOBTree
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
@@ -134,6 +135,7 @@ class Registration(object):
     def __init__(self, client, service):
         self.client = client
         self.service = service
+        self.timeStamp = int(time())
 
 
 class RegistrationTemplate(object):
@@ -163,20 +165,37 @@ class ClientRegistrations(object):
 
     template = None
 
+    registrationsAttributeName = '__service_registrations__'
+
     def __init__(self, context):
         self.context = context
 
     def register(self, services):
-        for service in services:
-            service.register(self.context)
+        regs = [service.register(self.context) for service in services]
+        old = getattr(self.context, self.registrationsAttributeName, [])
+        regs.extend(r for r in old if r.service not in services)
+        setattr(self.context, self.registrationsAttributeName, regs)
 
     def unregister(self, services):
+        old = getattr(self.context, self.registrationsAttributeName, [])
+        regs = [r for r in old if r.service not in services]
+        setattr(self.context, self.registrationsAttributeName, regs)
         for service in services:
             service.unregister(self.context)
 
     def getRegistrations(self):
-        for service in self.template.getServices():
-            for reg in service.registrations.values():
-                if self.context == reg.client:
-                    yield reg
+        return getattr(self.context, self.registrationsAttributeName, [])
+        #for service in self.template.getServices():
+        #    for reg in service.registrations.values():
+        #        if self.context == reg.client:
+        #            yield reg
 
+
+# event handlers
+
+def clientRemoved(obj, event):
+    """ Handle removal of a client object.
+    """
+    regs = IClientRegistrations(obj)
+    for r in regs.getRegistrations():
+        r.service.unregister(obj)
