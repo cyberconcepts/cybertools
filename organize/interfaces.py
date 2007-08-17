@@ -141,6 +141,10 @@ class IService(Interface):
     """ A service that clients may register with.
     """
 
+    description = schema.Text(
+                title=_(u'Description'),
+                description=_(u'A brief description of the item.'),
+                required=False,)
     category = schema.TextLine(
                 title=_(u'Category'),
                 description=_(u'A tokenized term characterizing the type of '

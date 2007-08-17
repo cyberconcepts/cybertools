@@ -35,9 +35,21 @@ class ISchema(ITemplate):
     """ Represents an ordered sequence of fields.
     """
 
-    name = Attribute('An internal name of the schema; will be used '
+    name = schema.ASCII(
+                title=_(u'Schema name'),
+                description=_(u'The internal name of the schema; will be used '
                 'to identify data fields of instance objects that '
-                'are associated with this schema.')
+                'are associated with this schema.'),
+                required=True,)
+    title = schema.TextLine(
+                title=_(u'Title'),
+                description=_(u'The title of the schema'),
+                required=True,)
+    description = schema.Text(
+                title=_(u'Description'),
+                description=_(u'A brief description of the item.'),
+                required=False,)
+
     fields = Attribute('The components the schema is built up of. '
                 'Should be a sequence of IField objects.')
     manager = Attribute('A manager object that may provide special '
@@ -50,7 +62,7 @@ class IField(IComponent):
     """
 
     name = schema.ASCII(
-                title=_(u'Fieldname'),
+                title=_(u'Field name'),
                 description=_(u'The internal name of the field'),
                 required=True,)
     title = schema.TextLine(
@@ -59,7 +71,7 @@ class IField(IComponent):
                 required=True,)
     description = schema.Text(
                 title=_(u'Description'),
-                description=_(u'A more lengthy description of the field'),
+                description=_(u'A brief description of the field'),
                 required=False,)
     fieldType = schema.Choice(
                 title=_(u'Field type'),
