@@ -30,6 +30,13 @@ from cybertools.composer.schema.browser.common import BaseView
 from cybertools.composer.schema.interfaces import IClientFactory
 
 
+class ServiceManagerView(object):
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+
 class ServiceView(object):
 
     def __init__(self, context, request):

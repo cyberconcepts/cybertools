@@ -28,9 +28,10 @@ from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 from zope.interface import implements
 from cybertools.composer.interfaces import IInstance
-from cybertools.util.jeep import Jeep
-
 from cybertools.composer.schema.interfaces import IClientManager, IClient
+from cybertools.util.jeep import Jeep
+from cybertools.util.randomname import generateName
+
 from cybertools.organize.interfaces import IServiceManager
 from cybertools.organize.interfaces import IService, IScheduledService
 from cybertools.organize.interfaces import IRegistration, IRegistrationTemplate
@@ -48,7 +49,7 @@ class ServiceManager(object):
     services = None
     clients = None
 
-    clientNum = 0
+    #clientNum = 0
 
     def __init__(self):
         if self.servicesFactory is not None:
@@ -76,8 +77,12 @@ class ServiceManager(object):
         return name
 
     def generateClientName(self, client):
-        self.clientNum += 1
-        return '%05i' % self.clientNum
+        return generateName(self.checkClientName)
+        #self.clientNum += 1
+        #return '%05i' % self.clientNum
+
+    def checkClientName(self, name):
+        return not name in self.getClients()
 
 
 class Service(object):
@@ -185,10 +190,6 @@ class ClientRegistrations(object):
 
     def getRegistrations(self):
         return getattr(self.context, self.registrationsAttributeName, [])
-        #for service in self.template.getServices():
-        #    for reg in service.registrations.values():
-        #        if self.context == reg.client:
-        #            yield reg
 
 
 # event handlers
