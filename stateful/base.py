@@ -17,28 +17,35 @@
 #
 
 """
-State definition implementation.
+Basic implementations for stateful objects and adapters.
 
 $Id$
 """
 
+from persistent.interfaces import IPersistent
+from persistent.mapping import PersistentMapping
+from zope.component import adapts
 from zope.interface import implements
 
 from cybertools.stateful.interfaces import IStateful
 from cybertools.stateful.definition import statesDefinitions
 
 
-class Stateful:
+class Stateful(object):
 
     implements(IStateful)
 
-    _statesDefinition = 'default'
-    _state = None
+    statesDefinition = 'default'
+    state = None
 
     def getState(self):
-        if self._state is None:
-            self._state = self.getStatesDefinition()._initialState
-        return self._state
+        if self.state is None:
+            self.state = self.getStatesDefinition().initialState
+        return self.state
+
+    def getStateObject(self):
+        state = self.getState()
+        return self.getStatesDefinition().states[state]
 
     def doTransition(self, transition):
         """ execute transition.
@@ -51,6 +58,29 @@ class Stateful:
         return sd.getAvailableTransitionsFor(self)
 
     def getStatesDefinition(self):
-        return statesDefinitions.get(self._statesDefinition, None)
+        return statesDefinitions.get(self.statesDefinition, None)
 
+
+class StatefulAdapter(Stateful):
+    """ An adapter for persistent objects to make the stateful.
+    """
+
+    adapts(IPersistent)
+
+    statesAttributeName = '__states__'
+
+    def __init__(self, context):
+        self.context = context
+
+    def getState(self):
+        statesAttr = getattr(self.context, self.statesAttributeName, {})
+        return statesAttr.get(self.statesDefinition,
+                              self.getStatesDefinition().initialState)
+    def setState(self, value):
+        statesAttr = getattr(self.context, self.statesAttributeName, None)
+        if statesAttr is None:
+            statesAttr = PersistentMapping()
+            setattr(self.context, self.statesAttributeName, statesAttr)
+        statesAttr[self.statesDefinition] = value
+    state = property(getState, setState)
 

@@ -22,7 +22,23 @@ Interfaces for the `stateful` package.
 $Id$
 """
 
-from zope.interface import Interface
+from zope.interface import Interface, Attribute
+
+
+class IState(Interface):
+
+    name = Attribute('The name or identifier of the state')
+    title = Attribute('A user-readable name or title of the state')
+    transitions = Attribute('A sequence of strings naming the transitions '
+                    'that can be executed from this state')
+
+
+class ITransition(Interface):
+
+    name = Attribute('The name or identifier of the transition')
+    title = Attribute('A user-readable name or title of the transition')
+    targetState = Attribute('A string naming the state that will be the '
+                    'result of executing this transition')
 
 
 class IStateful(Interface):
@@ -30,11 +46,15 @@ class IStateful(Interface):
     """
 
     def getState():
-        """ Return the workflow state of the object.
+        """ Return the name of the state of the object.
+        """
+
+    def getStateObject():
+        """ Return the state (an IState implementation) of the object.
         """
 
     def doTransition(transition):
-        """ Execute a transition; the transition is specified by its id.
+        """ Execute a transition; the transition is specified by its name.
         """
 
     def getAvailableTransitions():
@@ -50,9 +70,11 @@ class IStatesDefinition(Interface):
         Similar to an entity-based workflow definition.
     """
 
+    name = Attribute('The name or identifier of the states definition')
+
     def doTransitionFor(object, transition):
         """ Execute a transition for the object given;
-            the transition is specified by its id.
+            the transition is specified by its name.
         """
 
     def getAvailableTransitionsFor(object):

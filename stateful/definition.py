@@ -23,22 +23,28 @@ $Id$
 """
 
 from zope.interface import implements
+from cybertools.util.jeep import Jeep
 
+from cybertools.stateful.interfaces import IState, ITransition
 from cybertools.stateful.interfaces import IStatesDefinition
 
 
 class State(object):
 
-    def __init__(self, id, title, transitions):
-        self.id = id
+    implements(IState)
+
+    def __init__(self, name, title, transitions):
+        self.name = self.__name__ = name
         self.title = title
         self.transitions = transitions
 
 
 class Transition(object):
 
-    def __init__(self, id, title, targetState):
-        self.id = id
+    implements(ITransition)
+
+    def __init__(self, name, title, targetState):
+        self.name = self.__name__ = name
         self.title = title
         self.targetState = targetState
 
@@ -47,27 +53,49 @@ class StatesDefinition(object):
 
     implements(IStatesDefinition)
 
-    # Basic/example states definition:
-    _states = {
-        'started': State('started', 'Started', ('finish',)),
-        'finished': State('finished', 'Finished', ()),
-    }
-    _transitions = {
-        'finish': Transition('finish', 'Finish', 'finished')
-    }
-    _initialState = 'started'
+    initialState = 'started'
 
-    def doTransitionFor(self, object, transition):
-        object._state = self._transitions[transition].targetState
+    def __init__(self, name, *details, **kw):
+        self.name = self.__name__ = name
+        self.states = Jeep()
+        self.transitions = Jeep()
+        for d in details:
+            if ITransition.providedBy(d):
+                self.transitions.append(d)
+            elif IState.providedBy(d):
+                self.states.append(d)
+            else:
+                raise TypeError('Only states or transitions are allowed here, '
+                                'got %s instead.' % repr(d))
+        for k, v in kw.items():
+            setattr(self, k, v)
 
-    def getAvailableTransitionsFor(self, object):
-        state = object.getState()
-        return [ self._transitions[t] for t in self._states[state].transitions ]
+    def doTransitionFor(self, obj, transition):
+        if transition not in self.transitions:
+            raise ValueError('Transition %s is not available.' % transition)
+        if transition not in [t.name for t in self.getAvailableTransitionsFor(obj)]:
+            raise ValueError("Transition '%s' is not reachable from state '%s'."
+                                    % (transition, obj.getState()))
+        obj.state = self.transitions[transition].targetState
+
+    def getAvailableTransitionsFor(self, obj):
+        state = obj.getState()
+        return [self.transitions[t] for t in self.states[state].transitions]
+
+# dummy default states definition
+
+defaultSD = StatesDefinition('default',
+    State('started', 'Started', ('finish',)),
+    State('finished', 'Finished', ()),
+    Transition('finish', 'Finish', 'finished'),
+)
 
 
-def registerStatesDefinition(id, definition):
-    statesDefinitions[id] = definition
+# states definitions registry
 
-statesDefinitions = {
-    'default': StatesDefinition(),
-}
+statesDefinitions = dict()
+
+def registerStatesDefinition(definition):
+    statesDefinitions[definition.name] = definition
+
+registerStatesDefinition(defaultSD)
