@@ -25,7 +25,7 @@ $Id$
 from zope import component
 from zope.cachedescriptors.property import Lazy
 
-from cybertools.organize.interfaces import IClientRegistrations
+from cybertools.organize.interfaces import IClientRegistrations, IRegistrationTemplate
 from cybertools.composer.schema.browser.common import BaseView
 from cybertools.composer.schema.interfaces import IClientFactory
 
@@ -35,6 +35,16 @@ class ServiceManagerView(object):
     def __init__(self, context, request):
         self.context = context
         self.request = request
+
+    def findRegistrationTemplate(self, service):
+        """ Find a registration template that provides the registration
+            for the service given.
+        """
+        for tpl in self.context.getClientSchemas():
+            if IRegistrationTemplate.providedBy(tpl):
+                # TODO: check that service is really provided by this template
+                return tpl
+        return None
 
 
 class ServiceView(object):

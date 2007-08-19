@@ -49,8 +49,6 @@ class ServiceManager(object):
     services = None
     clients = None
 
-    #clientNum = 0
-
     def __init__(self):
         if self.servicesFactory is not None:
             self.services = self.servicesFactory()
@@ -78,11 +76,9 @@ class ServiceManager(object):
 
     def generateClientName(self, client):
         return generateName(self.checkClientName)
-        #self.clientNum += 1
-        #return '%05i' % self.clientNum
 
     def checkClientName(self, name):
-        return not name in self.getClients()
+        return name not in self.getClients()
 
 
 class Service(object):
