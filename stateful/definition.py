@@ -33,20 +33,24 @@ class State(object):
 
     implements(IState)
 
-    def __init__(self, name, title, transitions):
+    def __init__(self, name, title, transitions, **kw):
         self.name = self.__name__ = name
         self.title = title
         self.transitions = transitions
+        for k, v in kw.items():
+            setattr(self, k, v)
 
 
 class Transition(object):
 
     implements(ITransition)
 
-    def __init__(self, name, title, targetState):
+    def __init__(self, name, title, targetState, **kw):
         self.name = self.__name__ = name
         self.title = title
         self.targetState = targetState
+        for k, v in kw.items():
+            setattr(self, k, v)
 
 
 class StatesDefinition(object):

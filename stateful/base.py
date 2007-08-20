@@ -62,12 +62,12 @@ class Stateful(object):
 
 
 class StatefulAdapter(Stateful):
-    """ An adapter for persistent objects to make the stateful.
+    """ An adapter for persistent objects to make them stateful.
     """
 
     adapts(IPersistent)
 
-    statesAttributeName = '__states__'
+    statesAttributeName = '__stateful_states__'
 
     def __init__(self, context):
         self.context = context

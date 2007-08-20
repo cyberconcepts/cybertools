@@ -72,7 +72,7 @@ class BaseView(object):
     @Lazy
     def url(self):
         from zope.traversing.browser import absoluteURL
-        url = absoluteURL(self.context, self.request)
+        return absoluteURL(self.context, self.request)
 
     buttonActions = dict(
             submit_previous=getPreviousTemplate,

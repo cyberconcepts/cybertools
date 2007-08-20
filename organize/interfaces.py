@@ -141,6 +141,8 @@ class IService(Interface):
     """ A service that clients may register with.
     """
 
+    title = Attribute('A descriptive but short title')
+
     description = schema.Text(
                 title=_(u'Description'),
                 description=_(u'A brief description of the item.'),

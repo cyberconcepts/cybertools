@@ -26,15 +26,26 @@ from zope import component
 from zope.cachedescriptors.property import Lazy
 
 from cybertools.organize.interfaces import IClientRegistrations, IRegistrationTemplate
-from cybertools.composer.schema.browser.common import BaseView
+from cybertools.composer.schema.browser.common import BaseView as SchemaBaseView
 from cybertools.composer.schema.interfaces import IClientFactory
 
 
-class ServiceManagerView(object):
+class BaseView(object):
 
     def __init__(self, context, request):
         self.context = context
         self.request = request
+
+    @Lazy
+    def url(self):
+        return self.getUrlForObject(self.context)
+
+    def getUrlForObject(self, obj):
+        from zope.traversing.browser import absoluteURL
+        return absoluteURL(obj, self.request)
+
+
+class ServiceManagerView(BaseView):
 
     def findRegistrationTemplate(self, service):
         """ Find a registration template that provides the registration
@@ -46,18 +57,48 @@ class ServiceManagerView(object):
                 return tpl
         return None
 
+    def overview(self):
+        result = []
+        classific = []
+        category = None
+        maxLevel = 0
+        svcs = sorted(self.context.getServices(),
+                      key=lambda x: (x.getCategory(), x.getClassification()))
+        for svc in svcs:
+            cat = svc.getCategory()
+            if cat != category:
+                result.append(dict(isHeadline=True, title=cat, level=0))
+                category = cat
+                classific = []
+            clsf = svc.getClassification()
+            for idx, element in enumerate(clsf):
+                level = idx + 1
+                if (len(classific) <= idx or
+                        classific[idx].name != element.name):
+                    result.append(dict(isHeadline=True, title=element.title,
+                                       level=level))
+                    classific = clsf
+                if level > maxLevel:
+                    maxLevel = level
+            result.append(dict(isHeadline=False, level=maxLevel+1,
+                               title=svc.title or svc.getName(),
+                               object=svc))
+        return result
 
-class ServiceView(object):
 
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
+class ServiceView(BaseView):
 
     def getRegistrations(self):
         return self.context.registrations
 
+    def registrationUrl(self):
+        context = self.context
+        man = context.getManager()
+        tpl = ServiceManagerView(man, self.request).findRegistrationTemplate(context)
+        return self.getUrlForObject(tpl)
 
-class RegistrationTemplateView(BaseView):
+
+class RegistrationTemplateView(SchemaBaseView):
 
     @Lazy
     def services(self):

@@ -60,7 +60,7 @@ class IStateful(Interface):
     def getAvailableTransitions():
         """ Return the transitions for this object that are available in
             the current state. The implementation of the returned transition
-            objects is not specified, they may be an action dictionaries or
+            objects is not specified, they may be action dictionaries or
             special Transition objects.
         """
 

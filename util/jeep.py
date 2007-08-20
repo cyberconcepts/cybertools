@@ -122,3 +122,15 @@ class Jeep(object):
         if idx < 0:
             raise ValueError('list.index(x): x not in list')
         return idx
+
+
+class Term(object):
+    """ A simple name/title association that may be put in a jeep object.
+    """
+
+    def __init__(self, name, title, **kw):
+        self.name = self.__name__ = name
+        self.title = title
+        for k, v in kw.items():
+            setattr(self, k, v)
+

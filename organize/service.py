@@ -29,6 +29,9 @@ from zope.component import adapts
 from zope.interface import implements
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.interfaces import IClientManager, IClient
+from cybertools.stateful.definition import registerStatesDefinition
+from cybertools.stateful.definition import StatesDefinition
+from cybertools.stateful.definition import State, Transition
 from cybertools.util.jeep import Jeep
 from cybertools.util.randomname import generateName
 
@@ -87,11 +90,30 @@ class Service(object):
 
     registrationsFactory = OOBTree
 
-    def __init__(self, name=None, capacity=-1):
-        self.name = name
+    manager = None
+    category = None
+
+    def __init__(self, name=None, title=u'', capacity=-1, **kw):
+        self.name = self.__name__ = name
+        self.title = title
         self.capacity = capacity
         if self.registrationsFactory is not None:
             self.registrations = self.registrationsFactory()
+        self.classification = []
+        for k, v in kw.items():
+            setattr(self, k, v)
+
+    def getName(self):
+        return self.name
+
+    def getManager(self):
+        return self.manager
+
+    def getClassification(self):
+        return self.classification
+
+    def getCategory(self):
+        return self.category
 
     @property
     def token(self):
@@ -110,11 +132,12 @@ class Service(object):
         clientName = client.__name__
         if clientName in self.registrations:
             return self.registrations[clientName]
-        if self.availableCapacity:
-            reg = Registration(client, self)
-            self.registrations[clientName] = reg
-            return reg
-        return None
+        reg = Registration(client, self)
+        self.registrations[clientName] = reg
+        return reg
+        #if self.availableCapacity:
+        # TODO: handle case when no capacity available -
+        #       probably on 'submit' transition; UI feedback?
 
     def unregister(self, client):
         clientName = client.__name__
@@ -186,6 +209,27 @@ class ClientRegistrations(object):
 
     def getRegistrations(self):
         return getattr(self.context, self.registrationsAttributeName, [])
+
+
+# registration states definition
+
+registerStatesDefinition(
+    StatesDefinition('organize.service.registration',
+        State('temporary', 'temporary', ('submit', 'cancel',)),
+        State('submitted', 'submitted', ('retract', 'setwaiting', 'confirm', 'reject',)),
+        State('cancelled', 'cancelled', ('submit',)),
+        State('retracted', 'retracted', ('submit',)),
+        State('waiting', 'waiting', ('retract', 'confirm', 'reject',)),
+        State('confirmed', 'confirmed', ('retract', 'reject',)),
+        State('rejected', 'rejected', ('retract', 'setwaiting', 'confirm',)),
+        Transition('cancel', 'Cancel registration', 'cancelled'),
+        Transition('submit', 'Submit registration', 'submitted'),
+        Transition('retract', 'Retract registration', 'retracted'),
+        Transition('setwaiting', 'Set on waiting list', 'waiting'),
+        Transition('confirm', 'Confirm registration', 'confirmed'),
+        Transition('reject', 'Reject registration', 'rejected'),
+        initialState='temporary',
+))
 
 
 # event handlers
