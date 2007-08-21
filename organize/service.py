@@ -149,6 +149,13 @@ class ScheduledService(Service):
 
     implements(IScheduledService)
 
+    start = end = None
+
+    def getStartFromManager(self):
+        return getattr(self.getManager(), 'start', None)
+    def getEndFromManager(self):
+        return getattr(self.getManager(), 'end', None)
+
 
 # registration
 

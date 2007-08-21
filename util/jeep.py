@@ -32,9 +32,13 @@ class Jeep(object):
 
     def __init__(self, seq=[]):
         sequence = self._sequence = []
-        for attr, value in seq:
-            sequence.append(attr)
-            object.__setattr__(self, attr, value)
+        for item in seq:
+            if isinstance(item, (list, tuple)) and len(item) == 2:
+                attr, value = item
+                sequence.append(attr)
+                object.__setattr__(self, attr, value)
+            else:
+                self.append(item)
 
     def __len__(self):
         return len(self._sequence)
@@ -129,8 +133,11 @@ class Term(object):
     """
 
     def __init__(self, name, title, **kw):
-        self.name = self.__name__ = name
+        self.name = self.__name__ = self.value = self.token = name
         self.title = title
         for k, v in kw.items():
             setattr(self, k, v)
+
+    def __str__(self):
+        return self.title
 

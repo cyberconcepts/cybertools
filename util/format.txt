@@ -1,0 +1,17 @@
+==========================
+Basic Formatting Functions
+==========================
+
+$Id$
+
+  >>> from cybertools.util import format
+  >>> from datetime import datetime
+
+  >>> time = datetime(2006, 8, 21, 17, 37, 13)
+
+  >>> format.formatDate(time, type='time', variant='medium')
+  u'17:37:13'
+
+  >>> format.formatDate(time, type='dateTime', variant='medium')
+  u'21.08.2006 17:37:13'
+

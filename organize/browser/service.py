@@ -22,12 +22,16 @@ Basic browser view classes for composer.schema.
 $Id$
 """
 
+from datetime import datetime
+import time
 from zope import component
 from zope.cachedescriptors.property import Lazy
 
 from cybertools.organize.interfaces import IClientRegistrations, IRegistrationTemplate
+from cybertools.organize.interfaces import serviceCategories
 from cybertools.composer.schema.browser.common import BaseView as SchemaBaseView
 from cybertools.composer.schema.interfaces import IClientFactory
+from cybertools.util.format import formatDate
 
 
 class BaseView(object):
@@ -43,6 +47,25 @@ class BaseView(object):
     def getUrlForObject(self, obj):
         from zope.traversing.browser import absoluteURL
         return absoluteURL(obj, self.request)
+
+    def getLanguage(self):
+        # TODO: take from request or whatever...
+        return 'en'
+
+    def getFormattedDate(self, date=None, type='date', variant='medium'):
+        date = time.localtime(date)[:6]
+        date = datetime(*date)
+        return formatDate(date, type=type, variant=variant, lang=self.getLanguage())
+
+    def getFromTo(self, service=None):
+        if service is None:
+            service = self.context
+        if service.start and service.end:
+            return ('%s - %s' %
+                (self.getFormattedDate(service.start, type='dateTime', variant='short'),
+                 self.getFormattedDate(service.end, type='time', variant='short')))
+        else:
+            return '-'
 
 
 class ServiceManagerView(BaseView):
@@ -63,11 +86,15 @@ class ServiceManagerView(BaseView):
         category = None
         maxLevel = 0
         svcs = sorted(self.context.getServices(),
-                      key=lambda x: (x.getCategory(), x.getClassification()))
+                      key=lambda x: (x.getCategory(),
+                                     x.getClassification(),
+                                     x.title))
         for svc in svcs:
             cat = svc.getCategory()
             if cat != category:
-                result.append(dict(isHeadline=True, title=cat, level=0))
+                term = serviceCategories.getTermByToken(cat)
+                result.append(dict(isHeadline=True, level=0, title=term.title,
+                                   object=None))
                 category = cat
                 classific = []
             clsf = svc.getClassification()
@@ -75,13 +102,15 @@ class ServiceManagerView(BaseView):
                 level = idx + 1
                 if (len(classific) <= idx or
                         classific[idx].name != element.name):
-                    result.append(dict(isHeadline=True, title=element.title,
-                                       level=level))
+                    result.append(dict(isHeadline=True, level=level,
+                                       title=element.title,
+                                       object=element.object))
                     classific = clsf
                 if level > maxLevel:
                     maxLevel = level
             result.append(dict(isHeadline=False, level=maxLevel+1,
                                title=svc.title or svc.getName(),
+                               fromTo=self.getFromTo(svc),
                                object=svc))
         return result
 

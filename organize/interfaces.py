@@ -22,9 +22,12 @@ Interfaces for organizational stuff like persons, addresses, tasks, services...
 $Id$
 """
 
-from zope.interface import Interface, Attribute
 from zope import schema
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.interface import Interface, Attribute
 from zope.i18nmessageid import MessageFactory
+
+from cybertools.util.jeep import Jeep, Term
 
 _ = MessageFactory('zope')
 
@@ -126,6 +129,15 @@ class IServiceManager(Interface):
     """ A manager or container for a set of services.
     """
 
+    start = schema.Date(
+                title=_(u'Start date/time'),
+                description=_(u'The start date/time for providing services.'),
+                required=False,)
+    end = schema.Date(
+                title=_(u'End date/time'),
+                description=_(u'The end date/time for providing services.'),
+                required=False,)
+
     services = Attribute('A collection of services managed by this object.')
 
 
@@ -137,6 +149,11 @@ class IServiceGroup(Interface):
     services = Attribute('A collection of services belonging to this object.')
 
 
+serviceCategories = SimpleVocabulary((
+    SimpleTerm('event', 'event', u'Event'),
+    SimpleTerm('transport', 'transport', u'Transport'),
+))
+
 class IService(Interface):
     """ A service that clients may register with.
     """
@@ -147,10 +164,12 @@ class IService(Interface):
                 title=_(u'Description'),
                 description=_(u'A brief description of the item.'),
                 required=False,)
-    category = schema.TextLine(
+    category = schema.Choice(
                 title=_(u'Category'),
-                description=_(u'A tokenized term characterizing the type of '
+                description=_(u'The type of '
                         'this service, e.g. an event or a transport.'),
+                vocabulary=serviceCategories,
+                default='event',
                 required=False,)
     capacity = schema.Int(
                 title=_(u'Capacity'),
@@ -193,10 +212,12 @@ class IScheduledService(IService):
                 title=_(u'Start date/time'),
                 description=_(u'The date/time when the service starts'),
                 required=False,)
+    start.default_method = 'getStartFromManager'
     end = schema.Date(
                 title=_(u'End date/time'),
                 description=_(u'The date/time when the service ends'),
                 required=False,)
+    end.default_method = 'getEndFromManager'
     duration = Attribute('Time delta between start and end date/time.')
 
 
