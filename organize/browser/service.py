@@ -85,12 +85,9 @@ class ServiceManagerView(BaseView):
         classific = []
         category = None
         maxLevel = 0
-        svcs = sorted(self.context.getServices(),
-                      key=lambda x: (x.getCategory(),
-                                     x.getClassification(),
-                                     x.title))
-        for svc in svcs:
-            cat = svc.getCategory()
+        svcs = sorted((svc.getCategory(), idx, svc)
+                for idx, svc in enumerate(self.context.getServices()))
+        for cat, idx, svc in svcs:
             if cat != category:
                 term = serviceCategories.getTermByToken(cat)
                 result.append(dict(isHeadline=True, level=0, title=term.title,
