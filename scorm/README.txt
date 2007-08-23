@@ -37,11 +37,11 @@ Depending on the data elements the values entered are kept together in
 one track or stored in separate track objects. So there is a separate
 track for each interaction and one additional track for all the other elements.
 
-  >>> for t in sorted(tracks.values(), key=lambda x: x.timeStamp):
+  >>> for t in sorted(tracks.values(), key=lambda x: x.data['recnum']):
   ...     print t.data
-  {'id': 'q007', 'key_prefix': 'cmi.interactions.0', 'result': 'correct'}
-  {'cmi.comments_from_learner.comment': 'Hello SCORM', 'key_prefix': ''}
-  {'id': 'q009', 'key_prefix': 'cmi.interactions.1', 'result': 'incorrect'}
+  {'recnum': -1, 'cmi.comments_from_learner.comment': 'Hello SCORM'}
+  {'cmi.interactions.0.id': 'q007', 'cmi.interactions.0.result': 'correct', 'recnum': 0}
+  {'cmi.interactions.1.result': 'incorrect', 'cmi.interactions.1.id': 'q009', 'recnum': 1}
 
 Using the getValue() method we can retrieve certain values without having
 to care about the storage in different track objects.
@@ -69,12 +69,12 @@ We can also query special elements like _count and _children.
 We may also update existing tracks using the ``setValue()`` method.
 
   >>> rc = api.setValue('cmi.comments_from_learner.location', 'q007')
-  >>> for t in sorted(tracks.values(), key=lambda x: x.timeStamp):
+  >>> for t in sorted(tracks.values(), key=lambda x: x.data['recnum']):
   ...     print t.data
-  {'id': 'q007', 'key_prefix': 'cmi.interactions.0', 'result': 'correct'}
-  {'cmi.comments_from_learner.location': 'q007',
-   'cmi.comments_from_learner.comment': 'Hello SCORM', 'key_prefix': ''}
-  {'id': 'q009', 'key_prefix': 'cmi.interactions.1', 'result': 'incorrect'}
+  {'recnum': -1, 'cmi.comments_from_learner.comment': 'Hello SCORM',
+   'cmi.comments_from_learner.location': 'q007'}
+  {'cmi.interactions.0.id': 'q007', 'cmi.interactions.0.result': 'correct', 'recnum': 0}
+  {'cmi.interactions.1.result': 'incorrect', 'cmi.interactions.1.id': 'q009', 'recnum': 1}
 
 With the ``setValues()`` method we may set more than one element with
 one call. (This is not a SCORM-compliant call but is provided for efficiency
@@ -86,14 +86,14 @@ XML-RPC call.)
   ... }
   >>> rc = api.setValues(data)
 
-  >>> for t in sorted(tracks.values(), key=lambda x: x.timeStamp):
+  >>> for t in sorted(tracks.values(), key=lambda x: x.data['recnum']):
   ...     print t.data
-  {'id': 'q007', 'key_prefix': 'cmi.interactions.0', 'result': 'correct'}
-  {'cmi.comments_from_learner.location': 'q007',
-   'cmi.comments_from_learner.comment': 'Hello SCORM', 'key_prefix': ''}
-  {'id': 'q009', 'key_prefix': 'cmi.interactions.1', 'result': 'incorrect'}
-  {'result': 'correct', 'key_prefix': 'cmi.interactions.2',
-   'learner_response': 'my answer'}
+  {'recnum': -1, 'cmi.comments_from_learner.comment': 'Hello SCORM',
+   'cmi.comments_from_learner.location': 'q007'}
+  {'cmi.interactions.0.id': 'q007', 'cmi.interactions.0.result': 'correct', 'recnum': 0}
+  {'cmi.interactions.1.result': 'incorrect', 'cmi.interactions.1.id': 'q009', 'recnum': 1}
+  {'cmi.interactions.2.learner_response': 'my answer',
+   'cmi.interactions.2.result': 'correct', 'recnum': 2}
 
   >>> api.getValue('cmi.interactions.2.result')
   ('correct', '0')

@@ -33,7 +33,9 @@ from cybertools.tracking.interfaces import ITrackingStorage
 
 OK = '0'
 
-_children = {
+scormInteractionsPrefixes = ['cmi.interactions.']
+
+scormChildren = {
     'cmi.comments_from_learner': ('comment', 'location', 'timestamp'),
     'cmi.comments_from_lms': ('comment', 'location', 'timestamp'),
     'cmi.interactions': ('id', 'type', 'objectives', 'timestamp',
@@ -43,8 +45,10 @@ _children = {
             'delivery_speed', 'audio_captioning'),
     'cmi.objectives': ('id', 'score', 'success_status', 'completion_status',
             'description'),
-    'score': ('scaled', 'raw', 'min', 'max'),
+    ('cmi', 'score'): ('scaled', 'raw', 'min', 'max'),
 }
+
+
 
 
 class ScormAPI(object):
@@ -79,12 +83,12 @@ class ScormAPI(object):
 
     def setValue(self, element, value):
         tracks = self.context.getUserTracks(self.taskId, self.runId, self.userId)
-        prefix, key = self._splitKey(element)
-        track = self._getTrack(tracks, prefix)
+        recnum = self._getRecnum(element)
+        track = self._getTrack(tracks, recnum)
         data = track is not None and track.data or {}
-        data[key] = value
+        data[element] = value
         if track is None:
-            data['key_prefix'] = prefix
+            data['recnum'] = recnum
             self.context.saveUserTrack(self.taskId, self.runId, self.userId, data)
         else:
             self.context.updateTrack(track, data)
@@ -103,23 +107,23 @@ class ScormAPI(object):
         tracks = self.context.getUserTracks(self.taskId, self.runId, self.userId)
         if element.endswith('._count'):
             base = element[:-len('._count')]
-            if element.startswith('cmi.interactions.'):
-                return self._countSubtracks(tracks, base), OK
-            else:
-                track = self._getTrack(tracks, '')
-                if track is None:
-                    return 0, OK
-                return self._countSubelements(track.data, base), OK
+            for prefix in scormInteractionsPrefixes:
+                if element.startswith(prefix):
+                    return self._countInteractionTracks(tracks), OK
+            track = self._getTrack(tracks, -1)
+            if track is None:
+                return 0, OK
+            return self._countSubelements(track.data, base), OK
         if element.endswith('_children'):
             base = element[:-len('._children')]
             return self._getChildren(base)
-        prefix, key = self._splitKey(element)
-        track = self._getTrack(tracks, prefix)
+        recnum = self._getRecnum(element)
+        track = self._getTrack(tracks, recnum)
         if track is None:
             return '', '403'
         data = track.data
-        if key in data:
-            return data[key], OK
+        if element in data:
+            return data[element], OK
         else:
             return '', '403'
 
@@ -131,15 +135,22 @@ class ScormAPI(object):
 
     # helper methods
 
+    def _getRecnum(self, element):
+        for prefix in scormInteractionsPrefixes:
+            if element.startswith(prefix):
+                # interaction record
+                return int(element[len(prefix):].split('.', 1)[0])
+        return -1 # base record
+
     def _splitKey(self, element):
         if element.startswith('cmi.interactions.'):
             parts = element.split('.')
             return '.'.join(parts[:3]), '.'.join(parts[3:])
         return '', element
 
-    def _getTrack(self, tracks, prefix):
-        for tr in reversed(sorted(tracks, key=lambda x: x.timeStamp)):
-            if tr and tr.data.get('key_prefix', None) == prefix:
+    def _getTrack(self, tracks, recnum):
+        for tr in tracks:
+            if tr.data['recnum'] == recnum:
                 return tr
         return None
 
@@ -150,14 +161,19 @@ class ScormAPI(object):
                 result.add(key)
         return len(result)
 
-    def _countSubtracks(self, tracks, base):
-        return len([tr for tr in tracks if tr.data.get('key_prefix').startswith(base)])
+    def _countInteractionTracks(self, tracks):
+        return len([tr for tr in tracks
+                       if tr.data.get('recnum', -1) >= 0])
 
     def _getChildren(self, base):
-        if base.endswith('.score'):
-            base = 'score'
-        if base in _children:
-            return _children[base], OK
-        else:
-            return '', '401'
+        if base in scormChildren:
+            return scormChildren[base], OK
+        parts = base.split('.')
+        if len(parts) >= 2:
+            # this may be somewhat simplistic, but should cover the
+            # most common cases
+            key = (parts[0], parts[-1])
+            if key in scormChildren:
+                return scormChildren[key], OK
+        return '', '401'
 
