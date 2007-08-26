@@ -78,7 +78,7 @@ class IField(IComponent):
                 description=_(u'The type of the field'),
                 required=True,
                 default='textline',
-                values=('textline', 'textarea', 'date'))
+                values=('textline', 'textarea', 'date', 'checkbox'))
     defaultValue = schema.TextLine(
                 title=_(u'Default'),
                 description=_(u'Value with which to pre-set the field contents'),
@@ -87,6 +87,61 @@ class IField(IComponent):
                 title=_(u'Required'),
                 description=_(u'Must a value been entered into this field?'),
                 required=False,)
+    width = schema.Int(
+                title=_(u'Width'),
+                description=_(u'The horizontal size of the field in pixels'),
+                default=300,
+                required=False,)
+    height = schema.Int(
+                title=_(u'Height'),
+                description=_(u'The vertical size of the field in lines '
+                        '(only for type textarea)'),
+                default=3,
+                required=False,)
+    # validator = schema.Text(),
+    # marshaller = schema.Text(),
+
+    def marshallValue(value):
+        """ Return a string (possibly unicode) representation of the
+            value given that may be used for editing.
+        """
+
+    def displayValue(value):
+        """ Return a string (possibly unicode) representation of the
+            value given that may be used for presentation.
+        """
+
+    def unmarshallValue(strValue):
+        """ Return the internal (real) value corresponding to the string
+            value given.
+        """
+
+    def validateValue(value):
+        """ Check if the value given is valid. Return an object implementing
+            IFieldState.
+        """
+
+
+class IFieldState(Interface):
+    """ Represents the state of a field used for editing.
+    """
+
+    name = Attribute('Field name.')
+    change = Attribute('A tuple ``(oldValue, newValue)`` or None.')
+    errors = Attribute('A sequence of error infos.')
+    severity = Attribute("An integer giving a state or error "
+                    "code, 0 meaning 'OK'.")
+
+
+class IFormState(Interface):
+    """ Represents the state of all fields when editing.
+    """
+
+    fieldStates = Attribute('A mapping ``{fieldName: fieldState, ...}``.')
+    changed = Attribute('True if one of the fields has been changed or False.')
+    severity = Attribute("An integer giving an overall state or error "
+                    "code, typically the maximum of the field states' "
+                    "severities.")
 
 
 # clients

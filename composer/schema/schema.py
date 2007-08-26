@@ -26,7 +26,8 @@ from zope.interface import implements
 
 from cybertools.composer.base import Component, Element, Compound
 from cybertools.composer.base import Template
-from cybertools.composer.schema.interfaces import ISchema
+from cybertools.composer.schema.interfaces import ISchema, IFormState
+from cybertools.util.jeep import Jeep
 
 
 class Schema(Template):
@@ -57,3 +58,14 @@ class Schema(Template):
 
     def getManager(self):
         return self.manager
+
+
+class FormState(object):
+
+    implements(IFormState)
+
+    def __init__(self, fieldStates=[], changed=False, severity=0):
+        self.fieldStates = Jeep(fieldStates)
+        self.changed = changed
+        self.severity = severity
+

@@ -48,3 +48,16 @@ def formatNumber(num, type='decimal', lang='de'):
     fmt = de.numbers.getFormatter(type)
     return fmt.format(num)
 
+
+def toStr(value, encoding='UTF-8'):
+    if isinstance(value, unicode):
+        return value.encode(encoding)
+    return str(value)
+
+def toUnicode(value, encoding='UTF-8'):
+    if isinstance(value, unicode):
+        return value
+    elif isinstance(value, str):
+        return value.decode(encoding)
+    else:
+        return u''

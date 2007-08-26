@@ -29,6 +29,7 @@ from zope.interface import implements
 from cybertools.composer.instance import Instance
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.interfaces import IClient
+from cybertools.composer.schema.schema import FormState
 
 
 class Editor(Instance):
@@ -84,7 +85,9 @@ class ClientInstanceEditor(ClientInstance):
     def applyTemplate(self, data={}, **kw):
         """ Store the attributes described by self.template (a schema)
             using corresponding values from the data argument.
+            Return the resulting form state (an object providing IFormState).
         """
+        formState = FormState()
         attrs = getattr(self.context, self.attrsName, None)
         if attrs is None:
             attrs = OOBTree()
@@ -92,8 +95,17 @@ class ClientInstanceEditor(ClientInstance):
         template = self.template
         values = attrs.setdefault(self.aspect, OOBTree())
         if template is not None:
-            for c in template.components:
-                name = c.name
+            for f in template.fields:
+                name = f.name
+                value = f.unmarshallValue(data.get(name))
+                fieldState = f.validateValue(value)
                 if name in data:
-                    values[name] = data[name]
+                    oldValue = values.get(name)
+                    if value != oldValue:
+                        values[name] = value
+                        fieldState.change = (oldValue, value)
+                        formState.changed = True
+                formState.fieldStates.append(fieldState)
+                formState.severity = max(formState.severity, fieldState.severity)
+        return formState
 

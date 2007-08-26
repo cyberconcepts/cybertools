@@ -32,6 +32,8 @@ from cybertools.composer.schema.interfaces import IClientFactory
 
 class SchemaView(BaseView):
 
+    formState = None
+
     @Lazy
     def fields(self):
         return self.context.fields
@@ -41,8 +43,8 @@ class SchemaView(BaseView):
         return self.getData()
 
     def getData(self):
+        form = self.request.form
         if not self.clientName:
-            form = self.request.form
             self.clientName = form.get('id')
         clientName = self.clientName
         if not clientName:
@@ -54,6 +56,7 @@ class SchemaView(BaseView):
         instance = IInstance(client)
         instance.template = self.context
         return instance.applyTemplate()
+        # TODO: overwrite data with values from form
 
     def update(self):
         form = self.request.form
@@ -68,12 +71,17 @@ class SchemaView(BaseView):
             if client is None:
                 return True
         else:
+            # if not self.hasData(form) and 'submit' not in form:
+            #     self.request.response.redirect(self.nextUrl())
+            #     return False
             client = IClientFactory(manager)()
             clientName = self.clientName = manager.addClient(client)
         instance = component.getAdapter(client, IInstance, name='editor')
         instance.template = self.context
-        instance.applyTemplate(form)
-        #return True
+        self.formState = formState = instance.applyTemplate(form)
+        if formState.severity > 0:
+            # show form again
+            return True
         self.request.response.redirect(self.nextUrl())
         return False
 
