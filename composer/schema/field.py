@@ -50,18 +50,16 @@ class Field(Component):
     def name(self):
         return self.__name__
 
-    #@property
-    #def title(self):
-    #    return self.title or self.name
-
     def getTitleValue(self):
         return self.title or self.name
 
     def marshallValue(self, value):
-        return toStr(value)
+        return value
+        #return toStr(value)
 
     def displayValue(self, value):
-        return toStr(value)
+        return value
+        #return toStr(value)
 
     def unmarshallValue(self, strValue):
         return toUnicode(strValue) or u''

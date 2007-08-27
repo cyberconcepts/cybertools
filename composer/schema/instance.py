@@ -73,9 +73,9 @@ class ClientInstance(object):
         template = self.template
         values = attrs.setdefault(self.aspect, {})
         if template is not None:
-            for c in template.components:
-                name = c.name
-                result[name] = values.get(name, u'')
+            for f in template.fields:
+                name = f.name
+                result[name] = f.displayValue(values.get(name, u''))
         result['__name__'] = self.context.__name__
         return result
 
