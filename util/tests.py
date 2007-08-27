@@ -19,6 +19,7 @@ def test_suite():
         #unittest.makeSuite(Test),  # we don't need this
         #doctest.DocTestSuite(cybertools.util.property, optionflags=flags),
         doctest.DocFileSuite('adapter.txt', optionflags=flags),
+        doctest.DocFileSuite('aop.txt', optionflags=flags),
         doctest.DocFileSuite('defer.txt', optionflags=flags),
         doctest.DocFileSuite('format.txt', optionflags=flags),
         doctest.DocFileSuite('property.txt', optionflags=flags),

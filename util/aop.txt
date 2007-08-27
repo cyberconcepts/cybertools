@@ -1,0 +1,64 @@
+=======================================
+Aspect-oriented Programming for Dummies
+=======================================
+
+$Id$
+
+  >>> from cybertools.util.aop import getNotifier
+
+  >>> class Demo(object):
+  ...     def foo(self, num):
+  ...         return 38 + num
+
+  >>> demo = Demo()
+  >>> demo.foo(4)
+  42
+
+  >>> wrappedFoo = getNotifier(demo.foo)
+  >>> demo.foo is wrappedFoo
+  True
+
+Repeated calls of ``getNotifier()`` return the same wrapped object.
+
+  >>> getNotifier(demo.foo) is wrappedFoo
+  True
+
+Calling the wrapped method still works.
+
+  >>> demo.foo(8)
+  46
+
+We can now get information about the returning of the method by
+subscribing to it using some log function.
+
+  >>> def log(result, msg):
+  ...     print 'logging: %s, result=%s' % (msg, str(result))
+
+  >>> demo.foo.subscribe(log, None, 'before foo')
+
+  >>> demo.foo(4)
+  logging: before foo, result=None
+  42
+
+  >>> demo.foo.subscribe(log, log, "that's foo")
+  >>> demo.foo(4)
+  logging: before foo, result=None
+  logging: that's foo, result=None
+  logging: that's foo, result=42
+  42
+
+
+Wrapping methods on class level
+===============================
+
+  >>> demo = Demo()
+  >>> demo.foo(4)
+  42
+
+  >>> getNotifier(Demo.foo)
+  <...Notifier object ...>
+  >>> Demo.foo.subscribe(None, log, 'after foo')
+  >>> demo.foo(4)
+  logging: after foo, result=42
+  42
+
