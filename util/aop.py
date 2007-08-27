@@ -34,13 +34,22 @@ class Notifier(object):
     def __init__(self, method):
         self.method = method
         obj = method.im_self or method.im_class
-        name = method.im_func.func_name
+        name = self.name = method.im_func.func_name
         setattr(obj, name, self)
         self.beforeSubs = []
         self.afterSubs = []
 
     def __get__(self, instance, cls=None):
-        return BoundNotifier(self, instance)
+        if instance is None:
+            # class-level access
+            return self
+        existing = instance.__dict__.get(self.name)
+        if isinstance(existing, BoundNotifier):
+            # the instance's method is already wrapped
+            return existing
+        notifier = BoundNotifier(self, instance)
+        setattr(instance, self.name, notifier)
+        return notifier
 
     def __call__(self, *args, **kw):
         for sub, sargs, skw in self.beforeSubs:
@@ -62,15 +71,21 @@ class BoundNotifier(object):
     def __init__(self, context, instance):
         self.context = context
         self.instance = instance
+        self.beforeSubs = []
+        self.afterSubs = []
 
     def __call__(self, *args, **kw):
-        for sub, sargs, skw in self.context.beforeSubs:
+        context = self.context
+        for sub, sargs, skw in self.beforeSubs + context.beforeSubs:
             sub(None, *sargs, **skw)
-        result = self.context.method(self.instance, *args, **kw)
-        for sub, aargs, akw in self.context.afterSubs:
+        result = context.method(self.instance, *args, **kw)
+        for sub, aargs, akw in self.afterSubs + context.afterSubs:
             sub(result, *aargs, **akw)
         return result
 
     def subscribe(self, before, after, *args, **kw):
-        self.context.subscribe(before, after, *args, **kw)
+        if before is not None:
+            self.beforeSubs.append((before, args, kw))
+        if after is not None:
+            self.afterSubs.append((after, args, kw))
 

@@ -28,8 +28,8 @@ Calling the wrapped method still works.
   >>> demo.foo(8)
   46
 
-We can now get information about the returning of the method by
-subscribing to it using some log function.
+We can now get information about the start and end of the method call by
+subscribing to it using a logging routine.
 
   >>> def log(result, msg):
   ...     print 'logging: %s, result=%s' % (msg, str(result))
@@ -51,14 +51,36 @@ subscribing to it using some log function.
 Wrapping methods on class level
 ===============================
 
+The above code did only wrap the bound method ``foo()`` of a certain
+instance of the ``Demo`` class. Other instances of this class are not
+affected.
+
   >>> demo = Demo()
   >>> demo.foo(4)
   42
 
+But we may also wrap the class itself and subscribe to the method on
+the class level.
+
   >>> getNotifier(Demo.foo)
   <...Notifier object ...>
   >>> Demo.foo.subscribe(None, log, 'after foo')
+
+This now affects all instances of the class.
+
   >>> demo.foo(4)
   logging: after foo, result=42
   42
+  >>> demo.foo(8)
+  logging: after foo, result=46
+  46
+
+Combining class and instance level wrapping
+-------------------------------------------
+
+  >>> demo.foo.subscribe(None, log, 'after demo.foo')
+  >>> demo.foo(10)
+  logging: after demo.foo, result=48
+  logging: after foo, result=48
+  48
 
