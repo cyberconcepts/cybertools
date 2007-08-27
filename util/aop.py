@@ -25,16 +25,12 @@ $Id$
 
 def getNotifier(method):
     if isinstance(method, (Notifier, BoundNotifier)):
+        # already wrapped
         return method
     if method.im_self is not None:
-        name = method.im_func.func_name
-        classMethod = getattr(method.im_class, name)
-        if not isinstance(classMethod, Notifier):
-            classMethod = Notifier(classMethod)
-            setattr(method.im_class, name, classMethod)
-        notifier = BoundNotifier(classMethod, method.im_self)
-        setattr(method.im_self, name, notifier)
-        return notifier
+        # wrapping instance method - let's also wrap the class-level method
+        classNotifier = getNotifier(getattr(method.im_class, method.im_func.func_name))
+        return BoundNotifier(classNotifier, method.im_self)
     return Notifier(method)
 
 
@@ -56,9 +52,7 @@ class Notifier(object):
         if isinstance(existing, BoundNotifier):
             # the instance's method is already wrapped
             return existing
-        notifier = BoundNotifier(self, instance)
-        setattr(instance, self.name, notifier)
-        return notifier
+        return BoundNotifier(self, instance)
 
     def __call__(self, *args, **kw):
         for sub, sargs, skw in self.beforeSubs:
@@ -80,6 +74,7 @@ class BoundNotifier(object):
     def __init__(self, context, instance):
         self.context = context
         self.instance = instance
+        setattr(instance, context.name, self)
         self.beforeSubs = []
         self.afterSubs = []
 
