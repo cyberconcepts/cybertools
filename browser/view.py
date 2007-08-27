@@ -85,14 +85,15 @@ class GenericView(object):
     #    return self.index(*args, **kw)
 
     def update(self):
+        result = True
         if not self._updated:
             action = self.request.form.get('form.action')
             if action:
                 fc = component.getMultiAdapter((self, self.request),
                                                name=action)
-                fc.update()
+                result = fc.update()
         self._updated = True
-        return True
+        return result
 
     def setupController(self):
         """ May be called by __init__() if there is already a controller
