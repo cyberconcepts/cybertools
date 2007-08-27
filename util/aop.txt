@@ -84,3 +84,7 @@ Combining class and instance level wrapping
   logging: after foo, result=48
   48
 
+TODO: check case where instance is wrapped first, then class -
+that means: always wrap class when wrapping an instance, and always
+wrap instance with BoundNotifier.
+

@@ -24,8 +24,17 @@ $Id$
 
 
 def getNotifier(method):
-    if isinstance(method, Notifier):
+    if isinstance(method, (Notifier, BoundNotifier)):
         return method
+    if method.im_self is not None:
+        name = method.im_func.func_name
+        classMethod = getattr(method.im_class, name)
+        if not isinstance(classMethod, Notifier):
+            classMethod = Notifier(classMethod)
+            setattr(method.im_class, name, classMethod)
+        notifier = BoundNotifier(classMethod, method.im_self)
+        setattr(method.im_self, name, notifier)
+        return notifier
     return Notifier(method)
 
 
