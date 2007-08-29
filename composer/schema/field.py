@@ -23,10 +23,10 @@ $Id$
 """
 
 from zope.interface import implements
-from zope import schema
 
 from cybertools.composer.base import Component
 from cybertools.composer.schema.interfaces import IField, IFieldState
+from cybertools.composer.schema.schema import formErrors
 from cybertools.util.format import toStr, toUnicode
 
 
@@ -53,23 +53,24 @@ class Field(Component):
     def getTitleValue(self):
         return self.title or self.name
 
-    def marshallValue(self, value):
+    def marshall(self, value):
         return value
         #return toStr(value)
 
-    def displayValue(self, value):
+    def display(self, value):
         return value
         #return toStr(value)
 
-    def unmarshallValue(self, strValue):
+    def unmarshall(self, strValue):
         return toUnicode(strValue) or u''
 
     def validateValue(self, value):
         errors = []
         severity = 0
         if not value and self.required:
-            errors.append('required_missing')
-            severity = 5
+            error = formErrors['required_missing']
+            errors.append(error)
+            severity = error.severity
         return FieldState(self.name, errors, severity)
 
 

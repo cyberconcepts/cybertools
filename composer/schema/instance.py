@@ -67,6 +67,7 @@ class ClientInstance(object):
             to the corresponding values from the context object.
         """
         result = {}
+        mode = kw.get('mode', 'view')
         attrs = getattr(self.context, self.attrsName, None)
         if attrs is None:
             return result
@@ -75,7 +76,9 @@ class ClientInstance(object):
         if template is not None:
             for f in template.fields:
                 name = f.name
-                result[name] = f.displayValue(values.get(name, u''))
+                value = values.get(name, u'')
+                value = mode == 'view' and f.display(value) or f.marshall(value)
+                result[name] = value
         result['__name__'] = self.context.__name__
         return result
 
@@ -87,25 +90,36 @@ class ClientInstanceEditor(ClientInstance):
             using corresponding values from the data argument.
             Return the resulting form state (an object providing IFormState).
         """
-        formState = FormState()
+        template = self.template
+        if template is None:
+            return FormState()
+        formState = self.validate(data)
+        if formState.severity > 0:
+            # don't do anything if there is an error
+            return formState
         attrs = getattr(self.context, self.attrsName, None)
         if attrs is None:
             attrs = OOBTree()
             setattr(self.context, self.attrsName, attrs)
-        template = self.template
         values = attrs.setdefault(self.aspect, OOBTree())
-        if template is not None:
-            for f in template.fields:
-                name = f.name
-                value = f.unmarshallValue(data.get(name))
-                fieldState = f.validateValue(value)
-                if name in data:
-                    oldValue = values.get(name)
-                    if value != oldValue:
-                        values[name] = value
-                        fieldState.change = (oldValue, value)
-                        formState.changed = True
-                formState.fieldStates.append(fieldState)
-                formState.severity = max(formState.severity, fieldState.severity)
+        for f in template.fields:
+            name = f.name
+            fieldState = formState.fieldStates[name]
+            value = f.unmarshall(data.get(name))
+            if name in data:
+                oldValue = values.get(name)
+                if value != oldValue:
+                    values[name] = value
+                    fieldState.change = (oldValue, value)
+                    formState.changed = True
+        return formState
+
+    def validate(self, data):
+        formState = FormState()
+        for f in self.template.fields:
+            value = f.unmarshall(data.get(f.name))
+            fieldState = f.validateValue(value)
+            formState.fieldStates.append(fieldState)
+            formState.severity = max(formState.severity, fieldState.severity)
         return formState
 

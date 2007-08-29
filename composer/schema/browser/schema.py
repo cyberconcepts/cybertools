@@ -28,11 +28,12 @@ from zope.cachedescriptors.property import Lazy
 from cybertools.composer.schema.browser.common import BaseView
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.interfaces import IClientFactory
+from cybertools.composer.schema.schema import FormState
 
 
 class SchemaView(BaseView):
 
-    formState = None
+    formState = FormState()
 
     @Lazy
     def fields(self):
@@ -55,10 +56,15 @@ class SchemaView(BaseView):
             return {}
         instance = IInstance(client)
         instance.template = self.context
-        return instance.applyTemplate()
-        # TODO: overwrite data with values from form
+        data = instance.applyTemplate(mode='edit')
+        for k, v in data.items():
+            #overwrite data with values from form
+            if k in form:
+                data[k] = form[k]
+        return data
 
     def update(self):
+        newClient = False
         form = self.request.form
         if not self.clientName:
             self.clientName = form.get('id')
@@ -69,19 +75,21 @@ class SchemaView(BaseView):
         if clientName:
             client = manager.getClients().get(clientName)
             if client is None:
+                # no valid clientName - show empty form
                 return True
         else:
-            # if not self.hasData(form) and 'submit' not in form:
-            #     self.request.response.redirect(self.nextUrl())
-            #     return False
             client = IClientFactory(manager)()
-            clientName = self.clientName = manager.addClient(client)
+            # only add client to manager after validation, so we have
+            # to keep the info about new client here
+            newClient = True
         instance = component.getAdapter(client, IInstance, name='editor')
         instance.template = self.context
         self.formState = formState = instance.applyTemplate(form)
         if formState.severity > 0:
-            # show form again
+            # show form again; do not add client to manager
             return True
+        if newClient:
+            clientName = self.clientName = manager.addClient(client)
         self.request.response.redirect(self.nextUrl())
         return False
 

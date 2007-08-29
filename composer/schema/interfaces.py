@@ -78,7 +78,8 @@ class IField(IComponent):
                 description=_(u'The type of the field'),
                 required=True,
                 default='textline',
-                values=('textline', 'textarea', 'date', 'checkbox'))
+                values=('textline', 'textarea', 'number',
+                        'date', 'checkbox', 'spacer'))
     defaultValue = schema.TextLine(
                 title=_(u'Default'),
                 description=_(u'Value with which to pre-set the field contents'),
@@ -176,5 +177,4 @@ class IClientManager(Interface):
     def addClient(client):
         """ Add the client object given to the collection of clients.
         """
-
 

@@ -69,3 +69,19 @@ class FormState(object):
         self.changed = changed
         self.severity = severity
 
+
+class FormError(object):
+
+    def __init__(self, title, description=None, severity=5):
+        self.title = title
+        self.description = description or title
+        self.severity = severity
+
+    def __str__(self):
+        return self.title
+
+
+formErrors = dict(
+    required_missing=FormError(u'Missing data for required field',
+        u'Please enter data for required field.')
+)
