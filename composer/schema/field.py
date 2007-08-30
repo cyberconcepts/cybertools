@@ -23,9 +23,10 @@ $Id$
 """
 
 from zope.interface import implements
+from zope.component import adapts
 
 from cybertools.composer.base import Component
-from cybertools.composer.schema.interfaces import IField, IFieldState
+from cybertools.composer.schema.interfaces import IField, IFieldInstance
 from cybertools.composer.schema.schema import formErrors
 from cybertools.util.format import toStr, toUnicode
 
@@ -53,6 +54,19 @@ class Field(Component):
     def getTitleValue(self):
         return self.title or self.name
 
+
+class FieldInstance(object):
+
+    implements(IFieldInstance)
+    adapts(IField)
+
+    def __init__(self, context):
+        self.context = context
+        self.name = self.__name__ = context.name
+        self.errors = []
+        self.severity = 0
+        self.change = None
+
     def marshall(self, value):
         return value
         #return toStr(value)
@@ -64,23 +78,11 @@ class Field(Component):
     def unmarshall(self, strValue):
         return toUnicode(strValue) or u''
 
-    def validateValue(self, value):
+    def validate(self, value):
         errors = []
         severity = 0
-        if not value and self.required:
+        if not value and self.context.required:
             error = formErrors['required_missing']
-            errors.append(error)
-            severity = error.severity
-        return FieldState(self.name, errors, severity)
-
-
-class FieldState(object):
-
-    implements(IFieldState)
-
-    def __init__(self, name, errors=[], severity=0, change=None):
-        self.name = self.__name__ = name
-        self.errors = errors
-        self.severity = severity
-        self.change = change
+            self.errors.append(error)
+            self.severity = error.severity
 

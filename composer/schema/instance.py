@@ -28,7 +28,7 @@ from zope.interface import implements
 
 from cybertools.composer.instance import Instance
 from cybertools.composer.interfaces import IInstance
-from cybertools.composer.schema.interfaces import IClient
+from cybertools.composer.schema.interfaces import IClient, IFieldInstance
 from cybertools.composer.schema.schema import FormState
 
 
@@ -75,9 +75,10 @@ class ClientInstance(object):
         values = attrs.setdefault(self.aspect, {})
         if template is not None:
             for f in template.fields:
+                fi = IFieldInstance(f)
                 name = f.name
                 value = values.get(name, u'')
-                value = mode == 'view' and f.display(value) or f.marshall(value)
+                value = mode == 'view' and fi.display(value) or fi.marshall(value)
                 result[name] = value
         result['__name__'] = self.context.__name__
         return result
@@ -103,23 +104,25 @@ class ClientInstanceEditor(ClientInstance):
             setattr(self.context, self.attrsName, attrs)
         values = attrs.setdefault(self.aspect, OOBTree())
         for f in template.fields:
+            #fi = IFieldInstance(f)
             name = f.name
-            fieldState = formState.fieldStates[name]
-            value = f.unmarshall(data.get(name))
+            fi = formState.fieldInstances[name]
+            value = fi.unmarshall(data.get(name))
             if name in data:
                 oldValue = values.get(name)
                 if value != oldValue:
                     values[name] = value
-                    fieldState.change = (oldValue, value)
+                    fi.change = (oldValue, value)
                     formState.changed = True
         return formState
 
     def validate(self, data):
         formState = FormState()
         for f in self.template.fields:
-            value = f.unmarshall(data.get(f.name))
-            fieldState = f.validateValue(value)
-            formState.fieldStates.append(fieldState)
-            formState.severity = max(formState.severity, fieldState.severity)
+            fi = IFieldInstance(f)
+            value = fi.unmarshall(data.get(f.name))
+            fi.validate(value)
+            formState.fieldInstances.append(fi)
+            formState.severity = max(formState.severity, fi.severity)
         return formState
 

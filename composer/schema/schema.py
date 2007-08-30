@@ -64,8 +64,8 @@ class FormState(object):
 
     implements(IFormState)
 
-    def __init__(self, fieldStates=[], changed=False, severity=0):
-        self.fieldStates = Jeep(fieldStates)
+    def __init__(self, fieldInstances=[], changed=False, severity=0):
+        self.fieldInstances = Jeep(fieldInstances)
         self.changed = changed
         self.severity = severity
 

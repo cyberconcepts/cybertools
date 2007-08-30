@@ -10,4 +10,6 @@
   <adapter factory="cybertools.composer.schema.instance.ClientInstanceEditor"
            name="editor" />
 
+  <adapter factory="cybertools.composer.schema.field.FieldInstance" />
+
 </configure>

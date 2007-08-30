@@ -99,32 +99,12 @@ class IField(IComponent):
                         '(only for type textarea)'),
                 default=3,
                 required=False,)
-    # validator = schema.Text(),
-    # marshaller = schema.Text(),
-
-    def marshallValue(value):
-        """ Return a string (possibly unicode) representation of the
-            value given that may be used for editing.
-        """
-
-    def displayValue(value):
-        """ Return a string (possibly unicode) representation of the
-            value given that may be used for presentation.
-        """
-
-    def unmarshallValue(strValue):
-        """ Return the internal (real) value corresponding to the string
-            value given.
-        """
-
-    def validateValue(value):
-        """ Check if the value given is valid. Return an object implementing
-            IFieldState.
-        """
 
 
-class IFieldState(Interface):
-    """ Represents the state of a field used for editing.
+class IFieldInstance(Interface):
+    """ An adapter for checking and converting data values coming
+        from or being displayed on an external system (like a browser form).
+        It also keeps information on the processing state.
     """
 
     name = Attribute('Field name.')
@@ -133,15 +113,35 @@ class IFieldState(Interface):
     severity = Attribute("An integer giving a state or error "
                     "code, 0 meaning 'OK'.")
 
+    def marshall(value):
+        """ Return a string (possibly unicode) representation of the
+            value given that may be used for editing.
+        """
+
+    def display(value):
+        """ Return a string (possibly unicode) representation of the
+            value given that may be used for presentation.
+        """
+
+    def unmarshall(strValue):
+        """ Return the internal (real) value corresponding to the string
+            value given.
+        """
+
+    def validate(value):
+        """ Check if the value given is valid. Return an object implementing
+            IFieldState.
+        """
+
 
 class IFormState(Interface):
     """ Represents the state of all fields when editing.
     """
 
     fieldStates = Attribute('A mapping ``{fieldName: fieldState, ...}``.')
-    changed = Attribute('True if one of the fields has been changed or False.')
+    changed = Attribute('True if one of the fields has been changed')
     severity = Attribute("An integer giving an overall state or error "
-                    "code, typically the maximum of the field states' "
+                    "code, typically the maximum of the field instances' "
                     "severities.")
 
 
