@@ -83,5 +83,7 @@ class FormError(object):
 
 formErrors = dict(
     required_missing=FormError(u'Missing data for required field',
-        u'Please enter data for required field.')
+        u'Please enter data for required field.'),
+    invalid_number=FormError(u'Invalid number',
+        u'Please enter a number, only digits allowed.'),
 )

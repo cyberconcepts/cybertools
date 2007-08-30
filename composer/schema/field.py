@@ -24,9 +24,11 @@ $Id$
 
 from zope.interface import implements
 from zope.component import adapts
+from zope import component
 
 from cybertools.composer.base import Component
 from cybertools.composer.schema.interfaces import IField, IFieldInstance
+from cybertools.composer.schema.interfaces import fieldTypes
 from cybertools.composer.schema.schema import formErrors
 from cybertools.util.format import toStr, toUnicode
 
@@ -37,11 +39,11 @@ class Field(Component):
 
     required = False
 
-    def __init__(self, name, title=None, renderFactory=None, **kw):
+    def __init__(self, name, title=None, fieldType='textline', **kw):
         assert name
         self.__name__ = name
         title = title or u''
-        self.renderFactory = renderFactory  # use for rendering field content
+        self.fieldType = fieldType
         super(Field, self).__init__(title, __name__=name, **kw)
         self.title = title
         for k, v in kw.items():
@@ -53,6 +55,13 @@ class Field(Component):
 
     def getTitleValue(self):
         return self.title or self.name
+
+    def getFieldTypeInfo(self):
+        return fieldTypes.getTerm(self.fieldType)
+
+    def getFieldInstance(self):
+        instanceName = self.getFieldTypeInfo().instanceName
+        return component.getAdapter(self, IFieldInstance, name=instanceName)
 
 
 class FieldInstance(object):
@@ -79,10 +88,38 @@ class FieldInstance(object):
         return toUnicode(strValue) or u''
 
     def validate(self, value):
-        errors = []
-        severity = 0
         if not value and self.context.required:
-            error = formErrors['required_missing']
-            self.errors.append(error)
-            self.severity = error.severity
+            self.setError('required_missing')
 
+    def setError(self, errorName):
+        error = formErrors[errorName]
+        self.errors.append(error)
+        self.severity = max(error.severity, self.severity)
+
+
+class NumberFieldInstance(FieldInstance):
+
+    def marshall(self, value):
+        if value is None:
+            return ''
+        return str(value)
+
+    def display(self, value):
+        if value is None:
+            return '-'
+        return str(value)
+
+    def unmarshall(self, strValue):
+        if not strValue:
+            return None
+        return int(strValue)
+
+    def validate(self, value):
+        if value in ('', None):
+            if self.context.required:
+                self.setError('required_missing')
+        else:
+            try:
+                int(value)
+            except (TypeError, ValueError):
+                self.setError('invalid_number')

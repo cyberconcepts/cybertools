@@ -25,6 +25,7 @@ $Id$
 from zope import schema
 from zope.interface import Interface, Attribute
 from zope.i18nmessageid import MessageFactory
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
 from cybertools.composer.interfaces import ITemplate, IComponent
 
@@ -57,6 +58,30 @@ class ISchema(ITemplate):
                 'with this schema.')
 
 
+class FieldType(SimpleTerm):
+
+    def __init__(self, value, token=None, title=None, **kw):
+        super(FieldType, self).__init__(value, token, title)
+        self.name = value
+        self.fieldMacro = 'field'
+        self.inputMacro = 'input_' + self.name
+        self.storeData = True
+        self.instanceName = ''
+        for k, v in kw.items():
+            setattr(self, k, v)
+
+
+fieldTypes = SimpleVocabulary((
+    FieldType('textline', 'textline', u'Textline'),
+    FieldType('textarea', 'textarea', u'Textarea'),
+    FieldType('number', 'number', u'Number', inputMacro='input_textline',
+              instanceName='number'),
+    #FieldType('date', 'date', u'Date'),
+    #FieldType('checkbox', 'checkbox', u'Checkbox'),
+    FieldType('spacer', 'spacer', u'Spacer', fieldMacro='field_spacer',
+              storeData=False),
+))
+
 class IField(IComponent):
     """ May be used for data entry or display.
     """
@@ -78,8 +103,7 @@ class IField(IComponent):
                 description=_(u'The type of the field'),
                 required=True,
                 default='textline',
-                values=('textline', 'textarea', 'number',
-                        'date', 'checkbox', 'spacer'))
+                vocabulary=fieldTypes,)
     defaultValue = schema.TextLine(
                 title=_(u'Default'),
                 description=_(u'Value with which to pre-set the field contents'),
