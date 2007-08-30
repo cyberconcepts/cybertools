@@ -23,10 +23,14 @@ $Id$
 """
 
 from zope import component
+from zope.app.session.interfaces import ISession
 from zope.cachedescriptors.property import Lazy
 
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.interfaces import IClientFactory
+
+
+packageId = 'cybertools.composer.schema'
 
 
 class BaseView(object):
@@ -36,6 +40,22 @@ class BaseView(object):
     def __init__(self, context, request):
         self.context = context
         self.request = request
+
+    def getClientName(self):
+        clientName = self.clientName
+        if clientName:
+            return clientName
+        clientName = self.request.form.get('id')
+        if clientName:
+            self.setSessionInfo('clientName', clientName)
+        else:
+            clientName = self.getSessionInfo('clientName')
+        self.clientName = clientName
+        return clientName
+
+    def setClientName(self, clientName):
+        self.clientName = clientName
+        self.setSessionInfo('clientName', clientName)
 
     @Lazy
     def manager(self):
@@ -89,3 +109,12 @@ class BaseView(object):
                 viewName = self.buttonActions[bn](self)
                 break
         return '%s/%s?id=%s' % (self.url, viewName, self.clientName)
+
+    def setSessionInfo(self, key, value, packageId=packageId):
+        session = ISession(self.request)[packageId]
+        if session.get(key) != value:
+            session[key] = value
+
+    def getSessionInfo(self, key, default=None, packageId=packageId):
+        session = ISession(self.request)[packageId]
+        return session.get(key, default)

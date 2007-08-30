@@ -134,10 +134,7 @@ class RegistrationTemplateView(SchemaBaseView):
         return self.context.getServices().values()
 
     def getRegistrations(self):
-        if not self.clientName:
-            form = self.request.form
-            self.clientName = form.get('id')
-        clientName = self.clientName
+        clientName = self.getClientName()
         if not clientName:
             return []
         manager = self.context.getManager()
@@ -153,9 +150,7 @@ class RegistrationTemplateView(SchemaBaseView):
 
     def update(self):
         form = self.request.form
-        if not self.clientName:
-            self.clientName = form.get('id')
-        clientName = self.clientName
+        clientName = self.getClientName()
         if not form.get('action'):
             return True
         manager = self.context.getManager()
@@ -163,6 +158,7 @@ class RegistrationTemplateView(SchemaBaseView):
             client = manager.getClients().get(clientName)
             if client is None:
                 return True
+            #self.setClientName(clientName) # store in view and session
         else:
             client = IClientFactory(manager)()
             clientName = self.clientName = manager.addClient(client)

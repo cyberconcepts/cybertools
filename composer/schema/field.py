@@ -84,8 +84,8 @@ class FieldInstance(object):
         return value
         #return toStr(value)
 
-    def unmarshall(self, strValue):
-        return toUnicode(strValue) or u''
+    def unmarshall(self, value):
+        return toUnicode(value) or u''
 
     def validate(self, value):
         if not value and self.context.required:
@@ -109,10 +109,10 @@ class NumberFieldInstance(FieldInstance):
             return '-'
         return str(value)
 
-    def unmarshall(self, strValue):
-        if not strValue:
+    def unmarshall(self, value):
+        if not value:
             return None
-        return int(strValue)
+        return int(value)
 
     def validate(self, value):
         if value in ('', None):

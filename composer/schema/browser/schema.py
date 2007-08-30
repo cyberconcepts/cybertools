@@ -45,9 +45,7 @@ class SchemaView(BaseView):
 
     def getData(self):
         form = self.request.form
-        if not self.clientName:
-            self.clientName = form.get('id')
-        clientName = self.clientName
+        clientName = self.getClientName()
         if not clientName:
             return {}
         manager = self.context.getManager()
@@ -66,9 +64,7 @@ class SchemaView(BaseView):
     def update(self):
         newClient = False
         form = self.request.form
-        if not self.clientName:
-            self.clientName = form.get('id')
-        clientName = self.clientName
+        clientName = self.getClientName()
         if not form.get('action'):
             return True
         manager = self.context.getManager()
@@ -77,6 +73,7 @@ class SchemaView(BaseView):
             if client is None:
                 # no valid clientName - show empty form
                 return True
+            #self.setClientName(clientName) # store in view and session
         else:
             client = IClientFactory(manager)()
             # only add client to manager after validation, so we have
@@ -89,7 +86,8 @@ class SchemaView(BaseView):
             # show form again; do not add client to manager
             return True
         if newClient:
-            clientName = self.clientName = manager.addClient(client)
+            clientName = manager.addClient(client)
+            self.setClientName(clientName)
         self.request.response.redirect(self.nextUrl())
         return False
 
