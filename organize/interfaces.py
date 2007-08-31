@@ -125,6 +125,11 @@ class ITask(Interface):
 
 # services
 
+serviceManagerViews = SimpleVocabulary((
+    SimpleTerm('', '', u'Default view'),
+    SimpleTerm('events_overview.html', 'events_overview.html', u'Events overview'),
+))
+
 class IServiceManager(Interface):
     """ A manager or container for a set of services.
     """
@@ -136,6 +141,13 @@ class IServiceManager(Interface):
     end = schema.Date(
                 title=_(u'End date/time'),
                 description=_(u'The end date/time for providing services.'),
+                required=False,)
+    viewName = schema.Choice(
+                title=_(u'View name'),
+                description=_(u'Select the name of a specialized view to be used '
+                        'for presenting this object.'),
+                vocabulary=serviceManagerViews,
+                default='',
                 required=False,)
 
     services = Attribute('A collection of services managed by this object.')

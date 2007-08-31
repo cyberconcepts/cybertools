@@ -70,6 +70,13 @@ class BaseView(object):
 
 class ServiceManagerView(BaseView):
 
+    def getCustomView(self):
+        viewName = self.context.viewName
+        if viewName:
+            return component.getMultiAdapter((self.context, self.request),
+                                             name=viewName)
+        return None
+
     def findRegistrationTemplate(self, service):
         """ Find a registration template that provides the registration
             for the service given.
@@ -80,7 +87,7 @@ class ServiceManagerView(BaseView):
                 return tpl
         return None
 
-    def overview(self):
+    def overview(self, includeCategories=None):
         result = []
         classific = []
         category = None
@@ -88,9 +95,12 @@ class ServiceManagerView(BaseView):
         svcs = sorted((svc.getCategory(), idx, svc)
                 for idx, svc in enumerate(self.context.getServices()))
         for cat, idx, svc in svcs:
+            if includeCategories and cat not in includeCategories:
+                continue
             if cat != category:
                 term = serviceCategories.getTermByToken(cat)
                 result.append(dict(isHeadline=True, level=0, title=term.title,
+                                   name=cat,
                                    object=None))
                 category = cat
                 classific = []
@@ -100,16 +110,21 @@ class ServiceManagerView(BaseView):
                 if (len(classific) <= idx or
                         classific[idx].name != element.name):
                     result.append(dict(isHeadline=True, level=level,
+                                       name=element.name,
                                        title=element.title,
                                        object=element.object))
                     classific = clsf
                 if level > maxLevel:
                     maxLevel = level
             result.append(dict(isHeadline=False, level=maxLevel+1,
+                               name=svc.getName(),
                                title=svc.title or svc.getName(),
                                fromTo=self.getFromTo(svc),
                                object=svc))
         return result
+
+    def eventsOverview(self):
+        return self.overview(includeCategories=('event',))
 
 
 class ServiceView(BaseView):

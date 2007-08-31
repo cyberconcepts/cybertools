@@ -26,7 +26,9 @@ from time import time
 from BTrees.OOBTree import OOBTree
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
-from zope.interface import implements
+from zope import component
+from zope.interface import implements, Interface
+
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.interfaces import IClientManager, IClient
 from cybertools.stateful.definition import registerStatesDefinition
@@ -34,7 +36,6 @@ from cybertools.stateful.definition import StatesDefinition
 from cybertools.stateful.definition import State, Transition
 from cybertools.util.jeep import Jeep
 from cybertools.util.randomname import generateName
-
 from cybertools.organize.interfaces import IServiceManager
 from cybertools.organize.interfaces import IService, IScheduledService
 from cybertools.organize.interfaces import IRegistration, IRegistrationTemplate
