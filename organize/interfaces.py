@@ -183,6 +183,12 @@ class IService(Interface):
                 vocabulary=serviceCategories,
                 default='event',
                 required=False,)
+    allowRegWithNumber = schema.Bool(
+                title=_(u'Allow registration with number'),
+                description=_(u'When this field is checked more than one '
+                        'object (participant) may be assigned with one '
+                        'registration by entering a corresponding number.'),
+                required=False,)
     externalId = schema.TextLine(
                 title=_(u'External ID'),
                 description=_(u'Identifier in external system or code number.'),
@@ -297,7 +303,11 @@ class IRegistration(Interface):
     """ Information about the registration of a client with a service.
     """
 
-    client = Attribute('The client registered')
+    client = Attribute('The client registered.')
+    service = Attribute('The service the client is registered for.')
+    timeStamp = Attribute('An integer denoting the time of registration.')
+    number = Attribute('The number of objects (e.g. persons) registered '
+                '- usually == 1.')
 
 
 class IRegistrationTemplate(Interface):

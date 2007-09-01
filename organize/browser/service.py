@@ -169,8 +169,11 @@ class RegistrationTemplateView(SchemaBaseView):
         regs.template = self.context
         return regs.getRegistrations()
 
-    def getRegistratedServicesTokens(self):
+    def getRegisteredServicesTokens(self):
         return [r.service.token for r in self.getRegistrations()]
+
+    def getRegistrationsDict(self):
+        return dict((r.service.token, r) for r in self.getRegistrations())
 
     def getData(self):
         """ Retrieve standard field data (accessible without providing
@@ -201,11 +204,23 @@ class RegistrationTemplateView(SchemaBaseView):
             clientName = self.clientName = manager.addClient(client)
         regs = IClientRegistrations(client)
         regs.template = self.context
-        allServices = self.getServices()
+        services = manager.getServices()  # a mapping!
+        allServices = services.values()
         oldServices = [r.service for r in regs.getRegistrations()]
-        newServices = [manager.getServices()[token]
+        # collect check boxes:
+        newServices = [services[token]
                        for token in form.get('service_tokens', [])]
-        regs.register(newServices)
+        # collect numerical input:
+        numbers = len(newServices) * [1]
+        for token, svc in services.items():
+            try:
+                value = int(form.get('service.' + token, 0))
+            except ValueError:
+                value = 1
+            if value > 0:
+                newServices.append(svc)
+                numbers.append(value)
+        regs.register(newServices, numbers=numbers)
         toDelete = [s for s in oldServices
                       if s in allServices and s not in newServices]
         regs.unregister(toDelete)

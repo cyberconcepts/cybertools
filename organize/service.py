@@ -23,6 +23,7 @@ $Id$
 """
 
 from time import time
+from persistent import Persistent
 from BTrees.OOBTree import OOBTree
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
@@ -93,6 +94,7 @@ class Service(object):
 
     manager = None
     category = None
+    allowRegWithNumber = False
 
     def __init__(self, name=None, title=u'', capacity=-1, **kw):
         self.name = self.__name__ = name
@@ -129,11 +131,15 @@ class Service(object):
             return 0
         return self.capacity - len(self.registrations)
 
-    def register(self, client):
+    def register(self, client, number=1):
         clientName = client.__name__
         if clientName in self.registrations:
-            return self.registrations[clientName]
-        reg = Registration(client, self)
+            reg = self.registrations[clientName]
+            if number != reg.number:
+                reg.number = number
+                self.registrations[clientName] = reg # persistence hack
+            return reg
+        reg = Registration(client, self, number)
         self.registrations[clientName] = reg
         return reg
         #if self.availableCapacity:
@@ -164,10 +170,13 @@ class Registration(object):
 
     implements(IRegistration)
 
-    def __init__(self, client, service):
+    number = 1
+
+    def __init__(self, client, service, number=1):
         self.client = client
         self.service = service
         self.timeStamp = int(time())
+        self.number = number
 
 
 class RegistrationTemplate(object):
@@ -202,8 +211,11 @@ class ClientRegistrations(object):
     def __init__(self, context):
         self.context = context
 
-    def register(self, services):
-        regs = [service.register(self.context) for service in services]
+    def register(self, services, numbers=None):
+        if numbers is None:
+            numbers = len(services) * [1]
+        regs = [service.register(self.context, numbers[idx])
+                for idx, service in enumerate(services)]
         old = getattr(self.context, self.registrationsAttributeName, [])
         regs.extend(r for r in old if r.service not in services)
         setattr(self.context, self.registrationsAttributeName, regs)
