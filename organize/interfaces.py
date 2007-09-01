@@ -183,12 +183,52 @@ class IService(Interface):
                 vocabulary=serviceCategories,
                 default='event',
                 required=False,)
+    externalId = schema.TextLine(
+                title=_(u'External ID'),
+                description=_(u'Identifier in external system or code number.'),
+                required=False,)
+    cost = schema.Int(
+                title=_(u'Cost'),
+                description=_(u'Cost or prizing information.'),
+                required=False,)
     capacity = schema.Int(
                 title=_(u'Capacity'),
                 description=_(u'The capacity (maximum number of clients) '
                         'of this service; a negative number means: '
                         'no restriction, i.e. unlimited capacity.'),
                 required=False,)
+    waitingList = schema.Bool(
+                title=_(u'Waiting list'),
+                description=_(u'Check this field if participants beyond the '
+                        'capacity of the service should be kept in a '
+                        'waiting list.'),
+                required=False,)
+    location = schema.TextLine(
+                title=_(u'Location Information'),
+                description=_(u'Basic location information or '
+                        'start point for transport services.'),
+                required=False,)
+    locationUrl = schema.TextLine(
+                title=_(u'URL for location'),
+                description=_(u'Web address (URL) with more information '
+                        'about the location.'),
+                required=False,)
+    location2 = schema.TextLine(
+                title=_(u'Location Information (2)'),
+                description=_(u'Additional location information or '
+                        'end point for transport services.'),
+                required=False,)
+    location2Url = schema.TextLine(
+                title=_(u'URL for location (2)'),
+                description=_(u'Web address (URL) with more information '
+                        'about the location.'),
+                required=False,)
+    webAddress = schema.TextLine(
+                title=_(u'Web address'),
+                description=_(u'Web address (URL) for more information '
+                        'about the service.'),
+                required=False,)
+
     availableCapacity = Attribute('Available capacity, i.e. number of seats '
                 'still available; a negative number means: '
                 'no restriction, i.e. unlimited capacity; '
@@ -224,12 +264,14 @@ class IScheduledService(IService):
                 title=_(u'Start date/time'),
                 description=_(u'The date/time when the service starts'),
                 required=False,)
-    start.default_method = 'getStartFromManager'
     end = schema.Date(
                 title=_(u'End date/time'),
                 description=_(u'The date/time when the service ends'),
                 required=False,)
+
+    start.default_method = 'getStartFromManager'
     end.default_method = 'getEndFromManager'
+
     duration = Attribute('Time delta between start and end date/time.')
 
 

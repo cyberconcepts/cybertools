@@ -59,6 +59,10 @@ class ClientInstance(object):
     def aspect(self):
         return self.baseAspect + self.template.name
 
+    @property
+    def standardAspect(self):
+        return self.baseAspect + '__standard__'
+
     def __init__(self, context):
         self.context = context
 
@@ -66,14 +70,14 @@ class ClientInstance(object):
         """ Return a mapping of field names from self.template (a schema)
             to the corresponding values from the context object.
         """
-        result = {}
+        result = dict(__name__=self.context.__name__)
         mode = kw.get('mode', 'view')
         attrs = getattr(self.context, self.attrsName, None)
         if attrs is None:
             return result
         template = self.template
-        values = attrs.setdefault(self.aspect, {})
         if template is not None:
+            values = attrs.get(self.aspect, {})
             for f in template.fields:
                 fieldType = f.getFieldTypeInfo()
                 if not fieldType.storeData:
@@ -84,7 +88,9 @@ class ClientInstance(object):
                 value = values.get(name, u'')
                 value = mode == 'view' and fi.display(value) or fi.marshall(value)
                 result[name] = value
-        result['__name__'] = self.context.__name__
+        # update result with standard fields:
+        for k, v in attrs.get(self.standardAspect, {}).items():
+            result['standard.' + k] = v
         return result
 
 
@@ -121,6 +127,12 @@ class ClientInstanceEditor(ClientInstance):
                     values[name] = value
                     fi.change = (oldValue, value)
                     formState.changed = True
+                # update standard field if appropriate:
+                standardFieldName = f.standardFieldName
+                if standardFieldName:
+                    standardValues = attrs.setdefault(self.standardAspect, OOBTree())
+                    if value != standardValues.get(standardFieldName):
+                        standardValues[standardFieldName] = value
         return formState
 
     def validate(self, data):

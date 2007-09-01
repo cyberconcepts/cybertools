@@ -82,6 +82,14 @@ fieldTypes = SimpleVocabulary((
               storeData=False),
 ))
 
+standardFieldNames = SimpleVocabulary((
+    SimpleTerm('', '', 'Not selected'),
+    SimpleTerm('lastName', 'lastName', 'Last name'),
+    SimpleTerm('firstName', 'firstName', 'First name'),
+    SimpleTerm('organization', 'organization', 'Organization'),
+    SimpleTerm('email', 'email', 'E-Mail address'),
+))
+
 class IField(IComponent):
     """ May be used for data entry or display.
     """
@@ -104,6 +112,13 @@ class IField(IComponent):
                 required=True,
                 default='textline',
                 vocabulary=fieldTypes,)
+    standardFieldName = schema.Choice(
+                title=_(u'Standard field name'),
+                description=_(u'Provide the values entered in this field '
+                        'as one of the standard informations.'),
+                required=False,
+                default='',
+                vocabulary=standardFieldNames,)
     defaultValue = schema.TextLine(
                 title=_(u'Default'),
                 description=_(u'Value with which to pre-set the field contents'),
@@ -162,7 +177,7 @@ class IFormState(Interface):
     """ Represents the state of all fields when editing.
     """
 
-    fieldStates = Attribute('A mapping ``{fieldName: fieldState, ...}``.')
+    fieldInstances = Attribute('A mapping ``{fieldName: fieldInstance, ...}``.')
     changed = Attribute('True if one of the fields has been changed')
     severity = Attribute("An integer giving an overall state or error "
                     "code, typically the maximum of the field instances' "

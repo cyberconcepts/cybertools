@@ -29,6 +29,7 @@ from zope.cachedescriptors.property import Lazy
 
 from cybertools.organize.interfaces import IClientRegistrations, IRegistrationTemplate
 from cybertools.organize.interfaces import serviceCategories
+from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.browser.common import BaseView as SchemaBaseView
 from cybertools.composer.schema.interfaces import IClientFactory
 from cybertools.util.format import formatDate
@@ -71,7 +72,7 @@ class BaseView(object):
 class ServiceManagerView(BaseView):
 
     def getCustomView(self):
-        viewName = self.context.viewName
+        viewName = self.context.getViewName()
         if viewName:
             return component.getMultiAdapter((self.context, self.request),
                                              name=viewName)
@@ -138,6 +139,14 @@ class ServiceView(BaseView):
         tpl = ServiceManagerView(man, self.request).findRegistrationTemplate(context)
         return self.getUrlForObject(tpl)
 
+    def getClientData(self, clientName):
+        manager = self.context.getManager()
+        client = manager.getClients().get(clientName)
+        if client is None:
+            return {}
+        instance = IInstance(client)
+        return instance.applyTemplate()
+
 
 class RegistrationTemplateView(SchemaBaseView):
 
@@ -163,6 +172,20 @@ class RegistrationTemplateView(SchemaBaseView):
     def getRegistratedServicesTokens(self):
         return [r.service.token for r in self.getRegistrations()]
 
+    def getData(self):
+        """ Retrieve standard field data (accessible without providing
+            a template) from the client object.
+        """
+        clientName = self.getClientName()
+        if not clientName:
+            return {}
+        manager = self.context.getManager()
+        client = manager.getClients().get(clientName)
+        if client is None:
+            return {}
+        instance = IInstance(client)
+        return instance.applyTemplate()
+
     def update(self):
         form = self.request.form
         clientName = self.getClientName()
@@ -173,7 +196,6 @@ class RegistrationTemplateView(SchemaBaseView):
             client = manager.getClients().get(clientName)
             if client is None:
                 return True
-            #self.setClientName(clientName) # store in view and session
         else:
             client = IClientFactory(manager)()
             clientName = self.clientName = manager.addClient(client)

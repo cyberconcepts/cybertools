@@ -38,6 +38,7 @@ class Field(Component):
     implements(IField)
 
     required = False
+    standardFieldName = None
 
     def __init__(self, name, title=None, fieldType='textline', **kw):
         assert name
