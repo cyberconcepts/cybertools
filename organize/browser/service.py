@@ -130,6 +130,8 @@ class ServiceManagerView(BaseView):
 
 class ServiceView(BaseView):
 
+    showCheckoutButton = False
+
     def getRegistrations(self):
         return self.context.registrations
 
@@ -162,9 +164,15 @@ class ServiceView(BaseView):
         return instance.applyTemplate()
 
     def update(self):
+        newClient = False
+        nextUrl = None
         form = self.request.form
         clientName = self.getClientName()
         if not form.get('action'):
+            data = self.getClientData()
+            if ('service_registration' in data
+                    and data['service_registration'].number > 0):
+                self.showCheckoutButton = True
             return True
         manager = self.context.getManager()
         if clientName:
@@ -175,17 +183,29 @@ class ServiceView(BaseView):
             client = IClientFactory(manager)()
             clientName = manager.addClient(client)
             self.setClientName(clientName)
+            newClient = True
+            nextUrl = self.getSchemaUrl()
         regs = IClientRegistrations(client)
         try:
             number = int(form.get('number', 1))
         except ValueError:
             number = 1
-        if 'button.register' in form:
+        if 'submit_register' in form and number > 0:
             regs.register([self.context], numbers=[number])
-        elif 'button.unregister' in form:
+            self.showCheckoutButton = True
+        elif 'submit_unregister' in form:
             regs.unregister([self.context])
-        # TODO: redirect to nextUrl()
+            number = 0
+        elif 'submit_checkout' in form:
+            nextUrl = self.getSchemaUrl()
+        if nextUrl:
+            self.request.response.redirect(nextUrl)
+            return False
         return True
+
+    def getSchemaUrl(self):
+        manager = self.context.getManager()
+        return self.getUrlForObject(manager.getClientSchemas()[0])
 
 
 class RegistrationTemplateView(BaseView):
