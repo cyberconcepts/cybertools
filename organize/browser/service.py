@@ -35,7 +35,7 @@ from cybertools.composer.schema.interfaces import IClientFactory
 from cybertools.util.format import formatDate
 
 
-class BaseView(object):
+class BaseView(SchemaBaseView):
 
     def __init__(self, context, request):
         self.context = context
@@ -133,13 +133,27 @@ class ServiceView(BaseView):
     def getRegistrations(self):
         return self.context.registrations
 
-    def registrationUrl(self):
+    def getRegistrationTemplate(self):
         context = self.context
         man = context.getManager()
-        tpl = ServiceManagerView(man, self.request).findRegistrationTemplate(context)
+        return ServiceManagerView(man, self.request).findRegistrationTemplate(context)
+
+    def registrationUrl(self):
+        tpl = self.getRegistrationTemplate()
         return self.getUrlForObject(tpl)
 
-    def getClientData(self, clientName):
+    def getClientData(self):
+        clientName = self.getClientName()
+        if clientName is None:
+            return {}
+        data = self.getDataForClient(clientName)
+        regs = self.getRegistrations()
+        reg = regs.get(clientName)
+        if reg:
+            data['service_registration'] = reg
+        return data
+
+    def getDataForClient(self, clientName):
         manager = self.context.getManager()
         client = manager.getClients().get(clientName)
         if client is None:
@@ -147,8 +161,34 @@ class ServiceView(BaseView):
         instance = IInstance(client)
         return instance.applyTemplate()
 
+    def update(self):
+        form = self.request.form
+        clientName = self.getClientName()
+        if not form.get('action'):
+            return True
+        manager = self.context.getManager()
+        if clientName:
+            client = manager.getClients().get(clientName)
+            if client is None:
+                return True
+        else:
+            client = IClientFactory(manager)()
+            clientName = manager.addClient(client)
+            self.setClientName(clientName)
+        regs = IClientRegistrations(client)
+        try:
+            number = int(form.get('number', 1))
+        except ValueError:
+            number = 1
+        if 'button.register' in form:
+            regs.register([self.context], numbers=[number])
+        elif 'button.unregister' in form:
+            regs.unregister([self.context])
+        # TODO: redirect to nextUrl()
+        return True
 
-class RegistrationTemplateView(SchemaBaseView):
+
+class RegistrationTemplateView(BaseView):
 
     @Lazy
     def services(self):
@@ -201,7 +241,8 @@ class RegistrationTemplateView(SchemaBaseView):
                 return True
         else:
             client = IClientFactory(manager)()
-            clientName = self.clientName = manager.addClient(client)
+            clientName = manager.addClient(client)
+            self.setClientName(clientName)
         regs = IClientRegistrations(client)
         regs.template = self.context
         services = manager.getServices()  # a mapping!

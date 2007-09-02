@@ -57,6 +57,13 @@ class BaseView(object):
         self.clientName = clientName
         self.setSessionInfo('clientName', clientName)
 
+    def formatClientInfo(self, data, default=None):
+        info = ' '.join((data.get('standard.firstName', ''),
+                         data.get('standard.lastName', ''))).strip()
+        org = data.get('standard.organization', '')
+        info = ', '.join([text for text in (info, org) if text])
+        return info or (default is None and data.get('__name__', '???')) or default
+
     @Lazy
     def manager(self):
         return self.context.getManager()

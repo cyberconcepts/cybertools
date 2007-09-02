@@ -228,6 +228,7 @@ class ClientRegistrations(object):
             service.unregister(self.context)
 
     def getRegistrations(self):
+        # TODO: restrict to services on this template
         return getattr(self.context, self.registrationsAttributeName, [])
 
 
