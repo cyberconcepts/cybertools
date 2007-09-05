@@ -30,6 +30,8 @@ from cybertools.reporter.batch import Batch
 
 class BatchView(object):
 
+    default_size = 20
+
     def __init__(self, context, request, iterable=None):
         self.context = context
         self.request = request
@@ -39,7 +41,7 @@ class BatchView(object):
     def setup(self, iterable):
         form = self.request.form
         page = int(form.get('b_page', 1))
-        size = int(form.get('b_size', 20))
+        size = int(form.get('b_size', self.default_size))
         overlap = int(form.get('b_overlap', 0))
         orphan = int(form.get('b_orphan', 0))
         self.batch = Batch(iterable, page-1, size, overlap, orphan)
