@@ -28,13 +28,14 @@ from cybertools.composer.schema.field import Field
 
 
 fieldMapping = {
-        schema.TextLine: ('text',),
-        schema.ASCII: ('text',),
+        schema.TextLine: ('textline',),
+        schema.ASCII: ('textline',),
         schema.Text: ('textarea',),
         schema.Date: ('date',),
         schema.Int: ('number',),
         schema.Bool: ('checkbox',),
         schema.Choice: ('dropdown',),
+        schema.Bytes: ('fileupload',),
 }
 
 
@@ -44,12 +45,7 @@ def getSchemaFromInterface(ifc, manager):
         field = ifc[fname]
         if field.__class__ in fieldMapping:
             info = fieldMapping[field.__class__]
-            voc = getattr(field, 'vocabulary', ()) or getattr(field, 'vocabularyName', ())
-            if voc:
-                if isinstance(voc, str):
-                    voc = vocabularies[voc]
-                else:
-                    voc = [(t.token, t.title or t.token) for t in voc]
+            voc = getattr(field, 'vocabulary', ()) or getattr(field, 'vocabularyName', None)
             f = Field(field.getName(),
                     fieldType = info[0],
                     required=field.required,

@@ -24,17 +24,48 @@ $Id$
 
 from BTrees.OOBTree import OOBTree
 from zope.component import adapts
-from zope.interface import implements
+from zope.interface import implements, Interface
 
-from cybertools.composer.instance import Instance
+from cybertools.composer.instance import Instance as BaseInstance
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.interfaces import IClient
 from cybertools.composer.schema.schema import FormState
 
 
-class Editor(Instance):
+class Instance(BaseInstance):
+
+    implements(IInstance)
+    adapts(Interface)
 
     aspect = 'schema.editor.default'
+    template = None
+
+    def applyTemplate(self, *args, **kw):
+        #result = dict(__name__=self.context.__name__)
+        result = {}
+        mode = kw.get('mode', 'view')
+        template = self.template
+        if template is not None:
+            for f in template.components:
+                fieldType = f.getFieldTypeInfo()
+                if not fieldType.storeData:
+                    # a dummy field, e.g. a spacer
+                    continue
+                fi = f.getFieldInstance()
+                name = f.name
+                value = getattr(self.context, name, u'')
+                value = (mode == 'view' and fi.display(value)) or fi.marshall(value)
+                result[name] = value
+        return result
+
+
+class Editor(BaseInstance):
+
+    implements(IInstance)
+    adapts(Interface)
+
+    aspect = 'schema.editor.default'
+    template = None
 
     def applyTemplate(self, data={}, *args, **kw):
         for c in self.template.components:

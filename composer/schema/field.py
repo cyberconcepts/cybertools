@@ -39,6 +39,7 @@ class Field(Component):
 
     required = False
     standardFieldName = None
+    renderFactory = None
 
     def __init__(self, name, title=None, fieldType='textline', **kw):
         assert name

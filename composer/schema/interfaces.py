@@ -78,6 +78,7 @@ fieldTypes = SimpleVocabulary((
               instanceName='number'),
     #FieldType('date', 'date', u'Date'),
     #FieldType('checkbox', 'checkbox', u'Checkbox'),
+    FieldType('dropdown', 'dropdown', u'Drop-down selection'),
     FieldType('spacer', 'spacer', u'Spacer', fieldMacro='field_spacer',
               storeData=False),
 ))
@@ -138,6 +139,12 @@ class IField(IComponent):
                         '(only for type textarea)'),
                 default=3,
                 required=False,)
+
+    renderFactory = Attribute('A class or another factory providing an '
+                        'object used for rendering the data e.g. as a '
+                        'cell on a tabular report. See cybertools.reporter. '
+                        'May become replaced with a more intelligent kind of '
+                        'field instance.')
 
 
 class IFieldInstance(Interface):
