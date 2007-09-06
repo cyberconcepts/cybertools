@@ -35,6 +35,8 @@ class SchemaView(BaseView):
 
     formState = FormState()
 
+    isManageMode = False
+
     @Lazy
     def fields(self):
         return self.context.fields
@@ -62,6 +64,10 @@ class SchemaView(BaseView):
         return data
 
     def update(self):
+        if self.isManageMode:
+            # Don't store anything when editing
+            self.request.response.redirect(self.nextUrl())
+            return False
         newClient = False
         form = self.request.form
         clientName = self.getClientName()
