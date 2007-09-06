@@ -52,9 +52,40 @@ class Run(object):
                                        str(self.finished)))
 
 
+class Track(Persistent):
+
+    implements(ITrack)
+
+    metadata_attributes = ('taskId', 'runId', 'userName', 'timeStamp')
+
+    @property
+    def metadata(self):
+        return dict((attr, getattr(self, attr)) for attr in self.metadata_attributes)
+
+    def __init__(self, taskId, runId, userName, data={}):
+        self.taskId = taskId
+        self.runId = runId
+        self.userName = userName
+        self.timeStamp = getTimeStamp()
+        self.data = data
+
+    def update(self, newData):
+        self.timeStamp = getTimeStamp()
+        data = self.data
+        data.update(newData)
+        self.data = data
+
+    def __repr__(self):
+        md = self.metadata
+        md['timeStamp'] = timeStamp2ISO(md['timeStamp'])
+        return '<Track %s: %s>' % (`[md[a] for a in self.metadata_attributes]`,
+                                     `self.data`)
+
 class TrackingStorage(BTreeContainer):
 
     implements(ITrackingStorage)
+
+    trackFactory = Track
 
     trackNum = runId = 0
     runs = None
@@ -119,7 +150,7 @@ class TrackingStorage(BTreeContainer):
             self.trackNum += 1
             trackNum = self.trackNum
             trackId = self.idFromNum(trackNum)
-        track = Track(taskId, runId, userName, data)
+        track = self.trackFactory(taskId, runId, userName, data)
         self[trackId] = track
         self.indexTrack(trackNum, track)
         return trackId
@@ -163,6 +194,13 @@ class TrackingStorage(BTreeContainer):
         for idx in kw:
             value = kw[idx]
             if idx in self.indexAttributes:
+                #if type(value) not in (list, tuple):
+                #    value = [value]
+                # TODO: handle a list of values, provide union of results
+                # resultx = None
+                # for v in value:
+                #     result = self.union(result, self.indexes[idx].apply((v, v)))
+                # result = self.intersect(result, resultx)
                 result = self.intersect(result, self.indexes[idx].apply((value, value)))
             elif idx == 'timeFrom':
                 result = self.intersect(result,
@@ -170,6 +208,10 @@ class TrackingStorage(BTreeContainer):
             elif idx == 'timeTo':
                 result = self.intersect(result,
                                         self.indexes['timeStamp'].apply((None, value)))
+            elif idx == 'timeFromTo':  # expects a tuple (from, to)
+                start, end = value
+                result = self.intersect(result,
+                                        self.indexes['timeStamp'].apply((start, end)))
         return result and [self[self.idFromNum(r)] for r in result] or set()
 
     def intersect(self, r1, r2):
@@ -181,35 +223,6 @@ class TrackingStorage(BTreeContainer):
     def getTaskIds(self):
         return self.taskUsers.keys()
 
-
-class Track(Persistent):
-
-    implements(ITrack)
-
-    metadata_attributes = ('taskId', 'runId', 'userName', 'timeStamp')
-
-    @property
-    def metadata(self):
-        return dict((attr, getattr(self, attr)) for attr in self.metadata_attributes)
-
-    def __init__(self, taskId, runId, userName, data={}):
-        self.taskId = taskId
-        self.runId = runId
-        self.userName = userName
-        self.timeStamp = getTimeStamp()
-        self.data = data
-
-    def update(self, newData):
-        self.timeStamp = getTimeStamp()
-        data = self.data
-        data.update(newData)
-        self.data = data
-
-    def __repr__(self):
-        md = self.metadata
-        md['timeStamp'] = timeStamp2ISO(md['timeStamp'])
-        return '<Track %s: %s>' % (`[md[a] for a in self.metadata_attributes]`,
-                                     `self.data`)
 
 def timeStamp2ISO(ts):
     return time.strftime('%Y-%m-%d %H:%M', time.gmtime(ts))
