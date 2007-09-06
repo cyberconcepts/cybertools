@@ -64,15 +64,15 @@ class SchemaView(BaseView):
         return data
 
     def update(self):
-        if self.isManageMode:
-            # Don't store anything when editing
-            self.request.response.redirect(self.nextUrl())
-            return False
         newClient = False
         form = self.request.form
         clientName = self.getClientName()
         if not form.get('action'):
             return True
+        if self.isManageMode:
+            # Don't store anything when editing
+            self.request.response.redirect(self.nextUrl())
+            return False
         manager = self.context.getManager()
         if clientName:
             client = manager.getClients().get(clientName)
