@@ -86,11 +86,14 @@ class ServiceManagerView(BaseView):
         """ Find a registration template that provides the registration
             for the service given.
         """
+        first = None
         for tpl in self.context.getClientSchemas():
+            if first is None:
+                first = tpl
             if IRegistrationTemplate.providedBy(tpl):
                 # TODO: check that service is really provided by this template
                 return tpl
-        return None
+        return first
 
     def overview(self, includeCategories=None):
         result = []
