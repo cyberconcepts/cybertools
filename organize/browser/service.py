@@ -45,13 +45,13 @@ class BaseView(SchemaBaseView):
     def url(self):
         return self.getUrlForObject(self.context)
 
-    def getUrlForObject(self, obj):
-        from zope.traversing.browser import absoluteURL
-        return absoluteURL(obj, self.request)
+    def getClient(self):
+        clientName = self.getClientName()
+        if clientName is None:
+            return None
+        return self.manager.getClients().get(clientName)
 
-    def getLanguage(self):
-        # TODO: take from request or whatever...
-        return 'en'
+    # output formatting
 
     def getFormattedDate(self, date=None, type='date', variant='medium'):
         date = time.localtime(date)[:6]
@@ -77,6 +77,10 @@ class ServiceManagerView(BaseView):
             return component.getMultiAdapter((self.context, self.request),
                                              name=viewName)
         return None
+
+    @Lazy
+    def manager(self):
+        return self.context
 
     def findRegistrationTemplate(self, service):
         """ Find a registration template that provides the registration
@@ -126,6 +130,38 @@ class ServiceManagerView(BaseView):
 
     def eventsOverview(self):
         return self.overview(includeCategories=('event',))
+
+
+class CheckoutView(ServiceManagerView):
+
+    def getServices(self):
+        return self.manager.getServices()
+
+    def getClientData(self):
+        client = self.getClient()
+        if client is None:
+            return {}
+        regs = IClientRegistrations(client)
+        instance = IInstance(client)
+        data = instance.applyTemplate()
+        data['service_registrations'] = regs.getRegistrations()
+        return data
+
+    def update(self):
+        form = self.request.form
+        clientName = self.getClientName()
+        if not form.get('action'):
+            return True     # TODO: error, redirect to overview
+        client = self.getClient()
+        if client is None:
+            return True     # TODO: error, redirect to overview
+        regs = IClientRegistrations(client).getRegistrations()
+        for reg in regs:
+            pass # set state to submitted,
+        # send mail
+        # find thank you message and redirect to it
+        self.request.response.redirect(self.url + '/checkout.html?message=thankyou')
+        return False
 
 
 class ServiceView(BaseView):

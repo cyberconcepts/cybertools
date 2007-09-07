@@ -41,6 +41,14 @@ class BaseView(object):
         self.context = context
         self.request = request
 
+    def getUrlForObject(self, obj):
+        from zope.traversing.browser import absoluteURL
+        return absoluteURL(obj, self.request)
+
+    def getLanguage(self):
+        # TODO: take from request or whatever...
+        return 'en'
+
     def getClientName(self):
         clientName = self.clientName
         if clientName:
@@ -77,10 +85,10 @@ class BaseView(object):
         context = self.context
         idx = templates.find(context)
         if idx > 0:
-            #return templates[idx-1].name
-            return templates.keys()[idx-1]
+            return self.getUrlForObject(templates[idx-1])
+            #return templates.keys()[idx-1]
         else:
-            return None
+            return ''
 
     @Lazy
     def nextTemplate(self):
@@ -92,30 +100,38 @@ class BaseView(object):
         idx = templates.find(context)
         if 0 <= idx < len(templates) - 1:
             #return templates[idx+1].name
-            return templates.keys()[idx+1]
+            return self.getUrlForObject(templates[idx+1])
+            #return templates.keys()[idx+1]
         else:
-            return None
+            return ''
 
-    @Lazy
-    def url(self):
-        from zope.traversing.browser import absoluteURL
-        return absoluteURL(self.context, self.request)
+    def getCheckoutView(self):
+        manager = self.context.getManager()
+        return self.getUrlForObject(manager) + '/checkout.html'
 
     buttonActions = dict(
             submit_previous=getPreviousTemplate,
             submit_next=getNextTemplate,
+            submit=getCheckoutView,
     )
 
     #@Lazy
     def nextUrl(self):
         #viewName = 'thankyou.html'
         viewName = ''
+        url = ''
         form = self.request.form
         for bn in self.buttonActions:
             if bn in form:
-                viewName = self.buttonActions[bn](self)
+                url = self.buttonActions[bn](self)
                 break
-        return '%s/%s?id=%s' % (self.url, viewName, self.clientName)
+        return '%s?id=%s' % (url, self.clientName)
+        #return '%s/%s?id=%s' % (self.url, viewName, self.clientName)
+
+    @Lazy
+    def url(self):
+        from zope.traversing.browser import absoluteURL
+        return absoluteURL(self.context, self.request)
 
     def setSessionInfo(self, key, value, packageId=packageId):
         session = ISession(self.request)[packageId]
