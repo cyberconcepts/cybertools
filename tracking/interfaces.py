@@ -44,6 +44,7 @@ class ITrack(Interface):
 
     data = Attribute('The data for this track, typically a mapping')
     metadata = Attribute('A mapping with the track\'s metadata')
+    indexdata = Attribute('A mapping with the data to be used for indexing')
 
 
 class ITrackingStorage(Interface):

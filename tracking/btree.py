@@ -57,10 +57,13 @@ class Track(Persistent):
     implements(ITrack)
 
     metadata_attributes = ('taskId', 'runId', 'userName', 'timeStamp')
+    index_attributes = metadata_attributes
 
     @property
     def metadata(self):
         return dict((attr, getattr(self, attr)) for attr in self.metadata_attributes)
+
+    indexdata = metadata
 
     def __init__(self, taskId, runId, userName, data={}):
         self.taskId = taskId
@@ -90,7 +93,8 @@ class TrackingStorage(BTreeContainer):
     trackNum = runId = 0
     runs = None
 
-    indexAttributes = ('taskId', 'runId', 'userName', 'timeStamp')
+    #indexAttributes = ('taskId', 'runId', 'userName', 'timeStamp')
+    indexAttributes = Track.index_attributes
 
     def __init__(self, *args, **kw):
         super(TrackingStorage, self).__init__(*args, **kw)
@@ -100,6 +104,15 @@ class TrackingStorage(BTreeContainer):
         self.runs = IOBTree.IOBTree()
         self.currentRuns = OOBTree.OOBTree()
         self.taskUsers = OOBTree.OOBTree()
+
+    def setupIndexes(self):
+        changed = False
+        for idx in self.indexAttributes:
+            if idx not in self.indexes:
+                self.indexes[idx] = FieldIndex()
+                changed = True
+        if changed:
+            self.reindexTracks()
 
     def idFromNum(self, num):
         return '%07i' % (num)
@@ -163,11 +176,13 @@ class TrackingStorage(BTreeContainer):
         return trackId
 
     def indexTrack(self, trackNum, track):
-        md = track.metadata
+        ixd = track.indexdata
         for attr in self.indexAttributes:
-            self.indexes[attr].index_doc(trackNum, md[attr])
-        taskId = md['taskId']
-        userName = md['userName']
+            value = ixd[attr]
+            if value is not None:
+                self.indexes[attr].index_doc(trackNum, value)
+        taskId = ixd['taskId']
+        userName = ixd['userName']
         if taskId not in self.taskUsers:
             self.taskUsers[taskId] = OOBTree.OOTreeSet()
         self.taskUsers[taskId].update([userName])
