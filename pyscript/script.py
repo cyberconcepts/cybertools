@@ -38,7 +38,9 @@ import RestrictedPython.RCompile
 from RestrictedPython.SelectCompiler import ast
 from zope.security.untrustedpython.rcompile import RestrictionMutator as BaseRM
 
-unrestricted_objects = ('rpy', 'r')
+
+unrestricted_objects = ('rpy', 'r', 'as_py')
+
 
 def compile(text, filename, mode):
     if not isinstance(text, basestring):
@@ -46,6 +48,7 @@ def compile(text, filename, mode):
     gen = RExpression(text, str(filename), mode)
     gen.compile()
     return gen.getCode()
+
 
 class RExpression(RestrictedPython.RCompile.RestrictedCompileMode):
 
