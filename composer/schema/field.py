@@ -39,6 +39,7 @@ class Field(Component):
 
     required = False
     standardFieldName = None
+    vocabulary = None
     renderFactory = None
 
     def __init__(self, name, title=None, fieldType='textline', **kw):
@@ -57,6 +58,12 @@ class Field(Component):
 
     def getTitleValue(self):
         return self.title or self.name
+
+    def getVocabularyItems(self):
+        voc = (self.vocabulary or '')
+        if isinstance(voc, basestring):
+            voc = voc.splitlines()
+        return [dict(token=v, title=v) for v in voc if v.strip()]
 
     def getFieldTypeInfo(self):
         return fieldTypes.getTerm(self.fieldType)

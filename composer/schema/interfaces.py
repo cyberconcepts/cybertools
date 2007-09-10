@@ -139,6 +139,12 @@ class IField(IComponent):
                         '(only for type textarea)'),
                 default=3,
                 required=False,)
+    vocabulary = schema.Text(
+                title=_(u'Vocabulary'),
+                description=_(u'Values that may be selected as values for '
+                        'this field; enter one value per line '
+                        '(only for dropdown and other selection fields)'),
+                required=False,)
 
     renderFactory = Attribute('A class or another factory providing an '
                         'object used for rendering the data e.g. as a '
