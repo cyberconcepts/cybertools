@@ -163,7 +163,8 @@ class CheckoutView(ServiceManagerView):
             pass # set state to submitted,
         # send mail
         # find thank you message and redirect to it
-        self.request.response.redirect(self.url + '/checkout.html?message=thankyou')
+        params = '?message=thankyou&id=' + self.clientName
+        self.request.response.redirect(self.url + '/checkout.html' + params)
         return False
 
 
