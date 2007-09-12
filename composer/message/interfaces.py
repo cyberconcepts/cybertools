@@ -35,6 +35,11 @@ class IMessageManager(Interface):
     """ A manager (or container) for complex messages.
     """
 
+    title = schema.TextLine(
+                title=_(u'Title'),
+                description=_(u'The title of the object.'),
+                required=True,)
+
     messages = Attribute('A collection of message objects managed.')
 
 
@@ -42,7 +47,37 @@ class IMessage(ITemplate):
     """ A complex message that may be expanded using instance data.
     """
 
-    manager = Attribute('The manager of this message object')
+    name = schema.ASCII(
+                title=_(u'Name'),
+                description=_(u'The internal name of the message.'),
+                required=True,)
+    title = schema.TextLine(
+                title=_(u'Title'),
+                description=_(u'The title or label of the message.'),
+                required=True,)
+    description = schema.Text(
+                title=_(u'Description'),
+                description=_(u'A brief description of the message.'),
+                required=False,)
+    text = schema.Text(
+                title=_(u'Text'),
+                description=_(u"The message text; may contain placeholders "
+                        "i.e. words beginning with a '$' that will "
+                        "be replaced when the message is rendered."),
+                required=False,)
+    format = schema.Choice(
+                title=_(u'Text format'),
+                description=_(u'The format of the message.'),
+                required=True,
+                default='text/plain',
+                values=('text/plain', 'text/html',))
+    media = schema.Choice(
+                title=_(u'Output media'),
+                description=_(u'The media type on which the message will '
+                        'be rendered.'),
+                required=True,
+                default='mail',
+                values=('mail', 'browser',))
 
-    text = schema.Text()
+    manager = Attribute('The manager of this message object')
 
