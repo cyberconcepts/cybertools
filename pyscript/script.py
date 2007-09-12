@@ -159,7 +159,7 @@ class Function(object):
             lines.append('    ' + line)
         lines.append('script_result = dummy()')
         source = '\n'.join(lines)
-        #print source
+        #print '*** source:', source
         self.code = compile(source, filename, 'exec')
 
     def __call__(self, globals):
