@@ -22,6 +22,7 @@ Working transparently with the R statistics package.
 $Id$
 """
 
+import os
 import rpy
 from rpy import r
 from zope.proxy import removeAllProxies
@@ -34,18 +35,22 @@ class RWrapper(object):
 
     def __getattr__(self, attr):
         value = getattr(self.context, attr)
-        # TODO (Zope 2): return aq_base(value)
         return removeAllProxies(value)
 
     def __call__(self, *args, **kw):
         value = self.context.__call__(*args, **kw)
         value = removeAllProxies(value)
         return RWrapper(value)
-        # TODO (subclass for Zope 2): return aq_base(value)
 
 
 r = RWrapper(r)
 
 with_mode = RWrapper(rpy.with_mode)
-as_py = RWrapper(rpy.as_py)
+#as_py = RWrapper(rpy.as_py)
+
+
+def graphics(*args, **kw):
+    filename = os.tempnam()
+    rc = r.GDD(filename, *args, **kw)
+    return filename + '.jpg', rc
 

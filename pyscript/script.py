@@ -1,45 +1,50 @@
-##############################################################################
 #
-# Copyright (c) 2004 Zope Corporation and Contributors.
-# All Rights Reserved.
+#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
 #
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
 #
-##############################################################################
-"""Python Page
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+""" Simple implementation of Python scripts.
 
 $Id$
 """
 
-__docformat__ = 'restructuredtext'
-
 import new
 import re
+import compiler.pycodegen
 from cStringIO import StringIO
 from persistent import Persistent
-from zope.proxy import removeAllProxies
-from zope.security.untrustedpython.builtins import SafeBuiltins
-#from zope.security.untrustedpython.rcompile import compile
-from zope.traversing.api import getParent, getPath
-from zope.app.container.contained import Contained
-from zope.interface import implements
-from zope.app.i18n import ZopeMessageFactory as _
-
-from cybertools.pyscript.interfaces import IPythonScript, IScriptContainer
-
-
-import compiler.pycodegen
 import RestrictedPython.RCompile
 from RestrictedPython.SelectCompiler import ast
+from zope.app.container.btree import BTreeContainer
+from zope.app.container.contained import Contained
+from zope.interface import implements
+from zope.proxy import removeAllProxies
+from zope.security.untrustedpython.builtins import SafeBuiltins
 from zope.security.untrustedpython.rcompile import RestrictionMutator as BaseRM
+from zope.traversing.api import getParent, getPath
+
+from cybertools.pyscript.interfaces import IPythonScript, IScriptContainer
+try:
+    from cybertools.pyscript.rstat import r, rpy
+    HAS_R = True
+except ImportError:
+    HAS_R = False
 
 
-unrestricted_objects = ('rpy', 'r', 'as_py')
+unrestricted_objects = ('rpy', 'r', 'as_py', 'rstat')
 
 
 def compile(text, filename, mode):
@@ -59,6 +64,7 @@ class RExpression(RestrictedPython.RCompile.RestrictedCompileMode):
         RestrictedPython.RCompile.RestrictedCompileMode.__init__(
             self, source, filename)
         self.rm = RestrictionMutator()
+
 
 class RestrictionMutator(BaseRM):
 
@@ -173,3 +179,16 @@ def _print_usrc(match):
     if raw:
         return match.group(1)+'print '+`string`
     return match.group(1)+'print '+match.group(3).encode('unicode-escape')
+
+
+class ScriptContainer(BTreeContainer):
+
+    implements(IScriptContainer)
+
+    unrestricted_objects = ('rstat')  # not used (yet)
+
+    def updateGlobals(self, globs):
+        if HAS_R:
+            from cybertools.pyscript import rstat
+            globs['rstat'] = rstat
+

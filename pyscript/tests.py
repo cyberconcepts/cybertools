@@ -17,7 +17,7 @@ $Id$
 """
 
 import unittest, doctest
-import zope.component
+from zope import component
 from zope.interface import implements
 from zope.location.traversing import LocationPhysicallyLocatable
 from zope.testing.doctestunit import DocFileSuite
@@ -25,10 +25,11 @@ from zope.traversing.interfaces import IContainmentRoot
 from zope.traversing.interfaces import IPhysicallyLocatable
 from zope.traversing.adapters import RootPhysicallyLocatable
 from zope.app.container.contained import Contained
-from zope.app.testing import placelesssetup, ztapi
+from zope.app.testing import placelesssetup
+from cybertools.pyscript.script import ScriptContainer
 
 
-class Root(Contained):
+class Root(ScriptContainer, Contained):
     implements(IContainmentRoot)
 
     __parent__ = None
@@ -37,11 +38,8 @@ class Root(Contained):
 
 def setUp(test):
     placelesssetup.setUp()
-
-    ztapi.provideAdapter(None, IPhysicallyLocatable,
-                         LocationPhysicallyLocatable)
-    ztapi.provideAdapter(IContainmentRoot, IPhysicallyLocatable,
-                         RootPhysicallyLocatable)
+    component.provideAdapter(LocationPhysicallyLocatable)
+    component.provideAdapter(RootPhysicallyLocatable)
 
 
 def test_suite():
