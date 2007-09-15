@@ -43,7 +43,7 @@ class RWrapper(object):
         return RWrapper(value)
 
 
-r = RWrapper(r)
+rx = RWrapper(r)
 
 with_mode = RWrapper(rpy.with_mode)
 #as_py = RWrapper(rpy.as_py)

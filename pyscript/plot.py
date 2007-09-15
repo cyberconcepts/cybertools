@@ -43,7 +43,10 @@ class PlotView(object):
         return self
 
     def __call__(self):
-        path = str('/' + os.path.join(*self.traverse_subpath))
+        if self.traverse_subpath:
+            path = str('/' + os.path.join(*self.traverse_subpath))
+        else:
+            path = self.request.form.get('image')
         # TODO: keep path in temporary dictionary with hashed keys.
         self.setHeaders(path)
         f = open(path, 'rb')

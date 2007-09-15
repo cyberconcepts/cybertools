@@ -38,7 +38,9 @@ from zope.traversing.api import getParent, getPath
 
 from cybertools.pyscript.interfaces import IPythonScript, IScriptContainer
 try:
-    from cybertools.pyscript.rstat import r, rpy
+    #from cybertools.pyscript.rstat import r, rpy
+    import rpy
+    from rpy import r
     HAS_R = True
 except ImportError:
     HAS_R = False
@@ -191,4 +193,6 @@ class ScriptContainer(BTreeContainer):
         if HAS_R:
             from cybertools.pyscript import rstat
             globs['rstat'] = rstat
+            globs['r'] = r
+            globs['rpy'] = rpy
 
