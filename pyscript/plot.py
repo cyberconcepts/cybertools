@@ -73,6 +73,8 @@ class PlotView(object):
             key = self.traverse_subpath[0]
         else:
             key = self.request.form.get('image', 'not_found')
+        if '.' in key:  # remove extension possibly added to make Flash happy
+            key = key.split('.', 1)[0]
         path = cachedImages[key].path
         self.setHeaders(path)
         f = open(path, 'rb')

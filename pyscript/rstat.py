@@ -71,5 +71,5 @@ class RStat(object):
         context = self.context
         fn, robj = gdd(**kw)
         key = registerImage(fn)
-        return '%s/@@plot?image=%s' % (absoluteURL(context, request), key)
+        return '%s/@@plot?image=%s.jpg' % (absoluteURL(context, request), key)
 
