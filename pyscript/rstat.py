@@ -68,7 +68,7 @@ class RStat(object):
     def graphics(self, **kw):
         request = self.request
         context = self.context
-        fn, robj = gdd(**kw)
+        fn, robj = self.gdd(**kw)
         key = registerImage(fn)
         return '%s/@@plot?image=%s' % (absoluteURL(context, request), key)
 
