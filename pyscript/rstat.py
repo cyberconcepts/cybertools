@@ -53,17 +53,18 @@ with_mode = RWrapper(rpy.with_mode)
 #as_py = RWrapper(rpy.as_py)
 
 
+def gdd(self, **kw):
+    r.library('GDD')
+    filename = os.tempnam(None, 'rplot')
+    robj = r.GDD(filename, type='jpg', **kw)
+    return filename + '.jpg', robj
+
+
 class RStat(object):
 
     def __init__(self, context, request):
         self.context = context
         self.request = request
-
-    def gdd(self, **kw):
-        r.library('GDD')
-        filename = os.tempnam(None, 'rplot')
-        robj = r.GDD(filename, type='jpg', **kw)
-        return filename + '.jpg', robj
 
     def graphics(self, **kw):
         request = self.request
