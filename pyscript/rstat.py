@@ -26,6 +26,9 @@ import os
 import rpy
 from rpy import r
 from zope.proxy import removeAllProxies
+from zope.traversing.browser import absoluteURL
+
+from cybertools.pyscript.plot import registerImage
 
 
 class RWrapper(object):
@@ -49,8 +52,36 @@ with_mode = RWrapper(rpy.with_mode)
 #as_py = RWrapper(rpy.as_py)
 
 
-def graphics(*args, **kw):
-    filename = os.tempnam()
-    rc = r.GDD(filename, *args, **kw)
-    return filename + '.jpg', rc
+def gdd(**kw):
+    r.library('GDD')
+    filename = os.tempnam(None, 'rplot')
+    robj = r.GDD(filename, type='jpg', **kw)
+    return filename + '.jpg', robj
+
+def graphics(**kw):
+    context = kw.pop('context', None)
+    request = kw.pop('request', None)
+    fn, robj = gdd(**kw)
+    key = registerImage(fn)
+    return '%s/@@plot?image=%s' % (absoluteURL(context, request), key)
+
+
+class RStat(object):
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def gdd(self, **kw):
+        r.library('GDD')
+        filename = os.tempnam(None, 'rplot')
+        robj = r.GDD(filename, type='jpg', **kw)
+        return filename + '.jpg', robj
+
+    def graphics(self, **kw):
+        request = self.request
+        context = self.context
+        fn, robj = gdd(**kw)
+        key = registerImage(fn)
+        return '%s/@@plot?image=%s' % (absoluteURL(context, request), key)
 

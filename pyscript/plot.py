@@ -17,20 +17,46 @@
 #
 
 """
-View class(es) for images (plots).
+Management of filesystem images (plots) and corresponding views.
 
 $Id$
 """
 
 import os
+import time
 from zope.interface import Interface, implements
 from zope.cachedescriptors.property import Lazy
 
+from cybertools.util import randomname, jeep
+
+
+class CachedImage(object):
+    """ Keep information about temporary image files.
+    """
+
+    def __init__(self, path, name=None):
+        self.path = path
+        if name is None:
+            self.name = randomname.generateName(lambda x: x not in cachedImages)
+        else:
+            self.name = name
+        self.timeStamp = int(time.time())
+
+
+cachedImages = jeep.Jeep()
+
+def registerImage(filename, name=None):
+    image = CachedImage(filename, name)
+    cachedImages.append(image)
+    while len(cachedImages) > 10:  # clean up old cache entries
+        old = cachedImages.pop(0).path
+        if os.path.exists(old):
+            os.unlink(old)
+    return image.name
+
 
 class PlotView(object):
-    """ Abstract basic view class for Flash movies .
-
-        The assessment attribute has to be set by the subclass.
+    """ Access to temporary filesystem images.
     """
 
     def __init__(self, context, request):
@@ -44,10 +70,10 @@ class PlotView(object):
 
     def __call__(self):
         if self.traverse_subpath:
-            path = str('/' + os.path.join(*self.traverse_subpath))
+            key = self.traverse_subpath[0]
         else:
-            path = self.request.form.get('image')
-        # TODO: keep path in temporary dictionary with hashed keys.
+            key = self.request.form.get('image', 'not_found')
+        path = cachedImages[key].path
         self.setHeaders(path)
         f = open(path, 'rb')
         data = f.read()

@@ -38,15 +38,21 @@ class IPythonScript(Interface):
     automatically.
     """
 
+    parameters = schema.TextLine(
+        title=_(u"Parameters"),
+        description=_(u"Space-separated list of parameter names."),
+        required=False,
+        default=u''
+    )
     source = schema.SourceText(
         title=_(u"Source"),
         description=_(u"The source of the Python page."),
         required=True,
     )
-
     contentType = schema.TextLine(
         title=_(u"Content Type"),
-        description=_(u"The content type the script outputs."),
+        description=_(u"The content type of the script's output (return value "
+                "when rendered in the browser)."),
         required=True,
         default=u"text/html",
     )

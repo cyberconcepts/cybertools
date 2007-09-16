@@ -89,11 +89,14 @@ class PythonScript(Contained, Persistent):
 
     _v_compiled = None
 
-    def __init__(self, source=u'', contentType=u'text/plain'):
+    parameters = u''
+
+    def __init__(self, source=u'', parameters=u'', contentType=u'text/plain'):
         """Initialize the object."""
         super(PythonScript, self).__init__()
         self.source = source
         self.contentType = contentType
+        self.parameters = parameters or u''
 
     def __filename(self):
         if self.__parent__ is None:
@@ -110,7 +113,8 @@ class PythonScript(Contained, Persistent):
         self.__source = source
         self.__prepared_source = self.prepareSource(source)
         # Compile objects cannot be pickled
-        self._v_compiled = Function(self.__prepared_source, self.__filename())
+        self._v_compiled = Function(self.__prepared_source,  self.parameters,
+                                    self.__filename())
 
     _tripleQuotedString = re.compile(
         r"^([ \t]*)[uU]?([rR]?)(('''|\"\"\")(.*)\4)", re.MULTILINE | re.DOTALL)
@@ -136,11 +140,11 @@ class PythonScript(Contained, Persistent):
 
     source = property(getSource, setSource)
 
-    def __call__(self, request, **kw):
+    def __call__(self, request, *args, **kw):
         output = StringIO()
         if self._v_compiled is None:
-            self._v_compiled = Function(self.__prepared_source,
-                                               self.__filename())
+            self._v_compiled = Function(self.__prepared_source, self.parameters,
+                                        self.__filename(),)
         parent = getParent(self)
         kw['request'] = request
         kw['script'] = self
@@ -149,7 +153,7 @@ class PythonScript(Contained, Persistent):
         kw['script_result'] = None
         if IScriptContainer.providedBy(parent):
             parent.updateGlobals(kw)
-        self._v_compiled(kw)
+        self._v_compiled(args, kw)
         result = kw['script_result']
         if result == output:
             result = result.getvalue().decode('unicode-escape')
@@ -160,8 +164,13 @@ class Function(object):
     """A compiled function.
     """
 
-    def __init__(self, source, filename='<string>'):
+    parameters = ''
+
+    def __init__(self, source, parameters='', filename='<string>'):
         lines = []
+        if parameters:
+            self.parameters = str(parameters).split()
+        #print '*** Function.parameters:', repr(self.parameters)
         lines.insert(0, 'def dummy(): \n    pass')
         for line in source.splitlines():
             lines.append('    ' + line)
@@ -170,8 +179,10 @@ class Function(object):
         #print '*** source:', source
         self.code = compile(source, filename, 'exec')
 
-    def __call__(self, globals):
+    def __call__(self, args, globals):
         globals['__builtins__'] = SafeBuiltins
+        for idx, p in enumerate(self.parameters):
+            globals[p] = args[idx]
         exec self.code in globals, None
 
 
@@ -192,7 +203,10 @@ class ScriptContainer(BTreeContainer):
     def updateGlobals(self, globs):
         if HAS_R:
             from cybertools.pyscript import rstat
-            globs['rstat'] = rstat
+            #globs['rstat'] = rstat
+            context = globs['context']
+            request = globs['request']
+            globs['rstat'] = rstat.RStat(context, request)
             globs['r'] = r
             globs['rpy'] = rpy
 
