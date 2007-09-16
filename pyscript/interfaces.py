@@ -38,9 +38,15 @@ class IPythonScript(Interface):
     automatically.
     """
 
+    title = schema.TextLine(
+        title=_(u"Title"),
+        description=_(u"A descriptive title of the script."),
+        required=False,
+        default=u''
+    )
     parameters = schema.TextLine(
         title=_(u"Parameters"),
-        description=_(u"Space-separated list of parameter names."),
+        description=_(u"Comma-separated list of parameter names."),
         required=False,
         default=u''
     )

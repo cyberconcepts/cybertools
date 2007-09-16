@@ -89,11 +89,16 @@ class PythonScript(Contained, Persistent):
 
     _v_compiled = None
 
+    title = u''
     parameters = u''
+    source = u''
+    contentType=u'text/plain'
 
-    def __init__(self, source=u'', parameters=u'', contentType=u'text/plain'):
+    def __init__(self, title=u'', parameters=u'', source=u'',
+                 contentType=u'text/plain'):
         """Initialize the object."""
         super(PythonScript, self).__init__()
+        self.title = title
         self.source = source
         self.contentType = contentType
         self.parameters = parameters or u''
@@ -164,12 +169,12 @@ class Function(object):
     """A compiled function.
     """
 
-    parameters = ''
+    parameters = []
 
     def __init__(self, source, parameters='', filename='<string>'):
         lines = []
         if parameters:
-            self.parameters = str(parameters).split()
+            self.parameters = [str(p).strip() for p in parameters.split(',')]
         #print '*** Function.parameters:', repr(self.parameters)
         lines.insert(0, 'def dummy(): \n    pass')
         for line in source.splitlines():
@@ -182,6 +187,7 @@ class Function(object):
     def __call__(self, args, globals):
         globals['__builtins__'] = SafeBuiltins
         for idx, p in enumerate(self.parameters):
+            # TODO: handle parameters with default values like ``attr=abc``
             globals[p] = args[idx]
         exec self.code in globals, None
 
@@ -198,12 +204,14 @@ class ScriptContainer(BTreeContainer):
 
     implements(IScriptContainer)
 
-    unrestricted_objects = ('rstat')  # not used (yet)
+    unrestricted_objects = ('rstat',)  # not used (yet)
+
+    def getItems(self):
+        return self.values()
 
     def updateGlobals(self, globs):
         if HAS_R:
             from cybertools.pyscript import rstat
-            #globs['rstat'] = rstat
             context = globs['context']
             request = globs['request']
             globs['rstat'] = rstat.RStat(context, request)
