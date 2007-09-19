@@ -40,6 +40,7 @@ class Field(Component):
     required = False
     standardFieldName = None
     vocabulary = None
+    defaultValue = None
     renderFactory = None
 
     def __init__(self, name, title=None, fieldType='textline', **kw):
@@ -63,7 +64,9 @@ class Field(Component):
         voc = (self.vocabulary or '')
         if isinstance(voc, basestring):
             voc = voc.splitlines()
-        return [dict(token=v, title=v) for v in voc if v.strip()]
+            return [dict(token=t, title=t) for t in voc if t.strip()]
+        else:
+            return [dict(token=t.token, title=t.title) for t in voc]
 
     def getFieldTypeInfo(self):
         return fieldTypes.getTerm(self.fieldType)

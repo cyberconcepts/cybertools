@@ -1,0 +1,123 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      i18n:domain="loops">
+<body>
+
+
+<metal:fields define-macro="fields">
+  <tal:define define="manageMode manageMode|view/manageMode|nothing;
+                      fields view/fields;
+                      data view/data">
+    <table class="listing" style="width: auto">
+      <tal:fields repeat="field fields">
+        <tal:field define="name field/name;
+                           typeInfo field/getFieldTypeInfo;
+                           errors state/fieldInstances/?name/errors|python: [];">
+          <metal:field use-macro="python: view.schemaMacros[typeInfo.fieldMacro]" />
+        </tal:field>
+      </tal:fields>
+    </table>
+    <tal:add condition="manageMode">
+      <metal:add use-macro="view/schemaEditMacros/add_buttons" />
+    </tal:add>
+  </tal:define>
+</metal:fields>
+
+
+<metal:field define-macro="field">
+      <tbody tal:omit-tag="not:errors"
+             class="error"
+             style="padding: 4px; margin-bottom: 4px;">
+        <tal:errors repeat="error errors">
+          <tr>
+            <td colspan="2" style="padding: 4px"
+                i18n:translate=""
+                tal:content="error/description">???</td>
+          </tr>
+        </tal:errors>
+        <tr>
+          <tal:field>
+            <td style="padding: 4px; border-top: none"
+                tal:attributes="title field/description">
+              <b tal:content="field/title">...</b>
+              <span tal:condition="field/required">*</span>
+            </td>
+            <td class="field" style="border-top: none">
+              <metal:input use-macro="python:
+                    view.schemaMacros[typeInfo.inputMacro]" />
+            </td>
+          </tal:field>
+        </tr>
+        <tr style="border-bottom: 1px solid #dddddd"
+            tal:condition="manageMode">
+          <td style="border-top: none">
+            <metal:move use-macro="view/editMacros/move_icons" />
+          </td>
+          <td style="border-top: none">
+            <metal:edit use-macro="view/schemaEditMacros/edit_buttons" />
+          </td>
+        </tr>
+      </tbody>
+</metal:field>
+
+
+<metal:textline define-macro="input_textline">
+    <input type="text" name="field" style="width: 300px"
+           tal:define="width field/width|python:300"
+           tal:attributes="name name;
+                           style python: 'width: %ipx' % (width or 300);
+                           value data/?name|field/defaultValue|string:" />
+</metal:textline>
+
+
+<metal:textarea define-macro="input_textarea">
+    <textarea name="field" rows="3" style="width: 300px"
+           tal:define="width field/width|python:300;
+                       height field/height|python:3"
+           tal:attributes="name name;
+                           rows python: height or 3;
+                           style python: 'width: %ipx' % (width or 300)"
+           tal:content="data/?name|field/defaultValue|string:">
+    </textarea>
+</metal:textarea>
+
+
+<metal:dropdown define-macro="input_dropdown">
+    <select name="field" style="width: 100px"
+           tal:define="width field/width|python:100"
+           tal:attributes="name name;
+                           style python: 'width: %ipx' % (width or 100);">
+      <option tal:repeat="item field/getVocabularyItems"
+              tal:content="item/title"
+              tal:attributes="value item/token;
+                              selected python:
+                    item['token'] == data.get(name, field.defaultValue)">Mrs</option>
+    </select>
+</metal:dropdown>
+
+
+<metal:spacer define-macro="field_spacer">
+  <tr>
+    <td colspan="2" style="border-top:none; font-size: 50%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td colspan="2"
+        style="border-top: 1px solid #bbbbbb; padding: 8px 4px;
+               margin-top: 10px;">
+      <div><b tal:content="field/title"></b></div>
+      <div tal:content="structure field/description"></div>
+    </td>
+  </tr>
+  <tr style="border-bottom: 1px solid #dddddd"
+      tal:condition="manageMode">
+      <td style="border-top: none">
+        <metal:move use-macro="view/schemaEditMacros/move_icons" />
+      </td>
+      <td style="border-top: none">
+        <metal:edit use-macro="view/schemaEditMacros/edit_buttons" />
+      </td>
+  </tr>
+</metal:spacer>
+
+
+</body>
+</html>

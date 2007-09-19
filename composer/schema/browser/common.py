@@ -23,6 +23,7 @@ $Id$
 """
 
 from zope import component
+from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.app.session.interfaces import ISession
 from zope.cachedescriptors.property import Lazy
 
@@ -30,10 +31,18 @@ from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.interfaces import IClientFactory
 
 
+schema_macros = ViewPageTemplateFile('schema_macros.pt')
+schema_edit_macros = schema_macros  # default: no editing
+
 packageId = 'cybertools.composer.schema'
 
 
 class BaseView(object):
+    """ Base class for views that have schema objects as their context.
+
+        Do not use this base class for views on typical content objects
+        that are not schemas!
+    """
 
     clientName = None
 
