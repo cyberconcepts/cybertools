@@ -63,8 +63,8 @@ class FieldType(SimpleTerm):
     def __init__(self, value, token=None, title=None, **kw):
         super(FieldType, self).__init__(value, token, title)
         self.name = value
-        self.fieldMacro = 'field'
-        self.inputMacro = 'input_' + self.name
+        self.fieldRenderer = 'field'
+        self.inputRenderer = 'input_' + self.name
         self.storeData = True
         self.instanceName = ''
         for k, v in kw.items():
@@ -74,13 +74,15 @@ class FieldType(SimpleTerm):
 fieldTypes = SimpleVocabulary((
     FieldType('textline', 'textline', u'Textline'),
     FieldType('textarea', 'textarea', u'Textarea'),
-    FieldType('number', 'number', u'Number', inputMacro='input_textline',
-              instanceName='number'),
+    FieldType('number', 'number', u'Number',
+              inputRenderer='input_textline', instanceName='number'),
     #FieldType('date', 'date', u'Date'),
+    FieldType('fileupload', 'fileupload', u'File upload',
+              instanceName='fileupload'),
     #FieldType('checkbox', 'checkbox', u'Checkbox'),
     FieldType('dropdown', 'dropdown', u'Drop-down selection'),
-    FieldType('spacer', 'spacer', u'Spacer', fieldMacro='field_spacer',
-              storeData=False),
+    FieldType('spacer', 'spacer', u'Spacer',
+              fieldRenderer='field_spacer', storeData=False),
 ))
 
 standardFieldNames = SimpleVocabulary((
@@ -145,6 +147,17 @@ class IField(IComponent):
                         'this field; enter one value per line '
                         '(only for dropdown and other selection fields)'),
                 required=False,)
+
+    fieldRenderer = Attribute('Name of a renderer (i.e. a ZPT macro or '
+                        'an adapter) that is responsible for rendering '
+                        '(presenting) the field as a whole.')
+    inputRenderer = Attribute('Name of a renderer (i.e. a ZPT macro or '
+                        'an adapter) that is responsible for rendering '
+                        '(presenting) the part of the field that allows '
+                        'data input.')
+    storeData = Attribute('Boolean value, true when this field provides '
+                        'data that may be stored in a context object, '
+                        'false for dummy fields like spacers.')
 
     renderFactory = Attribute('A class or another factory providing an '
                         'object used for rendering the data e.g. as a '

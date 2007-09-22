@@ -40,8 +40,8 @@ class Field(Component):
     required = False
     standardFieldName = None
     vocabulary = None
-    defaultValue = None
     renderFactory = None
+    default = None
 
     def __init__(self, name, title=None, fieldType='textline', **kw):
         assert name
@@ -57,6 +57,24 @@ class Field(Component):
     def name(self):
         return self.__name__
 
+    @property
+    def defaultValue(self):
+        if callable(self.default):
+            return self.default()
+        return self.default
+
+    @property
+    def fieldRenderer(self):
+        return self.getFieldTypeInfo().fieldRenderer
+
+    @property
+    def inputRenderer(self):
+        return self.getFieldTypeInfo().inputRenderer
+
+    @property
+    def storeData(self):
+        return self.getFieldTypeInfo().storeData
+
     def getTitleValue(self):
         return self.title or self.name
 
@@ -66,7 +84,7 @@ class Field(Component):
             voc = voc.splitlines()
             return [dict(token=t, title=t) for t in voc if t.strip()]
         else:
-            return [dict(token=t.token, title=t.title) for t in voc]
+            return [dict(token=t.token, title=t.title or t.value) for t in voc]
 
     def getFieldTypeInfo(self):
         return fieldTypes.getTerm(self.fieldType)
@@ -135,3 +153,12 @@ class NumberFieldInstance(FieldInstance):
                 int(value)
             except (TypeError, ValueError):
                 self.setError('invalid_number')
+
+
+class FileUploadFieldInstance(FieldInstance):
+
+    def marshall(self, value):
+        return value
+
+    def unmarshall(self, value):
+        return value

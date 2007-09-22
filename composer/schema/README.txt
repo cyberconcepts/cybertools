@@ -24,17 +24,20 @@ objects.
   ...     pass
 
 The schema will be connected with an object via an instance adapter.
+In addition, we need a field instance adapter that cares for  the
+correct conversion of input data to context attributes.
 
   >>> from cybertools.composer.schema.instance import Editor
+  >>> from cybertools.composer.schema.field import FieldInstance
   >>> from zope import component
   >>> component.provideAdapter(Editor, (Service,), name="service.edit")
+  >>> component.provideAdapter(FieldInstance)
 
   >>> srv = Service()
   >>> inst = component.getAdapter(srv, name='service.edit')
   >>> inst.template = serviceSchema
-  >>> inst.applyTemplate()
-  title -
-  description -
-  start -
-  end -
-  capacity -
+  >>> inst.applyTemplate(data=dict(title='Service', capacity='30'))
+  <...FormState object ...>
+
+  >>> srv.title, srv.description, srv.capacity
+  (u'Service', u'', u'30')

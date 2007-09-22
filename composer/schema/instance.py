@@ -47,14 +47,13 @@ class Instance(BaseInstance):
         template = self.template
         if template is not None:
             for f in template.components:
-                fieldType = f.getFieldTypeInfo()
-                if not fieldType.storeData:
+                if not f.storeData:
                     # a dummy field, e.g. a spacer
                     continue
                 fi = f.getFieldInstance()
                 name = f.name
-                #value = getattr(self.context, name, field.default)
-                value = getattr(self.context, name, u'')
+                value = getattr(self.context, name, f.defaultValue)
+                #value = getattr(self.context, name, u'')
                 value = (mode == 'view' and fi.display(value)) or fi.marshall(value)
                 result[name] = value
         return result
@@ -69,12 +68,44 @@ class Editor(BaseInstance):
     template = None
 
     def applyTemplate(self, data={}, *args, **kw):
-        for c in self.template.components:
-            # TODO: implement the real stuff
-            # save data (if available) in context
-            # build sequence of fields with data from context
-            # or directly use request...
-            print c.name, getattr(self.context, c.name, '-')
+        fieldHandlers = kw.get('fieldHandlers', {})
+        template = self.template
+        context = self.context
+        formState = self.validate(data)
+        if template is None:
+            return formState
+        if formState.severity > 0:
+            # don't do anything if there is an error
+            return formState
+        for f in template.components:
+            if not f.storeData:
+                # a dummy field, e.g. a spacer
+                continue
+            name = f.name
+            ftype = f.fieldType
+            fi = formState.fieldInstances[name]
+            value = fi.unmarshall(data.get(name, u''))
+            if ftype in fieldHandlers:  # caller wants special treatment of field
+                fieldHandlers[ftype](context, value, fi, formState)
+            else:
+                oldValue = getattr(context, name, None)
+                if value != oldValue:
+                    setattr(context, name, value)
+                    fi.change = (oldValue, value)
+                    formState.changed = True
+        return formState
+
+    def validate(self, data):
+        formState = FormState()
+        if self.template is None:
+            return formState
+        for f in self.template.fields:
+            fi = f.getFieldInstance()
+            value = data.get(f.name)
+            fi.validate(value)
+            formState.fieldInstances.append(fi)
+            formState.severity = max(formState.severity, fi.severity)
+        return formState
 
 
 class ClientInstance(object):
@@ -111,8 +142,7 @@ class ClientInstance(object):
         if template is not None:
             values = attrs.get(self.aspect, {})
             for f in template.fields:
-                fieldType = f.getFieldTypeInfo()
-                if not fieldType.storeData:
+                if not f.storeData:
                     # a dummy field, e.g. a spacer
                     continue
                 fi = f.getFieldInstance()
@@ -147,13 +177,12 @@ class ClientInstanceEditor(ClientInstance):
         values = attrs.setdefault(self.aspect, OOBTree())
         for f in template.fields:
             name = f.name
-            fieldType = f.getFieldTypeInfo()
-            if not fieldType.storeData:
+            if not f.storeData:
                 # a dummy field, e.g. a spacer
                 continue
-            fi = formState.fieldInstances[name]
-            value = fi.unmarshall(data.get(name))
             if name in data:
+                fi = formState.fieldInstances[name]
+                value = fi.unmarshall(data.get(name))
                 oldValue = values.get(name)
                 if value != oldValue:
                     values[name] = value

@@ -7,12 +7,11 @@
   <tal:define define="manageMode manageMode|view/manageMode|nothing;
                       fields view/fields;
                       data view/data">
-    <table class="listing" style="width: auto">
+    <table style="width: 100%">
       <tal:fields repeat="field fields">
         <tal:field define="name field/name;
-                           typeInfo field/getFieldTypeInfo;
                            errors state/fieldInstances/?name/errors|python: [];">
-          <metal:field use-macro="python: view.schemaMacros[typeInfo.fieldMacro]" />
+          <metal:field use-macro="python: view.schemaMacros[field.fieldRenderer]" />
         </tal:field>
       </tal:fields>
     </table>
@@ -43,7 +42,7 @@
             </td>
             <td class="field" style="border-top: none">
               <metal:input use-macro="python:
-                    view.schemaMacros[typeInfo.inputMacro]" />
+                    view.schemaMacros[field.inputRenderer]" />
             </td>
           </tal:field>
         </tr>
@@ -61,36 +60,45 @@
 
 
 <metal:textline define-macro="input_textline">
-    <input type="text" name="field" style="width: 300px"
-           tal:define="width field/width|python:300"
+    <input type="text" name="field" style="width: 450px"
+           tal:define="width field/width|nothing"
            tal:attributes="name name;
-                           style python: 'width: %ipx' % (width or 300);
-                           value data/?name|field/defaultValue|string:" />
+                           style python:
+                                'width: %s' % (width and str(width)+'px' or '450px');
+                           value data/?name" />
 </metal:textline>
 
 
 <metal:textarea define-macro="input_textarea">
-    <textarea name="field" rows="3" style="width: 300px"
-           tal:define="width field/width|python:300;
+    <textarea name="field" rows="3" style="width: 450px"
+           tal:define="width field/width|nothing;
                        height field/height|python:3"
            tal:attributes="name name;
                            rows python: height or 3;
-                           style python: 'width: %ipx' % (width or 300)"
-           tal:content="data/?name|field/defaultValue|string:">
+                           style python:
+                                'width: %s' % (width and str(width)+'px' or '450px');"
+           tal:content="data/?name">
     </textarea>
 </metal:textarea>
 
 
+<metal:upload define-macro="input_fileupload">
+    <input type="file" name="field"
+           tal:attributes="name name;" />
+</metal:upload>
+
+
 <metal:dropdown define-macro="input_dropdown">
-    <select name="field" style="width: 100px"
-           tal:define="width field/width|python:100"
+    <select name="field" style="width: auto"
+           tal:define="width field/width|nothing"
            tal:attributes="name name;
-                           style python: 'width: %ipx' % (width or 100);">
+                           style python:
+                                'width: %s' % (width and str(width)+'px' or '');">
       <option tal:repeat="item field/getVocabularyItems"
               tal:content="item/title"
               tal:attributes="value item/token;
                               selected python:
-                    item['token'] == data.get(name, field.defaultValue)">Mrs</option>
+                    item['token'] == data[name]">Mrs</option>
     </select>
 </metal:dropdown>
 

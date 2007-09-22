@@ -47,10 +47,10 @@ def getSchemaFromInterface(ifc, manager):
             info = fieldMapping[field.__class__]
             voc = getattr(field, 'vocabulary', ()) or getattr(field, 'vocabularyName', None)
             f = Field(field.getName(),
-                    fieldType = info[0],
+                    fieldType=info[0],
                     required=field.required,
                     default=field.default,
-                    default_method=getattr(field, 'default_method', None),
+                    #default_method=getattr(field, 'default_method', None),
                     vocabulary=voc,
                     title=field.title,
                     description=field.description)
