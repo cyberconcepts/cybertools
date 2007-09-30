@@ -93,6 +93,10 @@ class Jeep(object):
     def append(self, obj):
         self.insert(len(self), obj)
 
+    def extend(self, sequence):
+        for obj in sequence:
+            self.append(obj)
+
     def insert(self, idx, obj):
         key = getattr(obj, '__name__', getattr(obj, 'name', _notfound))
         if key is _notfound:

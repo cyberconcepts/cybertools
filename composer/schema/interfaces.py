@@ -58,6 +58,15 @@ class ISchema(ITemplate):
                 'with this schema.')
 
 
+class ISchemaFactory(Interface):
+    """ Provides a schema when called. Typically used for adapters.
+    """
+
+    def __call__(interface, **kw):
+        """ Return a schema, based on the interface given.
+        """
+
+
 class FieldType(SimpleTerm):
 
     def __init__(self, value, token=None, title=None, **kw):
