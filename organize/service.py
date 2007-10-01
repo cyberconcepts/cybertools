@@ -54,13 +54,16 @@ class ServiceManager(object):
     services = None
     clients = None
 
+    allowRegWithNumber = False
+    allowDirectRegistration = True
+
     def __init__(self):
         if self.servicesFactory is not None:
             self.services = self.servicesFactory()
         if self.clientSchemasFactory is not None:
             self.clientSchemas = self.clientSchemasFactory()
 
-    def getServices(self):
+    def getServices(self, categories=[]):
         return self.services
 
     def getClientSchemas(self):
@@ -95,6 +98,7 @@ class Service(object):
     manager = None
     category = None
     allowRegWithNumber = False
+    allowDirectRegistration = True
 
     def __init__(self, name=None, title=u'', capacity=-1, **kw):
         self.name = self.__name__ = name
@@ -151,6 +155,12 @@ class Service(object):
         if clientName in self.registrations:
             del self.registrations[clientName]
 
+    # default methods
+    def getAllowRegWithNumberFromManager(self):
+        return getattr(self.getManager(), 'allowRegWithNumber', None)
+    def getAllowDirectRegistrationFromManager(self):
+        return getattr(self.getManager(), 'allowDirectRegistration', None)
+
 
 class ScheduledService(Service):
 
@@ -158,6 +168,7 @@ class ScheduledService(Service):
 
     start = end = None
 
+    # default methods
     def getStartFromManager(self):
         return getattr(self.getManager(), 'start', None)
     def getEndFromManager(self):
@@ -186,14 +197,19 @@ class RegistrationTemplate(object):
     def __init__(self, name=None, manager=None):
         self.name = self.__name__ = name
         self.manager = self.__parent__ = manager
+        self.categories = []
 
     @property
     def services(self):
         return self.getServices()
 
     def getServices(self):
-        # TODO: Restrict according to the objects selection criteria
-        return self.getManager().getServices()
+        svcs = self.getManager().getServices()
+        categories = [c.strip() for c in self.categories if c.strip()]
+        if categories:
+            svcs = Jeep((key, s) for key, s in svcs.items()
+                                 if s.category in categories)
+        return svcs
 
     def getManager(self):
         return self.manager
@@ -229,7 +245,11 @@ class ClientRegistrations(object):
 
     def getRegistrations(self):
         # TODO: restrict to services on this template
-        return getattr(self.context, self.registrationsAttributeName, [])
+        regs = getattr(self.context, self.registrationsAttributeName, [])
+        if self.template is None:
+            return regs
+        svcs = self.template.getServices().values()
+        return [r for r in regs if r.service in svcs]
 
 
 # registration states definition

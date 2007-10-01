@@ -82,18 +82,24 @@ class ServiceManagerView(BaseView):
     def manager(self):
         return self.context
 
-    def findRegistrationTemplate(self, service):
-        """ Find a registration template that provides the registration
-            for the service given.
+    def getRegistrationTemplate(self, service=None, preferRegistrationTemplate=False):
+        """ Find a suitable data or registration template.
         """
         first = None
         for tpl in self.context.getClientSchemas():
+            if not preferRegistrationTemplate:
+                return tpl
+            if IRegistrationTemplate.providedBy(tpl):
+                # TODO (optional): make sure template provides registration
+                # for service given.
+                return tpl
             if first is None:
                 first = tpl
-            if IRegistrationTemplate.providedBy(tpl):
-                # TODO: check that service is really provided by this template
-                return tpl
         return first
+
+    def registrationUrl(self):
+        tpl = self.getRegistrationTemplate()
+        return self.getUrlForObject(tpl)
 
     def overview(self, includeCategories=None):
         result = []
@@ -178,7 +184,7 @@ class ServiceView(BaseView):
     def getRegistrationTemplate(self):
         context = self.context
         man = context.getManager()
-        return ServiceManagerView(man, self.request).findRegistrationTemplate(context)
+        return ServiceManagerView(man, self.request).getRegistrationTemplate()
 
     def registrationUrl(self):
         tpl = self.getRegistrationTemplate()

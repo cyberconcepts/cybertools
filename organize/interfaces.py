@@ -149,6 +149,19 @@ class IServiceManager(Interface):
                 vocabulary=serviceManagerViews,
                 default='',
                 required=False,)
+    allowRegWithNumber = schema.Bool(
+                title=_(u'Allow registration with number'),
+                description=_(u'When this field is checked more than one '
+                        'object (participant) may be assigned with one '
+                        'registration by entering a corresponding number.'),
+                required=False,)
+    allowDirectRegistration = schema.Bool(
+                title=_(u'Allow direct registration'),
+                description=_(u'When this field is checked participants '
+                        'may register themselves directly on the page '
+                        'with the service description; otherwise registration '
+                        'is only possible on a registration template.'),
+                required=False,)
 
     services = Attribute('A collection of services managed by this object.')
 
@@ -188,6 +201,13 @@ class IService(Interface):
                 description=_(u'When this field is checked more than one '
                         'object (participant) may be assigned with one '
                         'registration by entering a corresponding number.'),
+                required=False,)
+    allowDirectRegistration = schema.Bool(
+                title=_(u'Allow direct registration'),
+                description=_(u'When this field is checked participants '
+                        'may register themselves directly on the page '
+                        'with the service description; otherwise registration '
+                        'is only possible on a registration template.'),
                 required=False,)
     externalId = schema.TextLine(
                 title=_(u'External ID'),
@@ -239,6 +259,9 @@ class IService(Interface):
                 'still available; a negative number means: '
                 'no restriction, i.e. unlimited capacity; '
                 'read-only')
+
+    allowRegWithNumber.default_method = 'getAllowRegWithNumberFromManager'
+    allowDirectRegistration.default_method = 'getAllowDirectRegistrationFromManager'
 
     token = Attribute('A name unique within the manager of this service '
                 'used for identifying the service e.g. in forms.')
@@ -317,9 +340,14 @@ class IRegistrationTemplate(Interface):
         The client should be accessed via an IClientRegistrations adapter.
     """
 
-    # TODO: provide fields for criteria for selecting the services
-    #       that should be handled by this object, e.g. service
-    #       category/ies or classification(s).
+    categories = schema.List(
+                title=_(u'Categories'),
+                description=_(u'A list of categories that of services '
+                        'that should be shown on this template.'),
+                default=[],
+                required=False,)
+
+    categories.vocabulary = serviceCategories
 
     manager = Attribute('The service manager this object belongs to.')
     services = Attribute('A collection of services to which this '
