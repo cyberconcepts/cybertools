@@ -153,8 +153,12 @@ class CheckoutView(ServiceManagerView):
         regs = IClientRegistrations(client)
         instance = IInstance(client)
         data = instance.applyTemplate()
-        data['service_registrations'] = regs.getRegistrations()
+        data['service_registrations'] = sorted(regs.getRegistrations(),
+                                               key=self.sortKey)
         return data
+
+    def sortKey(self, reg):
+        return reg.service.start
 
     def update(self):
         form = self.request.form
@@ -261,7 +265,11 @@ class RegistrationTemplateView(BaseView):
         return self.getServices()
 
     def getServices(self):
-        return self.context.getServices().values()
+        return self.context.getServices()
+        #return sorted(self.context.getServices().values(), key=self.sortKey)
+
+    def sortKey(self, svc):
+        return (svc.category, svc.getClassification(), svc.start)
 
     def getRegistrations(self):
         clientName = self.getClientName()

@@ -97,6 +97,7 @@ class Service(object):
 
     manager = None
     category = None
+    location = ''
     allowRegWithNumber = False
     allowDirectRegistration = True
 
@@ -246,10 +247,10 @@ class ClientRegistrations(object):
     def getRegistrations(self):
         # TODO: restrict to services on this template
         regs = getattr(self.context, self.registrationsAttributeName, [])
-        if self.template is None:
-            return regs
-        svcs = self.template.getServices().values()
-        return [r for r in regs if r.service in svcs]
+        if self.template is not None:
+            svcs = self.template.getServices().values()
+            regs = (r for r in regs if r.service in svcs)
+        return regs
 
 
 # registration states definition
