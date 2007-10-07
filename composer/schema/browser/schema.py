@@ -32,6 +32,8 @@ from cybertools.composer.schema.schema import FormState
 
 
 class SchemaView(BaseView):
+    """ View for schema objects.
+    """
 
     formState = FormState()
 
@@ -94,6 +96,6 @@ class SchemaView(BaseView):
         if newClient:
             clientName = manager.addClient(client)
             self.setClientName(clientName)
-        self.request.response.redirect(self.nextUrl())
+        self.request.response.redirect(self.getNextUrl())
         return False
 

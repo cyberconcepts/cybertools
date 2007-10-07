@@ -62,6 +62,8 @@ Creating a schema from an interface
 
   >>> class Person(object):
   ...     implements(IPerson)
+  ...     def __init__(self, firstName=u'', lastName=u'', age=None):
+  ...         self.firstName, self.lastName, self.age = firstName, lastName, age
 
   >>> from cybertools.composer.schema.interfaces import ISchemaFactory
   >>> factory = ISchemaFactory(Person())
@@ -77,9 +79,10 @@ Using a more specialized schema factory
 ---------------------------------------
 
   >>> class PersonSchemaFactory(SchemaFactory):
-  ...     def __call__(self, manager=None):
-  ...         schema = super(PersonSchemaFactory, self).__call__(manager)
-  ...         del schema.fields['firstName']  # don't show first name
+  ...     def __call__(self, interface, **kw):
+  ...         schema = super(PersonSchemaFactory, self).__call__(interface)
+  ...         if 'firstName' in schema.fields.keys():
+  ...             del schema.fields['firstName']  # don't show first name
   ...         return schema
   >>> component.provideAdapter(PersonSchemaFactory, (IPerson,))
 
@@ -89,4 +92,72 @@ Using a more specialized schema factory
   ...     print f.name, f.title, f.fieldType
   lastName Last name textline
   age Age number
+
+Access and update a context object using a schema-based form
+------------------------------------------------------------
+
+  >>> from zope.publisher.browser import TestRequest
+  >>> from cybertools.composer.schema.browser.form import Form
+
+We first have to provide adapters for special field types ('number' in
+this case) and an instance adapter that manages the access to the
+context object.
+
+  >>> from cybertools.composer.schema.field import NumberFieldInstance
+  >>> component.provideAdapter(NumberFieldInstance, name='number')
+
+  >>> from cybertools.composer.schema.instance import Instance
+  >>> component.provideAdapter(Instance)
+
+  >>> person = Person(u'John', u'Miller', 33)
+
+Note that the first name is not shown as we excluded it via the schema
+factory above. The age field is a number, but is shown here as a
+string as the instance is accessed using 'edit' mode, i.e. provide
+data suitable for showing on an HTML form.
+
+  >>> form = Form(person, TestRequest())
+  >>> form.interface = IPerson
+  >>> form.data
+  {'lastName': u'Miller', 'age': '33'}
+
+For editing we have to provide another instance adapter.
+
+  >>> from cybertools.composer.schema.instance import Editor
+  >>> component.provideAdapter(Editor, name='editor')
+
+  >>> input = dict(lastName='Miller', age='40', action='update')
+  >>> request = TestRequest(form=input)
+  >>> form = Form(person, request)
+  >>> form.interface = IPerson
+  >>> form.nextUrl = 'dummy_url'  # avoid hassle with IAbsoluteURL view...
+
+  >>> form.update()
+  False
+
+  >>> person.age
+  40
+
+Create a new object using a schema-based form
+---------------------------------------------
+
+  >>> from cybertools.composer.schema.browser.form import CreateForm
+  >>> container = dict()
+
+  >>> input = dict(lastName=u'Smith', age='28', action='update')
+  >>> form = CreateForm(container, TestRequest(form=input))
+  >>> form.interface = IPerson
+  >>> form.factory = Person
+  >>> form.nextUrl = 'dummy_url'  # avoid hassle with IAbsoluteURL view...
+  >>> form.getName = lambda x: x.lastName.lower()
+
+  >>> form.data
+  {'lastName': u'Smith', 'age': '28'}
+
+  >>> form.update()
+  False
+
+  >>> p2 = container['smith']
+  >>> p2.lastName, p2.age
+  (u'Smith', 28)
 

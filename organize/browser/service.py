@@ -340,5 +340,5 @@ class RegistrationTemplateView(BaseView):
                       if s in allServices and s not in newServices]
         regs.unregister(toDelete)
         #return True
-        self.request.response.redirect(self.nextUrl())
+        self.request.response.redirect(self.getNextUrl())
         return False

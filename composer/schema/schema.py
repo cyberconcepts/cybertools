@@ -80,6 +80,9 @@ class FormError(object):
     def __str__(self):
         return self.title
 
+    def __repr__(self):
+        return "FormError('%s')" % self.title
+
 
 formErrors = dict(
     required_missing=FormError(u'Missing data for required field',

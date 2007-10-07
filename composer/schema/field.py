@@ -117,7 +117,7 @@ class FieldInstance(object):
     def unmarshall(self, value):
         return toUnicode(value) or u''
 
-    def validate(self, value):
+    def validate(self, value, data=None):
         if not value and self.context.required:
             self.setError('required_missing')
 
@@ -144,7 +144,7 @@ class NumberFieldInstance(FieldInstance):
             return None
         return int(value)
 
-    def validate(self, value):
+    def validate(self, value, data=None):
         if value in ('', None):
             if self.context.required:
                 self.setError('required_missing')

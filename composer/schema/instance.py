@@ -102,7 +102,7 @@ class Editor(BaseInstance):
         for f in self.template.fields:
             fi = f.getFieldInstance()
             value = data.get(f.name)
-            fi.validate(value)
+            fi.validate(value, data)
             formState.fieldInstances.append(fi)
             formState.severity = max(formState.severity, fi.severity)
         return formState
@@ -202,7 +202,7 @@ class ClientInstanceEditor(ClientInstance):
             fi = f.getFieldInstance()
             #value = fi.unmarshall(data.get(f.name))
             value = data.get(f.name)
-            fi.validate(value)
+            fi.validate(value, data)
             formState.fieldInstances.append(fi)
             formState.severity = max(formState.severity, fi.severity)
         return formState

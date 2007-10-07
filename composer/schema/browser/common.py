@@ -124,8 +124,8 @@ class BaseView(object):
             submit=getCheckoutView,
     )
 
-    #@Lazy
-    def nextUrl(self):
+    #@Lazy   # must be method for Zope 2.9 compatibility :-( ???
+    def getNextUrl(self):
         #viewName = 'thankyou.html'
         viewName = ''
         url = ''

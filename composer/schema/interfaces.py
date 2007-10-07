@@ -202,9 +202,12 @@ class IFieldInstance(Interface):
             value given.
         """
 
-    def validate(value):
+    def validate(value, data=None):
         """ Check if the value given is valid. Return an object implementing
             IFieldState.
+
+            Optionally, in addition the full data set may be given to
+            allow for checking more than one data element.
         """
 
 
