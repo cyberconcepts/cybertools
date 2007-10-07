@@ -22,7 +22,7 @@ View(s) for forms based on composer.schema.
 $Id$
 """
 
-from zope import component
+from zope import component, interface
 from zope.app.container.interfaces import INameChooser
 from zope.cachedescriptors.property import Lazy
 from zope.interface import Interface
@@ -30,6 +30,7 @@ from zope.event import notify
 from zope.lifecycleevent import ObjectCreatedEvent, ObjectModifiedEvent
 from zope.traversing.browser.absoluteurl import absoluteURL
 
+from cybertools.browser.interfaces import IRenderers
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.browser.common import schema_macros, schema_edit_macros
 from cybertools.composer.schema.interfaces import ISchemaFactory
@@ -47,12 +48,17 @@ class Form(object):
         self.context = context
         self.request = request
 
-    @property
+    @Lazy
     def schemaMacros(self):
         return schema_macros.macros
 
-    @property
-    def schemaEditMacros(self):
+    # proof-of-concept - get a dictionary of renderers (macros) via adaptatation
+    @Lazy
+    def fieldRenderers(self):
+        return IRenderers(self)
+
+    @Lazy
+    def fieldEditRenderers(self):
         return schema_edit_macros.macros
 
     @Lazy
@@ -151,3 +157,12 @@ class CreateForm(Form):
     def getName(self, obj):
         name = getattr(obj, 'name', getattr(obj, 'title'))
         return INameChooser(container).chooseName(name, obj)
+
+
+# proof-of-concept - define a dictionary of renderers (macros) as an adapter
+@interface.implementer(IRenderers)
+@component.adapter(Form)
+def getFormSchemaRenderers(view):
+    return schema_macros.macros
+component.provideAdapter(getFormSchemaRenderers)
+

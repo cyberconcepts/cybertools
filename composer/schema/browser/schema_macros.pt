@@ -11,12 +11,12 @@
       <tal:fields repeat="field fields">
         <tal:field define="name field/name;
                            errors state/fieldInstances/?name/errors|python: [];">
-          <metal:field use-macro="python: view.schemaMacros[field.fieldRenderer]" />
+          <metal:field use-macro="python: view.fieldRenderers[field.fieldRenderer]" />
         </tal:field>
       </tal:fields>
     </table>
     <tal:add condition="manageMode">
-      <metal:add use-macro="view/schemaEditMacros/add_buttons" />
+      <metal:add use-macro="view/fieldEditRenderers/add_buttons" />
     </tal:add>
   </tal:define>
 </metal:fields>
@@ -42,17 +42,17 @@
             </td>
             <td class="field" style="border-top: none">
               <metal:input use-macro="python:
-                    view.schemaMacros[field.inputRenderer]" />
+                    view.fieldRenderers[field.inputRenderer]" />
             </td>
           </tal:field>
         </tr>
         <tr style="border-bottom: 1px solid #dddddd"
             tal:condition="manageMode">
           <td style="border-top: none">
-            <metal:move use-macro="view/editMacros/move_icons" />
+            <metal:move use-macro="view/fieldEditRenderers/move_icons" />
           </td>
           <td style="border-top: none">
-            <metal:edit use-macro="view/schemaEditMacros/edit_buttons" />
+            <metal:edit use-macro="view/fieldEditRenderers/edit_buttons" />
           </td>
         </tr>
       </tbody>
@@ -67,6 +67,16 @@
                                 'width: %s' % (width and str(width)+'px' or '450px');
                            value data/?name" />
 </metal:textline>
+
+
+<metal:password define-macro="input_password">
+    <input type="password" name="field" style="width: 450px"
+           tal:define="width field/width|nothing"
+           tal:attributes="name name;
+                           style python:
+                                'width: %s' % (width and str(width)+'px' or '450px');
+                           value data/?name" />
+</metal:password>
 
 
 <metal:textarea define-macro="input_textarea">
@@ -118,10 +128,10 @@
   <tr style="border-bottom: 1px solid #dddddd"
       tal:condition="manageMode">
       <td style="border-top: none">
-        <metal:move use-macro="view/schemaEditMacros/move_icons" />
+        <metal:move use-macro="view/fieldEditRenderers/move_icons" />
       </td>
       <td style="border-top: none">
-        <metal:edit use-macro="view/schemaEditMacros/edit_buttons" />
+        <metal:edit use-macro="view/fieldEditRenderers/edit_buttons" />
       </td>
   </tr>
 </metal:spacer>

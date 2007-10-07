@@ -161,3 +161,10 @@ Create a new object using a schema-based form
   >>> p2.lastName, p2.age
   (u'Smith', 28)
 
+Macros / renderers
+------------------
+
+  >>> fieldRenderers = form.fieldRenderers
+  >>> sorted(fieldRenderers.keys())
+  [u'field', u'field_spacer', u'fields', u'input_dropdown', u'input_fileupload',
+   u'input_password', u'input_textarea', u'input_textline']
