@@ -3,10 +3,28 @@
 <body>
 
 
+<metal:form define-macro="form">
+  <h1 i18n:translate=""
+      tal:content="view/label | default">Edit</h1>
+  <div>
+    <form method="post">
+      <input type="hidden" name="action" value="update" />
+      <br />
+      <metal:fields use-macro="view/fieldRenderers/fields" />
+      <br />
+      <input type="submit" name="submit" value="Save"
+             i18n:attributes="value"
+             tal:attributes="value view/label_submit | string:Save" />
+    </form>
+  </div>
+</metal:form>
+
+
 <metal:fields define-macro="fields">
   <tal:define define="manageMode manageMode|view/manageMode|nothing;
                       fields view/fields;
-                      data view/data">
+                      data view/data;
+                      state view/formState">
     <table style="width: 100%">
       <tal:fields repeat="field fields">
         <tal:field define="name field/name;

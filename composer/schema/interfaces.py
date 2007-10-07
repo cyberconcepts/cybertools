@@ -82,6 +82,7 @@ class FieldType(SimpleTerm):
 
 fieldTypes = SimpleVocabulary((
     FieldType('textline', 'textline', u'Textline'),
+    FieldType('password', 'password', u'Password'),
     FieldType('textarea', 'textarea', u'Textarea'),
     FieldType('number', 'number', u'Number',
               inputRenderer='input_textline', instanceName='number'),

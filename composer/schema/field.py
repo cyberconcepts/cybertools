@@ -121,7 +121,7 @@ class FieldInstance(object):
         if not value and self.context.required:
             self.setError('required_missing')
 
-    def setError(self, errorName):
+    def setError(self, errorName, formErrors=formErrors):
         error = formErrors[errorName]
         self.errors.append(error)
         self.severity = max(error.severity, self.severity)

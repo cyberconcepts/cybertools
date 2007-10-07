@@ -49,12 +49,10 @@ class Form(object):
         self.request = request
 
     @Lazy
-    def schemaMacros(self):
-        return schema_macros.macros
-
-    # proof-of-concept - get a dictionary of renderers (macros) via adaptatation
-    @Lazy
     def fieldRenderers(self):
+        """ proof-of-concept - get a dictionary of renderers (macros) via
+            adaptatation.
+        """
         return IRenderers(self)
 
     @Lazy

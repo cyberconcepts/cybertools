@@ -39,6 +39,7 @@ class SchemaFactory(object):
 
     fieldMapping = {
             schema.TextLine: ('textline',),
+            schema.Password: ('password',),
             schema.ASCII: ('textline',),
             schema.Text: ('textarea',),
             schema.Date: ('date',),
