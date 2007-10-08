@@ -39,6 +39,12 @@ track data.
   >>> len(result)
   2
 
+By supplying a list we can also search for more than one value in one query.
+
+  >>> result = tracks.query(taskId=('a001', 'a002'))
+  >>> len(result)
+  2
+
 What happens if we store more than on record for one set of keys?
 
   >>> tracks.saveUserTrack('a001', 0, 'u1', {'somekey': 'newvalue'})

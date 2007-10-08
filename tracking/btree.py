@@ -30,7 +30,7 @@ from zope.index.field import FieldIndex
 
 from persistent import Persistent
 from BTrees import OOBTree, IOBTree
-from BTrees.IFBTree import intersection
+from BTrees.IFBTree import intersection, union
 
 from interfaces import IRun, ITrackingStorage, ITrack
 
@@ -209,14 +209,14 @@ class TrackingStorage(BTreeContainer):
         for idx in kw:
             value = kw[idx]
             if idx in self.indexAttributes:
-                #if type(value) not in (list, tuple):
-                #    value = [value]
+                if type(value) not in (list, tuple):
+                    value = [value]
                 # TODO: handle a list of values, provide union of results
-                # resultx = None
-                # for v in value:
-                #     result = self.union(result, self.indexes[idx].apply((v, v)))
-                # result = self.intersect(result, resultx)
-                result = self.intersect(result, self.indexes[idx].apply((value, value)))
+                resultx = None
+                for v in value:
+                    resultx = self.union(resultx, self.indexes[idx].apply((v, v)))
+                result = self.intersect(result, resultx)
+                #result = self.intersect(result, self.indexes[idx].apply((value, value)))
             elif idx == 'timeFrom':
                 result = self.intersect(result,
                                         self.indexes['timeStamp'].apply((value, None)))
@@ -231,6 +231,9 @@ class TrackingStorage(BTreeContainer):
 
     def intersect(self, r1, r2):
         return r1 is None and r2 or intersection(r1, r2)
+
+    def union(self, r1, r2):
+        return r1 is None and r2 or union(r1, r2)
 
     def getUserNames(self, taskId):
         return sorted(self.taskUsers.get(taskId, []))
