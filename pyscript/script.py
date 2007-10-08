@@ -61,7 +61,7 @@ class RExpression(RestrictedPython.RCompile.RestrictedCompileMode):
 
     CodeGeneratorClass = compiler.pycodegen.ExpressionCodeGenerator
 
-    def __init__(self, source, filename, mode = "eval"):
+    def __init__(self, source, filename, mode="eval"):
         self.mode = mode
         RestrictedPython.RCompile.RestrictedCompileMode.__init__(
             self, source, filename)

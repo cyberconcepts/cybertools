@@ -26,7 +26,7 @@ from zope.traversing.interfaces import IPhysicallyLocatable
 from zope.traversing.adapters import RootPhysicallyLocatable
 from zope.app.container.contained import Contained
 from zope.app.testing import placelesssetup
-from cybertools.pyscript.script import ScriptContainer
+from cybertools.pyscript.script import ScriptContainer, HAS_R
 
 
 class Root(ScriptContainer, Contained):
@@ -44,10 +44,12 @@ def setUp(test):
 
 def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
-    return unittest.TestSuite((
-        DocFileSuite('README.txt', optionflags=flags,
-                     setUp=setUp, tearDown=placelesssetup.tearDown),
-        ))
+    suites = [DocFileSuite('README.txt', optionflags=flags,
+              setUp=setUp, tearDown=placelesssetup.tearDown)]
+    if HAS_R:
+        suites.append(DocFileSuite('rstat.txt', optionflags=flags,
+                      setUp=setUp, tearDown=placelesssetup.tearDown))
+    return unittest.TestSuite(suites)
 
 if __name__ == '__main__':
     unittest.main()

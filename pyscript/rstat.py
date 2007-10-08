@@ -88,7 +88,7 @@ class RStat(object):
         rows = {}
         for rowId, columnId, value in data:
             element = rows.setdefault(rowId, [])
-            element.append(rowId)
+            element.append(columnId)
         columnsToOmit = []
         for rowId, row in rows.items():
             for columnId in row:
@@ -98,8 +98,7 @@ class RStat(object):
         result = {}
         for rowId, columnId, value in data:
             if columnId not in columnsToOmit:
-                element = result.setdefault(rowId, [])
-                element.append(value)
-        rpy.set_default_mode(rpy.NO_CONVERSION)
-        matrix = r.data_frame(**result)
+                result.setdefault(rowId, []).append(value)
+        #print result
+        matrix = rpy.with_mode(rpy.NO_CONVERSION, r.data_frame)(**result)
         return matrix
