@@ -99,6 +99,6 @@ class RStat(object):
         for rowId, columnId, value in data:
             if columnId not in columnsToOmit:
                 result.setdefault(rowId, []).append(value)
-        #print result
+        self.intermediateData = result
         matrix = rpy.with_mode(rpy.NO_CONVERSION, r.data_frame)(**result)
         return matrix
