@@ -79,25 +79,37 @@ class RStat(object):
             (rowId, columnId, value). Elements with a columnId
             that is not present in all rows is omitted.
         """
-        def checkColumnId(rows, columnId):
-            for row in rows.values():
-                if columnId not in row:
+        def checkId(mapping, id):
+            for element in mapping.values():
+                if id not in element:
                     return False
             return True
         data = sorted(data)
         rows = {}
+        columns = {}
+        dataMapping = {}
         for rowId, columnId, value in data:
-            element = rows.setdefault(rowId, [])
-            element.append(columnId)
+            rows.setdefault(rowId, []).append(columnId)
+            columns.setdefault(columnId, []).append(rowId)
+            dataMapping[(rowId, columnId)] = value
         columnsToOmit = []
         for rowId, row in rows.items():
             for columnId in row:
-                if not checkColumnId(rows, columnId):
+                if not checkId(rows, columnId):
                     columnsToOmit.append(columnId)
+        rowsToOmit = []
+        for columnId, column in columns.items():
+            for rowId in column:
+                if not checkId(columns, rowId):
+                    rowsToOmit.append(rowId)
         r.library('ltm')
         result = {}
-        for rowId, columnId, value in data:
-            if columnId not in columnsToOmit:
+        #for rowId, columnId, value in data:
+            #if columnId not in columnsToOmit:
+        #    if rowId not in rowsToOmit:
+        #        result.setdefault(rowId, []).append(value)
+        for (rowId, columnId), value in sorted(dataMapping.items()):
+            if rowId not in rowsToOmit:
                 result.setdefault(rowId, []).append(value)
         self.intermediateData = result
         matrix = rpy.with_mode(rpy.NO_CONVERSION, r.data_frame)(**result)
