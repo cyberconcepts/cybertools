@@ -23,8 +23,12 @@ Using the R Statistics Package with Python Scripts
   ...         ('r2', 'c3', 1),
   ...         ('r3', 'c1', 0),
   ...         ('r3', 'c2', 1),
+  ...         ('r3', 'c3', 0),
+  ...         ('r4', 'c1', 1),
+  ...         ('r4', 'c2', 1),
+  ...         ('r4', 'c3', 1),
+  ...         ('r5', 'c3', 1),
   ... ]
-  ... data = [('q050', 'user1', 0), ('q044', 'user1', 1), ('q039', 'user1', 1), ('q041', 'user1', 0), ('q036', 'user1', 0), ('q053', 'user1', 0), ('q049', 'user1', 1), ('q057', 'user1', 0), ('q059', 'user1', 0), ('q060', 'user1', 0), ('q056', 'user1', 1), ('q047', 'user1', 1), ('q057', 'user1', 0), ('q041', 'user1', 1), ('q039', 'user1', 1), ('q038', 'user1', 1), ('q046', 'user1', 1), ('q040', 'user1', 1), ('q056', 'user1', 0), ('q059', 'user10', 0), ('q050', 'user10', 0), ('q058', 'user10', 0), ('q040', 'user10', 0), ('q052', 'user10', 0), ('q055', 'user10', 1), ('q039', 'user10', 1), ('q057', 'user10', 0), ('q049', 'user10', 1), ('q051', 'user10', 1), ('q041', 'user10', 1), ('q047', 'user10', 1), ('q038', 'user10', 1), ('q056', 'user10', 0), ('q037', 'user10', 1), ('q055', 'user10', 1), ('q054', 'user10', 0), ('q041', 'user10', 1), ('q044', 'user10', 1), ('q049', 'user10', 1), ('q048', 'user10', 1), ('q061', 'user10', 0), ('q056', 'user10', 1), ('q058', 'user10', 0), ('q042', 'user10', 0), ('q041', 'user10', 1), ('q036', 'user10', 1), ('q040', 'user10', 1), ('q059', 'user10', 1), ('q058', 'user10', 1), ('q057', 'user10', 0), ('q054', 'user10', 1), ('q037', 'user1', 1), ('q038', 'user1', 1), ('q047', 'user1', 1), ('q041', 'user1', 1), ('q051', 'user1', 1), ('q048', 'user1', 1), ('q058', 'user1', 1), ('q060', 'user1', 1)]
   ... matrix = rstat.getDataFrame(data)
   ... #return matrix
   ... #return rstat.intermediateData
@@ -32,4 +36,7 @@ Using the R Statistics Package with Python Scripts
   ... return x
   ... """
   >>> pp.setSource(source)
-  >>> pp(request)
+  >>> result = pp(request)
+  <BLANKLINE>
+  This is package 'ltm' ...
+  <BLANKLINE>
