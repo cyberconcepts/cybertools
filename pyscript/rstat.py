@@ -72,7 +72,7 @@ class RStat(object):
         key = registerImage(fn)
         return '%s/@@plot?image=%s.jpg' % (absoluteURL(context, request), key)
 
-    def getRFrame(self, data):
+    def getDataFrame(self, data):
         """ Return an R data.frame.
 
             The ``data`` argument is a sequence of tuples
