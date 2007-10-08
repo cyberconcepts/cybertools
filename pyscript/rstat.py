@@ -32,7 +32,6 @@ from cybertools.pyscript.plot import registerImage
 
 
 # not used (yet?):
-
 class RWrapper(object):
 
     def __init__(self, context):
@@ -73,3 +72,34 @@ class RStat(object):
         key = registerImage(fn)
         return '%s/@@plot?image=%s.jpg' % (absoluteURL(context, request), key)
 
+    def getRFrame(self, data):
+        """ Return an R data.frame.
+
+            The ``data`` argument is a sequence of tuples
+            (rowId, columnId, value). Elements with a columnId
+            that is not present in all rows is omitted.
+        """
+        def checkColumnId(rows, columnId):
+            for row in rows.values():
+                if columnId not in row:
+                    return False
+            return True
+        data = sorted(data)
+        rows = {}
+        for rowId, columnId, value in data:
+            element = rows.setdefault(rowId, [])
+            element.append(rowId)
+        columnsToOmit = []
+        for rowId, row in rows.items():
+            for columnId in row:
+                if not checkColumnId(rows, columnId):
+                    columnsToOmit.append(columnId)
+        r.library('ltm')
+        result = {}
+        for rowId, columnId, value in data:
+            if columnId not in columnsToOmit:
+                element = result.setdefault(rowId, [])
+                element.append(value)
+        rpy.set_default_mode(rpy.NO_CONVERSION)
+        matrix = r.data_frame(**result)
+        return matrix
