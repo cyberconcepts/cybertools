@@ -38,6 +38,8 @@ class Field(Component):
     implements(IField)
 
     required = False
+    readonly = False
+    nostore = False
     standardFieldName = None
     vocabulary = None
     renderFactory = None
@@ -73,7 +75,7 @@ class Field(Component):
 
     @property
     def storeData(self):
-        return self.getFieldTypeInfo().storeData
+        return not self.nostore and self.getFieldTypeInfo().storeData
 
     def getTitleValue(self):
         return self.title or self.name

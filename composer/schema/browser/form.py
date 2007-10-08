@@ -71,7 +71,7 @@ class Form(object):
 
     @Lazy
     def fields(self):
-        return self.schema.fields
+        return [f for f in self.schema.fields if not f.readonly]
 
     @Lazy
     def data(self):

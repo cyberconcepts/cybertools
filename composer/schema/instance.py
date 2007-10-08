@@ -78,7 +78,7 @@ class Editor(BaseInstance):
             # don't do anything if there is an error
             return formState
         for f in template.components:
-            if not f.storeData:
+            if not f.storeData or f.readonly:
                 # a dummy field, e.g. a spacer
                 continue
             name = f.name
@@ -99,7 +99,9 @@ class Editor(BaseInstance):
         formState = FormState()
         if self.template is None:
             return formState
-        for f in self.template.fields:
+        for f in self.template.components:
+            if f.readonly:
+                continue
             fi = f.getFieldInstance()
             value = data.get(f.name)
             fi.validate(value, data)

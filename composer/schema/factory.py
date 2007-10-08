@@ -68,6 +68,8 @@ class SchemaFactory(object):
                         #default_method=getattr(field, 'default_method', None),
                         vocabulary=voc,
                         title=field.title,
-                        description=field.description)
+                        description=field.description,
+                        readonly=field.readonly,
+                        nostore=getattr(field, 'nostore', False),)
                 fields.append(f)
         return Schema(name=interface.__name__, *fields, **kw)
