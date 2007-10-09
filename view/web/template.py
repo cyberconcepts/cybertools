@@ -22,7 +22,7 @@ Generic template base class.
 $Id$
 """
 
-from zope.app.traversing.adapters import DefaultTraversable
+from zope.traversing.adapters import DefaultTraversable
 from zope import component
 
 

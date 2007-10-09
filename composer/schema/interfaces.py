@@ -95,6 +95,7 @@ fieldTypes = SimpleVocabulary((
               fieldRenderer='field_spacer', storeData=False),
 ))
 
+# TODO: move this to organize.service...
 standardFieldNames = SimpleVocabulary((
     SimpleTerm('', '', 'Not selected'),
     SimpleTerm('lastName', 'lastName', 'Last name'),

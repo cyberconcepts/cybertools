@@ -3,7 +3,7 @@
 import unittest, doctest
 from zope.app.testing.functional import FunctionalTestCase
 from zope.app.testing import setup
-from zope.testbrowser import Browser
+from zope.testbrowser.testing import Browser
 
 from zope.app import component, intid, zapi
 
@@ -23,7 +23,7 @@ class BrowserTest(FunctionalTestCase):
         key = default.registrationManager.addRegistration(reg)
         default.registrationManager[key].status = component.interfaces.registration.ActiveStatus
 
-    def test(self):        
+    def test(self):
         browser = Browser()
         browser.handleErrors = False
         browser.addHeader('Authorization', 'Basic mgr:mgrpw')
@@ -38,7 +38,7 @@ class BrowserTest(FunctionalTestCase):
         button = browser.getControl('Apply')
         button.click()
         self.assert_(browser.isHtml)
-        
+
 
 def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS

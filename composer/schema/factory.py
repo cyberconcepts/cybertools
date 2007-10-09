@@ -33,6 +33,9 @@ from cybertools.composer.schema.schema import Schema
 
 
 class SchemaFactory(object):
+    """ Creates a cybertools.composer schema from an
+        interface (a zope.schema schema).
+    """
 
     implements(ISchemaFactory)
     adapts(Interface)

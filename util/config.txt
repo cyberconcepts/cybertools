@@ -1,0 +1,100 @@
+=============================
+Setting Configuration Options
+=============================
+
+$Id$
+
+  >>> from cybertools import util
+  >>> from cybertools.util.config import Configurator
+  >>> config = Configurator()
+
+  >>> config.load('transport.serverURL = "http://demo.cy55.de"')
+  >>> config.transport.serverURL
+  'http://demo.cy55.de'
+
+This setting may also contain indexed access; thus we can model
+configuration parameters with multiple instances (like crawling
+jobs).
+
+  >>> config.load('''
+  ... crawl[0].type = "filesystem"
+  ... crawl[0].directory = "documents/projects"
+  ... ''')
+  >>> config.crawl[0].type
+  'filesystem'
+  >>> config.crawl[0].directory
+  'documents/projects'
+
+Subsections are created automatically when they are first accessed.
+
+  >>> config.load('ui.web.port = 8081')
+  >>> config.ui.web.port
+  8081
+
+The ``setdefault()`` method allows to retrieve a value and set
+it with a default if not found, in one statement.
+
+  >>> config.ui.web.setdefault('port', 8080)
+  8081
+  >>> config.transport.setdefault('userName', 'demo')
+  'demo'
+
+  >>> sorted(config.transport.items())
+  [('__name__', 'transport'), ('serverURL', 'http://demo.cy55.de'),
+   ('userName', 'demo')]
+
+We can output a configuration in a form that is ready for loading
+just by converting it to a string representation.
+
+  >>> print config
+  crawl[0].directory = 'documents/projects'
+  crawl[0].type = 'filesystem'
+  transport.serverURL = 'http://demo.cy55.de'
+  transport.userName = 'demo'
+  ui.web.port = 8081
+
+The configuration may also be saved to a file -
+for testing purposes let's use the cybertools.util package directory
+for storage; normally it would be stored in the users home directory.
+
+  >>> import os
+  >>> os.environ['HOME'] = os.path.dirname(util.__file__)
+
+  >>> config.save()
+
+  >>> fn = config.getDefaultConfigFile()
+  >>> fn
+  '....cybertools.cfg'
+
+  >>> print open(fn).read()
+  crawl[0].directory = 'documents/projects'
+  crawl[0].type = 'filesystem'
+  transport.serverURL = 'http://demo.cy55.de'
+  transport.userName = 'demo'
+  ui.web.port = 8081
+
+The simplified syntax
+---------------------
+
+  >>> config.load('''
+  ... ui(
+  ...   web(
+  ...     port=11080,
+  ... ))
+  ... crawl[1](
+  ...   type='outlook',
+  ...   folder='inbox',
+  ... )
+  ... ''')
+  >>> config.ui.web.port
+  11080
+  >>> config.crawl[1].type
+  'outlook'
+
+  >>> #print config
+
+Cleaning up
+-----------
+
+  >>> os.unlink(fn)
+

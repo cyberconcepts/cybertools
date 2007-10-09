@@ -171,8 +171,8 @@ The default configurator uses attribute annotations for retrieving view
 properties; that means that there could be a form somewhere to edit those
 properties and store them in the content object's annotations.
 
-  >>> from zope.app.annotation.interfaces import IAttributeAnnotatable, IAnnotations
-  >>> from zope.app.annotation.attribute import AttributeAnnotations
+  >>> from zope.annotation.interfaces import IAttributeAnnotatable, IAnnotations
+  >>> from zope.annotation.attribute import AttributeAnnotations
   >>> component.provideAdapter(AttributeAnnotations, (SomeObject,), IAnnotations)
 
 The configurator is called automatically from the controller if there is
