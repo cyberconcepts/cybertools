@@ -87,6 +87,13 @@ class Jeep(object):
     def get(self, key, default=None):
         return getattr(self, key, default)
 
+    def setdefault(self, key, value):
+        existing = self.get(key, default=_notfound)
+        if existing is _notfound:
+            self[key] = value
+            return value
+        return existing
+
     def index(self, key):
         return self._sequence.index(key)
 
