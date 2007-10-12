@@ -78,6 +78,25 @@ More Dictionary Methods
   >>> dict(jeep)
   {'second': 'new second value', 'third': 'third value', 'first': 'first value'}
 
+  >>> jeep.setdefault('first', 'new first value')
+  'first value'
+  >>> jeep['first']
+  'first value'
+  >>> jeep.setdefault('fourth', 'new fourth value')
+  'new fourth value'
+  >>> jeep['fourth']
+  'new fourth value'
+  >>> len(jeep)
+  4
+
+  >>> del jeep['fourth']
+  >>> len(jeep)
+  3
+  >>> del jeep['fourth']
+  Traceback (most recent call last):
+  ...
+  ValueError: ...not in list
+
 More Methods and Operators
 --------------------------
 
@@ -103,7 +122,7 @@ Sequence Additions with Named Objects
 -------------------------------------
 
 Objects that have a ``__name__`` attribute can be appended
-to a Jeep object as the dictionary key can be obtained from these attribute.
+to a Jeep object as the dictionary key can be obtained from this attribute.
 
   >>> class Term(object):
   ...     def __init__(self, token, title=None, value=None):
@@ -135,7 +154,54 @@ an exception:
 Constructors
 ------------
 
-  >>> jeep2 = Jeep((('f', '1st'), ('s', '2nd'), ('t', '3rd')))
+A simple way of creating a Jeep object is using a sequence
+of key-value pairs.
+
+  >>> jeep2 = Jeep((('1', '1st'), ('2', '2nd'), ('3', '3rd')))
   >>> list(jeep2)
   ['1st', '2nd', '3rd']
+
+Using a Jeep object as the argument of the constructor yields a shallow
+copy.
+
+  >>> jeep3 = Jeep(jeep2)
+  >>> jeep3['1'] is jeep2['1']
+  True
+  >>> jeep3['4'] = '4th'
+  >>> len(jeep3)
+  4
+  >>> len(jeep2)
+  3
+
+More in-place changes
+---------------------
+
+Remove elements in a fault-tolerant way.
+
+  >>> jeep.keys()
+  ['first', 'term2', 'second', 'term1']
+  >>> jeep.remove('third', 'second')
+  >>> len(jeep)
+  3
+  >>> jeep.keys()
+  ['first', 'term2', 'term1']
+  >>> 'second' in jeep
+  False
+
+Reorder the sequence and remove all elements that are not
+in the argument list.
+
+  >>> jeep.select('term1', 'term2', 'nope')
+  >>> jeep.keys()
+  ['term1', 'term2']
+  >>> 'first' in jeep
+  False
+
+You may even reposition a certain element.
+
+  >>> jeep3.keys()
+  ['1', '2', '3', '4']
+  >>> jeep3.reorder(-1, '2', '4')
+  >>> jeep3.keys()
+  ['2', '1', '4', '3']
 

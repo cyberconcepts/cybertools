@@ -31,14 +31,19 @@ class Jeep(object):
     _attributes = ('_sequence',)
 
     def __init__(self, seq=[]):
-        sequence = self._sequence = []
-        for item in seq:
-            if isinstance(item, (list, tuple)) and len(item) == 2:
-                attr, value = item
-                sequence.append(attr)
-                object.__setattr__(self, attr, value)
-            else:
-                self.append(item)
+        if isinstance(seq, Jeep):
+            self._sequence = list(seq.keys())
+            for key, value in seq.items():
+                object.__setattr__(self, key, value)
+        else:
+            sequence = self._sequence = []
+            for item in seq:
+                if isinstance(item, (list, tuple)) and len(item) == 2:
+                    attr, value = item
+                    sequence.append(attr)
+                    object.__setattr__(self, attr, value)
+                else:
+                    self.append(item)
 
     def __len__(self):
         return len(self._sequence)
@@ -75,7 +80,7 @@ class Jeep(object):
         return getattr(self, key, _notfound) is not _notfound
 
     def keys(self):
-        return [key for key in self._sequence]
+        return list(self._sequence)
 
     def values(self):
         return list(self)
@@ -93,9 +98,6 @@ class Jeep(object):
             self[key] = value
             return value
         return existing
-
-    def index(self, key):
-        return self._sequence.index(key)
 
     def append(self, obj):
         self.insert(len(self), obj)
@@ -135,8 +137,24 @@ class Jeep(object):
     def index(self, obj):
         idx = self.find(obj)
         if idx < 0:
-            raise ValueError('list.index(x): x not in list')
+            raise ValueError('list.index(x): %r not in list' % obj)
         return idx
+
+    def remove(self, *keys):
+        myKeys = self.keys()
+        for key in keys:
+            if key in myKeys:
+                del self[key]
+
+    def select(self, *keys):
+        myKeys = self._sequence
+        self._sequence = [k for k in keys if k in myKeys]
+        for k in myKeys:
+            if k not in keys:
+                super(Jeep, self).__delattr__(k)
+
+    def reorder(self, delta, *keys):
+        self._sequence = moveByDelta(self._sequence, keys, delta)
 
 
 class Term(object):
@@ -151,4 +169,21 @@ class Term(object):
 
     def __str__(self):
         return self.title
+
+
+def moveByDelta(objs, toMove, delta):
+    """ Return the list given by objs re-ordered in a way that the elements
+        of toMove (which must be in the objs list) have been moved by delta.
+    """
+    result = [obj for obj in objs if obj not in toMove]
+    if delta < 0:
+        objs = list(reversed(objs))
+        result.reverse()
+    toMove = sorted(toMove, lambda x,y: cmp(objs.index(x), objs.index(y)))
+    for element in toMove:
+        newPos = min(len(result), objs.index(element) + abs(delta))
+        result.insert(newPos, element)
+    if delta < 0:
+        result.reverse()
+    return result
 
