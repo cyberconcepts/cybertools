@@ -17,7 +17,8 @@
 #
 
 """
-Basic classes for a complex template structures.
+Basic classes for schemas, i.e. sets of fields that may be used for creating
+editing forms or display views for objects.
 
 $Id$
 """

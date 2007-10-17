@@ -31,6 +31,7 @@ from zope import component
 from zope.interface import implements, Interface
 
 from cybertools.composer.interfaces import IInstance
+from cybertools.composer.rule.base import RuleManager, EventType
 from cybertools.composer.schema.interfaces import IClientManager, IClient
 from cybertools.stateful.definition import registerStatesDefinition
 from cybertools.stateful.definition import StatesDefinition
@@ -43,16 +44,18 @@ from cybertools.organize.interfaces import IRegistration, IRegistrationTemplate
 from cybertools.organize.interfaces import IClientRegistrations
 
 
-class ServiceManager(object):
+class ServiceManager(RuleManager):
 
     implements(IServiceManager, IClientManager)
 
     servicesFactory = Jeep
     clientSchemasFactory = Jeep
     clientsFactory = OOBTree
+    rulesFactory = Jeep
 
     services = None
     clients = None
+    rules = None
 
     allowRegWithNumber = False
     allowDirectRegistration = True
@@ -62,6 +65,8 @@ class ServiceManager(object):
             self.services = self.servicesFactory()
         if self.clientSchemasFactory is not None:
             self.clientSchemas = self.clientSchemasFactory()
+        if self.rulesFactory is not None:
+            self.rules = self.rulesFactory()
 
     def getServices(self, categories=[]):
         return self.services
@@ -87,6 +92,9 @@ class ServiceManager(object):
 
     def checkClientName(self, name):
         return name not in self.getClients()
+
+    def getRules(self):
+        return self.rules
 
 
 class Service(object):
@@ -274,7 +282,14 @@ registerStatesDefinition(
 ))
 
 
-# event handlers
+# event types
+
+eventTypes = Jeep((
+    EventType('service.checkout'),
+))
+
+
+# Zope event handlers
 
 def clientRemoved(obj, event):
     """ Handle removal of a client object.

@@ -17,45 +17,17 @@
 #
 
 """
-Basic classes for message management.
+Event definitions.
 
 $Id$
 """
 
 from zope.interface import implements
 
-from cybertools.composer.base import Component, Element, Compound
-from cybertools.composer.base import Template
-from cybertools.composer.message.interfaces import IMessageManager, IMessage
-from cybertools.util.jeep import Jeep
+from cybertools.composer.rule.base import ActionHandler
 
 
-class MessageManager(object):
+class MailActionHandler(ActionHandler):
 
-    implements(IMessageManager)
-
-    messagesFactory = Jeep
-
-    messages = None
-    manager = None
-
-    def __init__(self):
-        if self.messagesFactory is not None:
-            self.messages = self.messagesFactory()
-
-    def getManager(self):
-        return self.manager
-
-
-class Message(Template):
-
-    implements(IMessage)
-
-    name = u''
-    manager = None
-
-    def __init__(self, name, **kw):
-        self.name = name
-        for k, v in kw.items():
-            setattr(self, k, v)
+    pass
 

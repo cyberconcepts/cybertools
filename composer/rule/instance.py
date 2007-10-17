@@ -17,45 +17,27 @@
 #
 
 """
-Basic classes for message management.
+Rule instance and related classes.
 
 $Id$
 """
 
+from string import Template
+from zope import component
 from zope.interface import implements
 
-from cybertools.composer.base import Component, Element, Compound
-from cybertools.composer.base import Template
-from cybertools.composer.message.interfaces import IMessageManager, IMessage
-from cybertools.util.jeep import Jeep
+from cybertools.composer.instance import Instance
+from cybertools.composer.interfaces import IInstance
 
 
-class MessageManager(object):
+class RuleInstance(Instance):
 
-    implements(IMessageManager)
+    template = client = None
 
-    messagesFactory = Jeep
+    def __init__(self, client, template):
+        self.client = client
+        self.template = template
 
-    messages = None
-    manager = None
-
-    def __init__(self):
-        if self.messagesFactory is not None:
-            self.messages = self.messagesFactory()
-
-    def getManager(self):
-        return self.manager
-
-
-class Message(Template):
-
-    implements(IMessage)
-
-    name = u''
-    manager = None
-
-    def __init__(self, name, **kw):
-        self.name = name
-        for k, v in kw.items():
-            setattr(self, k, v)
+    def applyTemplate(self, **kw):
+        pass
 
