@@ -32,6 +32,7 @@ from cybertools.organize.interfaces import serviceCategories
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.browser.common import BaseView as SchemaBaseView
 from cybertools.composer.schema.interfaces import IClientFactory
+from cybertools.stateful.interfaces import IStateful
 from cybertools.util.format import formatDate
 
 
@@ -97,6 +98,7 @@ class ServiceManagerView(BaseView):
                 first = tpl
         return first
 
+    #@Lazy - Zope 2.9 compatibility
     def registrationUrl(self):
         tpl = self.getRegistrationTemplate()
         return self.getUrlForObject(tpl)
@@ -170,7 +172,8 @@ class CheckoutView(ServiceManagerView):
             return True     # TODO: error, redirect to overview
         regs = IClientRegistrations(client).getRegistrations()
         for reg in regs:
-            pass # set state to submitted,
+            stateful = IStateful(reg)
+            stateful.doTransition(('submit', 'change'))
         # send mail
         # find thank you message and redirect to it
         params = '?message=thankyou&id=' + self.clientName
@@ -190,6 +193,7 @@ class ServiceView(BaseView):
         man = context.getManager()
         return ServiceManagerView(man, self.request).getRegistrationTemplate()
 
+    #@Lazy - Zope 2.9 compatibility
     def registrationUrl(self):
         tpl = self.getRegistrationTemplate()
         return self.getUrlForObject(tpl)
@@ -212,6 +216,12 @@ class ServiceView(BaseView):
             return {}
         instance = IInstance(client)
         return instance.applyTemplate()
+
+    def getRegistrationInfo(self, reg):
+        registration = self.getRegistrations()[reg]
+        state = IStateful(registration).getStateObject()
+        return dict(number=registration.number,
+                    state=state.name, stateTitle=state.title)
 
     def update(self):
         newClient = False

@@ -47,11 +47,18 @@ class Stateful(object):
         state = self.getState()
         return self.getStatesDefinition().states[state]
 
-    def doTransition(self, transition):
-        """ execute transition.
-        """
+    def doTransition(self, transition, historyInfo=None):
         sd = self.getStatesDefinition()
-        sd.doTransitionFor(self, transition)
+        if isinstance(transition, basestring):
+            sd.doTransitionFor(self, transition)
+            return
+        available = [t.name for t in sd.getAvailableTransitionsFor(self)]
+        for tr in transition:
+            if tr in available:
+                sd.doTransitionFor(self, tr)
+                return
+        raise ValueError("None of the transitions '%s' is available for state '%s'."
+                                % (repr(transition), self.getState()))
 
     def getAvailableTransitions(self):
         sd = self.getStatesDefinition()

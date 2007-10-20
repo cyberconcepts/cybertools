@@ -59,11 +59,13 @@ class Field(Component):
     def name(self):
         return self.__name__
 
-    @property
-    def defaultValue(self):
+    def getDefaultValue(self):
         if callable(self.default):
             return self.default()
         return self.default
+    def setDefaultValue(self, value):
+        self.default = value
+    defaultValue = property(getDefaultValue, setDefaultValue)
 
     @property
     def fieldRenderer(self):

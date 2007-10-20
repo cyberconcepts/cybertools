@@ -50,18 +50,42 @@ class IStateful(Interface):
         """
 
     def getStateObject():
-        """ Return the state (an IState implementation) of the object.
+        """ Return the state (an IState implementation) of the context object.
         """
 
-    def doTransition(transition):
+    def doTransition(transition, historyInfo=None):
         """ Execute a transition; the transition is specified by its name.
+
+            The ``transition`` argument may be an iterable; in this case
+            its elements will be checked against the available transitions
+            and the first one that's available will be executed.
+
+            The ``historyInfo`` argument is an arbitrary object that will be
+            used for recording the transition execution in the history
+            (only if the context object is adaptable to IHistorizable).
         """
 
     def getAvailableTransitions():
         """ Return the transitions for this object that are available in
-            the current state. The implementation of the returned transition
-            objects is not specified, they may be action dictionaries or
-            special Transition objects.
+            the current state. The returned transition objects should
+            provide the ITransition interface.
+        """
+
+
+class IHistorizable(Interface):
+    """ An object that may record history information, e.g. when
+        performing a state transition.
+    """
+
+    def record(info):
+        """ Record the information given (typically a mapping) with the
+            object.
+        """
+
+    def recordTransition(stateFrom, stateTo, transition, historyInfo=None):
+        """ Record the state transition characterized by the arguments
+            (names of the states and the transition), optionally
+            supplemented by the additional history information given.
         """
 
 

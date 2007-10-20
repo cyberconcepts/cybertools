@@ -33,6 +33,7 @@ from zope.interface import implements, Interface
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.rule.base import RuleManager, EventType
 from cybertools.composer.schema.interfaces import IClientManager, IClient
+from cybertools.stateful.base import StatefulAdapter
 from cybertools.stateful.definition import registerStatesDefinition
 from cybertools.stateful.definition import StatesDefinition
 from cybertools.stateful.definition import State, Transition
@@ -97,11 +98,30 @@ class ServiceManager(RuleManager):
         return self.rules
 
 
+class Registration(object):
+
+    implements(IRegistration)
+
+    number = 1
+
+    def __init__(self, client, service, number=1):
+        self.client = client
+        self.service = service
+        self.timeStamp = int(time())
+        self.number = number
+
+
+class PersistentRegistration(Registration, Persistent):
+
+    pass
+
+
 class Service(object):
 
     implements(IService)
 
     registrationsFactory = OOBTree
+    registrationFactory = PersistentRegistration
 
     manager = None
     category = None
@@ -150,9 +170,9 @@ class Service(object):
             reg = self.registrations[clientName]
             if number != reg.number:
                 reg.number = number
-                self.registrations[clientName] = reg # persistence hack
+                #self.registrations[clientName] = reg # persistence hack
             return reg
-        reg = Registration(client, self, number)
+        reg = self.registrationFactory(client, self, number)
         self.registrations[clientName] = reg
         return reg
         #if self.availableCapacity:
@@ -184,20 +204,7 @@ class ScheduledService(Service):
         return getattr(self.getManager(), 'end', None)
 
 
-# registration
-
-class Registration(object):
-
-    implements(IRegistration)
-
-    number = 1
-
-    def __init__(self, client, service, number=1):
-        self.client = client
-        self.service = service
-        self.timeStamp = int(time())
-        self.number = number
-
+# registration stuff
 
 class RegistrationTemplate(object):
 
@@ -253,7 +260,6 @@ class ClientRegistrations(object):
             service.unregister(self.context)
 
     def getRegistrations(self):
-        # TODO: restrict to services on this template
         regs = getattr(self.context, self.registrationsAttributeName, [])
         if self.template is not None:
             svcs = self.template.getServices().values()
@@ -261,19 +267,26 @@ class ClientRegistrations(object):
         return regs
 
 
-# registration states definition
+# registration states
+
+registrationStates = 'organize.service.registration'
 
 registerStatesDefinition(
-    StatesDefinition('organize.service.registration',
+    StatesDefinition(registrationStates,
         State('temporary', 'temporary', ('submit', 'cancel',)),
-        State('submitted', 'submitted', ('retract', 'setwaiting', 'confirm', 'reject',)),
+        State('submitted', 'submitted',
+                    ('change', 'retract', 'setwaiting', 'confirm', 'reject',)),
         State('cancelled', 'cancelled', ('submit',)),
         State('retracted', 'retracted', ('submit',)),
-        State('waiting', 'waiting', ('retract', 'confirm', 'reject',)),
-        State('confirmed', 'confirmed', ('retract', 'reject',)),
-        State('rejected', 'rejected', ('retract', 'setwaiting', 'confirm',)),
+        State('waiting', 'waiting',
+                    ('change', 'retract', 'confirm', 'reject',)),
+        State('confirmed', 'confirmed',
+                    ('change', 'retract', 'reject',)),
+        State('rejected', 'rejected',
+                    ('change', 'retract', 'setwaiting', 'confirm',)),
         Transition('cancel', 'Cancel registration', 'cancelled'),
         Transition('submit', 'Submit registration', 'submitted'),
+        Transition('change', 'Change registration', 'submitted'),
         Transition('retract', 'Retract registration', 'retracted'),
         Transition('setwaiting', 'Set on waiting list', 'waiting'),
         Transition('confirm', 'Confirm registration', 'confirmed'),
@@ -282,7 +295,14 @@ registerStatesDefinition(
 ))
 
 
-# event types
+class StatefulRegistration(StatefulAdapter):
+
+    component.adapts(IRegistration)
+
+    statesDefinition = registrationStates
+
+
+# event types for rule-based processing
 
 eventTypes = Jeep((
     EventType('service.checkout'),
@@ -297,3 +317,11 @@ def clientRemoved(obj, event):
     regs = IClientRegistrations(obj)
     for r in regs.getRegistrations():
         r.service.unregister(obj)
+
+def serviceRemoved(obj, event):
+    """ Handle removal of a service.
+    """
+    for r in obj.registrations.values():
+        regs = IClientRegistrations(r.client)
+        regs.unregister([obj])
+
