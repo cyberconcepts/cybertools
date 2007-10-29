@@ -50,7 +50,7 @@ class Instance(BaseInstance):
                 if not f.storeData:
                     # a dummy field, e.g. a spacer
                     continue
-                fi = f.getFieldInstance()
+                fi = f.getFieldInstance(self)
                 name = f.name
                 value = getattr(self.context, name, f.defaultValue)
                 #value = getattr(self.context, name, u'')
@@ -147,9 +147,10 @@ class ClientInstance(object):
                 if not f.storeData:
                     # a dummy field, e.g. a spacer
                     continue
-                fi = f.getFieldInstance()
+                fi = f.getFieldInstance(self)
                 name = f.name
-                value = values.get(name, u'')
+                #value = values.get(name, u'')
+                value = values.get(name, f.defaultValue)
                 value = mode == 'view' and fi.display(value) or fi.marshall(value)
                 result[name] = value
         # update result with standard fields:

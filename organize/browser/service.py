@@ -72,7 +72,11 @@ class BaseView(SchemaBaseView):
 
 class ServiceManagerView(BaseView):
 
+    isManageMode = False
+
     def getCustomView(self):
+        if self.isManageMode:
+            return None
         viewName = self.context.getViewName()
         if viewName:
             return component.getMultiAdapter((self.context, self.request),
@@ -102,6 +106,10 @@ class ServiceManagerView(BaseView):
     def registrationUrl(self):
         tpl = self.getRegistrationTemplate()
         return self.getUrlForObject(tpl)
+
+    def redirectToRegistration(self):
+        self.request.response.redirect(self.registrationUrl())
+        return 'redirect'  # let template skip rendering
 
     def overview(self, includeCategories=None):
         result = []
@@ -270,6 +278,8 @@ class ServiceView(BaseView):
 
 class RegistrationTemplateView(BaseView):
 
+    state = None
+
     @Lazy
     def services(self):
         return self.getServices()
@@ -277,6 +287,11 @@ class RegistrationTemplateView(BaseView):
     def getServices(self):
         return self.context.getServices()
         #return sorted(self.context.getServices().values(), key=self.sortKey)
+
+    def overview(self):
+        categories = self.context.categories or None
+        mv = ServiceManagerView(self.context.getManager(), self.request)
+        return mv.overview(categories)
 
     def sortKey(self, svc):
         return (svc.category, svc.getClassification(), svc.start)
@@ -314,6 +329,7 @@ class RegistrationTemplateView(BaseView):
         return instance.applyTemplate()
 
     def update(self):
+        newClient = False
         form = self.request.form
         clientName = self.getClientName()
         if not form.get('action'):
@@ -325,13 +341,11 @@ class RegistrationTemplateView(BaseView):
                 return True
         else:
             client = IClientFactory(manager)()
-            clientName = manager.addClient(client)
-            self.setClientName(clientName)
-        regs = IClientRegistrations(client)
+            newClient = True    # make persistent later
+        regs = self.state = IClientRegistrations(client)
         regs.template = self.context
         services = manager.getServices()  # a mapping!
         allServices = services.values()
-        oldServices = [r.service for r in regs.getRegistrations()]
         # collect check boxes:
         newServices = [services[token]
                        for token in form.get('service_tokens', [])]
@@ -345,10 +359,18 @@ class RegistrationTemplateView(BaseView):
             if value > 0:
                 newServices.append(svc)
                 numbers.append(value)
+        regs.validate(clientName, newServices, numbers)
+        if regs.severity > 0:
+            return True
+        if newClient:
+            clientName = manager.addClient(client)
+            self.setClientName(clientName)
         regs.register(newServices, numbers=numbers)
+        oldServices = [r.service for r in regs.getRegistrations()]
         toDelete = [s for s in oldServices
                       if s in allServices and s not in newServices]
         regs.unregister(toDelete)
-        #return True
         self.request.response.redirect(self.getNextUrl())
         return False
+
+

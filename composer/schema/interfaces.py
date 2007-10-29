@@ -91,17 +91,21 @@ fieldTypes = SimpleVocabulary((
               instanceName='fileupload'),
     #FieldType('checkbox', 'checkbox', u'Checkbox'),
     FieldType('dropdown', 'dropdown', u'Drop-down selection'),
+    FieldType('calculated', 'display', u'Calculated Value',
+              instanceName='calculated'),
     FieldType('spacer', 'spacer', u'Spacer',
               fieldRenderer='field_spacer', storeData=False),
 ))
 
-# TODO: move this to organize.service...
+# TODO: move this to organize.service... (???)
 standardFieldNames = SimpleVocabulary((
     SimpleTerm('', '', 'Not selected'),
     SimpleTerm('lastName', 'lastName', 'Last name'),
     SimpleTerm('firstName', 'firstName', 'First name'),
     SimpleTerm('organization', 'organization', 'Organization'),
     SimpleTerm('email', 'email', 'E-Mail address'),
+    SimpleTerm('number', 'number', 'Number of participants'),
+    # TODO: on organize.service: extend this list, e.g. with 'totalCost'
 ))
 
 class IField(IComponent):
@@ -135,7 +139,8 @@ class IField(IComponent):
                 vocabulary=standardFieldNames,)
     defaultValue = schema.TextLine(
                 title=_(u'Default'),
-                description=_(u'Value with which to pre-set the field contents'),
+                description=_(u'Value with which to pre-set the field contents. '
+                        'Use this also for populating a calculated field.'),
                 required=False,)
     required = schema.Bool(
                 title=_(u'Required'),

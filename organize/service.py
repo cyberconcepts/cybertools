@@ -160,9 +160,10 @@ class Service(object):
 
     @property
     def availableCapacity(self):
-        if self.capacity >= 0 and len(self.registrations) >= self.capacity:
+        number = self.getNumberRegistered()
+        if self.capacity >= 0 and number >= self.capacity:
             return 0
-        return self.capacity - len(self.registrations)
+        return self.capacity - number
 
     def register(self, client, number=1):
         clientName = client.__name__
@@ -170,19 +171,21 @@ class Service(object):
             reg = self.registrations[clientName]
             if number != reg.number:
                 reg.number = number
-                #self.registrations[clientName] = reg # persistence hack
             return reg
         reg = self.registrationFactory(client, self, number)
         self.registrations[clientName] = reg
         return reg
-        #if self.availableCapacity:
-        # TODO: handle case when no capacity available -
-        #       probably on 'submit' transition; UI feedback?
 
     def unregister(self, client):
         clientName = client.__name__
         if clientName in self.registrations:
             del self.registrations[clientName]
+
+    def getNumberRegistered(self):
+        result = 0
+        for r in self.registrations.values():
+            result += r.number
+        return result
 
     # default methods
     def getAllowRegWithNumberFromManager(self):
@@ -240,6 +243,9 @@ class ClientRegistrations(object):
 
     registrationsAttributeName = '__service_registrations__'
 
+    errors = None
+    severity = 0
+
     def __init__(self, context):
         self.context = context
 
@@ -265,6 +271,46 @@ class ClientRegistrations(object):
             svcs = self.template.getServices().values()
             regs = (r for r in regs if r.service in svcs)
         return regs
+
+    def validate(self, clientName, services, numbers=None):
+        self.errors = {}
+        if numbers is None:
+            numbers = len(services) * [1]
+        for svc, n in zip(services, numbers):
+            oldReg = svc.registrations.get(clientName, None)
+            oldN = oldReg and oldReg.number or 0
+            if svc.capacity and svc.capacity > 0 and svc.availableCapacity < n - oldN:
+                error = registrationErrors['capacity_exceeded']
+                entry = self.errors.setdefault(svc.token, [])
+                entry.append(error)
+                self.severity = max(self.severity, error.severity)
+
+
+class RegistrationError(object):
+
+    def __init__(self, title, description=None, severity=5, **kw):
+        self.title = title
+        self.description = description or title
+        self.severity = severity
+        for k, v in kw.items():
+            setattr(self, k, v)
+
+    def __str__(self):
+        return self.title
+
+    def __repr__(self):
+        return "RegistrationError('%s')" % self.title
+
+
+registrationErrors = dict(
+    capacity_exceeded=RegistrationError(
+            u'The capacity for this service has been exceeded.'),
+    time_conflict=RegistrationError(
+            u'You have registered already for another service at the same time.'),
+    number_exceeded=RegistrationError(
+            u'The total number of participants you are registering is less than the '
+                'number of persons you want to register for this service.'),
+)
 
 
 # registration states

@@ -93,9 +93,11 @@ class Field(Component):
     def getFieldTypeInfo(self):
         return fieldTypes.getTerm(self.fieldType)
 
-    def getFieldInstance(self):
+    def getFieldInstance(self, clientInstance=None):
         instanceName = self.getFieldTypeInfo().instanceName
-        return component.getAdapter(self, IFieldInstance, name=instanceName)
+        fi = component.getAdapter(self, IFieldInstance, name=instanceName)
+        fi.clientInstance = clientInstance
+        return fi
 
 
 class FieldInstance(object):
@@ -111,7 +113,7 @@ class FieldInstance(object):
         self.change = None
 
     def marshall(self, value):
-        return value
+        return value or u''
         #return toStr(value)
 
     def display(self, value):
@@ -140,7 +142,7 @@ class NumberFieldInstance(FieldInstance):
 
     def display(self, value):
         if value is None:
-            return '-'
+            return ''
         return str(value)
 
     def unmarshall(self, value):
@@ -166,3 +168,9 @@ class FileUploadFieldInstance(FieldInstance):
 
     def unmarshall(self, value):
         return value
+
+
+class CalculatedFieldInstance(FieldInstance):
+
+    def marshall(self, value):
+        return str(value)

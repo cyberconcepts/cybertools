@@ -128,6 +128,8 @@ class ITask(Interface):
 serviceManagerViews = SimpleVocabulary((
     SimpleTerm('', '', u'Default view'),
     SimpleTerm('events_overview.html', 'events_overview.html', u'Events overview'),
+    SimpleTerm('redirect_registration.html', 'redirect_registration.html',
+               u'Redirect to registration')
 ))
 
 class IServiceManager(Interface):
@@ -145,7 +147,7 @@ class IServiceManager(Interface):
     viewName = schema.Choice(
                 title=_(u'View name'),
                 description=_(u'Select the name of a specialized view to be used '
-                        'for presenting this object.'),
+                        'for presenting this object for visitors.'),
                 vocabulary=serviceManagerViews,
                 default='',
                 required=False,)

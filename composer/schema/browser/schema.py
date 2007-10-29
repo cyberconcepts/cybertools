@@ -73,7 +73,7 @@ class SchemaView(BaseView):
             return True
         if self.isManageMode:
             # Don't store anything when editing
-            self.request.response.redirect(self.nextUrl())
+            self.request.response.redirect(self.getNextUrl())
             return False
         manager = self.context.getManager()
         if clientName:
