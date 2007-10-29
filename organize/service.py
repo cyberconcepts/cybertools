@@ -277,8 +277,11 @@ class ClientRegistrations(object):
         if numbers is None:
             numbers = len(services) * [1]
         for svc, n in zip(services, numbers):
-            oldReg = svc.registrations.get(clientName, None)
-            oldN = oldReg and oldReg.number or 0
+            if clientName:
+                oldReg = svc.registrations.get(clientName, None)
+                oldN = oldReg and oldReg.number or 0
+            else:
+                oldN = 0
             if svc.capacity and svc.capacity > 0 and svc.availableCapacity < n - oldN:
                 error = registrationErrors['capacity_exceeded']
                 entry = self.errors.setdefault(svc.token, [])

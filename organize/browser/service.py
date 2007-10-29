@@ -192,6 +192,7 @@ class CheckoutView(ServiceManagerView):
 class ServiceView(BaseView):
 
     showCheckoutButton = False
+    state = None
 
     def getRegistrations(self):
         return self.context.registrations
@@ -249,15 +250,16 @@ class ServiceView(BaseView):
                 return True
         else:
             client = IClientFactory(manager)()
-            clientName = manager.addClient(client)
-            self.setClientName(clientName)
             newClient = True
             nextUrl = self.getSchemaUrl()
-        regs = IClientRegistrations(client)
+        regs = self.state = IClientRegistrations(client)
         try:
             number = int(form.get('number', 1))
         except ValueError:
             number = 1
+        regs.validate(clientName, [self.context], [number])
+        if regs.severity > 0:
+            return True
         if 'submit_register' in form and number > 0:
             regs.register([self.context], numbers=[number])
             self.showCheckoutButton = True
@@ -266,6 +268,9 @@ class ServiceView(BaseView):
             number = 0
         elif 'submit_checkout' in form:
             nextUrl = self.getSchemaUrl()
+        if newClient:
+            clientName = manager.addClient(client)
+            self.setClientName(clientName)
         if nextUrl:
             self.request.response.redirect(nextUrl)
             return False
