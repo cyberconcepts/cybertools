@@ -260,6 +260,9 @@ class ServiceView(BaseView):
         regs.validate(clientName, [self.context], [number])
         if regs.severity > 0:
             return True
+        if newClient:
+            clientName = manager.addClient(client)
+            self.setClientName(clientName)
         if 'submit_register' in form and number > 0:
             regs.register([self.context], numbers=[number])
             self.showCheckoutButton = True
@@ -268,9 +271,6 @@ class ServiceView(BaseView):
             number = 0
         elif 'submit_checkout' in form:
             nextUrl = self.getSchemaUrl()
-        if newClient:
-            clientName = manager.addClient(client)
-            self.setClientName(clientName)
         if nextUrl:
             self.request.response.redirect(nextUrl)
             return False
