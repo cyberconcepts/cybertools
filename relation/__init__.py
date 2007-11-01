@@ -35,6 +35,9 @@ class Relation(Persistent):
 
     implements(IPredicate, IRelation)
 
+    order = 0
+    relevance = 1.0
+
     @classmethod
     def getPredicateName(cls):
         return '%s.%s' % (cls.__module__, cls.__name__)
@@ -47,10 +50,10 @@ class Relation(Persistent):
             if obj is not None and not IRelatable.providedBy(obj):
                 raise(ValueError, 'Objects to be used in relations '
                         'must provide the IRelatable interface.')
-    
+
 
 class DyadicRelation(Relation):
-    
+
     implements(IDyadicRelation)
 
     def __init__(self, first, second):
@@ -60,7 +63,7 @@ class DyadicRelation(Relation):
 
 
 class TriadicRelation(Relation):
-    
+
     implements(ITriadicRelation)
 
     def __init__(self, first, second, third):

@@ -32,6 +32,13 @@ class IRelation(Interface):
     """ Base interface for relations.
     """
 
+    order = Attribute('An integer that may be used for ordering relations. '
+                'The default should be 0, and there may be negative and '
+                'positive values.')
+    relevance = Attribute('A float greater than 0.0 and less or equal to '
+                '1.0 denoting the importance, relevance, or weight of a '
+                'relation. The default and standard value should be 1.0.')
+
     def getPredicateName():
         """ Return the predicate of this relation as a string that may be
             used for indexing.
@@ -41,7 +48,9 @@ class IRelation(Interface):
         """ Return True if this relation is valid.
 
             If the registry argument is provided the check should be done
-            with respect to this relation registry, e.g. to
+            with respect to this relation registry. The validate() method
+            may be used for implementing checks against ontologies or other
+            kinds of restrictions.
         """
 
 
