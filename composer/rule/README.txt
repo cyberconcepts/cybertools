@@ -8,6 +8,10 @@ Rule-based Execution of Actions
   >>> from cybertools.composer.rule.base import RuleManager, Rule, Action
   >>> from cybertools.composer.rule.base import EventType, Event
 
+  >>> from cybertools.composer.rule.base import ActionHandler
+  >>> component.provideAdapter(ActionHandler, name='message')
+  >>> component.provideAdapter(ActionHandler, name='sendmail')
+
   >>> manager = RuleManager()
 
   >>> loginEvent = EventType('login')
@@ -18,7 +22,7 @@ Rule-based Execution of Actions
   >>> checkoutRule.actions.append(Action('message',
   ...                   parameters = dict(messageName='confirmation_mail')))
   >>> checkoutRule.actions.append(Action('sendmail'))
-  >>> manager.rules.append(checkoutRule)
+  >>> manager.addRule(checkoutRule)
 
   >>> manager.handleEvent(Event(loginEvent))
 

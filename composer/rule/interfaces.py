@@ -40,11 +40,21 @@ class IRuleManager(Interface):
                 description=_(u'The title of the object.'),
                 required=True,)
 
-    rules = Attribute('An ordered collection of rules managed by this object.')
+    #rules = Attribute('An ordered collection of rules managed by this object.')
+
+    def addRule(rule):
+        """ Add the rule given to the rule manager's collection of rules,
+            registering it for the event types that are handled by
+            the rule.
+        """
+
+    def getRulesForEvent(event):
+        """ Retrieve the rules that may handle the event given.
+        """
 
     def handleEvent(event):
         """ Handle the event given and apply the corresponding rules
-            to the client object.
+            to the event's context object.
         """
 
 
@@ -66,9 +76,10 @@ class IRule(ITemplate):
                 required=False,)
 
     manager = Attribute('The associated rule manager.')
-    events = Attribute('The events to be handled by this rule.')
+    events = Attribute('The events (the event types, to be more precise) '
+                    'to be handled by this rule.')
     conditions = Attribute('Conditions to be checked.'
-                'This is typically a list of names of ICondition adapters.')
+                    'This is typically a list of names of ICondition adapters.')
     actions = Attribute('Sequence of actions to be carried out by this rule.')
 
 
@@ -81,7 +92,7 @@ class IEvent(Interface):
 
 class ICondition(Interface):
 
-    def __call__(context, params):
+    def __call__(context, event, params):
         """ Should return True if the condition should be fulfilled;
             will allow the rule to call its actions.
         """

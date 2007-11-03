@@ -45,18 +45,16 @@ from cybertools.organize.interfaces import IRegistration, IRegistrationTemplate
 from cybertools.organize.interfaces import IClientRegistrations
 
 
-class ServiceManager(RuleManager):
+class ServiceManager(object):
 
     implements(IServiceManager, IClientManager)
 
     servicesFactory = Jeep
     clientSchemasFactory = Jeep
     clientsFactory = OOBTree
-    rulesFactory = Jeep
 
     services = None
     clients = None
-    rules = None
 
     allowRegWithNumber = False
     allowDirectRegistration = True
@@ -66,8 +64,6 @@ class ServiceManager(RuleManager):
             self.services = self.servicesFactory()
         if self.clientSchemasFactory is not None:
             self.clientSchemas = self.clientSchemasFactory()
-        if self.rulesFactory is not None:
-            self.rules = self.rulesFactory()
 
     def getServices(self, categories=[]):
         return self.services
@@ -93,9 +89,6 @@ class ServiceManager(RuleManager):
 
     def checkClientName(self, name):
         return name not in self.getClients()
-
-    def getRules(self):
-        return self.rules
 
 
 class Registration(object):
@@ -351,11 +344,19 @@ class StatefulRegistration(StatefulAdapter):
     statesDefinition = registrationStates
 
 
-# event types for rule-based processing
+# rules and events
 
 eventTypes = Jeep((
     EventType('service.checkout'),
 ))
+
+
+class RuleManagerAdapter(RuleManager):
+
+    adapts(IServiceManager)
+
+    def __init__(self, context):
+        self.context = context
 
 
 # Zope event handlers

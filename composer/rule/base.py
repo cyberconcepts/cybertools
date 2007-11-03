@@ -22,6 +22,8 @@ Basic classes for rules and actions.
 $Id$
 """
 
+from zope import component
+from zope.component import adapts
 from zope.interface import implements
 
 from cybertools.composer.base import Component, Element, Compound
@@ -42,12 +44,29 @@ class RuleManager(object):
     rulesFactory = Jeep
     rules = None
 
-    def __init__(self):
-        if self.rulesFactory is not None:
+    def addRule(self, rule):
+        rule.manager = self
+        if self.rules is None:
             self.rules = self.rulesFactory()
+        for e in rule.events:
+            entry = self.rules.setdefault(e.name, [])
+            entry.append(rule)
+
+    def getRulesForEvent(self, event):
+        return self.rules.get(event.name, [])
 
     def handleEvent(self, event):
-        pass
+        rules = self.getRulesForEvent(event)
+        for r in rules:
+            for c in r.conditions:
+                cond = component.getAdapter(r, ICondition, name=c)
+                if not cond(event):
+                    continue
+            data = None
+            for action in r.actions:
+                handler = component.getAdapter(action, IActionHandler,
+                                               name=action.handlerName)
+                data = handler(data, event)
 
 
 class Rule(Template):
@@ -101,21 +120,13 @@ class Event(object):
 
 # conditions
 
-class ConditionType(object):
-
-    def __init__(self, name, title):
-        self.name = name
-        self.title = title
-
-
 class Condition(object):
 
     implements(ICondition)
+    adapts(IRule)
 
-    def __init__(self, conditionType):
-        self.conditionType = conditionType
-        self.name = conditionType.name
-        self.title = conditionType.title
+    def __init__(self, context):
+        self.context = context
 
     def __call__(self, context, params):
         return True
@@ -123,7 +134,7 @@ class Condition(object):
 
 # actions
 
-class Action(object):
+class Action(Component):
 
     implements(IAction)
 
@@ -133,17 +144,22 @@ class Action(object):
     rule = None
 
     def __init__(self, name, **kw):
+        self.name = name
         for k, v in kw.items():
             setattr(self, k, v)
         if self.parameters is None:
             self.parameters = {}
         if not self.handlerName:
-            self.handlerName = self.name
+            self.handlerName = name
 
 
 class ActionHandler(object):
 
     implements(IActionHandler)
+    adapts(IAction)
 
-    def __call__(self, data, params):
+    def __init__(self, context):
+        self.context = context
+
+    def __call__(self, data, event, params={}):
         pass
