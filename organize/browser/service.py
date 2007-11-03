@@ -136,7 +136,8 @@ class ServiceManagerView(BaseView):
                     result.append(dict(isHeadline=True, level=level,
                                        name=element.name,
                                        title=element.title,
-                                       object=element.object))
+                                       object=element.object,
+                                       view=None))
                     classific = clsf
                 if level > maxLevel:
                     maxLevel = level
@@ -144,7 +145,8 @@ class ServiceManagerView(BaseView):
                                name=svc.getName(),
                                title=svc.title or svc.getName(),
                                fromTo=self.getFromTo(svc),
-                               object=svc))
+                               object=svc,
+                               view=ServiceView(svc, self.request)))
         return result
 
     def eventsOverview(self):
@@ -229,8 +231,17 @@ class ServiceView(BaseView):
     def getRegistrationInfo(self, reg):
         registration = self.getRegistrations()[reg]
         state = IStateful(registration).getStateObject()
-        return dict(number=registration.number,
-                    state=state.name, stateTitle=state.title)
+        number=registration.number
+        return dict(number=number, state=state.name, stateTitle=state.title)
+
+    @Lazy
+    def registeredTotalSubmitted(self):
+        total = 0
+        for reg in self.getRegistrations().values():
+            state = IStateful(reg).getStateObject()
+            if state.name != 'temporary':
+                total += reg.number
+        return total
 
     def update(self):
         newClient = False
