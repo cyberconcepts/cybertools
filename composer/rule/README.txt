@@ -8,6 +8,9 @@ Rule-based Execution of Actions
   >>> from cybertools.composer.rule.base import RuleManager, Rule, Action
   >>> from cybertools.composer.rule.base import EventType, Event
 
+  >>> from cybertools.composer.rule.instance import RuleInstance
+  >>> from cybertools.composer.rule.interfaces import IRuleInstance
+  >>> component.provideAdapter(RuleInstance, provides=IRuleInstance)
   >>> from cybertools.composer.rule.base import ActionHandler
   >>> component.provideAdapter(ActionHandler, name='message')
   >>> component.provideAdapter(ActionHandler, name='sendmail')
@@ -26,7 +29,8 @@ Rule-based Execution of Actions
 
   >>> manager.handleEvent(Event(loginEvent))
 
-  >>> client = object()
+  >>> from cybertools.composer.schema.client import Client
+  >>> client = Client()
 
   >>> manager.handleEvent(Event(checkoutEvent, client))
 

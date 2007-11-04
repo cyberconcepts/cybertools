@@ -30,6 +30,7 @@ from cybertools.composer.base import Component, Element, Compound
 from cybertools.composer.base import Template
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.rule.interfaces import IRuleManager, IRule
+from cybertools.composer.rule.interfaces import IRuleInstance
 from cybertools.composer.rule.interfaces import IEvent, ICondition
 from cybertools.composer.rule.interfaces import IAction, IActionHandler
 from cybertools.util.jeep import Jeep
@@ -58,15 +59,19 @@ class RuleManager(object):
     def handleEvent(self, event):
         rules = self.getRulesForEvent(event)
         for r in rules:
-            for c in r.conditions:
-                cond = component.getAdapter(r, ICondition, name=c)
-                if not cond(event):
-                    continue
-            data = None
-            for action in r.actions:
-                handler = component.getAdapter(action, IActionHandler,
-                                               name=action.handlerName)
-                data = handler(data, event)
+            ri = IRuleInstance(event.context)
+            ri.template = r
+            ri.event = event
+            ri.applyTemplate()
+            #for c in r.conditions:
+            #    cond = component.getAdapter(r, ICondition, name=c)
+            #    if not cond(event):
+            #        continue
+            #data = None
+            #for action in r.actions:
+            #    handler = component.getAdapter(action, IActionHandler,
+            #                                   name=action.handlerName)
+            #    data = handler(data, event)
 
 
 class Rule(Template):
@@ -123,7 +128,7 @@ class Event(object):
 class Condition(object):
 
     implements(ICondition)
-    adapts(IRule)
+    adapts(IRuleInstance)
 
     def __init__(self, context):
         self.context = context
@@ -156,7 +161,7 @@ class Action(Component):
 class ActionHandler(object):
 
     implements(IActionHandler)
-    adapts(IAction)
+    adapts(IRuleInstance)
 
     def __init__(self, context):
         self.context = context

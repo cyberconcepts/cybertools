@@ -22,22 +22,29 @@ Rule instance and related classes.
 $Id$
 """
 
-from string import Template
 from zope import component
-from zope.interface import implements
+from zope.component import adapts
+from zope.interface import Interface, implements
 
 from cybertools.composer.instance import Instance
-from cybertools.composer.interfaces import IInstance
+from cybertools.composer.rule.interfaces import IRuleInstance, IActionHandler
 
 
 class RuleInstance(Instance):
 
-    template = client = None
+    implements(IRuleInstance)
+    adapts(Interface)
 
-    def __init__(self, client, template):
-        self.client = client
-        self.template = template
+    event = None
 
     def applyTemplate(self, **kw):
-        pass
+        for c in self.template.conditions:
+            cond = component.getAdapter(self, ICondition, name=c)
+            if not cond():
+                continue
+        data = None
+        for action in self.template.actions:
+            handler = component.getAdapter(self, IActionHandler,
+                                           name=action.handlerName)
+            data = handler(data, self.event)
 

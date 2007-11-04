@@ -26,7 +26,7 @@ from zope.interface import Interface, Attribute
 from zope.i18nmessageid import MessageFactory
 from zope import schema
 
-from cybertools.composer.interfaces import ITemplate, IComponent
+from cybertools.composer.interfaces import ITemplate, IComponent, IInstance
 
 _ = MessageFactory('zope')
 
@@ -83,6 +83,14 @@ class IRule(ITemplate):
     actions = Attribute('Sequence of actions to be carried out by this rule.')
 
 
+class IRuleInstance(IInstance):
+    """ A rule instance (typically used as an adapter) acts on some context
+        (client) object for executing the rule's actions.
+    """
+
+    event = Attribute('The event the rule instance was created for.')
+
+
 class IEvent(Interface):
 
     name = Attribute('The name by which the event will be identified.')
@@ -92,7 +100,7 @@ class IEvent(Interface):
 
 class ICondition(Interface):
 
-    def __call__(context, event, params):
+    def __call__(context, params):
         """ Should return True if the condition should be fulfilled;
             will allow the rule to call its actions.
         """
