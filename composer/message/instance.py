@@ -25,6 +25,7 @@ $Id$
 from string import Template
 from zope import component
 from zope.interface import implements
+from zope.publisher.browser import TestRequest
 
 from cybertools.composer.instance import Instance
 from cybertools.composer.interfaces import IInstance
@@ -38,7 +39,7 @@ class MessageInstance(Instance):
         self.client = client
         self.template = template
 
-    def applyTemplate(self, **kw):
+    def applyTemplate(self, data=None, **kw):
         data = DataProvider(self)
         return MessageTemplate(self.template.text).safe_substitute(data)
 
@@ -55,9 +56,12 @@ class DataProvider(object):
             viewName = key[2:]
             if client is None:
                 return '$' + key
-            view = component.getMultiAdapter(
-                    (client.manager, TestRequest(form=form)), name=viewName)
-            return view()
+            view = component.queryMultiAdapter(
+                    (client.manager, TestRequest()), name=viewName)
+            if view is not None:
+                return view()
+            else:
+                return key
         elif key in messageManager.messages:
             #mi = component.getMultiAdapter(
             #       (client, messageManager.messages[key]), IInstance)

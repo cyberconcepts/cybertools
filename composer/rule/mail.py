@@ -17,7 +17,7 @@
 #
 
 """
-Event definitions.
+Action handler for sending emails.
 
 $Id$
 """

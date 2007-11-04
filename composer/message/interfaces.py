@@ -42,6 +42,10 @@ class IMessageManager(Interface):
 
     messages = Attribute('A collection of message objects managed.')
 
+    def addMessage(name, text):
+        """ Add a message under the name given with the given message text.
+        """
+
 
 class IMessage(ITemplate):
     """ A complex message that may be expanded using instance data.

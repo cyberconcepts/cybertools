@@ -3,6 +3,14 @@
 import unittest, doctest
 from zope.testing.doctestunit import DocFileSuite
 
+from cybertools.composer.rule.base import ActionHandler
+
+
+class MailActionHandler(ActionHandler):
+
+    def __call__(self, data, event, params={}):
+        pass
+
 
 class Test(unittest.TestCase):
     "Basic tests."

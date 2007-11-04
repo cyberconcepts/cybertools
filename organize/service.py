@@ -31,6 +31,7 @@ from zope import component
 from zope.interface import implements, Interface
 
 from cybertools.composer.interfaces import IInstance
+from cybertools.composer.message.base import MessageManager
 from cybertools.composer.rule.base import RuleManager, EventType
 from cybertools.composer.schema.interfaces import IClientManager, IClient
 from cybertools.stateful.base import StatefulAdapter
@@ -55,6 +56,8 @@ class ServiceManager(object):
 
     services = None
     clients = None
+
+    messages = None
 
     allowRegWithNumber = False
     allowDirectRegistration = True
@@ -344,7 +347,7 @@ class StatefulRegistration(StatefulAdapter):
     statesDefinition = registrationStates
 
 
-# rules and events
+# events, rules, actions
 
 eventTypes = Jeep((
     EventType('service.checkout'),
@@ -357,6 +360,22 @@ class RuleManagerAdapter(RuleManager):
 
     def __init__(self, context):
         self.context = context
+
+
+class MessageManagerAdapter(MessageManager):
+
+    adapts(IServiceManager)
+
+    def __init__(self, context):
+        self.context = context
+
+    def addMessage(self, messageName, text):
+        super(MessageManagerAdapter, self).addMessage(messageName, text)
+        self.context.messages = self.messages
+
+    @Lazy
+    def messages(self):
+        return self.context.messages
 
 
 # Zope event handlers

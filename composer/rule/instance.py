@@ -42,9 +42,9 @@ class RuleInstance(Instance):
             cond = component.getAdapter(self, ICondition, name=c)
             if not cond():
                 continue
-        data = None
+        data = {}
         for action in self.template.actions:
             handler = component.getAdapter(self, IActionHandler,
                                            name=action.handlerName)
-            data = handler(data, self.event)
+            data = handler(data, action.parameters)
 

@@ -63,15 +63,6 @@ class RuleManager(object):
             ri.template = r
             ri.event = event
             ri.applyTemplate()
-            #for c in r.conditions:
-            #    cond = component.getAdapter(r, ICondition, name=c)
-            #    if not cond(event):
-            #        continue
-            #data = None
-            #for action in r.actions:
-            #    handler = component.getAdapter(action, IActionHandler,
-            #                                   name=action.handlerName)
-            #    data = handler(data, event)
 
 
 class Rule(Template):
@@ -166,5 +157,5 @@ class ActionHandler(object):
     def __init__(self, context):
         self.context = context
 
-    def __call__(self, data, event, params={}):
+    def __call__(self, data, params={}):
         pass

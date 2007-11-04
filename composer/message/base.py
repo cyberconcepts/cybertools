@@ -39,12 +39,15 @@ class MessageManager(object):
     messages = None
     manager = None
 
-    def __init__(self):
-        if self.messagesFactory is not None:
-            self.messages = self.messagesFactory()
-
     def getManager(self):
         return self.manager
+
+    def addMessage(self, messageName, text):
+        message = Message(messageName, manager=self)
+        message.text = text
+        if self.messages is None:
+            self.messages = self.messagesFactory()
+        self.messages.append(message)
 
 
 class Message(Template):
