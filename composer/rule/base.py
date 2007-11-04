@@ -158,4 +158,4 @@ class ActionHandler(object):
         self.context = context
 
     def __call__(self, data, params={}):
-        pass
+        return data
