@@ -57,12 +57,14 @@ class RuleManager(object):
         return self.rules.get(event.name, [])
 
     def handleEvent(self, event):
+        result = []
         rules = self.getRulesForEvent(event)
         for r in rules:
             ri = IRuleInstance(event.context)
             ri.template = r
             ri.event = event
-            ri.applyTemplate()
+            result.append(ri.applyTemplate())
+        return result
 
 
 class Rule(Template):

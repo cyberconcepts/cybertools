@@ -47,4 +47,5 @@ class RuleInstance(Instance):
             handler = component.getAdapter(self, IActionHandler,
                                            name=action.handlerName)
             data = handler(data, action.parameters)
+        return data
 
