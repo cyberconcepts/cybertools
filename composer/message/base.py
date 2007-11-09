@@ -42,8 +42,8 @@ class MessageManager(object):
     def getManager(self):
         return self.manager
 
-    def addMessage(self, messageName, text):
-        message = Message(messageName, manager=self)
+    def addMessage(self, messageName, text, **kw):
+        message = Message(messageName, manager=self, **kw)
         message.text = text
         if self.messages is None:
             self.messages = self.messagesFactory()
@@ -57,8 +57,10 @@ class Message(Template):
     name = u''
     manager = None
 
-    def __init__(self, name, **kw):
+    def __init__(self, name, text=u'', subject=u'', **kw):
         self.name = name
+        self.text = text
+        self.subject = subject
         for k, v in kw.items():
             setattr(self, k, v)
 

@@ -1,15 +1,23 @@
 # $Id$
 
 import unittest, doctest
+from email import message_from_string
+from zope.interface import implements
+from zope.sendmail.interfaces import IMailDelivery
 from zope.testing.doctestunit import DocFileSuite
 
-from cybertools.composer.rule.base import ActionHandler
 
+class TestMailer(object):
 
-class MailActionHandler(ActionHandler):
+    implements(IMailDelivery)
 
-    def __call__(self, data, event, params={}):
-        pass
+    def send(self, sender, recipients, message):
+        print 'sender:', sender
+        print 'recipients:', recipients
+        msg = message_from_string(message)
+        print 'subject:', msg['Subject']
+        print 'message:'
+        print msg.get_payload(decode=True)
 
 
 class Test(unittest.TestCase):

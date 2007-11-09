@@ -29,6 +29,7 @@ from zope.publisher.browser import TestRequest
 
 from cybertools.composer.instance import Instance
 from cybertools.composer.interfaces import IInstance
+from cybertools.util.jeep import Jeep
 
 
 class MessageInstance(Instance):
@@ -41,7 +42,9 @@ class MessageInstance(Instance):
 
     def applyTemplate(self, data=None, **kw):
         data = DataProvider(self)
-        return MessageTemplate(self.template.text).safe_substitute(data)
+        text = MessageTemplate(self.template.text).safe_substitute(data)
+        subject = self.template.subject
+        return Jeep((('subject', subject), ('text', text)))
 
 
 class DataProvider(object):
@@ -66,7 +69,7 @@ class DataProvider(object):
             #mi = component.getMultiAdapter(
             #       (client, messageManager.messages[key]), IInstance)
             mi = MessageInstance(client, messageManager.messages[key])
-            return mi.applyTemplate()
+            return mi.applyTemplate().text
         elif '.' in key:
             if client is None:
                 return '$' + key

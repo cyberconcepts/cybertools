@@ -369,8 +369,8 @@ class MessageManagerAdapter(MessageManager):
     def __init__(self, context):
         self.context = context
 
-    def addMessage(self, messageName, text):
-        super(MessageManagerAdapter, self).addMessage(messageName, text)
+    def addMessage(self, messageName, text, **kw):
+        super(MessageManagerAdapter, self).addMessage(messageName, text, **kw)
         self.context.messages = self.messages
 
     @Lazy

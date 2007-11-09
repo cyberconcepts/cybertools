@@ -63,6 +63,11 @@ class IMessage(ITemplate):
                 title=_(u'Description'),
                 description=_(u'A brief description of the message.'),
                 required=False,)
+    subject = schema.TextLine(
+                title=_(u'Subject'),
+                description=_(u'A short text that may be used as the subject '
+                        'line for emails or as a page title for web pages.'),
+                required=False,)
     text = schema.Text(
                 title=_(u'Text'),
                 description=_(u"The message text; may contain placeholders "
@@ -70,9 +75,16 @@ class IMessage(ITemplate):
                         "be replaced when the message is rendered."),
                 required=False,)
     format = schema.Choice(
-                title=_(u'Text format'),
-                description=_(u'The format of the message.'),
+                title=_(u'Text input format'),
+                description=_(u'The format in which the message is entered.'),
                 required=True,
+                default='text/plain',
+                values=('text/plain', 'text/html',))
+    outputFormat = schema.Choice(
+                title=_(u'Output format'),
+                description=_(u'The format in which the message will be '
+                        'rendered when delivered to the recipient.'),
+                required=False,
                 default='text/plain',
                 values=('text/plain', 'text/html',))
     media = schema.Choice(
