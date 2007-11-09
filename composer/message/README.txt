@@ -9,21 +9,16 @@ Message Management
 
   >>> manager = MessageManager()
 
-  >>> manager.messages.append(Message('feedback_html', manager=manager))
-  >>> manager.messages.append(Message('feedback_text', manager=manager))
-  >>> manager.messages.append(Message('footer', manager=manager))
-
   >>> messageText = '''Dear $person.firstname $person.lastname,
   ... You have been registered for the following $services.
   ... $@@list_registrations
   ... $footer
   ... '''
 
-  >>> manager.messages['feedback_text'].text = messageText
-  >>> manager.messages['footer'].text = 'Best regards, $sender'
-
-  >>> manager.messages.append(Message('sender', manager=manager, text='Jack'))
-  >>> manager.messages.append(Message('services', manager=manager, text='events'))
+  >>> manager.addMessage('feedback_text', messageText)
+  >>> manager.addMessage('footer', 'Best regards, $sender')
+  >>> manager.addMessage('sender', 'Jack')
+  >>> manager.addMessage('services', 'events')
 
 Message interpolation
 ---------------------

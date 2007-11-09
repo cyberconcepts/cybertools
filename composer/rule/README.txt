@@ -28,9 +28,10 @@ Rule-based Execution of Actions
   >>> manager.addRule(checkoutRule)
 
   >>> manager.handleEvent(Event(loginEvent))
+  []
 
   >>> from cybertools.composer.schema.client import Client
   >>> client = Client()
 
   >>> manager.handleEvent(Event(checkoutEvent, client))
-
+  [{}]
