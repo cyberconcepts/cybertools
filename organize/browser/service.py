@@ -29,7 +29,10 @@ from zope.cachedescriptors.property import Lazy
 
 from cybertools.organize.interfaces import IClientRegistrations, IRegistrationTemplate
 from cybertools.organize.interfaces import serviceCategories
+from cybertools.organize.service import eventTypes, getCheckoutRule
 from cybertools.composer.interfaces import IInstance
+from cybertools.composer.rule.base import Event
+from cybertools.composer.rule.interfaces import IRuleManager
 from cybertools.composer.schema.browser.common import BaseView as SchemaBaseView
 from cybertools.composer.schema.interfaces import IClientFactory
 from cybertools.stateful.interfaces import IStateful
@@ -185,6 +188,9 @@ class CheckoutView(ServiceManagerView):
             stateful = IStateful(reg)
             stateful.doTransition(('submit', 'change'))
         # send mail
+        rm = IRuleManager(self.manager)
+        rm.addRule(getCheckoutRule(self.manager.senderEmail))
+        rm.handleEvent(Event(eventTypes['service.checkout'], client))
         # find thank you message and redirect to it
         params = '?message=thankyou&id=' + self.clientName
         self.request.response.redirect(self.url + '/checkout.html' + params)

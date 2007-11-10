@@ -54,7 +54,7 @@ class RuleManager(object):
             entry.append(rule)
 
     def getRulesForEvent(self, event):
-        return self.rules.get(event.name, [])
+        return self.rules and self.rules.get(event.name, []) or []
 
     def handleEvent(self, event):
         result = []
@@ -84,16 +84,6 @@ class Rule(Template):
         self.events = []
         self.conditions = []
         self.actions = []
-
-
-class RuleInstance(object):
-
-    implements(IInstance)
-
-    template = None
-
-    def applyTemplate(self):
-        pass
 
 
 # events

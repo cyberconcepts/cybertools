@@ -33,6 +33,7 @@ from zope.interface import implements, Interface
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.message.base import MessageManager
 from cybertools.composer.rule.base import RuleManager, EventType
+from cybertools.composer.rule.base import Rule, Action
 from cybertools.composer.schema.interfaces import IClientManager, IClient
 from cybertools.stateful.base import StatefulAdapter
 from cybertools.stateful.definition import registerStatesDefinition
@@ -61,6 +62,7 @@ class ServiceManager(object):
 
     allowRegWithNumber = False
     allowDirectRegistration = True
+    senderEmail = 'unknown@sender.com'
 
     def __init__(self):
         if self.servicesFactory is not None:
@@ -121,7 +123,7 @@ class Service(object):
 
     manager = None
     category = None
-    location = ''
+    location = u''
     allowRegWithNumber = False
     allowDirectRegistration = True
 
@@ -376,6 +378,18 @@ class MessageManagerAdapter(MessageManager):
     @Lazy
     def messages(self):
         return self.context.messages
+
+
+def getCheckoutRule(sender):
+    """ A rule for sending a confirmation message, provided by default.
+    """
+    checkoutRule = Rule('checkoutmail')
+    checkoutRule.events.append(eventTypes['service.checkout'])
+    checkoutRule.actions.append(Action('message',
+                      parameters=dict(messageName='feedback_text')))
+    checkoutRule.actions.append(Action('sendmail',
+                      parameters=dict(sender=sender)))
+    return checkoutRule
 
 
 # Zope event handlers

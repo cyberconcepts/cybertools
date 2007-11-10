@@ -35,6 +35,7 @@ class RuleInstance(Instance):
     implements(IRuleInstance)
     adapts(Interface)
 
+    template = None
     event = None
 
     def applyTemplate(self, **kw):
