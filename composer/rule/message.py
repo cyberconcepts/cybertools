@@ -42,6 +42,6 @@ class MessageActionHandler(ActionHandler):
         if message is None:
             raise ValueError('Message %s does not exist.' % messageName)
         #client = IClient(self.context)
-        mi = MessageInstance(client, message)
+        mi = MessageInstance(client, message, manager)
         #mi.template = message
         return mi.applyTemplate(data)

@@ -164,6 +164,11 @@ class IServiceManager(Interface):
                         'with the service description; otherwise registration '
                         'is only possible on a registration template.'),
                 required=False,)
+    senderEmail = schema.TextLine(
+                title=_(u'Sender email'),
+                description=_(u'Email address that will be used as sender '
+                        'address of confirmation and feedback messages.'),
+                required=False,)
 
     services = Attribute('A collection of services managed by this object.')
 
@@ -255,11 +260,6 @@ class IService(Interface):
                 title=_(u'Web address'),
                 description=_(u'Web address (URL) for more information '
                         'about the service.'),
-                required=False,)
-    senderEmail = schema.TextLine(
-                title=_(u'Sender email'),
-                description=_(u'Email address that will be used as sender '
-                        'address of confirmation and feedback messages.'),
                 required=False,)
 
     availableCapacity = Attribute('Available capacity, i.e. number of seats '

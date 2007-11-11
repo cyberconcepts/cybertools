@@ -63,7 +63,7 @@ class IMessage(ITemplate):
                 title=_(u'Description'),
                 description=_(u'A brief description of the message.'),
                 required=False,)
-    subject = schema.TextLine(
+    subjectLine = schema.TextLine(
                 title=_(u'Subject'),
                 description=_(u'A short text that may be used as the subject '
                         'line for emails or as a page title for web pages.'),

@@ -40,10 +40,10 @@ Working with message instances
 ------------------------------
 
   >>> from cybertools.composer.message.instance import MessageInstance
-  >>> mi = MessageInstance(None, manager.messages['feedback_text'])
+  >>> mi = MessageInstance(None, manager.messages['feedback_text'], manager)
   >>> for key, value in mi.applyTemplate().items():
   ...     print key + ':', value
-  subject:
+  subjectLine:
   text: Dear $person.firstname $person.lastname,
   You have been registered for the following events.
   $@@list_registrations

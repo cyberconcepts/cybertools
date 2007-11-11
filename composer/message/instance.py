@@ -36,15 +36,16 @@ class MessageInstance(Instance):
 
     template = client = None
 
-    def __init__(self, client, template):
+    def __init__(self, client, template, manager):
         self.client = client
         self.template = template
+        self.manager = manager
 
     def applyTemplate(self, data=None, **kw):
         data = DataProvider(self)
         text = MessageTemplate(self.template.text).safe_substitute(data)
-        subject = self.template.subject
-        return Jeep((('subject', subject), ('text', text)))
+        subject = self.template.subjectLine
+        return Jeep((('subjectLine', subject), ('text', text)))
 
 
 class DataProvider(object):
@@ -54,7 +55,8 @@ class DataProvider(object):
 
     def __getitem__(self, key):
         client = self.context.client
-        messageManager = self.context.template.manager
+        #messageManager = self.context.template.getManager()
+        messageManager = self.context.manager
         if key.startswith('@@'):
             viewName = key[2:]
             if client is None:
@@ -68,13 +70,14 @@ class DataProvider(object):
         elif key in messageManager.messages:
             #mi = component.getMultiAdapter(
             #       (client, messageManager.messages[key]), IInstance)
-            mi = MessageInstance(client, messageManager.messages[key])
+            mi = MessageInstance(client, messageManager.messages[key],
+                                 messageManager)
             return mi.applyTemplate().text
         elif '.' in key:
             if client is None:
                 return '$' + key
             schemaName, fieldName = key.split('.', 1)
-            schema = client.manager.clientSchemas[schemaName]
+            schema = client.manager.getClientSchemas()[schemaName]
             instance = IInstance(client)
             instance.template = schema
             data = instance.applyTemplate()

@@ -57,10 +57,10 @@ class Message(Template):
     name = u''
     manager = None
 
-    def __init__(self, name, text=u'', subject=u'', **kw):
+    def __init__(self, name, text=u'', subjectLine=u'', **kw):
         self.name = name
         self.text = text
-        self.subject = subject
+        self.subjectLine = subjectLine
         for k, v in kw.items():
             setattr(self, k, v)
 

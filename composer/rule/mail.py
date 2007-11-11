@@ -25,7 +25,6 @@ $Id$
 from email.MIMEText import MIMEText
 from zope import component
 from zope.interface import implements
-from zope.sendmail.interfaces import IMailDelivery
 
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.rule.base import ActionHandler
@@ -34,15 +33,11 @@ from cybertools.composer.rule.base import ActionHandler
 class MailActionHandler(ActionHandler):
 
     def __call__(self, data, params={}):
-        #print 'sending mail...'
-        #print 'subject:', data.subject
-        #print 'text:', data.text
-        #print 'params:', params
         sender = params.get('sender', 'unknown')
         client = self.context.context
         clientData = IInstance(client).applyTemplate()
         recipient = clientData['standard.email']
-        msg = self.prepareMessage(data.subject, data.text, sender, recipient)
+        msg = self.prepareMessage(data.subjectLine, data.text, sender, recipient)
         data['mailInfo'] = self.sendMail(msg.as_string(), sender, [recipient])
         return data
 
@@ -55,6 +50,7 @@ class MailActionHandler(ActionHandler):
         return msg
 
     def sendMail(self, message, sender, recipients):
+        from zope.sendmail.interfaces import IMailDelivery
         mailhost = component.getUtility(IMailDelivery, 'Mail')
         mailhost.send(sender, recipients, message)
         return 'Mail sent to %s.' % ', '.join(recipients)
