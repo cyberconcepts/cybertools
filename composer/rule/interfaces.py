@@ -96,6 +96,8 @@ class IEvent(Interface):
     name = Attribute('The name by which the event will be identified.')
     title = Attribute('A human readable title or label.')
     context = Attribute('An object that is associated with the event.')
+    request = Attribute('Optional: the browser request that is associated '
+                        'with the event.')
 
 
 class ICondition(Interface):

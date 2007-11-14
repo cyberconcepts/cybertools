@@ -99,11 +99,12 @@ class Event(object):
 
     implements(IEvent)
 
-    def __init__(self, eventType, context=None):
+    def __init__(self, eventType, context=None, request=None):
         self.eventType = eventType
         self.name = eventType.name
         self.title = eventType.title
         self.context = context
+        self.request = request
 
 
 # conditions

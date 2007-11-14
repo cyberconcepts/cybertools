@@ -118,15 +118,15 @@ class ServiceManagerView(BaseView):
         result = []
         classific = []
         category = None
-        maxLevel = 0
         svcs = sorted((svc.getCategory(), idx, svc)
                 for idx, svc in enumerate(self.context.getServices()))
         for cat, idx, svc in svcs:
             if includeCategories and cat not in includeCategories:
                 continue
+            level = 0
             if cat != category:
                 term = serviceCategories.getTermByToken(cat)
-                result.append(dict(isHeadline=True, level=0, title=term.title,
+                result.append(dict(isHeadline=True, level=level, title=term.title,
                                    name=cat,
                                    object=None))
                 category = cat
@@ -141,10 +141,8 @@ class ServiceManagerView(BaseView):
                                        title=element.title,
                                        object=element.object,
                                        view=None))
-                    classific = clsf
-                if level > maxLevel:
-                    maxLevel = level
-            result.append(dict(isHeadline=False, level=maxLevel+1,
+                    classific = clsf[:idx+1]
+            result.append(dict(isHeadline=False, level=level+1,
                                name=svc.getName(),
                                title=svc.title or svc.getName(),
                                fromTo=self.getFromTo(svc),
@@ -190,11 +188,26 @@ class CheckoutView(ServiceManagerView):
         # send mail
         rm = IRuleManager(self.manager)
         rm.addRule(getCheckoutRule(self.manager.senderEmail))
-        rm.handleEvent(Event(eventTypes['service.checkout'], client))
+        rm.handleEvent(Event(eventTypes['service.checkout'], client, self.request))
         # find thank you message and redirect to it
         params = '?message=thankyou&id=' + self.clientName
         self.request.response.redirect(self.url + '/checkout.html' + params)
         return False
+
+    def listRegistrationsText(self):
+        client = self.getClient()
+        if client is None:
+            return 'Error: no client given.'
+        result = []
+        regs = IClientRegistrations(client)
+        regs = sorted(regs.getRegistrations(), key=self.sortKey)
+        for reg in regs:
+            service = reg.service
+            line = '%-30s %27s' % (service.title, self.getFromTo(service))
+            if service.allowRegWithNumber:
+                line += ' %4i' % reg.number
+            result.append(line)
+        return '\n'.join(result)
 
 
 class ServiceView(BaseView):
@@ -214,6 +227,16 @@ class ServiceView(BaseView):
     def registrationUrl(self):
         tpl = self.getRegistrationTemplate()
         return self.getUrlForObject(tpl)
+
+    def allowRegistration(self):
+        context = self.context
+        if not context.allowDirectRegistration:
+            return False
+        return (self.capacityAvailable()
+                or self.getClientName() in context.registrations)
+
+    def capacityAvailable(self):
+        return not self.context.capacity or self.context.availableCapacity
 
     def getClientData(self):
         clientName = self.getClientName()
@@ -271,7 +294,9 @@ class ServiceView(BaseView):
             nextUrl = self.getSchemaUrl()
         regs = self.state = IClientRegistrations(client)
         try:
-            number = int(form.get('number', 1))
+            number = int(form.get('number', 0))
+            if number < 0:
+                number = 0
         except ValueError:
             number = 1
         regs.validate(clientName, [self.context], [number])
@@ -318,6 +343,13 @@ class RegistrationTemplateView(BaseView):
     def sortKey(self, svc):
         return (svc.category, svc.getClassification(), svc.start)
 
+    def allowRegistration(self, service):
+        return (self.capacityAvailable(service)
+                or service in self.getRegisteredServices())
+
+    def capacityAvailable(self, service):
+        return not service.capacity or service.availableCapacity
+
     def getRegistrations(self):
         clientName = self.getClientName()
         if not clientName:
@@ -330,8 +362,11 @@ class RegistrationTemplateView(BaseView):
         regs.template = self.context
         return regs.getRegistrations()
 
+    def getRegisteredServices(self):
+        return [r.service for r in self.getRegistrations()]
+
     def getRegisteredServicesTokens(self):
-        return [r.service.token for r in self.getRegistrations()]
+        return [s.token for s in self.getRegisteredServices()]
 
     def getRegistrationsDict(self):
         return dict((r.service.token, r) for r in self.getRegistrations())
@@ -377,7 +412,7 @@ class RegistrationTemplateView(BaseView):
             try:
                 value = int(form.get('service.' + token, 0))
             except ValueError:
-                value = 1
+                value = 0
             if value > 0:
                 newServices.append(svc)
                 numbers.append(value)

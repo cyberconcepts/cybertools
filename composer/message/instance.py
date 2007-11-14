@@ -42,16 +42,20 @@ class MessageInstance(Instance):
         self.manager = manager
 
     def applyTemplate(self, data=None, **kw):
-        data = DataProvider(self)
-        text = MessageTemplate(self.template.text).safe_substitute(data)
+        if data is None:
+            data = {}
+        dp = DataProvider(self, data)
+        text = MessageTemplate(self.template.text).safe_substitute(dp)
         subject = self.template.subjectLine
-        return Jeep((('subjectLine', subject), ('text', text)))
+        data.update(dict(subjectLine=subject, text=text))
+        return data
 
 
 class DataProvider(object):
 
-    def __init__(self, context):
+    def __init__(self, context, data):
         self.context = context
+        self.data = data
 
     def __getitem__(self, key):
         client = self.context.client
@@ -61,8 +65,9 @@ class DataProvider(object):
             viewName = key[2:]
             if client is None:
                 return '$' + key
+            request = self.data.get('request') or TestRequest()
             view = component.queryMultiAdapter(
-                    (client.manager, TestRequest()), name=viewName)
+                    (client.manager, request), name=viewName)
             if view is not None:
                 return view()
             else:
@@ -72,7 +77,7 @@ class DataProvider(object):
             #       (client, messageManager.messages[key]), IInstance)
             mi = MessageInstance(client, messageManager.messages[key],
                                  messageManager)
-            return mi.applyTemplate().text
+            return mi.applyTemplate()['text']
         elif '.' in key:
             if client is None:
                 return '$' + key

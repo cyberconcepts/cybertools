@@ -34,4 +34,4 @@ Rule-based Execution of Actions
   >>> client = Client()
 
   >>> manager.handleEvent(Event(checkoutEvent, client))
-  [{}]
+  [{'request': None}]

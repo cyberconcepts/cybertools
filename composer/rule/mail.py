@@ -37,7 +37,8 @@ class MailActionHandler(ActionHandler):
         client = self.context.context
         clientData = IInstance(client).applyTemplate()
         recipient = clientData['standard.email']
-        msg = self.prepareMessage(data.subjectLine, data.text, sender, recipient)
+        msg = self.prepareMessage(data['subjectLine'], data['text'],
+                                  sender, recipient)
         data['mailInfo'] = self.sendMail(msg.as_string(), sender, [recipient])
         return data
 

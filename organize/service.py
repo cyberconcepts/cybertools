@@ -39,6 +39,7 @@ from cybertools.stateful.base import StatefulAdapter
 from cybertools.stateful.definition import registerStatesDefinition
 from cybertools.stateful.definition import StatesDefinition
 from cybertools.stateful.definition import State, Transition
+from cybertools.stateful.interfaces import IStateful
 from cybertools.util.jeep import Jeep
 from cybertools.util.randomname import generateName
 from cybertools.organize.interfaces import IServiceManager
@@ -179,9 +180,11 @@ class Service(object):
         if clientName in self.registrations:
             del self.registrations[clientName]
 
-    def getNumberRegistered(self):
+    def getNumberRegistered(self, ignoreTemporary=True):
         result = 0
         for r in self.registrations.values():
+            if ignoreTemporary and IStateful(r).state == 'temporary':
+                continue
             result += r.number
         return result
 
@@ -277,7 +280,11 @@ class ClientRegistrations(object):
         for svc, n in zip(services, numbers):
             if clientName:
                 oldReg = svc.registrations.get(clientName, None)
-                oldN = oldReg and oldReg.number or 0
+                if oldReg is None or IStateful(oldReg).state == 'temporary':
+                    # availableCapacity does not consider temporary registrations
+                    oldN = 0
+                else:
+                    oldN = oldReg.number or 0
             else:
                 oldN = 0
             if svc.capacity and svc.capacity > 0 and svc.availableCapacity < n - oldN:

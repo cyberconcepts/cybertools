@@ -11,7 +11,7 @@ Message Management
 
   >>> messageText = '''Dear $person.firstname $person.lastname,
   ... You have been registered for the following $services.
-  ... $@@list_registrations
+  ... $@@list_registrations_text
   ... $footer
   ... '''
 
@@ -27,7 +27,7 @@ Message interpolation
   >>> t = MessageTemplate(messageText)
   >>> print t.safe_substitute({
   ...           'person.firstname': 'John', 'person.lastname': 'Smith',
-  ...           '@@list_registrations': '0815: Python Introduction',
+  ...           '@@list_registrations_text': '0815: Python Introduction',
   ...           'services': 'events',
   ...           'footer': 'Regards, $sender'})
   Dear John Smith,
@@ -43,9 +43,9 @@ Working with message instances
   >>> mi = MessageInstance(None, manager.messages['feedback_text'], manager)
   >>> for key, value in mi.applyTemplate().items():
   ...     print key + ':', value
-  subjectLine:
   text: Dear $person.firstname $person.lastname,
   You have been registered for the following events.
-  $@@list_registrations
+  $@@list_registrations_text
   Best regards, Jack
   <BLANKLINE>
+  subjectLine:
