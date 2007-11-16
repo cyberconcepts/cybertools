@@ -144,7 +144,7 @@ class IField(IComponent):
                 required=False,)
     required = schema.Bool(
                 title=_(u'Required'),
-                description=_(u'Must a value been entered into this field?'),
+                description=_(u'Must a value be entered into this field?'),
                 required=False,)
     width = schema.Int(
                 title=_(u'Width'),

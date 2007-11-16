@@ -349,7 +349,7 @@ class IRegistrationTemplate(Interface):
 
     categories = schema.List(
                 title=_(u'Categories'),
-                description=_(u'A list of categories that of services '
+                description=_(u'A list of categories of services '
                         'that should be shown on this template.'),
                 default=[],
                 required=False,)
