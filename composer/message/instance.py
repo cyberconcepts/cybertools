@@ -26,6 +26,12 @@ from string import Template
 from zope import component
 from zope.interface import implements
 from zope.publisher.browser import TestRequest
+try:
+    from zope.traversing.browser.absoluteurl import absoluteURL
+    zope29 = False
+except ImportError:
+    from zope.app.traversing.browser.absoluteurl import absoluteURL
+    zope29 = True
 
 from cybertools.composer.instance import Instance
 from cybertools.composer.interfaces import IInstance
@@ -44,11 +50,23 @@ class MessageInstance(Instance):
     def applyTemplate(self, data=None, **kw):
         if data is None:
             data = {}
+        request = data.get('request') or TestRequest()
+        data['url'] = self.getClientUrl(request)
         dp = DataProvider(self, data)
         text = MessageTemplate(self.template.text).safe_substitute(dp)
         subject = self.template.subjectLine
         data.update(dict(subjectLine=subject, text=text))
         return data
+
+    def getClientUrl(self, request):
+        if self.client is None:
+            return ''
+        if zope29:  # evil hack to get rid of acquisition stuff
+            parts = absoluteURL(self.client.manager, request).split('/')
+            url = '/'.join(parts[:-3])
+        else:
+            url = absoluteURL(self.client.manager, request)
+        return '%s?id=%s' % (url, self.client.__name__)
 
 
 class DataProvider(object):
@@ -59,7 +77,6 @@ class DataProvider(object):
 
     def __getitem__(self, key):
         client = self.context.client
-        #messageManager = self.context.template.getManager()
         messageManager = self.context.manager
         if key.startswith('@@'):
             if client is None:
@@ -83,8 +100,6 @@ class DataProvider(object):
                     return ''
             return value
         elif key in messageManager.messages:
-            #mi = component.getMultiAdapter(
-            #       (client, messageManager.messages[key]), IInstance)
             mi = MessageInstance(client, messageManager.messages[key],
                                  messageManager)
             return mi.applyTemplate()['text']
@@ -97,6 +112,8 @@ class DataProvider(object):
             instance.template = schema
             data = instance.applyTemplate()
             return data[fieldName]
+        elif key in self.data:
+            return self.data[key]
         else:
             raise KeyError(key)
 

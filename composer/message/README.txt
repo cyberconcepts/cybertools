@@ -43,6 +43,7 @@ Working with message instances
   >>> mi = MessageInstance(None, manager.messages['feedback_text'], manager)
   >>> for key, value in mi.applyTemplate().items():
   ...     print key + ':', value
+  url:
   text: Dear $person.firstname $person.lastname,
   You have been registered for the following events.
   $@@list_registrations_text

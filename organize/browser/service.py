@@ -66,8 +66,9 @@ class BaseView(SchemaBaseView):
         if service is None:
             service = self.context
         if service.start and service.end:
-            return ('%s - %s' %
-                (self.getFormattedDate(service.start, type='dateTime', variant='short'),
+            return ('%s-%s' %
+                (self.getFormattedDate(service.start,
+                        type='dateTime', variant='short').replace(' ', '  '),
                  self.getFormattedDate(service.end, type='time', variant='short')))
         else:
             return '-'
@@ -247,7 +248,8 @@ class CheckoutView(ServiceManagerView):
     def listRegistrationsHtml(self):
         result = []
         for info in self.getRegistrationsInfo():
-            line = self.row % (info['number'], info['service'], info['fromTo'])
+            line = self.row % (info['number'], info['service'],
+                        info['fromTo'].replace(' ', '&nbsp;&nbsp;'))
             result.append(line)
         return self.html % '\n'.join(result)
 
@@ -320,27 +322,32 @@ class ServiceView(BaseView):
         form = self.request.form
         clientName = self.getClientName()
         if not form.get('action'):
-            data = self.getClientData()
-            if ('service_registration' in data
-                    and data['service_registration'].number > 0):
-                self.showCheckoutButton = True
+            #data = self.getClientData()
+            #if ('service_registration' in data
+            #        and data['service_registration'].number > 0):
+            #    self.showCheckoutButton = True
             return True
         manager = self.context.getManager()
-        if clientName:
-            client = manager.getClients().get(clientName)
-            if client is None:
-                return True
-        else:
-            client = IClientFactory(manager)()
-            newClient = True
-            nextUrl = self.getSchemaUrl()
-        regs = self.state = IClientRegistrations(client)
         try:
             number = int(form.get('number', 0))
             if number < 0:
                 number = 0
         except ValueError:
-            number = 1
+            number = 0
+        if clientName:
+            client = manager.getClients().get(clientName)
+            if client is None:
+                self.request.response.redirect(self.getSchemaUrl())
+                return False
+        else:
+            if number == 0:
+                self.request.response.redirect(self.getSchemaUrl())
+                return False
+            else:
+                client = IClientFactory(manager)()
+                newClient = True
+                nextUrl = self.getSchemaUrl()
+        regs = self.state = IClientRegistrations(client)
         regs.validate(clientName, [self.context], [number])
         if regs.severity > 0:
             return True
@@ -351,7 +358,7 @@ class ServiceView(BaseView):
             regs.register([self.context], numbers=[number])
             self.showCheckoutButton = True
             nextUrl = self.getSchemaUrl()
-        elif 'submit_unregister' in form:
+        elif 'submit_register' in form and number == 0 or 'submit_unregister' in form:
             regs.unregister([self.context])
             number = 0
             nextUrl = self.getSchemaUrl()
