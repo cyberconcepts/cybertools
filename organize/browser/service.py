@@ -229,10 +229,10 @@ class CheckoutView(ServiceManagerView):
         return '\n'.join(result)
 
     html = '''
-        <table class="listing">
+        <table class="listing" style="width: 100%%">
           <tr>
             <th width="5%%">Teilnehmer</th>
-            <th>Veranstaltung</th>
+            <th>Angebot</th>
             <th>Datum/Uhrzeit</th>
           </tr>
           %s
