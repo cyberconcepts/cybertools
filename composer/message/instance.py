@@ -62,9 +62,9 @@ class DataProvider(object):
         #messageManager = self.context.template.getManager()
         messageManager = self.context.manager
         if key.startswith('@@'):
-            viewName = key[2:]
             if client is None:
                 return '$' + key
+            viewName = key[2:]
             request = self.data.get('request') or TestRequest()
             view = component.queryMultiAdapter(
                     (client.manager, request), name=viewName)
@@ -72,6 +72,16 @@ class DataProvider(object):
                 return view()
             else:
                 return key
+        elif '|' in key:
+            elements = key.split('|')
+            key = elements.pop(0)
+            value = self[key]
+            if len(elements) > 1:
+                if elements[0] == value:
+                    return elements[1]
+                else:
+                    return ''
+            return value
         elif key in messageManager.messages:
             #mi = component.getMultiAdapter(
             #       (client, messageManager.messages[key]), IInstance)
@@ -93,4 +103,4 @@ class DataProvider(object):
 
 class MessageTemplate(Template):
 
-    idpattern = r'@{0,2}[_a-z][_.a-z0-9]*[_a-z0-9]+'
+    idpattern = r'@{0,2}[_a-z][_.|a-z0-9]*[_a-z0-9]+'

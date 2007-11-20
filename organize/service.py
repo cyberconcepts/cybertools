@@ -390,12 +390,16 @@ class MessageManagerAdapter(MessageManager):
 def getCheckoutRule(sender):
     """ A rule for sending a confirmation message, provided by default.
     """
-    checkoutRule = Rule('checkoutmail')
+    checkoutRule = Rule('checkout')
     checkoutRule.events.append(eventTypes['service.checkout'])
-    checkoutRule.actions.append(Action('message',
-                      parameters=dict(messageName='feedback_text')))
+    #checkoutRule.actions.append(Action('message',
+    #                  parameters=dict(messageName='feedback_text')))
     checkoutRule.actions.append(Action('sendmail',
-                      parameters=dict(sender=sender)))
+                      parameters=dict(sender=sender,
+                                      messageName='feedback_text')))
+    checkoutRule.actions.append(Action('redirect',
+                      parameters=dict(viewName='message_view.html',
+                                      messageName='feedback_html')))
     return checkoutRule
 
 

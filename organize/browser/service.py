@@ -188,26 +188,68 @@ class CheckoutView(ServiceManagerView):
         # send mail
         rm = IRuleManager(self.manager)
         rm.addRule(getCheckoutRule(self.manager.senderEmail))
-        rm.handleEvent(Event(eventTypes['service.checkout'], client, self.request))
-        # find thank you message and redirect to it
-        params = '?message=thankyou&id=' + self.clientName
-        self.request.response.redirect(self.url + '/checkout.html' + params)
+        result = rm.handleEvent(Event(eventTypes['service.checkout'],
+                                      client, self.request))
+        #params = '?message=thankyou&id=' + self.clientName
+        #self.request.response.redirect(self.url + '/checkout.html' + params)
         return False
 
-    def listRegistrationsText(self):
+    def getRegistrationsInfo(self):
         client = self.getClient()
         if client is None:
-            return 'Error: no client given.'
+            return []
         result = []
         regs = IClientRegistrations(client)
         regs = sorted(regs.getRegistrations(), key=self.sortKey)
         for reg in regs:
             service = reg.service
-            line = '%-30s %27s' % (service.title, self.getFromTo(service))
-            if service.allowRegWithNumber:
-                line += ' %4i' % reg.number
+            result.append(dict(service=service.title,
+                               fromTo=self.getFromTo(service),
+                               number=reg.number,
+                               serviceObject=service))
+        return result
+
+    def listRegistrationsTextTable(self):
+        result = []
+        for info in self.getRegistrationsInfo():
+            line = '%-30s %27s' % (info['service'], info['fromTo'])
+            if info['serviceObject'].allowRegWithNumber:
+                line += ' %4i' % info['number']
             result.append(line)
         return '\n'.join(result)
+
+    def listRegistrationsText(self):
+        result = []
+        for info in self.getRegistrationsInfo():
+            line = '%s\n%s\n' % (info['service'], info['fromTo'])
+            if info['serviceObject'].allowRegWithNumber:
+                line += 'Teilnehmer: %s\n' % info['number']
+            result.append(line)
+        return '\n'.join(result)
+
+    html = '''
+        <table class="listing">
+          <tr>
+            <th width="5%%">Teilnehmer</th>
+            <th>Veranstaltung</th>
+            <th>Datum/Uhrzeit</th>
+          </tr>
+          %s
+        </table>
+    '''
+    row = '''
+          <tr>
+            <td width="5%%">%i</td>
+            <td>%s</td>
+            <td style="white-space: nowrap">%s</td>
+          </tr>
+    '''
+    def listRegistrationsHtml(self):
+        result = []
+        for info in self.getRegistrationsInfo():
+            line = self.row % (info['number'], info['service'], info['fromTo'])
+            result.append(line)
+        return self.html % '\n'.join(result)
 
 
 class ServiceView(BaseView):
@@ -308,9 +350,11 @@ class ServiceView(BaseView):
         if 'submit_register' in form and number > 0:
             regs.register([self.context], numbers=[number])
             self.showCheckoutButton = True
+            nextUrl = self.getSchemaUrl()
         elif 'submit_unregister' in form:
             regs.unregister([self.context])
             number = 0
+            nextUrl = self.getSchemaUrl()
         elif 'submit_checkout' in form:
             nextUrl = self.getSchemaUrl()
         if nextUrl:

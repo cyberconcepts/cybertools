@@ -27,6 +27,7 @@ from zope import component
 from zope.interface import implements
 
 from cybertools.composer.interfaces import IInstance
+from cybertools.composer.rule.interfaces import IActionHandler
 from cybertools.composer.rule.base import ActionHandler
 
 
@@ -37,6 +38,9 @@ class MailActionHandler(ActionHandler):
         client = self.context.context
         clientData = IInstance(client).applyTemplate()
         recipient = clientData['standard.email']
+        if 'messageName' in params:
+            mh = component.getAdapter(self.context, IActionHandler, name='message')
+            data = mh(data, params)
         msg = self.prepareMessage(data['subjectLine'], data['text'],
                                   sender, recipient)
         data['mailInfo'] = self.sendMail(msg.as_string(), sender, [recipient])
