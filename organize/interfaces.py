@@ -237,7 +237,7 @@ class IService(Interface):
                         'waiting list.'),
                 required=False,)
     location = schema.TextLine(
-                title=_(u'Location Information'),
+                title=_(u'Location information'),
                 description=_(u'Basic location information or '
                         'start point for transport services.'),
                 required=False,)
@@ -247,7 +247,7 @@ class IService(Interface):
                         'about the location.'),
                 required=False,)
     location2 = schema.TextLine(
-                title=_(u'Location Information (2)'),
+                title=_(u'Location information (2)'),
                 description=_(u'Additional location information or '
                         'end point for transport services.'),
                 required=False,)
@@ -260,6 +260,11 @@ class IService(Interface):
                 title=_(u'Web address'),
                 description=_(u'Web address (URL) for more information '
                         'about the service.'),
+                required=False,)
+    infoUrl = schema.TextLine(
+                title=_(u'Additional information'),
+                description=_(u'Web address (URL) of a document that '
+                        'offers additional information.'),
                 required=False,)
 
     availableCapacity = Attribute('Available capacity, i.e. number of seats '

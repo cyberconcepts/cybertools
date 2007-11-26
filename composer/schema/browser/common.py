@@ -124,6 +124,13 @@ class BaseView(object):
             submit=getCheckoutView,
     )
 
+    def getButtonAction(self):
+        form = self.request.form
+        for bn in self.buttonActions:
+            if bn in form:
+                return bn
+        return None
+
     @Lazy
     def nextUrl(self):
         return self.getNextUrl()
@@ -132,11 +139,9 @@ class BaseView(object):
         #viewName = 'thankyou.html'
         viewName = ''
         url = ''
-        form = self.request.form
-        for bn in self.buttonActions:
-            if bn in form:
-                url = self.buttonActions[bn](self)
-                break
+        bn = self.getButtonAction()
+        if bn:
+            url = self.buttonActions[bn](self)
         return '%s?id=%s' % (url, self.clientName)
         #return '%s/%s?id=%s' % (self.url, viewName, self.clientName)
 

@@ -206,6 +206,7 @@ class CheckoutView(ServiceManagerView):
             service = reg.service
             result.append(dict(service=service.title,
                                fromTo=self.getFromTo(service),
+                               location=service.location,
                                number=reg.number,
                                serviceObject=service))
         return result
@@ -222,9 +223,9 @@ class CheckoutView(ServiceManagerView):
     def listRegistrationsText(self):
         result = []
         for info in self.getRegistrationsInfo():
-            line = '%s\n%s\n' % (info['service'], info['fromTo'])
+            line = '\n'.join((info['service'], info['fromTo'], info['location']))
             if info['serviceObject'].allowRegWithNumber:
-                line += 'Teilnehmer: %s\n' % info['number']
+                line += '\nTeilnehmer: %s\n' % info['number']
             result.append(line)
         return '\n'.join(result)
 
@@ -234,6 +235,7 @@ class CheckoutView(ServiceManagerView):
             <th width="5%%">Teilnehmer</th>
             <th>Angebot</th>
             <th>Datum/Uhrzeit</th>
+            <th>Ort</th>
           </tr>
           %s
         </table>
@@ -243,13 +245,15 @@ class CheckoutView(ServiceManagerView):
             <td width="5%%">%i</td>
             <td>%s</td>
             <td style="white-space: nowrap">%s</td>
+            <td>%s</td>
           </tr>
     '''
     def listRegistrationsHtml(self):
         result = []
         for info in self.getRegistrationsInfo():
             line = self.row % (info['number'], info['service'],
-                        info['fromTo'].replace(' ', '&nbsp;&nbsp;'))
+                        info['fromTo'].replace(' ', '&nbsp;&nbsp;'),
+                        info['location'])
             result.append(line)
         return self.html % '\n'.join(result)
 

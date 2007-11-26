@@ -89,8 +89,10 @@ class SchemaView(BaseView):
             newClient = True
         instance = component.getAdapter(client, IInstance, name='editor')
         instance.template = self.context
-        self.formState = formState = instance.applyTemplate(form)
-        if formState.severity > 0:
+        ignoreValidation = (self.getButtonAction() == 'submit_previous')
+        self.formState = formState = instance.applyTemplate(form,
+                                            ignoreValidation=ignoreValidation)
+        if formState.severity > 0 and not ignoreValidation:
             # show form again; do not add client to manager
             return True
         if newClient:

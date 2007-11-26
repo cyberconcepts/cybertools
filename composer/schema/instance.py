@@ -69,12 +69,13 @@ class Editor(BaseInstance):
 
     def applyTemplate(self, data={}, *args, **kw):
         fieldHandlers = kw.get('fieldHandlers', {})
+        ignoreValidation = kw.get('ignoreValidation', False)
         template = self.template
         context = self.context
         formState = self.validate(data)
         if template is None:
             return formState
-        if formState.severity > 0:
+        if formState.severity > 0 and not ignoreValidation:
             # don't do anything if there is an error
             return formState
         for f in template.components:
@@ -169,8 +170,9 @@ class ClientInstanceEditor(ClientInstance):
         template = self.template
         if template is None:
             return FormState()
+        ignoreValidation = kw.get('ignoreValidation', False)
         formState = self.validate(data)
-        if formState.severity > 0:
+        if formState.severity > 0 and not ignoreValidation:
             # don't do anything if there is an error
             return formState
         attrs = getattr(self.context, self.attrsName, None)
@@ -185,6 +187,8 @@ class ClientInstanceEditor(ClientInstance):
                 continue
             if name in data:
                 fi = formState.fieldInstances[name]
+                if fi.severity > 0:  # never store faulty field input
+                    continue
                 value = fi.unmarshall(data.get(name))
                 oldValue = values.get(name)
                 if value != oldValue:

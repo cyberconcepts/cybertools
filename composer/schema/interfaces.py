@@ -91,6 +91,7 @@ fieldTypes = SimpleVocabulary((
               instanceName='fileupload'),
     #FieldType('checkbox', 'checkbox', u'Checkbox'),
     FieldType('dropdown', 'dropdown', u'Drop-down selection'),
+    #FieldType('listbox', 'listbox', u'List box (multiple selection)'),
     FieldType('calculated', 'display', u'Calculated Value',
               instanceName='calculated'),
     FieldType('spacer', 'spacer', u'Spacer',
