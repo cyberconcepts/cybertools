@@ -61,9 +61,9 @@ class MessageInstance(Instance):
     def getClientUrl(self, request):
         if self.client is None:
             return ''
-        if zope29:  # evil hack to get rid of acquisition stuff
-            parts = absoluteURL(self.client.manager, request).split('/')
-            url = '/'.join(parts[:-3])
+        if zope29:
+            path = self.client.manager.getPhysicalPath()
+            url = request.physicalPathToURL(path)
         else:
             url = absoluteURL(self.client.manager, request)
         return '%s?id=%s' % (url, self.client.__name__)
