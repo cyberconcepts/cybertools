@@ -207,6 +207,7 @@ class CheckoutView(ServiceManagerView):
             result.append(dict(service=service.title,
                                fromTo=self.getFromTo(service),
                                location=service.location,
+                               locationUrl=service.locationUrl,
                                number=reg.number,
                                serviceObject=service))
         return result
@@ -223,7 +224,12 @@ class CheckoutView(ServiceManagerView):
     def listRegistrationsText(self):
         result = []
         for info in self.getRegistrationsInfo():
-            line = '\n'.join((info['service'], info['fromTo'], info['location']))
+            location, locationUrl = info['location'], info['locationUrl']
+            if locationUrl.startswith('/'):
+                locationUrl = self.request.get('SERVER_URL') + locationUrl
+            locationInfo = (locationUrl and '%s (%s)' % (location, locationUrl)
+                                        or location)
+            line = '\n'.join((info['service'], info['fromTo'], locationInfo))
             if info['serviceObject'].allowRegWithNumber:
                 line += '\nTeilnehmer: %s\n' % info['number']
             result.append(line)
@@ -251,9 +257,13 @@ class CheckoutView(ServiceManagerView):
     def listRegistrationsHtml(self):
         result = []
         for info in self.getRegistrationsInfo():
+            location, locationUrl = info['location'], info['locationUrl']
+            locationInfo = (locationUrl
+                        and ('<a href="%s">%s</a>'  % (locationUrl, location))
+                        or location)
             line = self.row % (info['number'], info['service'],
-                        info['fromTo'].replace(' ', '&nbsp;&nbsp;'),
-                        info['location'])
+                               info['fromTo'].replace(' ', '&nbsp;&nbsp;'),
+                               locationInfo)
             result.append(line)
         return self.html % '\n'.join(result)
 

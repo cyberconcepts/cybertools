@@ -261,9 +261,14 @@ class IService(Interface):
                 description=_(u'Web address (URL) for more information '
                         'about the service.'),
                 required=False,)
-    infoUrl = schema.TextLine(
+    info = schema.TextLine(
                 title=_(u'Additional information'),
-                description=_(u'Web address (URL) of a document that '
+                description=_(u'Name/title of a document or web page that '
+                        'offers additional information.'),
+                required=False,)
+    infoUrl = schema.TextLine(
+                title=_(u'URL for additional information'),
+                description=_(u'Web address (URL) of a document or web page that '
                         'offers additional information.'),
                 required=False,)
 

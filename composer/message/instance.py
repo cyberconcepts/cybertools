@@ -62,7 +62,7 @@ class MessageInstance(Instance):
         if self.client is None:
             return ''
         if zope29:
-            path = self.client.manager.getPhysicalPath()
+            path = self.client.manager.getPhysicalPath()[:-3]
             url = request.physicalPathToURL(path)
         else:
             url = absoluteURL(self.client.manager, request)
