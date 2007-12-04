@@ -170,6 +170,7 @@ class Service(object):
             reg = self.registrations[clientName]
             if number != reg.number:
                 reg.number = number
+                # TODO: set timeStamp
             return reg
         reg = self.registrationFactory(client, self, number)
         self.registrations[clientName] = reg

@@ -51,6 +51,7 @@ class MessageInstance(Instance):
         if data is None:
             data = {}
         request = data.get('request') or TestRequest()
+        # if 'url' not in data:
         data['url'] = self.getClientUrl(request)
         dp = DataProvider(self, data)
         text = MessageTemplate(self.template.text).safe_substitute(dp)
@@ -103,6 +104,8 @@ class DataProvider(object):
             mi = MessageInstance(client, messageManager.messages[key],
                                  messageManager)
             return mi.applyTemplate()['text']
+            # TODO: use available data, esp request
+            #return mi.applyTemplate(self.data)['text']
         elif '.' in key:
             if client is None:
                 return '$' + key

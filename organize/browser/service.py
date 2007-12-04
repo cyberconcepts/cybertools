@@ -323,6 +323,8 @@ class ServiceView(BaseView):
 
     @Lazy
     def registeredTotalSubmitted(self):
+        # TODO: clean-up temporary registrations
+        # return self.context.getNumberRegistered()
         total = 0
         for reg in self.getRegistrations().values():
             state = IStateful(reg).getStateObject()
