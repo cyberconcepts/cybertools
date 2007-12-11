@@ -26,7 +26,7 @@
         />
 
   <page name="controller"
-        for="zope.app.publisher.interfaces.browser.IBrowserView"
+        for="zope.publisher.interfaces.browser.IBrowserView"
         class="cybertools.browser.controller.Controller"
         permission="zope.Public"
         />

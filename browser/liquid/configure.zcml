@@ -6,8 +6,8 @@
    i18n_domain="zope"
    >
 
-  <layer name="liquid"
-         interface="cybertools.browser.liquid.liquid" />
+  <!--<layer name="liquid"
+         interface="cybertools.browser.liquid.liquid" />-->
 
   <!--<skin name="Liquid"
         layers="liquid rotterdam default" />-->
@@ -21,27 +21,27 @@
   <page for="*"
         name="skin_macros" template="view_macros.pt"
         permission="zope.View"
-        layer="cybertools.browser.liquid.liquid" />
+        layer="cybertools.browser.liquid.Liquid" />
 
   <page for="*"
         name="base_macros" template="view_macros.pt"
         permission="zope.View"
-        layer="cybertools.browser.liquid.liquid" />
+        layer="cybertools.browser.liquid.Liquid" />
 
   <page name="controller"
-        for="zope.app.publisher.interfaces.browser.IBrowserView"
+        for="zope.publisher.interfaces.browser.IBrowserView"
         class="cybertools.browser.liquid.controller.Controller"
         permission="zope.Public"
-        layer="cybertools.browser.liquid.liquid"
+        layer="cybertools.browser.liquid.Liquid"
         />
 
   <resource name="zope3_tablelayout.css" file="zope3_tablelayout.css"
-        layer="cybertools.browser.liquid.liquid" />
+        layer="cybertools.browser.liquid.Liquid" />
   <resource name="base.css"   file="base.css"
-        layer="cybertools.browser.liquid.liquid" />
+        layer="cybertools.browser.liquid.Liquid" />
   <resource name="print.css"  file="print.css"
-        layer="cybertools.browser.liquid.liquid" />
+        layer="cybertools.browser.liquid.Liquid" />
   <resource name="custom.css" file="custom.css"
-        layer="cybertools.browser.liquid.liquid" />
+        layer="cybertools.browser.liquid.Liquid" />
 
 </configure>

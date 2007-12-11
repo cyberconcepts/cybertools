@@ -55,12 +55,12 @@
         />
 
   <!-- browser settings -->
-        
-  <browser:tool
+
+  <!--<browser:tool
       interface=".interfaces.IRelationRegistry"
       title="Relation Registry"
       description="Registry for relation objects."
-      />
+      />-->
 
   <browser:addMenuItem
       title="Relation Registry"
