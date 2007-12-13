@@ -29,6 +29,13 @@
 </metal:js>
 
 
+<metal:portlet define-macro="multi_actions">
+    <tal:sub repeat="macro macro/subMacros">
+      <metal:sub use-macro="macro" />
+    </tal:sub>
+</metal:portlet>
+
+
 <metal:portlet define-macro="portlet_left">
     <div metal:use-macro="macro/template/macros/portlet" />
 </metal:portlet>
