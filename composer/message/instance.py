@@ -31,6 +31,7 @@ try:
     zope29 = False
 except ImportError:
     from zope.app.traversing.browser.absoluteurl import absoluteURL
+    from Acquisition import aq_parent, aq_inner
     zope29 = True
 
 from cybertools.composer.instance import Instance
@@ -51,8 +52,8 @@ class MessageInstance(Instance):
         if data is None:
             data = {}
         request = data.get('request') or TestRequest()
-        # if 'url' not in data:
-        data['url'] = self.getClientUrl(request)
+        if 'url' not in data:
+            data['url'] = self.getClientUrl(request)
         dp = DataProvider(self, data)
         text = MessageTemplate(self.template.text).safe_substitute(dp)
         subject = self.template.subjectLine
@@ -63,7 +64,12 @@ class MessageInstance(Instance):
         if self.client is None:
             return ''
         if zope29:
-            path = self.client.manager.getPhysicalPath()[:-3]
+            #path = aq_inner(self.client.manager).getPhysicalPath()
+            path = self.client.manager.getPhysicalPath()
+            if len(path) >= 3 and path[-3] == 'sm_clients':
+                print '*** path correction:', path
+                # evil hack for aqcuisition-wrapped manager object
+                path = path[:-3]
             url = request.physicalPathToURL(path)
         else:
             url = absoluteURL(self.client.manager, request)
@@ -103,9 +109,7 @@ class DataProvider(object):
         elif key in messageManager.messages:
             mi = MessageInstance(client, messageManager.messages[key],
                                  messageManager)
-            return mi.applyTemplate()['text']
-            # TODO: use available data, esp request
-            #return mi.applyTemplate(self.data)['text']
+            return mi.applyTemplate(self.data)['text']
         elif '.' in key:
             if client is None:
                 return '$' + key
