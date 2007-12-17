@@ -91,5 +91,5 @@ formErrors = dict(
     invalid_number=FormError(u'Invalid number',
         u'Please enter a number, only digits allowed.'),
     invalid_email_address=FormError(u'Invalid E-Mail Address',
-        u'Please enter a correct email address.'),
+        u'Please enter a valid email address.'),
 )
