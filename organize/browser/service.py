@@ -276,6 +276,13 @@ class ServiceView(BaseView):
     def getRegistrations(self):
         return self.context.registrations
 
+    def listRegistrations(self):
+        if self.request.get('with_temporary'):
+            return self.getRegistrations()
+        regs = self.getRegistrations()
+        return (name for name, reg in regs.items()
+                  if IStateful(reg).getState() != 'temporary')
+
     def getRegistrationTemplate(self):
         context = self.context
         man = context.getManager()

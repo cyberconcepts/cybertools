@@ -93,8 +93,9 @@ Using a more specialized schema factory
   lastName Last name textline
   age Age number
 
+
 Access and update a context object using a schema-based form
-------------------------------------------------------------
+============================================================
 
   >>> from zope.publisher.browser import TestRequest
   >>> from cybertools.composer.schema.browser.form import Form

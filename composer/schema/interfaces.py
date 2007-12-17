@@ -87,6 +87,8 @@ fieldTypes = SimpleVocabulary((
     FieldType('number', 'number', u'Number',
               inputRenderer='input_textline', instanceName='number'),
     FieldType('date', 'date', u'Date'),
+    FieldType('email', 'email', u'E-Mail Address',
+              inputRenderer='input_textline', instanceName='email'),
     FieldType('fileupload', 'fileupload', u'File upload',
               instanceName='fileupload'),
     #FieldType('checkbox', 'checkbox', u'Checkbox'),

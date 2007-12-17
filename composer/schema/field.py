@@ -170,6 +170,13 @@ class FileUploadFieldInstance(FieldInstance):
         return value
 
 
+class EmailFieldInstance(FieldInstance):
+
+    def validate(self, value, data=None):
+        if value and '@' not in value:
+            self.setError('invalid_email_address')
+
+
 class CalculatedFieldInstance(FieldInstance):
 
     def marshall(self, value):
