@@ -1,0 +1,15 @@
+/*
+ $Id$
+
+*/
+
+body {
+    min-width: 200px;
+}
+
+#content {
+    width: 550px;
+}
+
+#menu {width: 50px}
+#sub-section {width: 50px}

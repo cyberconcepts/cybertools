@@ -39,6 +39,8 @@
         layer="cybertools.browser.liquid.Liquid" />
   <resource name="base.css"   file="base.css"
         layer="cybertools.browser.liquid.Liquid" />
+  <resource name="popup.css"   file="popup.css"
+        layer="cybertools.browser.liquid.Liquid" />
   <resource name="print.css"  file="print.css"
         layer="cybertools.browser.liquid.Liquid" />
   <resource name="custom.css" file="custom.css"

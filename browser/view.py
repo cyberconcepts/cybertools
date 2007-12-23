@@ -30,6 +30,7 @@ from zope.app.pagetemplate import ViewPageTemplateFile
 
 
 mainTemplate = ViewPageTemplateFile('main.pt')
+popupTemplate = ViewPageTemplateFile('liquid/popup.pt')
 
 
 class UnboundTemplateFile(ViewPageTemplateFile):

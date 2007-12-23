@@ -55,8 +55,8 @@
           <tal:field>
             <td style="padding: 4px; border-top: none"
                 tal:attributes="title field/description">
-              <b tal:content="field/title">...</b>
-              <span tal:condition="field/required">*</span>
+              <b tal:content="field/title">...</b><span
+                    tal:condition="field/required">&nbsp;*</span>
             </td>
             <td class="field" style="border-top: none">
               <metal:input use-macro="python:
