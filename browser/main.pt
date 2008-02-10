@@ -32,7 +32,8 @@
     <base href="." tal:attributes="href request/URL">
   </head>
 
-  <body tal:content="structure body" />
+  <body class="tundra"
+        tal:content="structure body" />
 
 </html>
 </metal:block>

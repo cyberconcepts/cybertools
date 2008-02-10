@@ -52,8 +52,8 @@ class Instance(BaseInstance):
                     continue
                 fi = f.getFieldInstance(self)
                 name = f.name
-                value = getattr(self.context, name, f.defaultValue)
-                #value = getattr(self.context, name, u'')
+                #value = getattr(self.context, name, f.defaultValue)
+                value = getattr(self.context, name) or fi.default
                 value = (mode == 'view' and fi.display(value)) or fi.marshall(value)
                 result[name] = value
         return result
@@ -103,7 +103,7 @@ class Editor(BaseInstance):
         for f in self.template.components:
             if f.readonly:
                 continue
-            fi = f.getFieldInstance()
+            fi = f.getFieldInstance(self)
             value = data.get(f.name)
             fi.validate(value, data)
             formState.fieldInstances.append(fi)

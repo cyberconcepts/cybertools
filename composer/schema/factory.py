@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -42,10 +42,12 @@ class SchemaFactory(object):
 
     fieldMapping = {
             schema.TextLine: ('textline',),
+            schema.ASCIILine: ('textline',),
             schema.Password: ('password',),
-            schema.ASCII: ('textline',),
             schema.Text: ('textarea',),
+            schema.ASCII: ('textarea',),
             schema.Date: ('date',),
+            schema.Datetime: ('date',),
             schema.Int: ('number',),
             schema.Bool: ('checkbox',),
             schema.Choice: ('dropdown',),
@@ -68,7 +70,7 @@ class SchemaFactory(object):
                         fieldType=info[0],
                         required=field.required,
                         default=field.default,
-                        #default_method=getattr(field, 'default_method', None),
+                        default_method=getattr(field, 'default_method', None),
                         vocabulary=voc,
                         title=field.title,
                         description=field.description,

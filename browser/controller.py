@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@ from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 
 from cybertools.browser.configurator import IViewConfigurator, IMacroViewProperty
+from cybertools.browser.member import IMemberInfoProvider
+from cybertools.util.jeep import Jeep
 
 
 # layout controller: collects information about head elements, skins, portlets, etc
@@ -54,15 +56,11 @@ class Controller(object):
         return self.request.URL[0] + skinSetter + '/@@/'
 
     def configure(self):
-        #configurator = component.queryMultiAdapter((self.context, self.request),
-        #                                           IViewConfigurator)
-        # idea: collect multiple configurators:
+        # collect multiple configurators:
         configurators = component.getAdapters((self.context, self.request),
                                               IViewConfigurator)
         for conf in configurators:
             configurator = conf[1]
-        #if configurator is not None:
-            #for item in configurator.viewProperties:
             for item in configurator.getActiveViewProperties():
                 if IMacroViewProperty.providedBy(item):
                     self.macros.register(item.slot, item.idenitifier,
@@ -70,6 +68,12 @@ class Controller(object):
                                          **item.params)
                 else:
                     setattr(self, item.slot, item)
+
+    @Lazy
+    def memberInfo(self):
+        provider = component.queryMultiAdapter((self.context, self.request),
+                                          IMemberInfoProvider)
+        return provider is not None and provider.data or None
 
 
 class Macros(dict):
@@ -81,7 +85,7 @@ class Macros(dict):
         self.identifiers = set()
 
     def register(self, slot, identifier=None, template=None, name=None,
-                 position=None, **kw):
+                 priority=50, **kw):
         if identifier:
             # make sure a certain resource is only registered once
             if identifier in self.identifiers:
@@ -91,22 +95,20 @@ class Macros(dict):
             template = self.standardTemplate
         if name is None:
             name = slot
-        macro = Macro(template, name, **kw)
+        macro = Macro(template, name, priority, **kw)
         entry = self.setdefault(slot, [])
-        if position is None:
-            entry.append(macro)
-        else:
-            entry.insert(position, macro)
+        entry.append(macro)
 
     def __getitem__(self, key):
-        return self.get(key, [])
+        return list(sorted(self.get(key, []), key=lambda x: x.priority))
 
 
 class Macro(object):
 
-    def __init__(self, template, name, **kw):
+    def __init__(self, template, name, priority, **kw):
         self.template = template
         self.name = name
+        self.priority = priority
         for k in kw:
             setattr(self, k, kw[k])
 

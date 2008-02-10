@@ -28,19 +28,26 @@ from cybertools.browser.controller import Controller as BaseController
 class Controller(BaseController):
 
     def __init__(self, context, request):
+        self.view = view = context         # the controller is adapted to a view
+        self.context = context.context
+        self.request = request
         self.setupCss()
         self.setupJs()
         super(Controller, self).__init__(context, request)
 
     def setupCss(self):
         macros = self.macros
-        params = [('zope3_tablelayout.css', 'all'),
-                  ('base.css', 'screen'),
-                  ('print.css', 'print'),
-                  ('custom.css', 'all')]
+        presentationMode = self.request.get('liquid.viewmode') == 'presentation'
+        params = [('zope3_tablelayout.css', 'all', 20),
+                  ('base.css', 'screen', 25),
+                  ('print.css', 'print', 30),
+                  ('custom.css', 'all', 100)]
+        if presentationMode:
+            params.append(('presentation.css', 'all', 30))
         for param in params:
             macros.register('css', identifier=param[0],
-                            resourceName=param[0], media=param[1])
+                            resourceName=param[0], media=param[1],
+                            priority=param[2])
 
     def setupJs(self):
         return

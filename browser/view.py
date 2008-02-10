@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -58,14 +58,19 @@ class GenericView(object):
         # make the (one and only controller) available via the request
         viewAnnotations = self.request.annotations.setdefault('cybertools.browser', {})
         viewAnnotations['controller'] = controller
-        if getattr(controller, 'skinName', None) and controller.skinName.value:
-            self.setSkin(controller.skinName.value)
+        #if getattr(controller, 'skinName', None) and controller.skinName.value:
+        #    self.setSkin(controller.skinName.value)
         controller.skin = self.skin
         # this is the place to register special macros with the controller:
         self.setupController()
     def getController(self):
         viewAnnotations = self.request.annotations.setdefault('cybertools.browser', {})
-        return viewAnnotations.get('controller', None)
+        cont = viewAnnotations.get('controller', None)
+        if cont is None:
+            cont = component.queryMultiAdapter((self, self.request), name='controller')
+            if cont is not None:
+                self.setController(cont)
+        return cont
     controller = property(getController, setController)
 
     def __init__(self, context, request):
@@ -118,5 +123,4 @@ class GenericView(object):
             if skin:
                 applySkin(self.request, skin)
         self.skin = skin
-
 

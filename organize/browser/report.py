@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -24,13 +24,17 @@ $Id$
 
 import csv
 from cStringIO import StringIO
+import itertools
 from zope import component
 from zope.cachedescriptors.property import Lazy
 from cybertools.composer.interfaces import IInstance
+from cybertools.composer.schema.interfaces import ISchema
 from cybertools.stateful.interfaces import IStateful
 
 
 class RegistrationsExportCsv(object):
+
+    encoding = 'ISO8859-15'
 
     def __init__(self, context, request):
         self.context = context
@@ -55,32 +59,75 @@ class RegistrationsExportCsv(object):
                 state = IStateful(reg).getStateObject()
                 if state.name == 'temporary' and not withTemporary:
                     continue
-                yield [encode(service.title) or service.name,
+                yield [self.encode(service.title) or service.name,
                        clientName,
-                       encode(data.get('standard.organization', '')),
-                       encode(data.get('standard.lastName', '')),
-                       encode(data.get('standard.firstName', '')),
-                       encode(data.get('standard.email', '')),
+                       self.encode(data.get('standard.organization', '')),
+                       self.encode(data.get('standard.lastName', '')),
+                       self.encode(data.get('standard.firstName', '')),
+                       self.encode(data.get('standard.email', '')),
                        reg.number,
                        state.title
                 ]
 
+    def getAllDataInColumns(self):
+        """ Yield all data available, with a column for each service and
+            columns for all data fields of all data templates.
+        """
+        withTemporary = self.request.get('with_temporary')
+        context = self.context
+        services = context.getServices()
+        schemas = [s for s in context.getClientSchemas() if ISchema.providedBy(s)]
+        yield (['Client ID']
+             + list(itertools.chain(*[[self.encode(f.title)
+                                            for f in s.fields]
+                                                    for s in schemas]))
+             + [self.encode(s.title) for s in services])
+        clients = context.getClients()
+        for name, client in clients.items():
+            hasRegs = False
+            regs = []
+            for service in services:
+                reg = service.registrations.get(name)
+                if reg is None:
+                    regs.append(0)
+                else:
+                    state = IStateful(reg).getStateObject()
+                    if state.name == 'temporary' and not withTemporary:
+                        regs.append(0)
+                    else:
+                        number = reg.number
+                        regs.append(reg.number)
+                        if number:
+                            hasRegs = True
+            if not hasRegs:
+                continue
+            result = [name]
+            for schema in schemas:
+                instance = IInstance(client)
+                instance.template = schema
+                data = instance.applyTemplate()
+                for f in schema.fields:
+                    result.append(self.encode(data.get(f.name, '')))
+            result += regs
+            yield result
+
     def render(self):
+        methodName = self.request.get('get_data_method', 'getAllDataInColumns')
+        method = getattr(self, methodName, self.getData)
         output = StringIO()
-        csv.writer(output).writerows(self.getData())
+        csv.writer(output, dialect='excel', delimiter=';').writerows(method())
         result = output.getvalue()
         self.setHeaders(len(result))
         return result
 
     def render2(self):
         # using cybertools.reporter.resultset
-        rs = self.getData()     # returns a ResultSet
+        rs = self.getData()     # should return a ResultSet
         result = rs.asCsv()
         self.setHeaders(len(result))
         return result
 
-
-def encode(text, encoding='UTF-8'):
-    if type(text) is unicode:
-        text = text.encode(encoding)
-    return text
+    def encode(self, text):
+        if type(text) is unicode:
+            text = text.encode(self.encoding)
+        return text

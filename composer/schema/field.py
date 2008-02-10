@@ -22,9 +22,13 @@ Schema fields and related classes.
 $Id$
 """
 
+from datetime import datetime
+from time import strptime, strftime
 from zope.interface import implements
 from zope.component import adapts
 from zope import component
+from zope.i18n.format import DateTimeParseError
+from zope.i18n.locales import locales
 
 from cybertools.composer.base import Component
 from cybertools.composer.schema.interfaces import IField, IFieldInstance
@@ -44,6 +48,7 @@ class Field(Component):
     vocabulary = None
     renderFactory = None
     default = None
+    default_method = None
 
     def __init__(self, name, title=None, fieldType='textline', **kw):
         assert name
@@ -60,8 +65,8 @@ class Field(Component):
         return self.__name__
 
     def getDefaultValue(self):
-        if callable(self.default):
-            return self.default()
+        if callable(self.default_method):
+            return self.default_method()
         return self.default
     def setDefaultValue(self, value):
         self.default = value
@@ -78,6 +83,10 @@ class Field(Component):
     @property
     def storeData(self):
         return not self.nostore and self.getFieldTypeInfo().storeData
+
+    @property
+    def required_js(self):
+        return self.required and 'true' or 'false'
 
     def getTitleValue(self):
         return self.title or self.name
@@ -105,12 +114,23 @@ class FieldInstance(object):
     implements(IFieldInstance)
     adapts(IField)
 
+    clientInstance = None
+
     def __init__(self, context):
         self.context = context
         self.name = self.__name__ = context.name
         self.errors = []
         self.severity = 0
         self.change = None
+
+    @property
+    def default(self):
+        dm = self.context.default_method
+        if dm and isinstance(dm, str) and self.clientInstance:
+            method = getattr(self.clientInstance.context, dm, None)
+            if method:
+                return method()
+        return self.context.defaultValue
 
     def marshall(self, value):
         return value or u''
@@ -156,9 +176,45 @@ class NumberFieldInstance(FieldInstance):
                 self.setError('required_missing')
         else:
             try:
-                int(value)
+                self.unmarshall(value)
             except (TypeError, ValueError):
                 self.setError('invalid_number')
+
+
+class DateFieldInstance(NumberFieldInstance):
+
+    def marshall(self, value):
+        if value is None:
+            return ''
+        return strftime('%Y-%m-%dT%H:%M', value.timetuple())
+
+    def display(self, value):
+        if value is None:
+            return ''
+        view = self.clientInstance.view
+        langInfo = view and view.languageInfo or None
+        if langInfo:
+            locale = locales.getLocale(langInfo.language)
+            fmt = locale.dates.getFormatter('dateTime', 'short')
+            return fmt.format(value)
+        return str(value)
+
+    def unmarshall(self, value):
+        if not value:
+            return None
+        value = ''.join(value)
+        return datetime(*(strptime(value, '%Y-%m-%dT%H:%M:%S')[:6]))
+
+    def validate(self, value, data=None):
+        if value in ('', None):
+            if self.context.required:
+                self.setError('required_missing')
+        else:
+            try:
+                self.unmarshall(value)
+            except (TypeError, ValueError, DateTimeParseError), e:
+                print '*** invalid_datetime:', value, e
+                self.setError('invalid_datetime')
 
 
 class FileUploadFieldInstance(FieldInstance):
@@ -175,6 +231,19 @@ class EmailFieldInstance(FieldInstance):
     def validate(self, value, data=None):
         if value and '@' not in value:
             self.setError('invalid_email_address')
+
+
+class BooleanFieldInstance(FieldInstance):
+
+    def marshall(self, value):
+        return value
+
+    def display(self, value):
+        #return value and _(u'Yes') or _(u'No')
+        return value and u'X' or u'-'
+
+    def unmarshall(self, value):
+        return bool(value)
 
 
 class CalculatedFieldInstance(FieldInstance):

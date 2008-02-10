@@ -204,10 +204,10 @@ class CheckoutView(ServiceManagerView):
         regs = sorted(regs.getRegistrations(), key=self.sortKey)
         for reg in regs:
             service = reg.service
-            result.append(dict(service=service.title,
+            result.append(dict(service=service.title or '???',
                                fromTo=self.getFromTo(service),
-                               location=service.location,
-                               locationUrl=service.locationUrl,
+                               location=service.location or '',
+                               locationUrl=service.locationUrl or '',
                                number=reg.number,
                                serviceObject=service))
         return result
@@ -225,7 +225,7 @@ class CheckoutView(ServiceManagerView):
         result = []
         for info in self.getRegistrationsInfo():
             location, locationUrl = info['location'], info['locationUrl']
-            if locationUrl.startswith('/'):
+            if locationUrl and locationUrl.startswith('/'):
                 locationUrl = self.request.get('SERVER_URL') + locationUrl
             locationInfo = (locationUrl and '%s (%s)' % (location, locationUrl)
                                         or location)

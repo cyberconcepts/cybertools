@@ -45,4 +45,5 @@ class PptTransform(base.BaseFileTransform):
         else:
             html = self.execute('ppthtml "%s" 2> /dev/null' % filename)
         data = htmlToText(html)
-        return data.decode('ISO8859-15')
+        return data
+        #return data.decode('ISO8859-15')

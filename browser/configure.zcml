@@ -6,6 +6,8 @@
    i18n_domain="zope"
    >
 
+  <resourceDirectory name="cybertools.icons" directory="icons" />
+
   <page for="*"
         name="main.html"
         template="main.pt"
@@ -25,9 +27,15 @@
         permission="zope.Public"
         />
 
-  <page name="controller"
+  <!--<page name="controller"
         for="zope.publisher.interfaces.browser.IBrowserView"
         class="cybertools.browser.controller.Controller"
+        permission="zope.Public"
+        />-->
+
+  <zope:adapter
+        for="* zope.publisher.interfaces.browser.IBrowserRequest"
+        factory="cybertools.browser.member.MemberInfoProvider"
         permission="zope.Public"
         />
 

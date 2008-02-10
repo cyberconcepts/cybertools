@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,12 +22,11 @@ A view configurator provides configuration data for a view controller.
 $Id$
 """
 
-from zope.app import zapi
+from zope import component
 from zope.annotation.interfaces import IAttributeAnnotatable, IAnnotations
 from zope.annotation.attribute import AttributeAnnotations
 from zope.cachedescriptors.property import Lazy
 from zope.interface import Interface, Attribute, implements
-from zope.component import adapts
 
 
 # interfaces
@@ -64,14 +63,27 @@ class IMacroViewProperty(IViewProperty):
 
 #default implementations
 
-ANNOTATION_KEY = 'cybertools.browser.configurator.ViewConfigurator'
-
 class ViewConfigurator(object):
-    """ Simple/basic default adapter using attribute annotations as storage
-        for view properties.
+    """ An base class for adapters that allow the registration of view properties.
     """
 
     implements(IViewConfigurator)
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+        self.viewProperties = []
+
+    def getActiveViewProperties(self):
+        return self.viewProperties
+
+
+ANNOTATION_KEY = 'cybertools.browser.configurator.ViewConfigurator'
+
+class AnnotationViewConfigurator(ViewConfigurator):
+    """ Simple adapter using attribute annotations as storage
+        for view properties.
+    """
 
     def __init__(self, context, request):
         self.context = context
@@ -83,38 +95,18 @@ class ViewConfigurator(object):
         propDefs = ann.get(ANNOTATION_KEY, {})
         return [self.setupViewProperty(prop, propDef)
                     for prop, propDef in propDefs.items() if propDef]
-        # idea: include properties from GlobalViewConfigurator;
-        # there also may be other view configurators e.g. based on
-        # the class (or some sort of type) of the context object.
-        # Also the view properties may be filtered by permission
-        # or other conditions.
-        # Note: collecting configurators may be solved by getting
-        # multiple configurators (+ utilities) in the controller!
 
     def getActiveViewProperties(self):
         return self.viewProperties
 
     def setupViewProperty(self, prop, propDef):
-        vp = zapi.queryMultiAdapter((self.context, self.request),
+        vp = component.queryMultiAdapter((self.context, self.request),
                                     IViewProperty, name=prop)
         if vp is None:
             vp = ViewProperty(self.context, self.request)
         vp.slot = prop
         vp.setParams(propDef)
         return vp
-
-
-class GlobalViewConfigurator(object):
-    """ A global utility that allows the registration of view properties.
-    """
-
-    implements(IViewConfigurator)
-
-    def __init__(self):
-        self.viewProperties = []
-
-    def getActiveViewProperties(self):
-        return self.viewProperties
 
 
 class ViewProperty(object):
@@ -136,7 +128,7 @@ class ViewProperty(object):
         self.params = params
 
 
-class MacroViewProperty(object):
+class MacroViewProperty(ViewProperty):
 
     implements(IMacroViewProperty)
 

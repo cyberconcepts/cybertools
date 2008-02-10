@@ -80,20 +80,27 @@
 <metal:textline define-macro="input_textline">
     <input type="text" name="field" style="width: 450px"
            tal:define="width field/width|nothing"
-           tal:attributes="name name;
+           tal:attributes="name name; id name;
                            style python:
                                 'width: %s' % (width and str(width)+'px' or '450px');
-                           value data/?name|string:" />
+                           value data/?name|string:;
+                           required field/required_js;" />
 </metal:textline>
 
 
 <metal:textline define-macro="input_date">
-    <input type="text" name="field" style="width: 450px"
+    <input type="text" name="field" style="width: 8em"
+           dojoType="dijit.form.DateTextBox"
            tal:define="width field/width|nothing"
            tal:attributes="name name;
-                           style python:
-                                'width: %s' % (width and str(width)+'px' or '450px');
-                           value data/?name|string:" />
+                           value data/?name|string:;
+                           required field/required_js" />
+    <input type="text" name="field" style="width: 6em"
+           dojoType="dijit.form.TimeTextBox"
+           tal:define="width field/width|nothing"
+           tal:attributes="name name;
+                           value data/?name|string:;
+                           required field/required_js" />
 </metal:textline>
 
 
@@ -120,10 +127,22 @@
 </metal:textarea>
 
 
+<metal:html define-macro="input_html">
+    <metal:textarea use-macro="view/fieldRenderers/input_textarea" />
+</metal:html>
+
+
 <metal:upload define-macro="input_fileupload">
     <input type="file" name="field"
            tal:attributes="name name;" />
 </metal:upload>
+
+
+<metal:checkbox define-macro="input_checkbox">
+    <input type="checkbox" name="field" value="true"
+           tal:attributes="name name;
+                           checked data/?name|nothing" />
+</metal:checkbox>
 
 
 <metal:dropdown define-macro="input_dropdown">

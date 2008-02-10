@@ -29,12 +29,7 @@
 </metal:js>
 
 
-<metal:portlet define-macro="multi_actions">
-    <tal:sub repeat="macro macro/subMacros">
-      <metal:sub use-macro="macro" />
-    </tal:sub>
-</metal:portlet>
-
+<!-- portlets and similar collections of actions -->
 
 <metal:portlet define-macro="portlet_left">
     <div metal:use-macro="macro/template/macros/portlet" />
@@ -45,11 +40,27 @@
 </metal:portlet>
 
 <metal:portlet define-macro="portlet">
-    <div class="box">
-      <h4 tal:content="macro/title"
-          i18n:translate="">Navigation</h4>
+    <div class="box"
+         tal:define="icon macro/icon|nothing;
+                     url macro/url|nothing">
+      <h4>
+        <a tal:omit-tag="not:url"
+           tal:attributes="href url"
+           i18n:translate=""><img
+                tal:condition="icon"
+                tal:attributes="src string:$resourceBase$icon"/>
+          <span tal:content="macro/title">Navigation</span></a>
+      </h4>
       <div class="body">
            <div metal:use-macro="macro/subMacro" />
       </div>
     </div>
 </metal:portlet>
+
+
+<metal:portlet define-macro="multi_actions">
+    <tal:sub repeat="macro macro/subMacros">
+      <metal:sub use-macro="macro" />
+    </tal:sub>
+</metal:portlet>
+

@@ -167,5 +167,6 @@ Macros / renderers
 
   >>> fieldRenderers = form.fieldRenderers
   >>> sorted(fieldRenderers.keys())
-  [u'field', u'field_spacer', u'fields', u'form', u'input_date', u'input_dropdown',
-   u'input_fileupload', u'input_password', u'input_textarea', u'input_textline']
+  [u'field', u'field_spacer', u'fields', u'form', u'input_checkbox',
+   u'input_date', u'input_dropdown', u'input_fileupload', u'input_html',
+   u'input_password', u'input_textarea', u'input_textline']

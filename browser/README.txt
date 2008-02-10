@@ -1,3 +1,4 @@
+==================
 Browser View Tools
 ==================
 
@@ -5,8 +6,9 @@ Browser View Tools
   >>> from zope.interface import Interface, implements
   >>> from zope.publisher.interfaces.browser import IBrowserRequest
 
+
 The Generic View class
-----------------------
+======================
 
 GenericView is intended as the base class for application-specific views.
 The GenericView class itself provides only basic functionality, so you
@@ -64,7 +66,7 @@ bodyTemplate attribute.
 
 
 The View Controller
--------------------
+===================
 
 There is a special view class that does not directly adapt to a real context
 (i.e. typically a content) object but to a view instead. Thus it can provide
@@ -131,10 +133,11 @@ Calling a macro provided by Controller.macros[] returns the real ZPT macro:
 The pre-set collection of macros for a certain slot may be extended
 (this may be done by overriding the view's setupController() method, e.g.):
 
-  >>> controller.macros.register('css', 'node.css', resourceName='node.css', media='all')
+  >>> controller.macros.register('css', 'node.css', resourceName='node.css',
+  ...                            media='all', priority=110)
   >>> len(controller.macros['css'])
   5
-  >>> m5 = cssMacros[4]
+  >>> m5 = controller.macros['css'][4]
   >>> print m5.name, m5.media, m5.resourceName
   css all node.css
 
@@ -158,7 +161,7 @@ We can also access slots that are not predefined:
 
 
 The View Configurator
----------------------
+=====================
 
 A view configurator is typically a multiadapter for a content object that provides
 a set of properties to be used for setting up special presentation
@@ -167,9 +170,9 @@ characteristics of a page. Typical examples for such characteristics are
 - the skin to be used
 - the logo to show in the corner of the page
 
-The default configurator uses attribute annotations for retrieving view
-properties; that means that there could be a form somewhere to edit those
-properties and store them in the content object's annotations.
+There is a standard configurator that uses attribute annotations for
+retrieving view properties; that means that there could be a form somewhere
+to edit those properties and store them in the content object's annotations.
 
   >>> from zope.annotation.interfaces import IAttributeAnnotatable, IAnnotations
   >>> from zope.annotation.attribute import AttributeAnnotations
@@ -179,8 +182,8 @@ The configurator is called automatically from the controller if there is
 an appropriate adapter:
 
   >>> from cybertools.browser.configurator import IViewConfigurator
-  >>> from cybertools.browser.configurator import ViewConfigurator
-  >>> component.provideAdapter(ViewConfigurator, (SomeObject, IBrowserRequest),
+  >>> from cybertools.browser.configurator import AnnotationViewConfigurator
+  >>> component.provideAdapter(AnnotationViewConfigurator, (SomeObject, IBrowserRequest),
   ...                          IViewConfigurator)
   >>> controller = Controller(view, request)
 
@@ -197,18 +200,9 @@ stored in the attribute annotations. So let's set a 'skinName' attribute:
   >>> controller.skinName.value
   'SuperSkin'
 
-Another way of providing view configurations is using a view configurator
-as a utility, this can be used for setting view properties by certain
-packages.
-
-  >>> from cybertools.browser.configurator import GlobalViewConfigurator
-  >>> component.provideUtility(GlobalViewConfigurator())
-
-  >>> gvc = component.getUtility(IViewConfigurator)
-
 
 Processing form input
----------------------
+=====================
 
 GenericView also provides an update() method that may be called from
 templates that might receive form information.

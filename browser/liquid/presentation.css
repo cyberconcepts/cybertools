@@ -1,0 +1,21 @@
+/*
+ $Id$
+
+*/
+
+.body {
+    margin: 4em;
+}
+
+.top, #header, #menu, #sub-section, #footer, #xedit_icon {
+    display: none;
+}
+
+#content {
+    width: 100%;
+    color: #000077;
+}
+
+h1, h2, h3, h4, h5 {
+    color: #005599;
+}

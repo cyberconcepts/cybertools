@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2005 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ class CachedImage(object):
     def __init__(self, path, name=None):
         self.path = path
         if name is None:
-            self.name = randomname.generateName(lambda x: x not in cachedImages)
+            self.name = randomname.generateName(lambda x: x not in cachedImages.keys())
         else:
             self.name = name
         self.timeStamp = int(time.time())

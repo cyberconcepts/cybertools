@@ -90,6 +90,8 @@ formErrors = dict(
         u'Please enter data for required field.'),
     invalid_number=FormError(u'Invalid number',
         u'Please enter a number, only digits allowed.'),
+    invalid_datetime=FormError(u'Invalid date/time',
+        u'Please enter a string denoting a valid date/time.'),
     invalid_email_address=FormError(u'Invalid E-Mail Address',
         u'Please enter a valid email address.'),
 )

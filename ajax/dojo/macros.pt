@@ -1,12 +1,8 @@
 <metal:def define-macro="main">
 
-  <script type="text/javascript">
-      djConfig = { isDebug: true,
-                   parseOnLoad: true };
-  </script>
-
   <script type="text/javascript" src="ajax.dojo/dojo.js"
-          tal:attributes="src context/++resource++ajax.dojo/dojo.js">
+          tal:attributes="src context/++resource++ajax.dojo/dojo/dojo.js;
+                          djConfig macro/djConfig|nothing">
   </script>
 
 </metal:def>

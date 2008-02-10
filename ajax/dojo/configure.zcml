@@ -6,7 +6,6 @@
     i18n_domain="zope">
 
   <resourceDirectory name="ajax.dojo" directory="dojo" />
-  <!-- <resourceDirectory name="ajax.dojo1" directory="dojo1" /> -->
 
   <page
       for="*"

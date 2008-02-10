@@ -4,6 +4,9 @@ Setting Configuration Options
 
 $Id$
 
+(TO DO / exercises: try to formulate a typical buildout.cfg, a configure.zcml,
+or a generic setup configuration file using this syntax.)
+
   >>> from cybertools import util
   >>> from cybertools.util.config import Configurator
   >>> config = Configurator()
@@ -92,6 +95,30 @@ The simplified syntax
   'outlook'
 
   >>> #print config
+
+A better simplified syntax
+--------------------------
+
+Open a section with the ``use`` method.
+
+use(ui.web)
+port = 11080
+
+use(crawl[1])
+type = 'outlook'
+folder = 'inbox'
+
+or - even more better...
+
+use(ui.web,
+    port=11080,
+)
+
+use(crawl[1],
+    type='outlook',
+    folder='inbox',
+)
+
 
 Cleaning up
 -----------

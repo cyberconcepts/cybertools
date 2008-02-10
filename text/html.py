@@ -33,7 +33,7 @@ def htmlToText(html):
     data = []
     soup = BeautifulSoup(html).html
     collectText([soup], data)
-    text = u' '.join(data).replace('\n', '').replace('&nbsp;', '')
+    text = u' '.join(data).replace(u'\n', u'').replace(u'&nbsp;', u'')
     return text
 
 def collectText(tags, data):

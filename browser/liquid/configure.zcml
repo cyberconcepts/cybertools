@@ -43,6 +43,8 @@
         layer="cybertools.browser.liquid.Liquid" />
   <resource name="print.css"  file="print.css"
         layer="cybertools.browser.liquid.Liquid" />
+  <resource name="presentation.css"  file="presentation.css"
+        layer="cybertools.browser.liquid.Liquid" />
   <resource name="custom.css" file="custom.css"
         layer="cybertools.browser.liquid.Liquid" />
 
