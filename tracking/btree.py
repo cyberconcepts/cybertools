@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 #
 
 """
-BTree-based implementation of user interaction tracking.
+ZODB-/BTree-based implementation of user interaction tracking.
 
 $Id$
 """
@@ -84,6 +84,7 @@ class Track(Persistent):
         return '<Track %s: %s>' % (`[md[a] for a in self.metadata_attributes]`,
                                      `self.data`)
 
+
 class TrackingStorage(BTreeContainer):
 
     implements(ITrackingStorage)
@@ -93,10 +94,13 @@ class TrackingStorage(BTreeContainer):
     trackNum = runId = 0
     runs = None
 
-    #indexAttributes = ('taskId', 'runId', 'userName', 'timeStamp')
     indexAttributes = Track.index_attributes
 
     def __init__(self, *args, **kw):
+        trackFactory = kw.pop('trackFactory', None)
+        if trackFactory is not None:
+            self.trackFactory = trackFactory
+            self.indexAttributes = trackFactory.index_attributes
         super(TrackingStorage, self).__init__(*args, **kw)
         self.indexes = OOBTree.OOBTree()
         for idx in self.indexAttributes:
@@ -117,10 +121,11 @@ class TrackingStorage(BTreeContainer):
     def idFromNum(self, num):
         return '%07i' % (num)
 
-    def startRun(self, taskId):
+    def startRun(self, taskId=None):
         self.runId += 1
         runId = self.runId
-        self.currentRuns[taskId] = runId
+        if taskId is not None:
+            self.currentRuns[taskId] = runId
         run = self.runs[runId] = Run(runId)
         run.start = run.end = getTimeStamp()
         return runId
@@ -147,6 +152,11 @@ class TrackingStorage(BTreeContainer):
             return self.runs.get(runId)
         return None
 
+    def generateTrackId(self):
+        self.trackNum += 1
+        trackId = self.idFromNum(self.trackNum)
+        return trackId, self.trackNum
+
     def saveUserTrack(self, taskId, runId, userName, data, update=False):
         if not runId:
             runId = self.currentRuns.get(taskId) or self.startRun(taskId)
@@ -154,15 +164,11 @@ class TrackingStorage(BTreeContainer):
         if run is None:
             raise ValueError('Invalid run: %i.' % runId)
         run.end = getTimeStamp()
-        trackNum = 0
         if update:
             track = self.getLastUserTrack(taskId, runId, userName)
             if track is not None:
                 return self.updateTrack(track, data)
-        if not trackNum:
-            self.trackNum += 1
-            trackNum = self.trackNum
-            trackId = self.idFromNum(trackNum)
+        trackId, trackNum = self.generateTrackId()
         track = self.trackFactory(taskId, runId, userName, data)
         self[trackId] = track
         self.indexTrack(trackNum, track)
@@ -211,12 +217,10 @@ class TrackingStorage(BTreeContainer):
             if idx in self.indexAttributes:
                 if type(value) not in (list, tuple):
                     value = [value]
-                # TODO: handle a list of values, provide union of results
                 resultx = None
                 for v in value:
                     resultx = self.union(resultx, self.indexes[idx].apply((v, v)))
                 result = self.intersect(result, resultx)
-                #result = self.intersect(result, self.indexes[idx].apply((value, value)))
             elif idx == 'timeFrom':
                 result = self.intersect(result,
                                         self.indexes['timeStamp'].apply((value, None)))

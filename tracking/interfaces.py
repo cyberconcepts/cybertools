@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 #
 
 """
-loops tracking interface definitions.
+Interface definitions for tracking of user interactions.
 
 $Id$
 """
@@ -51,8 +51,9 @@ class ITrackingStorage(Interface):
     """ A utility for storing user tracks.
     """
 
-    def startRun(taskId):
-        """ Create a new run for the task given and return its id.
+    def startRun(taskId=None):
+        """ Create a new run and return its id.
+            If a taskId is given, record the runId as the tasks current run.
         """
 
     def stopRun(taskId=None, runId=0, finish=True):
