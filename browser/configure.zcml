@@ -8,12 +8,17 @@
 
   <resourceDirectory name="cybertools.icons" directory="icons" />
 
-  <page for="*"
+  <!--<page for="*"
         name="main.html"
         template="main.pt"
         class="cybertools.browser.view.GenericView"
         permission="zope.Public"
         menu="zmi_views" title="View"
+        />-->
+
+  <menuItem
+        for="*"
+        menu="zmi_views" action="index.html" title="View"
         />
 
   <page for="*"
