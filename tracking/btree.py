@@ -58,6 +58,7 @@ class Track(Persistent):
 
     metadata_attributes = ('taskId', 'runId', 'userName', 'timeStamp')
     index_attributes = metadata_attributes
+    typeName = 'Track'
 
     @property
     def metadata(self):
@@ -81,8 +82,9 @@ class Track(Persistent):
     def __repr__(self):
         md = self.metadata
         md['timeStamp'] = timeStamp2ISO(md['timeStamp'])
-        return '<Track %s: %s>' % (`[md[a] for a in self.metadata_attributes]`,
-                                     `self.data`)
+        return '<%s %s: %s>' % (self.typeName,
+                                repr([md[a] for a in self.metadata_attributes]),
+                                repr(self.data))
 
 
 class TrackingStorage(BTreeContainer):
