@@ -32,6 +32,10 @@ from cybertools.composer.schema.interfaces import ISchemaFactory
 from cybertools.composer.schema.schema import Schema
 
 
+class Email(schema.TextLine):
+    pass
+
+
 class SchemaFactory(object):
     """ Creates a cybertools.composer schema from an
         interface (a zope.schema schema).
@@ -52,6 +56,7 @@ class SchemaFactory(object):
             schema.Bool: ('checkbox',),
             schema.Choice: ('dropdown',),
             schema.Bytes: ('fileupload',),
+            Email: ('email',),
     }
 
     def __init__(self, context):

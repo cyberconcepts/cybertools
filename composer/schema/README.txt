@@ -46,6 +46,20 @@ correct conversion of input data to context attributes.
   >>> srv.title, srv.description, srv.capacity
   (u'Service', u'', u'30')
 
+Field types
+-----------
+
+  >>> from cybertools.composer.schema.interfaces import fieldTypes
+  >>> sorted(t.token for t in fieldTypes)
+  ['checkbox', 'date', 'display', 'dropdown', 'email', 'fileupload', 'html',
+   'number', 'password', 'spacer', 'textarea', 'textline']
+
+  >>> from zope.schema.vocabulary import SimpleVocabulary
+  >>> textFieldTypes = SimpleVocabulary([t for t in fieldTypes if t.token in
+  ...                                       ('textline', 'textarea',)])
+  >>> sorted(t.token for t in textFieldTypes)
+  ['textarea', 'textline']
+
 
 Creating a schema from an interface
 ===================================

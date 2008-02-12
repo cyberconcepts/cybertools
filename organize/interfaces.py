@@ -27,6 +27,7 @@ from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from zope.interface import Interface, Attribute
 from zope.i18nmessageid import MessageFactory
 
+from cybertools.composer.schema.factory import Email
 from cybertools.util.jeep import Jeep, Term
 
 _ = MessageFactory('zope')
@@ -53,8 +54,7 @@ class IPerson(Interface):
     lastName = schema.TextLine(
                     title=_(u'Last name'),
                     description=_(u'The last name or surname'),)
-    email = schema.TextLine(
-                    title=_(u'E-Mail address'),
+    email = Email(title=_(u'E-Mail address'),
                     description=_(u'The standard email address of the person'),)
     phoneNumbers = SimpleList(
                     value_type=schema.TextLine(),

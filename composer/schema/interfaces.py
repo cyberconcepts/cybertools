@@ -90,7 +90,8 @@ fieldTypes = SimpleVocabulary((
               inputRenderer='input_textline', instanceName='number'),
     FieldType('date', 'date', u'Date', instanceName='date'),
     FieldType('email', 'email', u'E-Mail Address',
-              inputRenderer='input_textline', instanceName='email'),
+              displayRenderer='display_email', inputRenderer='input_textline',
+              instanceName='email'),
     FieldType('fileupload', 'fileupload', u'File upload',
               instanceName='fileupload'),
     FieldType('checkbox', 'checkbox', u'Checkbox', instanceName='boolean'),
@@ -172,6 +173,9 @@ class IField(IComponent):
     fieldRenderer = Attribute('Name of a renderer (i.e. a ZPT macro or '
                         'an adapter) that is responsible for rendering '
                         '(presenting) the field as a whole.')
+    displayRenderer = Attribute('Name of a renderer (i.e. a ZPT macro or '
+                        'an adapter) that is responsible for displaying '
+                        'field data.')
     inputRenderer = Attribute('Name of a renderer (i.e. a ZPT macro or '
                         'an adapter) that is responsible for rendering '
                         '(presenting) the part of the field that allows '
