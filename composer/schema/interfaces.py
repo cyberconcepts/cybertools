@@ -74,6 +74,7 @@ class FieldType(SimpleTerm):
         self.name = value
         self.fieldRenderer = 'field'
         self.inputRenderer = 'input_' + self.name
+        self.displayRenderer = 'display_textline'
         self.storeData = True
         self.instanceName = ''
         for k, v in kw.items():

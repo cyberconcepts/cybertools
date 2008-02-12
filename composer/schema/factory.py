@@ -62,19 +62,18 @@ class SchemaFactory(object):
         fields = []
         for fname in schema.getFieldNamesInOrder(interface):
             field = interface[fname]
-            if field.__class__ in fieldMapping:
-                info = fieldMapping[field.__class__]
-                voc = (getattr(field, 'vocabulary', ()) or
-                       getattr(field, 'vocabularyName', None))
-                f = Field(field.getName(),
-                        fieldType=info[0],
-                        required=field.required,
-                        default=field.default,
-                        default_method=getattr(field, 'default_method', None),
-                        vocabulary=voc,
-                        title=field.title,
-                        description=field.description,
-                        readonly=field.readonly,
-                        nostore=getattr(field, 'nostore', False),)
-                fields.append(f)
+            info = fieldMapping.get(field.__class__) or ('textline',)
+            voc = (getattr(field, 'vocabulary', ()) or
+                   getattr(field, 'vocabularyName', None))
+            f = Field(field.getName(),
+                    fieldType=info[0],
+                    required=field.required,
+                    default=field.default,
+                    default_method=getattr(field, 'default_method', None),
+                    vocabulary=voc,
+                    title=field.title,
+                    description=field.description,
+                    readonly=field.readonly,
+                    nostore=getattr(field, 'nostore', False),)
+            fields.append(f)
         return Schema(name=interface.__name__, *fields, **kw)

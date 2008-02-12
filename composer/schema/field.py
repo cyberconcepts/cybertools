@@ -50,6 +50,12 @@ class Field(Component):
     default = None
     default_method = None
 
+    fieldTypeInfo = None
+    instance_name = None
+    display_renderer = None
+    display_format = None
+
+
     def __init__(self, name, title=None, fieldType='textline', **kw):
         assert name
         self.__name__ = name
@@ -81,6 +87,10 @@ class Field(Component):
         return self.getFieldTypeInfo().inputRenderer
 
     @property
+    def displayRenderer(self):
+        return self.display_renderer or self.getFieldTypeInfo().displayRenderer
+
+    @property
     def storeData(self):
         return not self.nostore and self.getFieldTypeInfo().storeData
 
@@ -100,10 +110,10 @@ class Field(Component):
             return [dict(token=t.token, title=t.title or t.value) for t in voc]
 
     def getFieldTypeInfo(self):
-        return fieldTypes.getTerm(self.fieldType)
+        return self.fieldTypeInfo or fieldTypes.getTerm(self.fieldType)
 
     def getFieldInstance(self, clientInstance=None):
-        instanceName = self.getFieldTypeInfo().instanceName
+        instanceName = self.instance_name or self.getFieldTypeInfo().instanceName
         fi = component.getAdapter(self, IFieldInstance, name=instanceName)
         fi.clientInstance = clientInstance
         return fi
@@ -193,9 +203,10 @@ class DateFieldInstance(NumberFieldInstance):
             return ''
         view = self.clientInstance.view
         langInfo = view and view.languageInfo or None
+        format = self.context.display_format or ('dateTime', 'short')
         if langInfo:
             locale = locales.getLocale(langInfo.language)
-            fmt = locale.dates.getFormatter('dateTime', 'short')
+            fmt = locale.dates.getFormatter(*format)
             return fmt.format(value)
         return str(value)
 
