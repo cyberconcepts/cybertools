@@ -79,6 +79,7 @@
 
 <metal:textline define-macro="input_textline">
     <input type="text" name="field" style="width: 450px"
+           xxdojoType="dijit.form.ValidationTextBox"
            tal:define="width field/width|nothing"
            tal:attributes="name name; id name;
                            style python:

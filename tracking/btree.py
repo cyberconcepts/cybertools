@@ -94,7 +94,9 @@ class TrackingStorage(BTreeContainer):
     trackFactory = Track
 
     trackNum = runId = 0
-    runs = None
+    runs = None             # currently active runs
+    finishedRuns = None     # finished runs
+    currentRuns = None      # the currently active run for each task
 
     indexAttributes = Track.index_attributes
 
@@ -108,6 +110,7 @@ class TrackingStorage(BTreeContainer):
         for idx in self.indexAttributes:
             self.indexes[idx] = FieldIndex()
         self.runs = IOBTree.IOBTree()
+        self.finishedRuns = IOBTree.IOBTree()
         self.currentRuns = OOBTree.OOBTree()
         self.taskUsers = OOBTree.OOBTree()
 
@@ -142,8 +145,18 @@ class TrackingStorage(BTreeContainer):
         if run is not None:
             run.end = getTimeStamp()
             run.finished = finish
+            if finish:
+                self.moveToFinishedRuns(run)
             return runId
         return 0
+
+    def moveToFinishedRuns(self, run):
+        id = run.id
+        if id in self.runs:
+            del self.runs[id]
+        if self.finishedRuns is None:   # backward compatibility
+            self.finishedRuns = IOBTree.IOBTree()
+        self.finishedRuns[id] = run
 
     def getRun(self, taskId=None, runId=0):
         if self.runs is None:
@@ -151,7 +164,7 @@ class TrackingStorage(BTreeContainer):
         if taskId and not runId:
             runId = self.currentRuns.get(taskId)
         if runId:
-            return self.runs.get(runId)
+            return self.runs.get(runId) or self.finishedRuns.get(runId)
         return None
 
     def generateTrackId(self):

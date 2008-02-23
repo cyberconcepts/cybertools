@@ -66,10 +66,16 @@ class BaseView(SchemaBaseView):
         if service is None:
             service = self.context
         if service.start and service.end:
-            return ('%s-%s' %
+            typeEnd = 'time'
+            separator = '-'
+            if time.localtime(service.start)[2] != time.localtime(service.end)[2]:
+                typeEnd = 'dateTime'
+                separator = ' - '
+            return ('%s%s%s' %
                 (self.getFormattedDate(service.start,
-                        type='dateTime', variant='short').replace(' ', '  '),
-                 self.getFormattedDate(service.end, type='time', variant='short')))
+                                       type='dateTime', variant='short'),
+                 separator,
+                 self.getFormattedDate(service.end, type=typeEnd, variant='short')))
         else:
             return '-'
 
