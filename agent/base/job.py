@@ -23,10 +23,38 @@ $Id$
 """
 
 from zope.interface import implements
-from loops.agent.interfaces import IScheduledJob
+
+from cybertools.agent.base.schedule import Scheduler
+from cybertools.agent.components import jobs
+from cybertools.agent.interfaces import IScheduledJob
 
 
 class Job(object):
 
     implements(IScheduledJob)
 
+    agent = None
+    startTime = None
+    repeat = 0
+    whenStarted = whenFinished = None
+
+    def __init__(self, scheduler):
+        self.scheduler = scheduler
+        self.params = {}
+        self.successors = []
+
+    def execute(self):
+        if self.agent is not None:
+            self.agent.execute(self, self.params)
+
+    def reschedule(self, startTime=None):
+        self.scheduler.schedule(self.copy(), startTime)
+
+    def copy(self):
+        newJob = Job(self.scheduler)
+        newJob.agent = self.agent
+        newJob.params = self.params
+        newJob.repeat = self.repeat
+        newJob.successors = [s.copy() for s in self.successors]
+
+jobs.register(Job, Scheduler, name='sample')

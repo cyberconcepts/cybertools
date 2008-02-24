@@ -25,8 +25,8 @@ $Id$
 from zope.interface import implements
 
 from cybertools.agent.interfaces import IAgent
-from cybertools.agent.components import agents
-from cybertools.agent.components import controllers, loggers, schedulers
+from cybertools.agent.components import agents, controllers, jobs
+from cybertools.agent.components import loggers, schedulers
 from cybertools.util.config import Configurator
 
 
@@ -72,12 +72,16 @@ class Master(Agent):
             self.children[spec.name] = agent
 
     def setupJobs(self, jobSpecs):
-        pass
+        for spec in jobSpecs:
+            job = jobs(self.scheduler, spec.type)
+            job.agent = self.children[spec.agent]
+            self.scheduler.schedule(job, spec.startTime)
 
 
 class SampleAgent(Agent):
 
-    pass
+    def execute(self, job, params=None):
+        print 'Job %s on agent %s has been executed.' % (job, self)
 
 agents.register(SampleAgent, Master, name='sample')
 

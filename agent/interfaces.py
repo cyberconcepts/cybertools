@@ -127,7 +127,7 @@ class IScheduler(Interface):
         time by the agents responsible for it.
     """
 
-    def schedule(job, agent, startTime=None):
+    def schedule(job, startTime=None):
         """ Register the job given for execution at the intended start
             date/time (an integer timestamp) and return the job.
 
@@ -154,6 +154,7 @@ class IScheduledJob(Interface):
         a predefined date and time - this is the basic job interface.
     """
 
+    scheduler = Attribute('Scheduler that controls this job.')
     agent = Attribute('Agent responsible for executing the job.')
     startTime = Attribute('Date/time at which the job should be executed.')
     params = Attribute('Mapping with key/value pairs to be used by '
@@ -168,7 +169,7 @@ class IScheduledJob(Interface):
                        'result of running the job, that will be called when '
                        'the job has finished.')
 
-    def execute(params=None):
+    def execute():
         """ Execute the job, typically by calling the ``execute()`` method
             of the agent responsible for it.
         """

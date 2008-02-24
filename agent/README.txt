@@ -146,8 +146,18 @@ Let's check a few attributes of the newly created agent.
 Job Scheduling and Execution
 ----------------------------
 
+A scheduler is responsible for triggering the execution of a job at the
+appropriate time. The master agent schedules the jobs based upon the
+information (job specifications) it gets from the controller. There
+is just one scheduler associated with the master agent.
+
   >>> master.scheduler
   <cybertools.agent.base.schedule.Scheduler object ...>
+
+  >>> from cybertools.agent.base.control import JobSpecification
+  >>> jobSpec = JobSpecification('sample', agent='sample01')
+  >>> master.setupJobs([jobSpec])
+  Job <...Job object ...> on agent <...SampleAgent object ...> has been executed.
 
 Logging
 -------

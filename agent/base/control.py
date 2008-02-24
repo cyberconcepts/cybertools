@@ -66,8 +66,9 @@ class AgentSpecification(object):
 
 class JobSpecification(object):
 
-    def __init__(self, name, type, **kw):
-        self.name = name
+    startTime = None
+
+    def __init__(self, type, **kw):
         self.type = type
         for k, v in kw.items():
             setattr(self, k, v)

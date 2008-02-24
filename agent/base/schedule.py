@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ Basic (sample) job scheduler.
 $Id$
 """
 
-
+from time import time
 from zope.interface import implements
 
 from cybertools.agent.base.agent import Master
@@ -36,6 +36,15 @@ class Scheduler(object):
 
     def __init__(self, agent):
         self.agent = agent
+        self.queue = []
+
+    def schedule(self, job, startTime=None):
+        job. startTime = startTime or int(time())
+        self.queue.append(job)
+        job.execute()   # the sample scheduler does not care about startTime
+
+    def getJobsToExecute(startTime=0):
+        return [j for j in self.queue.values() if startTime <= j.startTime]
 
 
 schedulers.register(Scheduler, Master, name='sample')
