@@ -154,6 +154,9 @@ is just one scheduler associated with the master agent.
   >>> master.scheduler
   <cybertools.agent.base.schedule.Scheduler object ...>
 
+We schedule a sample job by taking the role of the controller and simply
+call the master agent's callback method for entering jobs.
+
   >>> from cybertools.agent.base.control import JobSpecification
   >>> jobSpec = JobSpecification('sample', agent='sample01')
   >>> master.setupJobs([jobSpec])
