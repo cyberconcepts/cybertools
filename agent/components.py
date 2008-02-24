@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,25 +17,16 @@
 #
 
 """
-Basic (sample) job scheduler.
+Component registries.
 
 $Id$
 """
 
-
-from zope.interface import implements
-
-from cybertools.agent.base.agent import Master
-from cybertools.agent.components import schedulers
-from cybertools.agent.interfaces import IScheduler
+from cybertools.util.adapter import AdapterFactory
 
 
-class Scheduler(object):
-
-    implements(IScheduler)
-
-    def __init__(self, agent):
-        self.agent = agent
-
-
-schedulers.register(Scheduler, Master, name='sample')
+agents = AdapterFactory()
+controllers = AdapterFactory()
+jobs = AdapterFactory()
+loggers = AdapterFactory()
+schedulers = AdapterFactory()

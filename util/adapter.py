@@ -53,4 +53,6 @@ class AdapterFactory(object):
             check also for its base classes.
         """
         adapter = self.queryAdapter(obj, name)
-        return adapter is not None and adapter(obj) or None
+        if adapter is None:
+            return None
+        return adapter(obj)

@@ -16,28 +16,31 @@ Sub-Packages
 ============
 
 Top-level
-    Generic interfaces, ``tests`` module, this ``README.txt`` file.
+    Generic interfaces, ``commponents``: adapter registry,
+    ``tests`` module, this ``README.txt`` file.
 
 base
-    Base and sample classes
+    Base and sample classes.
 
 core
     Agent and scheduling implementations.
 
 control
-    Communication with an external agent control and job database application
+    Communication with an external agent control and job database application.
 
 crawl
     Scanning/crawling some system, e.g. the database of an email application,
-    the local file system, or an external document source
+    the local file system, or an external document source.
 
 transport
     Transfer of information objects to agents on another machine or
-    to an information management application (e.g. loops)
+    to an information management application (e.g. loops).
 
 util
     Various utility modules, e.g. a backport of the
-    ``twisted.internet.task.coiterate()`` function from Twisted 2.5.
+    ``twisted.internet.task.coiterate()`` function from Twisted 2.5 so that
+    we can use the Twisted version coming with Zope 3.3.1 for
+    cybertools.agent.
 
 All sub-packages except ``base`` depend on Twisted.
 
@@ -77,7 +80,7 @@ framework Twisted there is some basic stuff (mainly interfaces and
 base classes with basic, sample, or dummy implementations) that is
 independent of Twisted.
 
-The code resides in in the ``base`` sub-package.
+The code for this resides in in the ``base`` sub-package.
 
 Master Agent and Configuration
 ------------------------------
@@ -103,24 +106,53 @@ the path to the configuration file.
 
   >>> master.config
   controller.name = 'sample'
-  logger.name = 'sample'
+  logger.name = 'default'
+  logger.standard = 20
   scheduler.name = 'sample'
 
-Controller
-----------
+Controllers
+-----------
 
-Creation of agents and scheduling of jobs is controlled by the controller
-object. This is typically associated with a sort of control storage that
+Creation of agents and scheduling of jobs is controlled by controller
+objects. These are typically associated with a sort of control storage that
 provides agent and job specifications and receives the results of job
 execution.
 
-We open the controller and read in the specifications via the master agent's
-``setup`` method.
+  >>> master.controllers
+  [<cybertools.agent.base.control.SampleController object ...>]
+
+We make the contollers provide the specifications via the master agent's
+``setup()`` method.
 
   >>> master.setup()
 
 Other Agents
 ------------
 
+The above ``setup()`` call has triggered the creation of one child agent -
+that is all the sample controller provides.
+
+  >>> master.children
+  {'sample01': <cybertools.agent.base.agent.SampleAgent object ...>}
+
+Let's check a few attributes of the newly created agent.
+
+  >>> agent01 = master.children['sample01']
+  >>> agent01.master is master
+  True
+  >>> agent01.config is master.config
+  True
+
 Job Scheduling and Execution
 ----------------------------
+
+  >>> master.scheduler
+  <cybertools.agent.base.schedule.Scheduler object ...>
+
+Logging
+-------
+
+  >>> master.logger
+  <cybertools.agent.base.log.Logger object ...>
+  >>> agent01.logger is master.logger
+  True

@@ -24,10 +24,51 @@ $Id$
 
 from zope.interface import implements
 
+from cybertools.agent.base.agent import Master
+from cybertools.agent.components import controllers
 from cybertools.agent.interfaces import IController
 
 
 class Controller(object):
 
     implements(IController)
+
+    def __init__(self, agent):
+        self.agent = agent
+
+    def setupAgent(self):
+        self.agent.setupAgents(self._getAgents())
+        self.agent.setupJobs(self._getCurrentJobs())
+
+    def _getAgents(self):
+        return []
+
+    def _getCurrentJobs(self):
+        return []
+
+
+class SampleController(Controller):
+
+    def _getAgents(self):
+        return [AgentSpecification('sample01', 'sample')]
+
+controllers.register(SampleController, Master, name='sample')
+
+
+class AgentSpecification(object):
+
+    def __init__(self, name, type, **kw):
+        self.name = name
+        self.type = type
+        for k, v in kw.items():
+            setattr(self, k, v)
+
+
+class JobSpecification(object):
+
+    def __init__(self, name, type, **kw):
+        self.name = name
+        self.type = type
+        for k, v in kw.items():
+            setattr(self, k, v)
 

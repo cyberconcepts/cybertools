@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -27,7 +27,9 @@ import sys
 import time
 from zope.interface import implements
 
-from loops.agent.interfaces import ILogger, ILogRecord
+from cybertools.agent.base.agent import Agent
+from cybertools.agent.components import loggers
+from cybertools.agent.interfaces import ILogger, ILogRecord
 
 
 class LogRecord(object):
@@ -48,20 +50,20 @@ class LogRecord(object):
         return ' '.join(msg)
 
 
-class Logger(list):
+class Logger(object):
 
     implements(ILogger)
 
     recordFactory = LogRecord
 
-
     def __init__(self, agent):
         self.agent = agent
+        self.records = []
+        self.externalLoggers = []
         self.setup()
 
     def setup(self):
-        self.externalLoggers = []
-        conf = self.agent.config.logging
+        conf = self.agent.config.logger
         if conf.standard:
             logger = logging.getLogger()
             logger.level = conf.standard
@@ -70,7 +72,9 @@ class Logger(list):
 
     def log(self, data):
         record = self.recordFactory(self, data)
-        self.append(record)
+        self.records.append(record)
         for logger in self.externalLoggers:
             logger.info(str(record))
 
+
+loggers.register(Logger, Agent, name='default')

@@ -32,8 +32,11 @@ class IAgent(Interface):
     """
 
     master = Attribute('IMaster instance.')
+    config = Attribute('Configuration settings.')
     logger = Attribute('Logger instance to be used for recording '
                     'job execution and execution results.')
+    children = Attribute('A collection of agents that are managed by this '
+                    'master.')
 
     def execute(job, params=None):
         """ Execute a job.
@@ -44,15 +47,30 @@ class IMaster(IAgent):
     """ The top-level controller agent.
     """
 
-    config = Attribute('Central configuration.')
-    controller = Attribute('IController instance.')
+    config = Attribute('Central configuration settings.')
+    controllers = Attribute('Collection of IController instances.')
     scheduler = Attribute('IScheduler instance.')
 
     def setup():
-        """ Load agent specifications from the controller and set up
-            the corresponding agents. Then load the specifications of
-            active jobs from the controller and schedule the corresponding
-            jobs.
+        """ Set up the master agent by triggering all assigned controllers.
+            Each controller will then call the master agent's callback
+            methods ``setupAgents()`` and ``setupJobs()``.
+        """
+
+    def setupAgents(agentSpecs):
+        """ Callback for loading agent specifications from the controller
+            and setting up the corresponding agents.
+
+            Will be called upon agent setup and later when the controller
+            wants to provide new agent information.
+        """
+
+    def setupJobs(jobSpecs):
+        """ Callback for loading the specifications of active jobs from
+            the controller and scheduling the corresponding jobs.
+
+            Will be called upon agent setup and later when the controller
+            wants to provide new job information.
         """
 
 
@@ -97,6 +115,11 @@ class IController(Interface):
         storage and updates the storage with the status and result
         information.
     """
+
+    def setupAgent():
+        """ Set up the controllers's agent by calling the agent's
+            callback methods.
+        """
 
 
 class IScheduler(Interface):
