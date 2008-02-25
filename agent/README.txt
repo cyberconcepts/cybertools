@@ -107,7 +107,7 @@ the path to the configuration file.
   >>> master.config
   controller.name = 'sample'
   logger.name = 'default'
-  logger.standard = 20
+  logger.standard = 30
   scheduler.name = 'sample'
 
 Controllers
@@ -158,9 +158,9 @@ We schedule a sample job by taking the role of the controller and simply
 call the master agent's callback method for entering jobs.
 
   >>> from cybertools.agent.base.control import JobSpecification
-  >>> jobSpec = JobSpecification('sample', agent='sample01')
+  >>> jobSpec = JobSpecification('sample', '00001', agent='sample01')
   >>> master.setupJobs([jobSpec])
-  Job <...Job object ...> on agent <...SampleAgent object ...> has been executed.
+  Job 00001 on agent sample01 has been executed.
 
 Logging
 -------
@@ -169,3 +169,15 @@ Logging
   <cybertools.agent.base.log.Logger object ...>
   >>> agent01.logger is master.logger
   True
+
+  >>> master.config.logger.standard = 20
+  >>> master.logger.setup()
+  >>> jobSpec = JobSpecification('sample', '00002', agent='sample01')
+  >>> master.setupJobs([jobSpec])
+  Job 00002 on agent sample01 has been executed.
+  2... agent:sample01 job:00002 message:job execution
+
+  >>> for r in master.logger.records:
+  ...     print r
+  2... agent:sample01 job:00001 message:job execution
+  2... agent:sample01 job:00002 message:job execution

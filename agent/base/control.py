@@ -68,8 +68,9 @@ class JobSpecification(object):
 
     startTime = None
 
-    def __init__(self, type, **kw):
+    def __init__(self, type, identifier, **kw):
         self.type = type
+        self.identifier = identifier
         for k, v in kw.items():
             setattr(self, k, v)
 

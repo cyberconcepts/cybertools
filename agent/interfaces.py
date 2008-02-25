@@ -31,6 +31,7 @@ class IAgent(Interface):
     """ An agent waits for jobs to execute.
     """
 
+    name = Attribute('A name identifying the agent.')
     master = Attribute('IMaster instance.')
     config = Attribute('Configuration settings.')
     logger = Attribute('Logger instance to be used for recording '
@@ -154,6 +155,8 @@ class IScheduledJob(Interface):
         a predefined date and time - this is the basic job interface.
     """
 
+    identifier = Attribute('A name/ID unique within the realm of the '
+                       'controller.')
     scheduler = Attribute('Scheduler that controls this job.')
     agent = Attribute('Agent responsible for executing the job.')
     startTime = Attribute('Date/time at which the job should be executed.')

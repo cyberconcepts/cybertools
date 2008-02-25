@@ -34,6 +34,7 @@ class Agent(object):
 
     implements(IAgent)
 
+    name = '???'
     master = None
     config = None
     logger = None
@@ -49,6 +50,7 @@ class Agent(object):
 
 class Master(Agent):
 
+    name = 'master'
     scheduler = None
 
     def __init__(self, configuration=None):
@@ -69,24 +71,26 @@ class Master(Agent):
     def setupAgents(self, agentSpecs):
         for spec in agentSpecs:
             agent = agents(self, spec.type)
+            agent.name = spec.name
             self.children[spec.name] = agent
 
     def setupJobs(self, jobSpecs):
         for spec in jobSpecs:
             job = jobs(self.scheduler, spec.type)
             job.agent = self.children[spec.agent]
+            job.identifier = spec.identifier
             self.scheduler.schedule(job, spec.startTime)
 
 
 class SampleAgent(Agent):
 
     def execute(self, job, params=None):
-        msg = 'Job %s on agent %s has been executed.' % (job, self)
-        print msg
-        self.log(msg)
+        print 'Job %s on agent %s has been executed.' % (job.identifier, self.name)
+        self.log(job)
 
-    def log(self, msg):
-        self.logger.log(dict(msg=msg))
+    def log(self, job):
+        self.logger.log(dict(message='job execution', job=job.identifier,
+                        agent=self.name))
 
 
 agents.register(SampleAgent, Master, name='sample')

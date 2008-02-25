@@ -59,11 +59,12 @@ class Logger(object):
     def __init__(self, agent):
         self.agent = agent
         self.records = []
-        self.externalLoggers = []
         self.setup()
+        self.externalLoggers = []
 
     def setup(self):
         conf = self.agent.config.logger
+        self.externalLoggers = []
         if conf.standard:
             logger = logging.getLogger()
             logger.level = conf.standard

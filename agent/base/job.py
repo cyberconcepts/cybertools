@@ -33,6 +33,7 @@ class Job(object):
 
     implements(IScheduledJob)
 
+    identifier = '???'
     agent = None
     startTime = None
     repeat = 0
