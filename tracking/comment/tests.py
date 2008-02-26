@@ -5,7 +5,7 @@ from zope.testing.doctestunit import DocFileSuite
 
 
 class Test(unittest.TestCase):
-    "Basic tests for the cybertools.tracking.notify package."
+    "Basic tests for the cybertools.tracking.comment package."
 
     def testBasics(self):
         pass
