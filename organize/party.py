@@ -32,7 +32,7 @@ from cybertools.organize.interfaces import IPerson, IAddress
 class Person(object):
 
     implements(IPerson)
-    
+
     def __init__(self, lastName, firstName=u'', birthDate=None):
         self.lastName = lastName
         self.firstName = firstName
@@ -49,7 +49,7 @@ class Person(object):
         return self.ageAt(date.today())
 
     def ageAt(self, date):
-        if self.birthDate is None:
+        if not self.birthDate:
             return None
         return int((date - self.birthDate).days/365.25)
 
