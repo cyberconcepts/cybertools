@@ -12,7 +12,7 @@ Getting started
 
 Let's do some basic set up
 
-  >>> from zope import component, interface
+  >>> from zope import component
 
   >>> from cybertools.integrator.tests import testDir
   >>> from cybertools.integrator.filesystem import ContainerFactory, FileFactory

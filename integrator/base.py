@@ -38,9 +38,12 @@ class ReadContainer(Contained):
     implements(IReadContainer)
 
     factoryName = 'sample'
+    __parent__ = None
 
     def __init__(self, address, **kw):
         self.address = address
+        for k, v in kw.items():
+            setattr(self, k, v)
 
     @Lazy
     def fileFactory(self):
@@ -85,6 +88,7 @@ class File(object):
 
     contentType = None
     data = None
+    __parent__ = None
 
     def __init__(self, address, contentType, **kw):
         self.address = address

@@ -46,7 +46,7 @@ class ReadContainer(ReadContainer):
         return os.listdir(self.address)
 
     def keys(self):
-        return self.filenames
+        return [n for n in self.filenames if not n.startswith('.')]
 
     def __iter__(self):
         return iter(self.keys())
@@ -61,9 +61,9 @@ class ReadContainer(ReadContainer):
             return default
         path = os.path.join(self.address, key)
         if os.path.isdir(path):
-            return self.containerFactory(path)
+            return self.containerFactory(path, __parent__=self.__parent__)
         else:
-            return self.fileFactory(path)
+            return self.fileFactory(path, __parent__=self.__parent__)
 
     def values(self):
         return [self.get(k) for k in self]
