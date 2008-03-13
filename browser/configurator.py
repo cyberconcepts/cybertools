@@ -136,7 +136,8 @@ class MacroViewProperty(ViewProperty):
 
     def setParams(self, params):
         params = dict(params)
-        self.name = params.pop('name', '')
-        self.identifier = params.pop('identifier', name)
+        self.slot = params.pop('slot', '')
+        self.name = params.pop('name', None)
+        self.identifier = params.pop('identifier', self.name)
         self.template = params.pop('template', None)
         self.params = params

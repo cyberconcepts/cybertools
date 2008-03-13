@@ -63,7 +63,7 @@ class Controller(object):
             configurator = conf[1]
             for item in configurator.getActiveViewProperties():
                 if IMacroViewProperty.providedBy(item):
-                    self.macros.register(item.slot, item.idenitifier,
+                    self.macros.register(item.slot, item.identifier,
                                          item.template, item.name,
                                          **item.params)
                 else:

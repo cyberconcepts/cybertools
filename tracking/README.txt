@@ -78,6 +78,10 @@ The tracks of a tracking store may be reindexed:
 
   >>> tracks.reindexTracks()
 
+  >>> tracks.removeTrack(t4[0])
+  >>> tracks.getUserTracks('a001', 0, 'u2')
+  set([])
+
 Runs
 ----
 
