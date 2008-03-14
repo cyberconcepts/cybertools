@@ -39,6 +39,7 @@ class Controller(object):
         self.view = view = context         # the controller is adapted to a view
         self.context = context.context
         self.request = request
+        self.params = Jeep()
         self.configure()
         #self.view.setupController()
         self.view.controller = self   # notify the view
