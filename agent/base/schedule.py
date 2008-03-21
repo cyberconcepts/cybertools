@@ -39,7 +39,7 @@ class Scheduler(object):
         self.queue = []
 
     def schedule(self, job, startTime=None):
-        job. startTime = startTime or int(time())
+        job.startTime = startTime or int(time())
         self.queue.append(job)
         job.execute()   # the sample scheduler does not care about startTime
 

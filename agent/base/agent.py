@@ -84,6 +84,9 @@ class Master(Agent):
 
 class SampleAgent(Agent):
 
+    def __init__(self, parent):
+        self.parent = parent
+
     def execute(self, job, params=None):
         print 'Job %s on agent %s has been executed.' % (job.identifier, self.name)
         self.log(job)
