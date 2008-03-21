@@ -17,7 +17,7 @@ behaviour directly.
 
   >>> demo = Demo()
 
-The default states definition has the `started` state has its initial
+The default states definition has the `started` state as its initial
 state.
 
   >>> demo.getState()
@@ -34,21 +34,15 @@ We can now execute the `finish` Transition.
 More complex states definitions
 -------------------------------
 
-  >>> registerStatesDefinition(
-  ...     StatesDefinition('publishing',
-  ...         State('private', 'private', ('show',)),
-  ...         State('visible', 'visible', ('publish', 'hide',)),
-  ...         State('published', 'published', ('retract',)),
-  ...         Transition('show', 'show', 'visible'),
-  ...         Transition('hide', 'hide', 'private'),
-  ...         Transition('publish', 'publish', 'published'),
-  ...         Transition('retract', 'retract', 'visible'),
-  ...         initialState='visible'))
+We'll use a predefined simple publishing workflow that.
+
+  >>> from cybertools.stateful.publishing import simplePublishing
+  >>> registerStatesDefinition(simplePublishing)
 
   >>> demo = Demo()
   >>> demo.statesDefinition = 'publishing'
   >>> demo.getState()
-  'visible'
+  'draft'
 
 If we try to execute a transition that is not an outgoing transition
 of the current state we get an error.
@@ -56,9 +50,9 @@ of the current state we get an error.
   >>> demo.doTransition('retract')
   Traceback (most recent call last):
   ...
-  ValueError: Transition 'retract' is not reachable from state 'visible'.
+  ValueError: Transition 'retract' is not reachable from state 'draft'.
   >>> demo.getState()
-  'visible'
+  'draft'
 
 
 Stateful Adapters
