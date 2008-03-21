@@ -56,3 +56,29 @@ class AdapterFactory(object):
         if adapter is None:
             return None
         return adapter(obj)
+
+
+# self-registering adapters
+
+adapters = AdapterFactory()
+
+
+class AdapterType(type):
+    """ To be used as metaclass for self-registering adapters.
+    """
+
+    def __init__(cls, name, bases, cdict):
+        super(AdapterType, cls).__init__(name, bases, cdict)
+        info = list(cdict.get('__adapterinfo__', (adapters, object, '')))
+        if len(info) < 2:
+            info.append(object)
+        if len(info) < 3:
+            info.append('')
+        factory, adapted, name = info
+        factory.register(cls, adapted, name)
+
+
+class AdapterBase:
+
+    __metaclass__ = AdapterType
+

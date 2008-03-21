@@ -7,6 +7,10 @@ $Id$
 To work with adapters we need at least two classes, one for objects
 that we want to adapt to (the adapter's `context`) and one for the adapters.
 
+
+Adapter Classes and Factories
+=============================
+
   >>> class Content(object):
   ...     pass
 
@@ -99,4 +103,23 @@ example above.
   >>> c2 = loader.load()
   >>> c2
   <Content object ...>
+
+
+Self-registering Adapters
+=========================
+
+  >>> from cybertools.util.adapter import adapters, AdapterBase
+  >>> stateful = AdapterFactory()
+
+  >>> class StateAdapter(AdapterBase):
+  ...     __adapterinfo__ = stateful, Content
+  ...     def __init__(self, context):
+  ...         self.context = context
+  ...     def setState(self, state):
+  ...         self.context._state = state
+  ...     def getState(self):
+  ...         return getattr(self.context, '_state', 'initial')
+
+  >>> stateful._registry
+  {(<class 'Content'>, ''): <class 'StateAdapter'>}
 
