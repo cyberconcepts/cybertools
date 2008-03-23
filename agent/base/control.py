@@ -48,6 +48,7 @@ class Controller(object):
 
 
 class SampleController(Controller):
+    
 
     def _getAgents(self):
         return [AgentSpecification('sample01', 'sample')]
@@ -65,6 +66,7 @@ class AgentSpecification(object):
 
 
 class JobSpecification(object):
+    
 
     startTime = None
 

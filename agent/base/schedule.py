@@ -48,3 +48,4 @@ class Scheduler(object):
 
 
 schedulers.register(Scheduler, Master, name='sample')
+#schedulers.register(Scheduler, Master, name='BasicCrawler')
