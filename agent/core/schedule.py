@@ -19,7 +19,7 @@
 """
 Basic (sample) job scheduler.
 
-$Id: schedule.py 2415 2008-02-24 15:04:13Z helmutm $
+$Id$
 """
 
 from time import time
@@ -47,24 +47,16 @@ class Scheduler(object):
         self.queue.append(job)
         if startTime is None:
             startTime = int(time())
-            
-        if startTime < int(time()):
-            '''
-            Only small test for first draft
-            '''
-            startTime = startTime + int(time())
         job.startTime = startTime
         job.scheduler = self
         #while startTime in self.queue:
         #    startTime += 1
         #self.queue[startTime] = job
-        #reactor.callLater(startTime-int(time()), job.execute)
+        reactor.callLater(startTime-int(time()), job.execute)
         job.execute()
         return startTime
 
     def getJobsToExecute(startTime=0):
         return [j for j in self.queue.values() if startTime <= j.startTime]
 
-
-schedulers.register(Scheduler, Master, name='sample')
-#schedulers.register(Scheduler, Master, name='BasicCrawler')
+schedulers.register(Scheduler, Master, name='core')

@@ -84,9 +84,6 @@ class Master(Agent):
 
 class SampleAgent(Agent):
 
-    def __init__(self, parent):
-        self.parent = parent
-
     def execute(self, job, params=None):
         print 'Job %s on agent %s has been executed.' % (job.identifier, self.name)
         self.log(job)
@@ -95,6 +92,4 @@ class SampleAgent(Agent):
         self.logger.log(dict(message='job execution', job=job.identifier,
                         agent=self.name))
 
-
 agents.register(SampleAgent, Master, name='sample')
-

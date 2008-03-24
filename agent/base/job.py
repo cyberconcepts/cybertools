@@ -24,8 +24,7 @@ $Id$
 
 from zope.interface import implements
 
-#from cybertools.agent.base.schedule import Scheduler
-from cybertools.agent.core.schedule import Scheduler
+from cybertools.agent.base.schedule import Scheduler
 from cybertools.agent.components import jobs
 from cybertools.agent.interfaces import IScheduledJob
 
@@ -60,4 +59,3 @@ class Job(object):
         newJob.successors = [s.copy() for s in self.successors]
 
 jobs.register(Job, Scheduler, name='sample')
-#jobs.register(Job, Scheduler, name='BasicCrawler')
