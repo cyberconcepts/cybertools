@@ -103,6 +103,7 @@ the path to the configuration file.
 
   >>> from cybertools.agent.base.agent import Master
   >>> master = Master(configFile)
+  >>> configFile.close()
 
   >>> master.config
   controller.name = 'sample'
@@ -181,3 +182,26 @@ Logging
   ...     print r
   2... agent:sample01 job:00001 message:job execution
   2... agent:sample01 job:00002 message:job execution
+
+
+Using the Twisted-based Scheduler
+=================================
+
+  >>> config = '''
+  ... controller(name='sample')
+  ... scheduler(name='core')
+  ... logger(name='default', standard=30)
+  ... '''
+  >>> master = Master(config)
+
+  >>> master.scheduler
+  <cybertools.agent.core.schedule.Scheduler object ...>
+
+  >>> master.setup()
+
+  >>> jobSpec = JobSpecification('sample', '00001', agent='sample01')
+  >>> master.setupJobs([jobSpec])
+
+  >>> from cybertools.agent.tests import tester
+  >>> tester.iterate()
+  Job 00001 on agent sample01 has been executed.

@@ -26,6 +26,7 @@ from time import time
 from zope.interface import implements
 
 from cybertools.agent.base.agent import Master
+from cybertools.agent.base.schedule import Scheduler as BaseScheduler
 from cybertools.agent.components import schedulers
 from cybertools.agent.interfaces import IScheduler
 
@@ -33,27 +34,26 @@ from twisted.internet import reactor
 from twisted.internet.defer import Deferred
 
 
-class Scheduler(object):
+class Scheduler(BaseScheduler):
 
     implements(IScheduler)
 
     def __init__(self, agent):
         self.agent = agent
-        self.queue = []
+        self.queue = {}
 
     def schedule(self, job, startTime=None):
-        print "core.schedule called"
         job.startTime = startTime or int(time())
-        self.queue.append(job)
+        #self.queue.append(job)
         if startTime is None:
             startTime = int(time())
         job.startTime = startTime
-        job.scheduler = self
-        #while startTime in self.queue:
-        #    startTime += 1
-        #self.queue[startTime] = job
+        #job.scheduler = self   # obsolete, set already in job's __init__()
+        while startTime in self.queue:  # TODO: use another key for the queue;
+            startTime += 1              # is the queue necessary anyway?
+        self.queue[startTime] = job
         reactor.callLater(startTime-int(time()), job.execute)
-        job.execute()
+        #job.execute()
         return startTime
 
     def getJobsToExecute(startTime=0):
