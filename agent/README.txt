@@ -187,6 +187,9 @@ Logging
 Using the Twisted-based Scheduler
 =================================
 
+By specifying the core scheduler in the agent's configuration this will be
+used automatically for scheduling.
+
   >>> config = '''
   ... controller(name='sample')
   ... scheduler(name='core')
@@ -197,11 +200,19 @@ Using the Twisted-based Scheduler
   >>> master.scheduler
   <cybertools.agent.core.schedule.Scheduler object ...>
 
+We trigger the controller's setup as above and enter the same
+job specification.
+
   >>> master.setup()
 
   >>> jobSpec = JobSpecification('sample', '00001', agent='sample01')
   >>> master.setupJobs([jobSpec])
 
+Now the job is not executed immediately - we have to hand over control to
+the twisted reactor first. The running of the reactor is simulated by
+a method provided for testing.
+
   >>> from cybertools.agent.tests import tester
   >>> tester.iterate()
   Job 00001 on agent sample01 has been executed.
+
