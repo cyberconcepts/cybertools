@@ -51,8 +51,10 @@ class SampleController(Controller):
 
     jobNumber = 0
 
+    agents = (('sample01', 'base.sample'),)
+
     def _getAgents(self):
-        return [AgentSpecification('sample01', 'base.sample')]
+        return [AgentSpecification(name, type) for name, type in self.agents]
 
     def enterJob(self, jobType, agent):
         self.jobNumber += 1

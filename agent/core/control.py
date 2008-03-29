@@ -31,7 +31,6 @@ from cybertools.agent.components import controllers
 
 class SampleController(SampleController):
 
-    def _getAgents(self):
-        return [AgentSpecification('sample01', 'core.sample')]
+    agents = (('sample01', 'core.sample'),)
 
 controllers.register(SampleController, Master, name='core.sample')
