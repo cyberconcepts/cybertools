@@ -36,11 +36,28 @@ class IAgent(Interface):
     config = Attribute('Configuration settings.')
     logger = Attribute('Logger instance to be used for recording '
                     'job execution and execution results.')
-    children = Attribute('A collection of agents that are managed by this '
-                    'master.')
 
-    def execute(job, params=None):
-        """ Execute a job.
+    def send(job):
+        """ If the agent supports queueing and the agent is busy put
+            job in queue, otherwise just execute the job.
+        """
+
+    def execute(job):
+        """ Execute a job using the parameters given.
+        """
+
+
+class IQueueableAgent(Interface):
+    """ An agent that keeps a queue of jobs. A queueable agent
+        executes not more than one job at a time; when a running
+        job is finished the next one will be taken from the queue.
+    """
+
+    queue = Attribute('A sequence of jobs to execute.')
+
+    def process():
+        """ Do the real work asynchronously, returning a deferred.
+            This method will be called by execute().
         """
 
 
@@ -51,6 +68,8 @@ class IMaster(IAgent):
     config = Attribute('Central configuration settings.')
     controllers = Attribute('Collection of IController instances.')
     scheduler = Attribute('IScheduler instance.')
+    children = Attribute('A collection of agents that are managed by this '
+                    'master.')
 
     def setup():
         """ Set up the master agent by triggering all assigned controllers.

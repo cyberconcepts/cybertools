@@ -106,7 +106,7 @@ the path to the configuration file.
   >>> configFile.close()
 
   >>> master.config
-  controller.name = 'sample'
+  controller.name = 'base.sample'
   logger.name = 'default'
   logger.standard = 30
   scheduler.name = 'sample'
@@ -155,12 +155,10 @@ is just one scheduler associated with the master agent.
   >>> master.scheduler
   <cybertools.agent.base.schedule.Scheduler object ...>
 
-We schedule a sample job by taking the role of the controller and simply
-call the master agent's callback method for entering jobs.
+We schedule a sample job by calling an internal method of the agent's
+controller.
 
-  >>> from cybertools.agent.base.control import JobSpecification
-  >>> jobSpec = JobSpecification('sample', '00001', agent='sample01')
-  >>> master.setupJobs([jobSpec])
+  >>> master.controllers[0].enterJob('sample', 'sample01')
   Job 00001 on agent sample01 has been executed.
 
 Logging
@@ -173,15 +171,14 @@ Logging
 
   >>> master.config.logger.standard = 20
   >>> master.logger.setup()
-  >>> jobSpec = JobSpecification('sample', '00002', agent='sample01')
-  >>> master.setupJobs([jobSpec])
+  >>> master.controllers[0].enterJob('sample', 'sample01')
   Job 00002 on agent sample01 has been executed.
-  2... agent:sample01 job:00002 message:job execution
+  2... agent:sample01 job:00002 message:job execution result:OK
 
   >>> for r in master.logger.records:
   ...     print r
-  2... agent:sample01 job:00001 message:job execution
-  2... agent:sample01 job:00002 message:job execution
+  2... agent:sample01 job:00001 message:job execution result:OK
+  2... agent:sample01 job:00002 message:job execution result:OK
 
 
 Using the Twisted-based Scheduler
@@ -190,27 +187,29 @@ Using the Twisted-based Scheduler
 By specifying the core scheduler in the agent's configuration this will be
 used automatically for scheduling.
 
+In addition, we use another sample controller, now also the twisted-based
+from the core package. This will in turn set up a queueable agent from
+the core package so that now everything is running under the control of
+the twisted reactor.
+
   >>> config = '''
-  ... controller(name='sample')
+  ... controller(name='core.sample')
   ... scheduler(name='core')
   ... logger(name='default', standard=30)
   ... '''
   >>> master = Master(config)
+  >>> master.setup()
 
   >>> master.scheduler
   <cybertools.agent.core.schedule.Scheduler object ...>
 
-We trigger the controller's setup as above and enter the same
-job specification.
+We enter the same job specification as above.
 
-  >>> master.setup()
-
-  >>> jobSpec = JobSpecification('sample', '00001', agent='sample01')
-  >>> master.setupJobs([jobSpec])
+  >>> master.controllers[0].enterJob('sample', 'sample01')
 
 Now the job is not executed immediately - we have to hand over control to
 the twisted reactor first. The running of the reactor is simulated by
-a method provided for testing.
+the ``iterate()`` method provided for testing.
 
   >>> from cybertools.agent.tests import tester
   >>> tester.iterate()

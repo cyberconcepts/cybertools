@@ -49,10 +49,17 @@ class Controller(object):
 
 class SampleController(Controller):
 
-    def _getAgents(self):
-        return [AgentSpecification('sample01', 'sample')]
+    jobNumber = 0
 
-controllers.register(SampleController, Master, name='sample')
+    def _getAgents(self):
+        return [AgentSpecification('sample01', 'base.sample')]
+
+    def enterJob(self, jobType, agent):
+        self.jobNumber += 1
+        spec = JobSpecification(jobType, '%05i' % self.jobNumber, agent=agent)
+        self.agent.setupJobs([spec])
+
+controllers.register(SampleController, Master, name='base.sample')
 
 
 class AgentSpecification(object):

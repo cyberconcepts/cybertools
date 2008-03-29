@@ -46,7 +46,7 @@ class Job(object):
 
     def execute(self):
         if self.agent is not None:
-            self.agent.execute(self, self.params)
+            self.agent.send(self)
 
     def reschedule(self, startTime=None):
         self.scheduler.schedule(self.copy(), startTime)

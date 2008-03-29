@@ -17,7 +17,7 @@
 #
 
 """
-Basic (sample) job scheduler.
+Basic job scheduler using twisted.
 
 $Id$
 """
