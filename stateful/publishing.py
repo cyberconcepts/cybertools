@@ -29,6 +29,10 @@ from cybertools.stateful.definition import StatesDefinition
 from cybertools.stateful.definition import State, Transition
 
 
+def simplePublishingFactory():
+    return simplePublishing
+
+
 simplePublishing = StatesDefinition('publishing',
         State('private', 'private', ('show',)),
         State('draft', 'draft', ('publish', 'hide',)),
