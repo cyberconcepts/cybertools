@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -21,8 +21,7 @@
 $Id$
 """
 
-import new
-import re
+import os, re
 import compiler.pycodegen
 from cStringIO import StringIO
 from persistent import Persistent
@@ -37,13 +36,17 @@ from zope.security.untrustedpython.rcompile import RestrictionMutator as BaseRM
 from zope.traversing.api import getParent, getPath
 
 from cybertools.pyscript.interfaces import IPythonScript, IScriptContainer
-try:
-    #from cybertools.pyscript.rstat import r, rpy
-    import rpy
-    from rpy import r
-    HAS_R = True
-except ImportError:
-    HAS_R = False
+
+HAS_R = use_R = bool(os.environ.get('USE_RLIBRARY', True))
+
+if use_R:
+    try:
+        #from cybertools.pyscript.rstat import r, rpy
+        import rpy
+        from rpy import r
+        HAS_R = True
+    except ImportError:
+        HAS_R = False
 
 
 unrestricted_objects = ('rpy', 'r', 'as_py', 'rstat')
