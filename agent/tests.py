@@ -43,6 +43,7 @@ def test_suite():
             unittest.makeSuite(Test),
             DocFileSuite('README.txt', optionflags=flags),
             DocFileSuite('core/README.txt', optionflags=flags),
+            DocFileSuite('crawl/README.txt', optionflags=flags),
             #DocFileSuite('transport/httpput.txt', optionflags=flags),
     ))
     return testSuite
