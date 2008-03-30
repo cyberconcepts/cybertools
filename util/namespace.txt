@@ -1,0 +1,63 @@
+==============================================
+Python Execution in Special Dynamic Namespaces
+==============================================
+
+$Id$
+
+  >>> from cybertools.util import namespace
+
+
+A Very Restricted Basic Namespace
+=================================
+
+  >>> minimal = namespace.BaseNamespace()
+
+We
+
+  >>> code = """
+  ... print 'Hello'
+  ... # a comment
+  ... print dir('')
+  ... print '__builtins__:', __builtins__
+  ... output('something')
+  ... a = 'a is a variable'
+  ... if a:
+  ...     print a
+  ... """
+  >>> exec code in minimal
+  Hello
+  ['__add__', ..., 'zfill']
+  __builtins__: {}
+  something
+  a is a variable
+
+Assignments in code executed in a namespace may be accessed as attributes
+of the namespace later.
+
+  >>> minimal.a
+  'a is a variable'
+
+By setting the ``__builtins__`` mapping to an empty dictionary the minimal
+namespace provides a secure restricted execution environment.
+
+  >>> exec "import os" in minimal
+  Traceback (most recent call last):
+  ...
+  ImportError: __import__ not found
+
+  >>> exec "f = open('dummy.txt', 'w')" in minimal
+  Traceback (most recent call last):
+  ...
+  NameError: open
+
+
+A Namespace Automatically Generating Symbols
+============================================
+
+  >>> auto = namespace.AutoNamespace()
+
+  >>> exec "print something" in auto
+  something
+
+  >>> auto.something
+  <Symbol 'something'>
