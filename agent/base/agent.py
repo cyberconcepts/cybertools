@@ -44,7 +44,10 @@ class Agent(object):
         self.config = master.config
         self.logger = master.logger
 
-    def execute(self, job, params=None):
+    def send(self, job):
+        self.execute(job)
+
+    def execute(self, job):
         pass
 
     def log(self, job, result='OK'):
@@ -90,9 +93,6 @@ class Master(Agent):
 
 
 class SampleAgent(Agent):
-
-    def send(self, job):
-        self.execute(job)
 
     def execute(self, job):
         print 'Job %s on agent %s has been executed.' % (job.identifier, self.name)
