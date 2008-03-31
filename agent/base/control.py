@@ -56,6 +56,10 @@ class SampleController(Controller):
     def _getAgents(self):
         return [AgentSpecification(name, type) for name, type in self.agents]
 
+    def createAgent(self, agentType, name):
+        spec = AgentSpecification(name, agentType)
+        self.agent.setupAgents([spec])
+
     def enterJob(self, jobType, agent):
         self.jobNumber += 1
         spec = JobSpecification(jobType, '%05i' % self.jobNumber, agent=agent)

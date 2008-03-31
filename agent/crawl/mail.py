@@ -24,31 +24,23 @@ $Id: base.py
 
 from zope.interface import implements
 
-from cybertools.agent.base.agent import Master
-from cybertools.agent.core.agent import QueueableAgent
-from cybertools.agent.interfaces import ICrawler
+from cybertools.agent.agent import Agent
+from cybertools.agent.crawl.base import Crawler
 from cybertools.agent.components import agents
 from twisted.internet.defer import succeed
 
 
-class Crawler(QueueableAgent):
+class MailCrawler(Crawler):
 
-    implements(ICrawler)
-
-    def process(self):
-        return self.collect()
+    def __init__(self, params):
+        self.params = params
 
     def collect(self, filter=None):
-        d = defer.succeed([])
-        return d
-
-
-class SampleCrawler(Crawler):
-
-    def collect(self, filter=None):
-        print 'SampleCrawler is collecting.'
+        print 'MailCrawler is collecting.'
         d = succeed([])
         return d
 
-agents.register(SampleCrawler, Master, name='crawl.sample')
-
+#would it make sense to register this one at the AdapterFactory?
+#or should it also just serve as base class for OutlookCrawler
+#KMailCrawler etc. ?
+#agents.register(MailCrawler, Agent, name='crawl.mail')

@@ -75,6 +75,9 @@ class Master(Agent):
     def setupAgents(self, agentSpecs):
         for spec in agentSpecs:
             agent = agents(self, spec.type)
+            if agent is None:
+                print spec.type
+                return
             agent.name = spec.name
             self.children[spec.name] = agent
 

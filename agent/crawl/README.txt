@@ -2,35 +2,45 @@
 Agents for Job Execution and Communication Tasks
 ================================================
 
-Agents collect informations and transfer them e.g. to a loops server.
+  ($Id$)
 
-  ($Id: README.txt 2413 2008-02-23 14:07:15Z helmutm $)
+  >>> from cybertools.agent.base.agent import Master
 
-This package does not depend on zope or the other loops packages
-but represents a standalone application.
-
-But we need a reactor for working with Twisted; in order not to block
-testing when running the reactor we use reactor.iterate() calls
-wrapped in a ``tester`` object.
-
-  >>> from cybertools.agent.tests import tester
+  >>> config = '''
+  ... controller(name='core.sample')
+  ... scheduler(name='core')
+  ... logger(name='default', standard=30)
+  ... '''
+  >>> master = Master(config)
+  >>> master.setup()
 
 
 Crawler
-============
+=======
 
 The agent uses Twisted's cooperative multitasking model.
 
-Crawler is the base class for all derived Crawlers like the filesystem crawler
+Crawler is the base class for all derived crawlers like the filesystem crawler
 and the mailcrawler. The SampleCrawler returns a deferred that already had a
 callback being called, so it will return at once.
+
 Returns a deferred that must be supplied with a callback method (and in
 most cases also an errback method).
 
-  >>> from cybertools.agent.crawl.base import SampleCrawler
-  >>> from twisted.internet import defer
-  >>> crawler = SampleCrawler()
-  >>> deferred = crawler.collect()
-  SampleCrawler is collecting.
+We create the sample crawler via the master's controller. The sample
+controller provides a simple method for this purpose.
 
+  >>> controller = master.controllers[0]
+  >>> controller.createAgent('crawl.sample', 'crawler01')
+
+In the next step we request the start of a job, again via the controller.
+
+  >>> controller.enterJob('sample', 'crawler01')
+
+The job is not executed immediately - we have to hand over control to
+the twisted reactor first.
+
+  >>> from cybertools.agent.tests import tester
+  >>> tester.iterate()
+  SampleCrawler is collecting.
 
