@@ -34,11 +34,27 @@ class MailCrawler(Crawler):
 
     def __init__(self, params):
         self.params = params
+        self.result = []
 
     def collect(self, filter=None):
         print 'MailCrawler is collecting.'
+        # d = self.crawlFolders()
         d = succeed([])
         return d
+
+    def crawlFolders(self):
+        pass
+
+    def loadMailsFromFolder(self, folder):
+        pass
+
+    def createResource(self, mail):
+        resource = mail
+        # do the real processing
+        self.result.append(resource)
+
+    def login(self):
+        pass
 
 #would it make sense to register this one at the AdapterFactory?
 #or should it also just serve as base class for OutlookCrawler
