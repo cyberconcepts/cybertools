@@ -95,7 +95,7 @@ class IMaster(IAgent):
             wants to provide new job information.
         """
 
-    def inform(job, result=None, message=''):
+    def notify(job, result=None, message=''):
         """ Callback for informing the master about the state of a job.
         """
 

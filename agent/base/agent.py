@@ -90,8 +90,9 @@ class Master(Agent):
             job.controller = controller
             self.scheduler.schedule(job, spec.startTime)
 
-    def inform(self, job, result=None, message=''):
-        job.controller.inform(job.identifier, job.state, result, message)
+    def notify(self, job, result=None, message=''):
+        if job.state.hasFinished():
+            job.controller.notify(job.identifier, job.state, result, message)
 
 
 class SampleAgent(Agent):
@@ -101,6 +102,6 @@ class SampleAgent(Agent):
         print 'Job %s on agent %s has been executed.' % (job.identifier, self.name)
         self.log(job)
         job.state = states.completed
-        self.master.inform(job)
+        self.master.notify(job)
 
 agents.register(SampleAgent, Master, name='base.sample')

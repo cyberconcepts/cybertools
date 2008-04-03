@@ -66,14 +66,14 @@ class QueueableAgent(Agent):
         job = self.currentJob
         job.state = states.completed
         self.log(job)
-        self.master.inform(job, result)
+        self.master.notify(job, result)
         self.finishJob()
 
     def error(self, result):
         print '*** error', result
         job.state = states.aborted
         self.log(self.currentJob, result='Error')
-        self.master.inform(job, result)
+        self.master.notify(job, result)
         self.finishJob()
 
     def finishJob(self):

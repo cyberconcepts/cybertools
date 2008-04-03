@@ -46,7 +46,7 @@ class Controller(object):
     def _getCurrentJobs(self):
         return []
 
-    def inform(self, identifier, state, result=None, message=''):
+    def notify(self, identifier, state, result=None, message=''):
         pass
 
 
@@ -56,7 +56,7 @@ class SampleController(Controller):
 
     agents = (('sample01', 'base.sample'),)
 
-    def inform(self, identifier, state, result=None, message=''):
+    def notify(self, identifier, state, result=None, message=''):
         msg = ('Job %s %s; result: %s; %s' %
                (identifier, state, result, message))
         print msg
