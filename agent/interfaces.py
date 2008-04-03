@@ -97,7 +97,6 @@ class IMaster(IAgent):
 
     def inform(job, result=None, message=''):
         """ Callback for informing the master about the state of a job.
-            The result is an IResource object (if not None).
         """
 
 

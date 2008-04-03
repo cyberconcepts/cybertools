@@ -43,4 +43,4 @@ the twisted reactor first.
   >>> from cybertools.agent.tests import tester
   >>> tester.iterate()
   SampleCrawler is collecting.
-
+  Job 00001 completed; result: [];

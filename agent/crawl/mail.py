@@ -56,7 +56,3 @@ class MailCrawler(Crawler):
     def login(self):
         pass
 
-#would it make sense to register this one at the AdapterFactory?
-#or should it also just serve as base class for OutlookCrawler
-#KMailCrawler etc. ?
-#agents.register(MailCrawler, Agent, name='crawl.mail')

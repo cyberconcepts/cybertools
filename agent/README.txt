@@ -156,10 +156,13 @@ is just one scheduler associated with the master agent.
   <cybertools.agent.base.schedule.Scheduler object ...>
 
 We schedule a sample job by calling an internal method of the agent's
-controller.
+controller. In addition to the output of the job execution itself we
+also get a note from the controller about the feedback it received
+about the outcome of the job execution.
 
   >>> master.controllers[0].enterJob('sample', 'sample01')
   Job 00001 on agent sample01 has been executed.
+  Job 00001 completed; result: None;
 
 Logging
 -------
@@ -174,6 +177,7 @@ Logging
   >>> master.controllers[0].enterJob('sample', 'sample01')
   Job 00002 on agent sample01 has been executed.
   2... agent:sample01 job:00002 message:job execution result:OK
+  Job 00002 completed; result: None;
 
   >>> for r in master.logger.records:
   ...     print r
@@ -214,4 +218,4 @@ the ``iterate()`` method provided for testing.
   >>> from cybertools.agent.tests import tester
   >>> tester.iterate()
   Job 00001 on agent sample01 has been executed.
-
+  Job 00001 completed; result: Done;

@@ -56,6 +56,11 @@ class SampleController(Controller):
 
     agents = (('sample01', 'base.sample'),)
 
+    def inform(self, identifier, state, result=None, message=''):
+        msg = ('Job %s %s; result: %s; %s' %
+               (identifier, state, result, message))
+        print msg
+
     def _getAgents(self):
         return [AgentSpecification(name, type) for name, type in self.agents]
 
