@@ -74,7 +74,7 @@ class Master(Agent):
 
     def setup(self):
         for cont in self.controllers:
-            cont.setupAgent()
+            cont.setup()
 
     def setupAgents(self, controller, agentSpecs):
         for spec in agentSpecs:

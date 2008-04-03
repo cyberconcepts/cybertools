@@ -36,7 +36,7 @@ class Controller(object):
     def __init__(self, agent):
         self.agent = agent
 
-    def setupAgent(self):
+    def setup(self):
         self.agent.setupAgents(self, self._getAgents())
         self.agent.setupJobs(self, self._getCurrentJobs())
 

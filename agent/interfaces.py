@@ -142,9 +142,9 @@ class IController(Interface):
         information.
     """
 
-    def setupAgent():
-        """ Set up the controllers's agent by calling the agent's
-            callback methods.
+    def setup():
+        """ Set up the controller; e.g. create agents and jobs by calling
+            the agent's callback methods.
         """
 
 
