@@ -24,9 +24,10 @@ $Id$
 
 from zope.interface import implements
 
-from cybertools.agent.interfaces import IAgent
+from cybertools.agent.common import states
 from cybertools.agent.components import agents, controllers, jobs
 from cybertools.agent.components import loggers, schedulers
+from cybertools.agent.interfaces import IAgent
 from cybertools.util.config import Configurator
 
 
@@ -75,27 +76,31 @@ class Master(Agent):
         for cont in self.controllers:
             cont.setupAgent()
 
-    def setupAgents(self, agentSpecs):
+    def setupAgents(self, controller, agentSpecs):
         for spec in agentSpecs:
             agent = agents(self, spec.type)
-            if agent is None:
-                print spec.type
-                return
             agent.name = spec.name
             self.children[spec.name] = agent
 
-    def setupJobs(self, jobSpecs):
+    def setupJobs(self, controller, jobSpecs):
         for spec in jobSpecs:
             job = jobs(self.scheduler, spec.type)
             job.agent = self.children[spec.agent]
             job.identifier = spec.identifier
+            job.controller = controller
             self.scheduler.schedule(job, spec.startTime)
+
+    def inform(self, job, result=None, message=''):
+        job.controller.inform(job.identifier, job.state, result, message)
 
 
 class SampleAgent(Agent):
 
     def execute(self, job):
+        job.state = states.running
         print 'Job %s on agent %s has been executed.' % (job.identifier, self.name)
         self.log(job)
+        job.state = states.completed
+        self.master.inform(job)
 
 agents.register(SampleAgent, Master, name='base.sample')

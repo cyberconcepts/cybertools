@@ -27,6 +27,7 @@ from zope.interface import implements
 
 from cybertools.agent.base.agent import Master
 from cybertools.agent.base.schedule import Scheduler as BaseScheduler
+from cybertools.agent.common import states
 from cybertools.agent.components import schedulers
 from cybertools.agent.interfaces import IScheduler
 
@@ -40,20 +41,14 @@ class Scheduler(BaseScheduler):
 
     def __init__(self, agent):
         self.agent = agent
-        self.queue = {}
 
     def schedule(self, job, startTime=None):
         job.startTime = startTime or int(time())
-        #self.queue.append(job)
         if startTime is None:
             startTime = int(time())
         job.startTime = startTime
-        #job.scheduler = self   # obsolete, set already in job's __init__()
-        while startTime in self.queue:  # TODO: use another key for the queue;
-            startTime += 1              # is the queue necessary anyway?
-        self.queue[startTime] = job
+        job.state = states.scheduled
         reactor.callLater(startTime-int(time()), job.execute)
-        #job.execute()
         return startTime
 
     def getJobsToExecute(startTime=0):

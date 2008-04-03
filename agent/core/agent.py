@@ -26,6 +26,7 @@ from twisted.internet.defer import succeed
 from zope.interface import implements
 
 from cybertools.agent.base.agent import Agent, Master
+from cybertools.agent.common import states
 from cybertools.agent.components import agents
 from cybertools.agent.interfaces import IQueueableAgent
 
@@ -50,6 +51,7 @@ class QueueableAgent(Agent):
             self.queue.insert(0, job)
 
     def execute(self, job):
+        job.state = states.running
         self.currentJob = job
         d = self.process()
         d.addCallbacks(self.completed, self.error)
@@ -61,14 +63,17 @@ class QueueableAgent(Agent):
         return succeed('Done')
 
     def completed(self, result):
-        self.log(self.currentJob)
-        # TODO: inform the master about the result of the job execution
+        job = self.currentJob
+        job.state = states.completed
+        self.log(job)
+        self.master.inform(job, result)
         self.finishJob()
 
     def error(self, result):
         print '*** error', result
+        job.state = states.aborted
         self.log(self.currentJob, result='Error')
-        # TODO: inform the master about the result of the job execution
+        self.master.inform(job, result)
         self.finishJob()
 
     def finishJob(self):

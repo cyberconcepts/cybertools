@@ -37,14 +37,17 @@ class Controller(object):
         self.agent = agent
 
     def setupAgent(self):
-        self.agent.setupAgents(self._getAgents())
-        self.agent.setupJobs(self._getCurrentJobs())
+        self.agent.setupAgents(self, self._getAgents())
+        self.agent.setupJobs(self, self._getCurrentJobs())
 
     def _getAgents(self):
         return []
 
     def _getCurrentJobs(self):
         return []
+
+    def inform(self, identifier, state, result=None, message=''):
+        pass
 
 
 class SampleController(Controller):
@@ -58,12 +61,12 @@ class SampleController(Controller):
 
     def createAgent(self, agentType, name):
         spec = AgentSpecification(name, agentType)
-        self.agent.setupAgents([spec])
+        self.agent.setupAgents(self, [spec])
 
     def enterJob(self, jobType, agent):
         self.jobNumber += 1
         spec = JobSpecification(jobType, '%05i' % self.jobNumber, agent=agent)
-        self.agent.setupJobs([spec])
+        self.agent.setupJobs(self, [spec])
 
 controllers.register(SampleController, Master, name='base.sample')
 

@@ -24,6 +24,8 @@ $Id$
 
 from zope.interface import Interface, Attribute
 
+from cybertools.util.jeep import Jeep
+
 
 # agents
 
@@ -77,7 +79,7 @@ class IMaster(IAgent):
             methods ``setupAgents()`` and ``setupJobs()``.
         """
 
-    def setupAgents(agentSpecs):
+    def setupAgents(controller, agentSpecs):
         """ Callback for loading agent specifications from the controller
             and setting up the corresponding agents.
 
@@ -85,12 +87,17 @@ class IMaster(IAgent):
             wants to provide new agent information.
         """
 
-    def setupJobs(jobSpecs):
+    def setupJobs(controller, jobSpecs):
         """ Callback for loading the specifications of active jobs from
             the controller and scheduling the corresponding jobs.
 
             Will be called upon agent setup and later when the controller
             wants to provide new job information.
+        """
+
+    def inform(job, result=None, message=''):
+        """ Callback for informing the master about the state of a job.
+            The result is an IResource object (if not None).
         """
 
 
@@ -157,15 +164,6 @@ class IScheduler(Interface):
             supplied.
         """
 
-    def getJobsToExecute(startTime=None, agents=None):
-        """ Return a collection of jobs that are scheduled for execution at
-            or before the date/time given.
-
-            If ``startTime`` is None the current date/time is used.
-            If ``agents`` is not None return only jobs for the agents
-            given.
-        """
-
 
 # jobs
 
@@ -178,18 +176,15 @@ class IScheduledJob(Interface):
                        'controller.')
     scheduler = Attribute('Scheduler that controls this job.')
     agent = Attribute('Agent responsible for executing the job.')
+    controller = Attribute('Controller that issued the job.')
     startTime = Attribute('Date/time at which the job should be executed.')
     params = Attribute('Mapping with key/value pairs to be used by '
                        'the ``execute()`` method.')
+    state = Attribute('An object representing the current state of the job.')
     repeat = Attribute('Number of seconds after which the job should be '
                        'rescheduled. Do not repeat if 0.')
     successors = Attribute('Jobs to execute immediately after this '
                        'one has been finished.')
-    whenStarted = Attribute('A callable with one argument (the job) that will '
-                       'be called when the job has started.')
-    whenfinished = Attribute('A callable with two arguments, the job and the '
-                       'result of running the job, that will be called when '
-                       'the job has finished.')
 
     def execute():
         """ Execute the job, typically by calling the ``execute()`` method

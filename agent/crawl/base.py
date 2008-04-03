@@ -19,7 +19,7 @@
 """
 Crawl base and sample classes.
 
-$Id: base.py
+$Id$
 """
 
 from zope.interface import implements

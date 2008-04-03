@@ -17,30 +17,34 @@
 #
 
 """
-Basic (sample) job scheduler.
+Common stuff.
 
 $Id$
 """
 
-from time import time
-from zope.interface import implements
-
-from cybertools.agent.base.agent import Master
-from cybertools.agent.common import states
-from cybertools.agent.components import schedulers
-from cybertools.agent.interfaces import IScheduler
+from cybertools.util.jeep import Jeep
 
 
-class Scheduler(object):
+class JobState(object):
 
-    implements(IScheduler)
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
 
-    def __init__(self, agent):
-        self.agent = agent
+    def hasError(self):
+        return self.value < 0
 
-    def schedule(self, job, startTime=None):
-        job.startTime = startTime or int(time())
-        job.state = states.scheduled
-        job.execute()   # the sample scheduler does not care about startTime
+    def hasFinished(self):
+        return (self.value <= states.aborted.value or
+                self.value >= states.completed.value)
 
-schedulers.register(Scheduler, Master, name='sample')
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return '<JobState %s>' % self.name
+
+
+states = Jeep([JobState(n, v) for n, v in
+                (('initialized', 0), ('scheduled', 1), ('submitted', 2),
+                 ('running', 3), ('completed', 4), ('aborted', -1))])
