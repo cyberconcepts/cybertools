@@ -22,6 +22,7 @@ Base/sample controller implementation.
 $Id$
 """
 
+from twisted.application import service, internet
 from twisted.internet import protocol, reactor, stdio
 from twisted.protocols import basic
 from zope.interface import implements
@@ -44,12 +45,15 @@ controllers.register(CmdlineController, Master, name='cmdline')
 
 class TelnetController(CmdlineController):
 
-    delimiter = '\r\n'
-
     def setup(self):
         super(CmdlineController, self).setup()
         port = self.agent.config.controller.telnet.port
-        reactor.listenTCP(port, TelnetServerFactory(self))
+        from cybertools.agent.main import application
+        if application is None:
+            reactor.listenTCP(port, TelnetServerFactory(self))
+        else:
+            service = internet.TCPServer(port, TelnetServerFactory(self))
+            service.setServiceParent(application)
 
 controllers.register(TelnetController, Master, name='telnet')
 
@@ -61,6 +65,7 @@ class CmdlineProtocol(basic.LineReceiver):
 
     def connectionMade(self):
         self.sendLine("Agent console. Type 'help' for help.")
+        self.transport.write('> ')
 
     def lineReceived(self, line):
         if not line:
@@ -77,6 +82,7 @@ class CmdlineProtocol(basic.LineReceiver):
                 method(*args)
             except Exception, e:
                 self.sendLine('Error: ' + str(e))
+        self.transport.write('> ')
 
     def do_help(self, command=None):
         if command:

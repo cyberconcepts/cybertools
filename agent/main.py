@@ -1,3 +1,4 @@
+#! /usr/bin/env python2.4
 #
 #  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
@@ -22,10 +23,36 @@ Agent application.
 $Id$
 """
 
-from twisted.application import service
+import os
+from twisted.internet import reactor
 
-from cybertools.agent import main
+from cybertools.agent.base.agent import Master
 
 
-application = main.application = service.Application('Agent Application')
-main.setup()
+application = None  # contains application object if started via twistd
+
+
+def getConfig():
+    agentHome = os.path.abspath(os.path.dirname(__file__))
+    configName = 'agent.cfg'
+    configFile = open(os.path.join(agentHome, configName))
+    config = configFile.read()
+    configFile.close()
+    return config
+
+
+def setup():
+    master = Master(getConfig())
+    master.setup()
+    print 'Starting agent application...'
+    print 'Using controllers %s.' % ', '.join(master.config.controller.names)
+
+
+def startReactor():
+    reactor.run()
+    print 'Agent application has been stopped.'
+
+
+if __name__ == '__main__':
+    setup()
+    startReactor()
