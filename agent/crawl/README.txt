@@ -7,7 +7,7 @@ Agents for Job Execution and Communication Tasks
   >>> from cybertools.agent.base.agent import Master
 
   >>> config = '''
-  ... controller(name='core.sample')
+  ... controller(names=['core.sample'])
   ... scheduler(name='core')
   ... logger(name='default', standard=30)
   ... '''

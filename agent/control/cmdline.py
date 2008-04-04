@@ -35,7 +35,9 @@ class CmdlineController(SampleController):
 
     def setup(self):
         super(CmdlineController, self).setup()
-        stdio.StandardIO(CmdlineProtocol())
+        prot = CmdlineProtocol()
+        prot.controller = self
+        stdio.StandardIO(prot)
 
 controllers.register(CmdlineController, Master, name='cmdline')
 
@@ -46,7 +48,8 @@ class TelnetController(CmdlineController):
 
     def setup(self):
         super(CmdlineController, self).setup()
-        reactor.listenTCP(5001, TelnetServerFactory())
+        port = self.agent.config.controller.telnet.port
+        reactor.listenTCP(port, TelnetServerFactory(self))
 
 controllers.register(TelnetController, Master, name='telnet')
 
@@ -54,6 +57,7 @@ controllers.register(TelnetController, Master, name='telnet')
 class CmdlineProtocol(basic.LineReceiver):
 
     delimiter = '\n'
+    controller = None
 
     def connectionMade(self):
         self.sendLine("Agent console. Type 'help' for help.")
@@ -97,4 +101,11 @@ class TelnetProtocol(CmdlineProtocol):
 
 class TelnetServerFactory(protocol.ServerFactory):
 
-    protocol = TelnetProtocol
+    def __init__(self, controller):
+        self.controller = controller
+
+    def protocol(self, *args, **kw):
+        prot = TelnetProtocol(*args, **kw)
+        prot.controller = self.controller
+        return prot
+

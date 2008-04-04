@@ -23,21 +23,32 @@ Agent application.
 $Id$
 """
 
+import os
 from twisted.internet import reactor
+
 from cybertools.agent.base.agent import Master
 
-config = '''
-controller(name='telnet')
-scheduler(name='core')
-logger(name='default', standard=30)
-'''
 
-master = Master(config)
-master.setup()
+def getConfig():
+    agentHome = os.path.abspath(os.path.dirname(__file__))
+    configName = 'agent.cfg'
+    configFile = open(os.path.join(agentHome, configName))
+    config = configFile.read()
+    configFile.close()
+    return config
 
-print 'Starting agent application...'
-print 'Using controller %s.' % master.config.controller.name
 
-reactor.run()
+def start():
+    master = Master(getConfig())
+    master.setup()
 
-print 'Agent application has been stopped.'
+    print 'Starting agent application...'
+    print 'Using controllers %s.' % ', '.join(master.config.controller.names)
+
+    reactor.run()
+
+    print 'Agent application has been stopped.'
+
+
+if __name__ == '__main__':
+    start()

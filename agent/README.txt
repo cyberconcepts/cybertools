@@ -106,7 +106,7 @@ the path to the configuration file.
   >>> configFile.close()
 
   >>> master.config
-  controller.name = 'base.sample'
+  controller.names = ['base.sample']
   logger.name = 'default'
   logger.standard = 30
   scheduler.name = 'sample'
@@ -197,7 +197,7 @@ the core package so that now everything is running under the control of
 the twisted reactor.
 
   >>> config = '''
-  ... controller(name='core.sample')
+  ... controller(names=['core.sample'])
   ... scheduler(name='core')
   ... logger(name='default', standard=30)
   ... '''

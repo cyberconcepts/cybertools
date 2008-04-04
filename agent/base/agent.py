@@ -61,16 +61,19 @@ class Master(Agent):
     name = 'master'
     scheduler = None
 
-    def __init__(self, configuration=None):
-        config = self.config = Configurator()
+    def __init__(self, configuration):
+        if isinstance(configuration, Configurator):
+            config = configuration
+        else:   # configuration is path to config file
+            config = self.config = Configurator()
+            config.load(configuration)
         self.master = self
         self.controllers = []
         self.children = {}
-        if configuration is not None:
-            config.load(configuration)
-            self.logger = loggers(self, name=config.logger.name)
-            self.controllers.append(controllers(self, name=config.controller.name))
-            self.scheduler = schedulers(self, name=config.scheduler.name)
+        self.logger = loggers(self, name=config.logger.name)
+        for n in config.controller.names:
+            self.controllers.append(controllers(self, n))
+        self.scheduler = schedulers(self, name=config.scheduler.name)
 
     def setup(self):
         for cont in self.controllers:
