@@ -24,7 +24,8 @@ $Id$
 
 from zope.interface import implements
 
-from cybertools.agent.agent import Agent
+from cybertools.agent.base.agent import Agent, Master
+from cybertools.agent.crawl.base import Resource
 from cybertools.agent.crawl.base import Crawler
 from cybertools.agent.components import agents
 from twisted.internet.defer import succeed
@@ -41,6 +42,9 @@ class MailCrawler(Crawler):
         # d = self.crawlFolders()
         d = succeed([])
         return d
+    
+    def fetchCriteria(self):
+        pass
 
     def crawlFolders(self):
         pass
@@ -48,11 +52,15 @@ class MailCrawler(Crawler):
     def loadMailsFromFolder(self, folder):
         pass
 
-    def createResource(self, mail):
-        resource = mail
-        # do the real processing
+    def createResource(self, mail, path="", application="", metadata=None):
+        resource = MailResource(mail, path, application, metadata)
         self.result.append(resource)
 
     def login(self):
         pass
 
+
+class MailResource(Resource):
+    pass
+
+agents.register(MailCrawler, Master, name='crawl.mail')

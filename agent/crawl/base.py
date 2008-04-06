@@ -27,6 +27,7 @@ from zope.interface import implements
 from cybertools.agent.base.agent import Master
 from cybertools.agent.core.agent import QueueableAgent
 from cybertools.agent.interfaces import ICrawler
+from cybertools.agent.interfaces import IResource
 from cybertools.agent.components import agents
 from twisted.internet.defer import succeed
 
@@ -49,6 +50,24 @@ class SampleCrawler(Crawler):
         print 'SampleCrawler is collecting.'
         d = succeed([])
         return d
+
+
+class Resource(object):
+
+    implements(IResource)
+
+    data = None
+    path = ""
+    application = ""
+    metadata = None
+
+    def __init__(self, data, path="", application="", metadata=None):
+        self.data = data
+        self.path = path
+        self.application = application
+        self.metadata = metadata
+
+
 
 agents.register(SampleCrawler, Master, name='crawl.sample')
 
