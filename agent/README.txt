@@ -1,4 +1,4 @@
-﻿================================================
+================================================
 Agents for Job Execution and Communication Tasks
 ================================================
 
@@ -101,8 +101,10 @@ configuration are provided by the controller.
 So we are now ready to create a master agent and configure it by supplying
 the path to the configuration file.
 
-  >>> from cybertools.agent.base.agent import Master
-  >>> master = Master(configFile)
+  >>> from cybertools.agent.main import setup
+  >>> master = setup(configFile)
+  Starting agent application...
+  Using controllers base.sample.
   >>> configFile.close()
 
   >>> master.config
@@ -201,8 +203,9 @@ the twisted reactor.
   ... scheduler(name='core')
   ... logger(name='default', standard=30)
   ... '''
-  >>> master = Master(config)
-  >>> master.setup()
+  >>> master = setup(config)
+  Starting agent application...
+  Using controllers core.sample.
 
   >>> master.scheduler
   <cybertools.agent.core.schedule.Scheduler object ...>

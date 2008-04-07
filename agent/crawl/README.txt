@@ -4,15 +4,15 @@ Agents for Job Execution and Communication Tasks
 
   ($Id$)
 
-  >>> from cybertools.agent.base.agent import Master
-
   >>> config = '''
   ... controller(names=['core.sample'])
   ... scheduler(name='core')
   ... logger(name='default', standard=30)
   ... '''
-  >>> master = Master(config)
-  >>> master.setup()
+  >>> from cybertools.agent.main import setup
+  >>> master = setup(config)
+  Starting agent application...
+  Using controllers core.sample.
 
 
 Crawler

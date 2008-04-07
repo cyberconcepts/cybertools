@@ -19,7 +19,7 @@
 """
 Outlook Crawler Class.
 
-$Id: mail.py 2493 2008-04-03 11:17:37Z helmutm $
+$Id$
 """
 
 import re

@@ -60,22 +60,24 @@ class Master(Agent):
 
     name = 'master'
     scheduler = None
+    logger = None
 
     def __init__(self, configuration):
         if isinstance(configuration, Configurator):
-            config = configuration
+            self.config = configuration
         else:   # configuration is path to config file
-            config = self.config = Configurator()
-            config.load(configuration)
+            self.config = Configurator()
+            self.config.load(configuration)
         self.master = self
         self.controllers = []
         self.children = {}
+
+    def setup(self):
+        config = self.config
         self.logger = loggers(self, name=config.logger.name)
         for n in config.controller.names:
             self.controllers.append(controllers(self, n))
         self.scheduler = schedulers(self, name=config.scheduler.name)
-
-    def setup(self):
         for cont in self.controllers:
             cont.setup()
 

@@ -17,34 +17,8 @@
 #
 
 """
-Miscellaneous common stuff.
+Conficuration-controlled import of Windows API functions.
 
 $Id$
 """
 
-from cybertools.util.jeep import Jeep
-
-
-class JobState(object):
-
-    def __init__(self, name, value):
-        self.name = name
-        self.value = value
-
-    def hasError(self):
-        return self.value < 0
-
-    def hasFinished(self):
-        return (self.value <= states.aborted.value or
-                self.value >= states.completed.value)
-
-    def __str__(self):
-        return self.name
-
-    def __repr__(self):
-        return '<JobState %s>' % self.name
-
-
-states = Jeep([JobState(n, v) for n, v in
-                (('initialized', 0), ('scheduled', 1), ('submitted', 2),
-                 ('running', 3), ('completed', 4), ('aborted', -1))])
