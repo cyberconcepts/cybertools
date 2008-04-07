@@ -26,20 +26,21 @@ import re
 
 from zope.interface import implements
 from twisted.internet import defer
-import win32com.client
-import ctypes
-import win32api, win32process, win32con
+#import win32com.client
+#import ctypes
+#import win32api, win32process, win32con
 
 from cybertools.agent.base.agent import Agent, Master
 from cybertools.agent.crawl.mail import MailCrawler
 from cybertools.agent.crawl.mail import MailResource
 from cybertools.agent.components import agents
+from cybertools.agent.system.windows import api
 
 # some constants
 COMMASPACE = ', '
 
 class OutlookCrawler(MailCrawler):
-    
+
     keys = ""
     inbox = ""
     subfolders = ""
@@ -54,7 +55,7 @@ class OutlookCrawler(MailCrawler):
         else:
             pass
             #self.d.addErrback([])
-        return d
+        return self.d
 
     def fetchCriteria(self):
         criteria = self.params
@@ -107,7 +108,7 @@ class OutlookCrawler(MailCrawler):
 
     def login(self):
         pass
-    
+
     def handleOutlookDialog(self):
         """
         This function handles the outlook dialog, which appears if someone
@@ -140,11 +141,11 @@ class OutlookCrawler(MailCrawler):
                     break
 
     def findOutlook(self):
-        outlookFound = 0
+        outlookFound = False
         try:
             self.oOutlookApp = \
-            win32com.client.gencache.EnsureDispatch("Outlook.Application")
-            outlookFound = 1
+                api.client.gencache.EnsureDispatch("Outlook.Application")
+            outlookFound = True
         except:
             pass
         return outlookFound
@@ -168,5 +169,5 @@ class OutlookCrawler(MailCrawler):
             msg['To'] = COMMASPACE.join(recipients)
         msg.preamble = emails['Body'].encode('utf-8')
         return msg
-    
+
 agents.register(OutlookCrawler, Master, name='crawl.outlook')

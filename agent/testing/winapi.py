@@ -22,3 +22,4 @@ Fake Windows API functions for testing purposes.
 $Id$
 """
 
+client = ctypes = win32api = win32process = win32con = None

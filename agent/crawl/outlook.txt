@@ -2,16 +2,18 @@
 Agents for Job Execution and Communication Tasks
 ================================================
 
-
-  >>> from cybertools.agent.base.agent import Master
+  ($Id$)
 
   >>> config = '''
   ... controller(names=['core.sample'])
   ... scheduler(name='core')
   ... logger(name='default', standard=30)
+  ... system.winapi = 'testing'
   ... '''
-  >>> master = Master(config)
-  >>> master.setup()
+  >>> from cybertools.agent.main import setup
+  >>> master = setup(config)
+  Starting agent application...
+  Using controllers core.sample.
 
 
 OutlookCrawler
@@ -33,19 +35,10 @@ dlls".
 
 In the next step we request the start of a job, again via the controller.
 
-  >>> controller.enterJob('outlook', 'sample02')
+  >>> controller.enterJob('sample', 'sample02')
 
 The job is not executed immediately - we have to hand over control to
 the twisted reactor first.
 
-  >>> from cybertools.agent.crawl.outlook import OutlookCrawler
-  >>> from cybertools.agent.crawl.outlookstub import OutlookCrawlerStub
-  >>> OutlookCrawler.findOutlook = OutlookCrawlerStub.findOutlook
-  >>> OutlookCrawler = OutlookCrawlerStub
   >>> from cybertools.agent.tests import tester
   >>> tester.iterate()
-  Returning reference to Outlook Application
-  Retrieving Parameters
-  Crawling Folders
-  loading mails from folder
-  Job 00001 completed; result: [];

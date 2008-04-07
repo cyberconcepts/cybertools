@@ -33,8 +33,8 @@ from twisted.internet.defer import succeed
 
 class MailCrawler(Crawler):
 
-    def __init__(self, params):
-        self.params = params
+    def __init__(self, master):
+        super(MailCrawler, self).__init__(master)
         self.result = []
 
     def collect(self, filter=None):
@@ -42,7 +42,7 @@ class MailCrawler(Crawler):
         # d = self.crawlFolders()
         d = succeed([])
         return d
-    
+
     def fetchCriteria(self):
         pass
 

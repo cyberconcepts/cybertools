@@ -22,3 +22,17 @@ Conficuration-controlled import of Windows API functions.
 $Id$
 """
 
+def setup(config):
+    global client, ctypes, win32api, win32process, win32con
+    if config.system.winapi == 'testing':
+        from cybertools.agent.testing.winapi import \
+                        client, ctypes, win32api, win32process, win32con
+    else:
+        try:
+            from win32com import client
+            import ctypes
+            import win32api, win32process, win32con
+        except ImportError:
+            from cybertools.agent.testing.winapi import \
+                        client, ctypes, win32api, win32process, win32con
+
