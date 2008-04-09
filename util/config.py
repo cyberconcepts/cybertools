@@ -40,10 +40,11 @@ class Configurator(dict):
         self.filename = kw.get('filename')
 
     def __getitem__(self, key):
-        item = getattr(self, key, _not_found)
-        if item is _not_found:
-            item = ConfigSection(key)
-            setattr(self, key, item)
+        return getattr(self, key)
+
+    def __getattr__(self, key):
+        item = ConfigSection(key)
+        setattr(self, key, item)
         return item
 
     def load(self, p=None, filename=None):
@@ -138,6 +139,6 @@ class ConfigSection(list):
         for name, value in self.__dict__.items():
             if isinstance(value, ConfigSection):
                 value.collect('%s.%s' % (ident, name), result)
-            elif name != '__name__' and isinstance(value, (str, int)):
-                result.append('%s.%s = %s' % (ident, name, repr(value)))
+            elif name != '__name__' and isinstance(value, (str, int, list, tuple)):
+                result.append('%s.%s = %r' % (ident, name, value))
 

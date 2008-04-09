@@ -20,7 +20,7 @@ Storing and Retrieving Notifications
 
   >>> manager.notify('obj01', 'user01', 'object_changed')
 
-  >>> ntf01 = manager.query(userName='user01')[0]
+  >>> ntf01 = list(manager.query(userName='user01'))[0]
   >>> ntf01
   <Notification ['obj01', 1, 'user01', '...']:
   {'media': ['inbox'], 'state': 'new', 'type': 'object_changed'}>

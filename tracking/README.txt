@@ -14,7 +14,7 @@ working with the current run of a task.)
   >>> tracks = TrackingStorage()
   >>> tracks.saveUserTrack('a001', 0, 'u1', {'somekey': 'somevalue'})
   '0000001'
-  >>> t1 = tracks.getUserTracks('a001', 0, 'u1')
+  >>> t1 = list(tracks.getUserTracks('a001', 0, 'u1'))
   >>> len(t1)
   1
   >>> t1[0].data
@@ -30,18 +30,18 @@ We can query the tracking storage using the tracks' metadata. These
 are mapped to btree indexes, so we get fast access to the resulting
 track data.
 
-  >>> tracks.query(taskId='a001')
+  >>> list(tracks.query(taskId='a001'))
   [<Track ['a001', 1, 'u1', '...-...-... ...:...']: {'somekey': 'somevalue'}>]
 
   >>> tracks.saveUserTrack('a002', 0, 'u1', {'somekey': 'anothervalue'})
   '0000002'
-  >>> result = tracks.query(userName='u1')
+  >>> result = list(tracks.query(userName='u1'))
   >>> len(result)
   2
 
 By supplying a list we can also search for more than one value in one query.
 
-  >>> result = tracks.query(taskId=('a001', 'a002'))
+  >>> result = list(tracks.query(taskId=('a001', 'a002')))
   >>> len(result)
   2
 
@@ -70,7 +70,7 @@ for a given set of keys.
 
   >>> tracks.saveUserTrack('a001', 0, 'u2', {'somekey': 'user2'}, update=True)
   '0000004'
-  >>> t4 = tracks.getUserTracks('a001', 0, 'u2')
+  >>> t4 = list(tracks.getUserTracks('a001', 0, 'u2'))
   >>> [t.data for t in t4]
   [{'somekey': 'user2'}]
 

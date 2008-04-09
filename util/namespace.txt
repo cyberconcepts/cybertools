@@ -50,9 +50,35 @@ namespace provides a secure restricted execution environment.
   ...
   NameError: open
 
+Elements and sub-elements
+-------------------------
 
-A Namespace Automatically Generating Symbols
-============================================
+  >>> code = """
+  ... topic('zope3', title='Zope 3')[
+  ...     annotation(author='jim')]
+  ... topic('python')[
+  ...     annotation(author='guido'),
+  ...     child('zope3')]
+  ... """
+
+  >>> from cybertools.util.jeep import Jeep
+  >>> topics = Jeep()
+  >>> symbols = namespace.BaseNamespace()
+  >>> symbols['topic'] = namespace.Element(symbols, 'topic', topics)
+  >>> symbols['annotation'] = namespace.Element(symbols, 'annotation')
+  >>> symbols['child'] = namespace.Element(symbols, 'child')
+
+  >>> exec code in symbols
+
+  >>> dict(topics)
+  {'python': <Element 'python'>, 'zope3': <Element 'zope3'>}
+
+  >>> dict(topics['python'].subElements)
+  {'zope3': <Element 'zope3'>, 'annotation': <Element 'annotation'>}
+
+
+A Namespace Automatically Generating Elements
+=============================================
 
   >>> auto = namespace.AutoNamespace()
 
@@ -60,4 +86,50 @@ A Namespace Automatically Generating Symbols
   something
 
   >>> auto.something
-  <Symbol 'something'>
+  <Element 'something'>
+
+
+Execution of Python Code in a Namespace
+=======================================
+
+To simplify some standard use cases for working with namespaces the
+module provides two classes for execution of Python code with appropriate
+simple error handling.
+
+Evaluation of Python expressions
+--------------------------------
+
+When evaluating an expression we always get a pair with the resulting
+value and an - hopefully empty - error string.
+
+  >>> ev = namespace.Evaluator(auto)
+  >>> ev.evaluate('25 * 25')
+  (625, '')
+
+  >>> ev.evaluate('30/0')
+  (None, 'Traceback...ZeroDivisionError...')
+
+Trying to execute a statement leads to a syntax error.
+
+  >>> ev.evaluate('print something_else')
+  (None, 'Traceback...SyntaxError...')
+
+But we can explicitly allow the execution of statements. The result
+of executing a statement is None.
+
+  >>> ev = namespace.Evaluator(auto, allowExec=True)
+  >>> ev.evaluate('print something_else')
+  something_else
+  (None, '')
+  >>> ev.evaluate('25 * 25')
+  (625, '')
+
+Execution of Statements
+-----------------------
+
+  >>> ex = namespace.Executor(auto)
+  >>> ex.execute('number = 25')
+  ''
+
+  >>> ex.execute('30/0')
+  'Traceback...ZeroDivisionError...'

@@ -217,6 +217,7 @@ class TrackingStorage(BTreeContainer):
         self.taskUsers[taskId].update([userName])
 
     def reindexTracks(self):
+        # TODO: clear indexes
         for trackId in self:
             trackNum = int(trackId)
             self.indexTrack(trackNum, self[trackId])
@@ -254,7 +255,8 @@ class TrackingStorage(BTreeContainer):
                 start, end = value
                 result = self.intersect(result,
                                         self.indexes['timeStamp'].apply((start, end)))
-        return result and [self[self.idFromNum(r)] for r in result] or set()
+        #return result and [self[self.idFromNum(r)] for r in result] or set()
+        return result and (self[self.idFromNum(r)] for r in result) or set()
 
     def intersect(self, r1, r2):
         return r1 is None and r2 or intersection(r1, r2)

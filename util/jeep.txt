@@ -89,10 +89,14 @@ More Dictionary Methods
   >>> len(jeep)
   4
 
-  >>> del jeep['fourth']
+  >>> jeep.update(dict(first='another first value', fifth='5th value'))
   >>> len(jeep)
-  3
-  >>> del jeep['fourth']
+  5
+
+  >>> del jeep['fifth']
+  >>> len(jeep)
+  4
+  >>> del jeep['fifth']
   Traceback (most recent call last):
   ...
   ValueError: ...not in list
@@ -103,6 +107,8 @@ More Methods and Operators
   >>> 'third' in jeep
   True
 
+  >>> jeep.pop()
+  'new fourth value'
   >>> jeep.pop()
   'third value'
   >>> len(jeep)

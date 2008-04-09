@@ -110,10 +110,14 @@ class Jeep(object):
         key = getattr(obj, '__name__', getattr(obj, 'name', _notfound))
         if key is _notfound:
             raise AttributeError("No name attribute present")
-        if key in self:
+        if key in self.keys():
             raise ValueError("Object already present")
         self._sequence.insert(idx, key)
         object.__setattr__(self, key, obj)
+
+    def update(self, mapping):
+        for key, value in mapping.items():
+            self[key] = value
 
     def pop(self, key=-1):
         value = self[key]
