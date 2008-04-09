@@ -23,12 +23,18 @@ $Id$
 """
 
 import re
+from email import MIMEMultipart
 
 from zope.interface import implements
 from twisted.internet import defer
 #import win32com.client
 #import ctypes
 #import win32api, win32process, win32con
+#The watsup import is needed as soon as we start handling the Outlook Pop-Up
+#again
+#This should also be integrated within the wrapper-api for doctests
+#from watsup.winGuiAuto import findTopWindow, findControl, findControls, clickButton, \
+#                              getComboboxItems, selectComboboxItem, setCheckBox
 
 from cybertools.agent.base.agent import Agent, Master
 from cybertools.agent.crawl.mail import MailCrawler
@@ -63,13 +69,13 @@ class OutlookCrawler(MailCrawler):
         self.inbox = criteria.get('inbox') #boolean
         self.subfolders = criteria.get('subfolders') #boolean
         self.pattern = criteria.get('pattern')
-        if self.pattern != '':
+        if self.pattern != '' and self.pattern != None:
             self.pattern = re.compile(criteria.get('pattern') or '.*')
 
     def crawlFolders(self):
         onMAPI = self.oOutlookApp.GetNamespace("MAPI")
         ofInbox = \
-            onMAPI.GetDefaultFolder(win32com.client.constants.olFolderInbox)
+            onMAPI.GetDefaultFolder(api.client.constants.olFolderInbox)
         # fetch mails from inbox
         if self.inbox:
             self.loadMailsFromFolder(ofInbox)
@@ -92,7 +98,7 @@ class OutlookCrawler(MailCrawler):
         folderItems = getattr(folder, 'Items')
         for item in range(len(folderItems)):
             mail = folderItems.Item(item+1)
-            if mail.Class == win32com.client.constants.olMail:
+            if mail.Class == api.win32com.client.constants.olMail:
                 if self.keys is None:
                     self.keys = []
                     for key in mail._prop_map_get_:
@@ -116,17 +122,17 @@ class OutlookCrawler(MailCrawler):
         """
         hwnd = None
         while True:
-            hwnd = ctypes.windll.user32.FindWindowExA(None, hwnd, None, None)
+            hwnd = api.ctypes.windll.user32.FindWindowExA(None, hwnd, None, None)
             if hwnd == None:
                     break
             else:
                 val = u"\0" * 1024
-                ctypes.windll.user32.GetWindowTextW(hwnd, val, len(val))
+                api.ctypes.windll.user32.GetWindowTextW(hwnd, val, len(val))
                 val = val.replace(u"\000", u"")
                 if val and repr(val) == "u'Microsoft Office Outlook'":
                     print repr(val)
                     # get the Main Control
-                    form = findTopWindow(wantedText='Microsoft Office Outlook')
+                    form = api.findTopWindow(wantedText='Microsoft Office Outlook')
                     controls = findControls(form)
                     # get the check box
                     checkBox = findControl(form, wantedText='Zugriff')

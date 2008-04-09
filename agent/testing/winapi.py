@@ -23,3 +23,57 @@ $Id$
 """
 
 client = ctypes = win32api = win32process = win32con = None
+
+
+class OutlookFolder(object):
+    
+    Items = {'mail1': "eMail 1", 'mail2': "eMail2"}
+    
+    def __init__(self):
+        pass
+
+
+class OutlookNamespace(object):
+    
+    def __init__(self):
+        pass
+    
+    def GetDefaultFolder(self, message=""):
+        print "retrieving Outlook default folder"
+        folder = OutlookFolder()
+        return folder
+
+
+class OutlookApp(object):
+    
+    def __init__(self):
+        pass
+    
+    def GetNamespace(self, message=""):
+        print "Namespace " + message + " retrieved"
+        return
+
+
+class Message(object):
+    
+    olFolderInbox = None
+    
+    def __init__(self):
+        pass
+    
+    def EnsureDispatch(self, message=""):
+        print message + " retrieved"
+
+
+class client(object):
+    
+    gencache = Message()
+    constants = Message()
+    
+    def __init__(self):
+        pass
+    
+class ctypes(object):
+    
+    def __init__(self):
+        pass

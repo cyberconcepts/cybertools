@@ -42,3 +42,4 @@ the twisted reactor first.
 
   >>> from cybertools.agent.tests import tester
   >>> tester.iterate()
+  Outlook.Application retrieved
