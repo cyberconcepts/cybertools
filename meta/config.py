@@ -22,17 +22,16 @@ Basic implementations for configuration options
 $Id$
 """
 
-from zope.component import adapts
-from zope.interface import implements, Interface
+from zope.interface import implements
 
 from cybertools.meta.interfaces import IOptions
+from cybertools.meta.namespace import AutoNamespace
 
 
-class Options(object):
+class Options(AutoNamespace):
 
     implements(IOptions)
-    adapts(Interface)
 
-    def __init__(self, context):
+    def __init__(self, context=None):
         self.context = context
 

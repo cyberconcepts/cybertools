@@ -26,6 +26,7 @@ $Id$
 
 import traceback
 
+from cybertools.meta.element import Element, AutoElement
 from cybertools.util.jeep import Jeep
 
 _not_found = object()
@@ -62,60 +63,21 @@ class BaseNamespace(dict):
         return result
 
 
-class Element(object):
-
-    posArgs = ('name',)
-
-    def __init__(self, namespace, name, collection=None, parent=None):
-        self.namespace = namespace
-        self.name = name
-        self.collection = collection
-        self.parent = parent
-        self.subElements = Jeep()
-
-    def __call__(self, *args, **kw):
-        elem = self.__class__(self.namespace, '', parent=self)
-        for idx, v in enumerate(args):
-            if idx < len(self.posArgs):
-                setattr(elem, self.posArgs[idx], v)
-        for k, v in kw.items():
-            setattr(elem, k, v)
-        if not elem.name:
-            elem.name = self.name
-        if self.collection is not None:
-            self.collection.append(elem)
-        return elem
-
-    def __getitem__(self, key):
-        if isinstance(key, (list, tuple)):
-            return tuple(self[k] for k in key)
-        elif isinstance(key, Element):
-            self.subElements.append(key)
-            return key
-        elif isinstance(key, (int, long, basestring)):
-            return self.subElements[key]
-        else:
-            print '*** Error', key
-
-    def __str__(self):
-        return self.name
-
-    def __repr__(self):
-        return "<Element '%s'>" % self.name
-
-
 class AutoNamespace(BaseNamespace):
 
-    elementFactory = Element
+    elementFactory = AutoElement
 
     def __getitem__(self, key):
         result = self.get(key, _not_found)
         if result is _not_found:
-            result = getattr(self, key, _not_found)
-            if result is _not_found:
-                elem = Element(self, key)
-                self[key] = elem
-                return elem
+            result = getattr(self, key)
+        return result
+
+    def __getattr__(self, key):
+        result = self.get(key, _not_found)
+        if result is _not_found:
+            result = self.elementFactory(self, key)
+            self[key] = result
         return result
 
 

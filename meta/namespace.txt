@@ -50,8 +50,8 @@ namespace provides a secure restricted execution environment.
   ...
   NameError: open
 
-Elements and sub-elements
--------------------------
+Elements and sub-elements (children)
+------------------------------------
 
   >>> code = """
   ... topic('zope3', title='Zope 3')[
@@ -62,18 +62,19 @@ Elements and sub-elements
   ... """
 
   >>> from cybertools.util.jeep import Jeep
+  >>> from cybertools.meta.element import Element
   >>> topics = Jeep()
   >>> symbols = namespace.BaseNamespace()
-  >>> symbols['topic'] = namespace.Element(symbols, 'topic', topics)
-  >>> symbols['annotation'] = namespace.Element(symbols, 'annotation')
-  >>> symbols['child'] = namespace.Element(symbols, 'child')
+  >>> symbols['topic'] = Element(symbols, 'topic', topics)
+  >>> symbols['annotation'] = Element(symbols, 'annotation')
+  >>> symbols['child'] = Element(symbols, 'child')
 
   >>> exec code in symbols
 
   >>> dict(topics)
   {'python': <Element 'python'>, 'zope3': <Element 'zope3'>}
 
-  >>> dict(topics['python'].subElements)
+  >>> dict(topics['python'].children)
   {'zope3': <Element 'zope3'>, 'annotation': <Element 'annotation'>}
 
 
@@ -86,7 +87,7 @@ A Namespace Automatically Generating Elements
   something
 
   >>> auto.something
-  <Element 'something'>
+  <AutoElement 'something'>
 
 
 Execution of Python Code in a Namespace

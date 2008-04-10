@@ -11,7 +11,7 @@ from zope.testing.doctestunit import DocFileSuite
 
 
 class Test(unittest.TestCase):
-    "Basic tests for the storage package."
+    "Basic tests for the meta package."
 
     def testBasicStuff(self):
         pass

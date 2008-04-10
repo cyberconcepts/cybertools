@@ -111,7 +111,7 @@ class Jeep(object):
         if key is _notfound:
             raise AttributeError("No name attribute present")
         if key in self.keys():
-            raise ValueError("Object already present")
+            raise ValueError("Object '%s' already present" % key)
         self._sequence.insert(idx, key)
         object.__setattr__(self, key, obj)
 
