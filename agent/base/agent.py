@@ -93,6 +93,7 @@ class Master(Agent):
             job.agent = self.children[spec.agent]
             job.identifier = spec.identifier
             job.controller = controller
+            job.params = spec.params
             self.scheduler.schedule(job, spec.startTime)
 
     def notify(self, job, result=None, message=''):

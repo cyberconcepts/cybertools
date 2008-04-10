@@ -53,6 +53,7 @@ class QueueableAgent(Agent):
     def execute(self, job):
         job.state = states.running
         self.currentJob = job
+        self.params = job.params
         d = self.process()
         d.addCallbacks(self.completed, self.error)
 

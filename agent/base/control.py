@@ -92,6 +92,7 @@ class JobSpecification(object):
     def __init__(self, type, identifier, **kw):
         self.type = type
         self.identifier = identifier
+        self.params = kw.pop('params', {})
         for k, v in kw.items():
             setattr(self, k, v)
 
