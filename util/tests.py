@@ -23,6 +23,7 @@ def test_suite():
         doctest.DocFileSuite('config.txt', optionflags=flags),
         doctest.DocFileSuite('defer.txt', optionflags=flags),
         doctest.DocFileSuite('format.txt', optionflags=flags),
+        doctest.DocFileSuite('multikey.txt', optionflags=flags),
         doctest.DocFileSuite('namespace.txt', optionflags=flags),
         doctest.DocFileSuite('property.txt', optionflags=flags),
         doctest.DocFileSuite('jeep.txt', optionflags=flags),

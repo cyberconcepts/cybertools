@@ -9,7 +9,7 @@ Multikey Dictionaries
 
 A MultiKeyDict is a dictionary that expects its keys to be tuples.
 
-  >>> from cybertools.index.multikey import MultiKeyDict
+  >>> from cybertools.util.multikey import MultiKeyDict
   >>> registry = MultiKeyDict()
 
   >>> registry[('index.html', None, None, None)] = 'global index.html'
