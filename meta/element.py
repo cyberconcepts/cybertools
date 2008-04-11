@@ -23,6 +23,8 @@ elements.
 $Id$
 """
 
+from cStringIO import StringIO
+
 from cybertools.util.jeep import Jeep
 
 _not_found = object()
@@ -31,28 +33,25 @@ _not_found = object()
 class Element(dict):
 
     typeName = 'Element'
-    posArgs = ('name',)
+    posArgs = ('__name__',)
+    realAttributes = ('namespace', '__name__', 'factory', 'parent', 'children')
 
-    def __init__(self, namespace, name, collection=None, parent=None):
+    def __init__(self, namespace, name, factory=None, parent=None):
         self.namespace = namespace
-        self.name = name
-        self.collection = collection
+        self.__name__ = name
         self.parent = parent
+        self.factory = factory
         self.children = Jeep()
 
     def __call__(self, *args, **kw):
-        elem = self.__class__(self.namespace, '')
         for idx, v in enumerate(args):
-            if idx < len(self.posArgs):
-                elem[self.posArgs[idx]] = v
+            if isinstance(v, Element):
+                self[v.__name__] = v
+            elif idx < len(self.posArgs):
+                self[self.posArgs[idx]] = v
         for k, v in kw.items():
-            elem[k] = v
-        elem.name = elem.get('name')
-        if not elem.name:
-            elem.name = self.name
-        if self.collection is not None:
-            self.collection.append(elem)
-        return elem
+            self[k] = v
+        return self
 
     def __getitem__(self, key):
         if isinstance(key, (list, tuple)):
@@ -68,44 +67,61 @@ class Element(dict):
     def __getattr__(self, key):
         result = self.get(key, _not_found)
         if result is _not_found:
-            raise AttributeError(key)
+            result = self.children.get(key, _not_found)
+            if result is _not_found:
+                raise AttributeError(key)
         return result
+
+    def __setattr__(self, key, value):
+        if key in self.realAttributes:
+            super(Element, self).__setattr__(key, value)
+        else:
+            self[key] = value
 
     def __iter__(self):
         return iter(self.children)
 
     def __str__(self):
-        return self.name
+        return self.__name__
 
     def __repr__(self):
-        return "<%s '%s'>" % (self.typeName, self.name)
+        return "<%s '%s'>" % (self.typeName, self.__name__)
+
+
+class ElementFactory(object):
+
+    elementClass = Element
+
+    def __init__(self, namespace, name):
+        self.namespace = namespace
+        self.__name__ = name
+        self.instances = []
+
+    def __call__(self, *args, **kw):
+        elem = self.elementClass(self.namespace, '', factory=self)
+        for idx, v in enumerate(args):
+            if idx < len(elem.posArgs):
+                elem[elem.posArgs[idx]] = v
+        for k, v in kw.items():
+            elem[k] = v
+        elem.__name__ = elem.get('__name__')
+        if not elem.__name__:
+            elem.__name__ = self.__name__
+        self.instances.append(elem)
+        return elem
 
 
 class AutoElement(Element):
 
     typeName = 'AutoElement'
 
-    def __call__(self, *args, **kw):
-        if self.collection is None:
-            elem = self
-        else:
-            elem = self.__class__(self.namespace, '')
-            self.collection.append(elem)
-        for idx, v in enumerate(args):
-            if idx < len(self.posArgs):
-                elem[self.posArgs[idx]] = v
-        for k, v in kw.items():
-            elem[k] = v
-        elem.name = elem.get('name')
-        if not elem.name:
-            elem.name = self.name
-        return elem
-
     def __getattr__(self, key):
         result = self.get(key, _not_found)
         if result is _not_found:
-            result = self.__class__(self.namespace, key, parent=self)
-            self[key] = result
+            result = self.children.get(key, _not_found)
+            if result is _not_found:
+                result = self.__class__(self.namespace, key, parent=self)
+                self.children[key] = result
         return result
 
     def __getitem__(self, key):
@@ -118,3 +134,16 @@ class AutoElement(Element):
                 return result
             else:
                 raise KeyError(key)
+
+    def __str__(self):
+        out = StringIO()
+        for v in self.children:
+            out.write('%s.%s\n' % (self.__name__, v))
+        if self or not self.children:
+            out.write(self.__name__)
+        if self:
+            out.write('(')
+            out.write(', '.join('%s=%r' % (k, v) for k, v in self.items()))
+            out.write(')')
+        return out.getvalue()
+

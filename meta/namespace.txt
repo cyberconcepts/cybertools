@@ -62,20 +62,21 @@ Elements and sub-elements (children)
   ... """
 
   >>> from cybertools.util.jeep import Jeep
-  >>> from cybertools.meta.element import Element
-  >>> topics = Jeep()
+  >>> from cybertools.meta.element import ElementFactory
   >>> symbols = namespace.BaseNamespace()
-  >>> symbols['topic'] = Element(symbols, 'topic', topics)
-  >>> symbols['annotation'] = Element(symbols, 'annotation')
-  >>> symbols['child'] = Element(symbols, 'child')
+  >>> symbols['topic'] = ElementFactory(symbols, 'topic')
+  >>> symbols['annotation'] = ElementFactory(symbols, 'annotation')
+  >>> symbols['child'] = ElementFactory(symbols, 'child')
 
   >>> exec code in symbols
 
-  >>> dict(topics)
-  {'python': <Element 'python'>, 'zope3': <Element 'zope3'>}
-
-  >>> dict(topics['python'].children)
-  {'zope3': <Element 'zope3'>, 'annotation': <Element 'annotation'>}
+  >>> symbols.topic.instances
+  [<Element 'zope3'>, <Element 'python'>]
+  >>> zope3 = symbols.topic.instances[0]
+  >>> dict(zope3.annotation)
+  {'author': 'jim'}
+  >>> zope3.title
+  'Zope 3'
 
 
 A Namespace Automatically Generating Elements

@@ -24,14 +24,42 @@ $Id$
 
 from zope.interface import implements
 
-from cybertools.meta.interfaces import IOptions
-from cybertools.meta.namespace import AutoNamespace
+from cybertools.meta.interfaces import IOptions, IConfigurator
+from cybertools.meta.namespace import AutoNamespace, Executor, ExecutionError
 
 
 class Options(AutoNamespace):
 
     implements(IOptions)
 
-    def __init__(self, context=None):
+
+class Configurator(object):
+
+    implements(IConfigurator)
+
+    def __init__(self, context):
         self.context = context
+
+    def load(self, text=None, file=None):
+        if file is not None:
+            if hasattr(file, 'read'):
+                text = file.read()
+            else:   # must be a file name
+                f = open(file, 'r')
+                text = f.read()
+                f.close()
+        result = Executor(self.context).execute(text)
+        if result:
+            raise ExecutionError('\n' + result)
+
+    def dump(self, file=None):
+        text = str(options)
+        if file is not None:
+            if hasattr(file, 'write'):
+                file.write(text)
+            else:   # must be a file name
+                f = open(file, 'w')
+                f.write(text)
+                f.close()
+        return text
 

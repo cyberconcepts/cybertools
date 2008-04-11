@@ -34,11 +34,11 @@ _not_found = object()
 
 class BaseNamespace(dict):
 
-    builtins = 'dir', 'output'
+    builtins = '__builtins__', 'dir', 'output'
 
     def __init__(self, *args, **kw):
+        self.__builtins__ = {}
         super(BaseNamespace, self).__init__(*args, **kw)
-        self['__builtins__'] = {}
         for key in self.builtins:
             self[key] = getattr(self, key)
 
@@ -62,6 +62,18 @@ class BaseNamespace(dict):
             raise AttributeError(key)
         return result
 
+    def __str__(self):
+        def result():
+            for k, v in self.items():
+                if k not in self.builtins:
+                    if isinstance(v, Element):
+                        yield str(v)
+                    else:
+                        yield '%s=%r' % (k, v)
+        return '\n'.join(list(result()))
+
+    __repr__ = object.__repr__
+
 
 class AutoNamespace(BaseNamespace):
 
@@ -70,15 +82,12 @@ class AutoNamespace(BaseNamespace):
     def __getitem__(self, key):
         result = self.get(key, _not_found)
         if result is _not_found:
-            result = getattr(self, key)
-        return result
-
-    def __getattr__(self, key):
-        result = self.get(key, _not_found)
-        if result is _not_found:
             result = self.elementFactory(self, key)
             self[key] = result
         return result
+
+    def __getattr__(self, key):
+        return self[key]
 
 
 class Executor(object):
@@ -129,3 +138,8 @@ class Evaluator(Executor):
         except:
             error = traceback.format_exc()
         return result, error
+
+
+class ExecutionError(ValueError):
+
+    pass

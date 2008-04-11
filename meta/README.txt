@@ -31,8 +31,8 @@ Loading options as Python code
   >>> ex = Executor(config)
 
   >>> code = """
-  ... controller(names=['cmdline', 'telnet'])
-  ... controller.telnet.port = 5001
+  ... controller(names=('cmdline', 'telnet'))
+  ... controller.telnet(port= 5001)
   ... scheduler(name='core')
   ... logger(name='default', standard=30)
   ... """
@@ -43,3 +43,14 @@ Loading options as Python code
   'core'
   >>> config.logger.standard
   30
+  >>> config.controller.names
+  ('cmdline', 'telnet')
+  >>> config.controller.telnet.port
+  5001
+
+  >>> print config
+  controller.telnet(port=5001)
+  controller(names=('cmdline', 'telnet'))
+  scheduler(name='core')
+  logger(name='default', standard=30)
+

@@ -27,5 +27,52 @@ from zope.interface import Interface, Attribute
 
 class IOptions(Interface):
     """ Provide a set of options (settings, configuration options,
-        preferences) based on a given context object.
+        preferences) based on a given context object or loaded from
+        a file.
     """
+
+    def __contains__(key):
+        """ Return True if this object provides the option identified
+            by the key given.
+        """
+
+    def __iter__():
+        """ Return an iterator over the option keys provided by this
+            object.
+        """
+
+    def values():
+        """ Return an iterator over all settings.
+        """
+
+    def __getitem__(key):
+        """ Return the value belonging to the key given.
+        """
+
+    def __getattr__(key):
+        """ Return the value belonging to the key given
+            (same as ``__getitem__()``).
+        """
+
+    def __str__():
+        """ Return a string representation that shows all settings.
+        """
+
+
+class IConfigurator(Interface):
+    """ Adapter for an IOptions object that allows loading and saving
+        of configuration settings.
+    """
+
+    def load(text=None, file=None):
+        """ Load settings from the string or the file given.
+
+            The ``file`` argument may be a string - that will be interpreted
+            as a file name or path - or a file object
+        """
+
+    def dump(file=None):
+        """ Return a string representation of the context's configuration
+            settings; if ``file`` is given write the representation to
+            the corresponding file object.
+        """
