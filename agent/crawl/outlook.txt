@@ -43,3 +43,6 @@ the twisted reactor first.
   >>> from cybertools.agent.tests import tester
   >>> tester.iterate()
   Outlook.Application retrieved
+  Namespace MAPI retrieved
+  retrieving Outlook default folder
+  collecting Mails from folder

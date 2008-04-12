@@ -46,9 +46,10 @@ class OutlookFolder(object):
     Folders = None
     
     def __init__(self):
-        Items[0] = Mail()
-        Items[1] = Mail()
-        pass
+        print "collecting Mails from folder"
+        self.Items[0] = Mail()
+        self.Items[1] = Mail()
+        self.Items[2] = Mail()
 
 
 class OutlookNamespace(object):

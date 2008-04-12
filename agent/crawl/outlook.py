@@ -41,6 +41,7 @@ from cybertools.agent.crawl.mail import MailCrawler
 from cybertools.agent.crawl.mail import MailResource
 from cybertools.agent.components import agents
 from cybertools.agent.system.windows import api
+from cybertools.agent.util.task import coiterate
 
 # some constants
 COMMASPACE = ', '
@@ -53,15 +54,19 @@ class OutlookCrawler(MailCrawler):
     pattern = ""
 
     def collect(self, filter=None):
+        self.collected = []
         self.d = defer.Deferred()
         self.oOutlookApp = None
         if self.findOutlook():
             self.fetchCriteria()
-            self.d.addCallback(self.crawlFolders)
+            coiterate(self.crawlFolders()).addCallback(self.finished)
         else:
             pass
             #self.d.addErrback([])
         return self.d
+
+    def finished(self, result):
+        self.d.callback(self.result)
 
     def fetchCriteria(self):
         criteria = self.params
@@ -91,7 +96,6 @@ class OutlookCrawler(MailCrawler):
                 # get specified MAPI-subfolder object and load its emails
                 if self.pattern.match(getattr(lInboxSubfolders.Item(of + 1), 'Name')):
                     self.loadMailsFromFolder(lInboxSubfolders.Item(of + 1))
-        return self.result
 
     def loadMailsFromFolder(self, folder):
         # get items of the folder
@@ -111,6 +115,8 @@ class OutlookCrawler(MailCrawler):
                 msg = self.createEmailMime(record)
                 # Create a resource and append it to the result list
                 self.createResource(msg, folder, "Microsoft Office Outlook")
+                #return self.result
+                yield None
 
     def login(self):
         pass
