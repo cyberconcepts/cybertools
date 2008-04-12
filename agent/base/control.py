@@ -68,9 +68,9 @@ class SampleController(Controller):
         spec = AgentSpecification(name, agentType)
         self.agent.setupAgents(self, [spec])
 
-    def enterJob(self, jobType, agent):
+    def enterJob(self, jobType, agent, **kw):
         self.jobNumber += 1
-        spec = JobSpecification(jobType, '%05i' % self.jobNumber, agent=agent)
+        spec = JobSpecification(jobType, '%05i' % self.jobNumber, agent=agent, **kw)
         self.agent.setupJobs(self, [spec])
 
 controllers.register(SampleController, Master, name='base.sample')
