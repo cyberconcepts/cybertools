@@ -36,11 +36,8 @@ class Crawler(QueueableAgent):
 
     implements(ICrawler)
     
-    params = {}
-    
     def __init__(self, master, params={}):
         super(Crawler, self).__init__(master)
-        self.params = params
 
     def process(self):
         return self.collect()

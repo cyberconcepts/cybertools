@@ -98,7 +98,7 @@ class OutlookCrawler(MailCrawler):
         folderItems = getattr(folder, 'Items')
         for item in range(len(folderItems)):
             mail = folderItems.Item(item+1)
-            if mail.Class == api.win32com.client.constants.olMail:
+            if mail.Class == api.client.constants.olMail:
                 if self.keys is None:
                     self.keys = []
                     for key in mail._prop_map_get_:

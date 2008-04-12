@@ -24,12 +24,30 @@ $Id$
 
 client = ctypes = win32api = win32process = win32con = None
 
+class Mail(object):
+    
+    #this is just a guess what a Outlook Mail Object Probably returns
+    Class = None
+
+    def __init__(self):
+        Class = self.__class__
+    
+    def _prop_map_get_(self):
+        #here it is necessary of what attributes (called keys in outlok.py)
+        #an Outlook Mail typically has
+        # should return a tuple ()
+        pass
+    
 
 class OutlookFolder(object):
     
-    Items = {'mail1': "eMail 1", 'mail2': "eMail2"}
+    Items = {}
+    # Folders defines in Outlook the sub folders under the "Main" Folder
+    Folders = None
     
     def __init__(self):
+        Items[0] = Mail()
+        Items[1] = Mail()
         pass
 
 
@@ -51,18 +69,26 @@ class OutlookApp(object):
     
     def GetNamespace(self, message=""):
         print "Namespace " + message + " retrieved"
-        return
+        oNamespace = OutlookNamespace()
+        return oNamespace
 
 
 class Message(object):
     
     olFolderInbox = None
+    # esp. for olMail, for further dummy implementations it is necessary
+    # to find out, what class is expected. Meaning what type of object has
+    # to be faked and what attributes it has. see outlook.py
+    # loadMailsfromFolder
+    olMail = Mail()
     
     def __init__(self):
         pass
     
     def EnsureDispatch(self, message=""):
         print message + " retrieved"
+        oApp = OutlookApp()
+        return oApp
 
 
 class client(object):
