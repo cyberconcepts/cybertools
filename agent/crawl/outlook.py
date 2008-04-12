@@ -89,13 +89,13 @@ class OutlookCrawler(MailCrawler):
             lInboxSubfolders = getattr(ofInbox, 'Folders')
             for of in range(lInboxSubfolders.__len__()):
                 # get a MAPI-subfolder object and load its emails
-                self.loadMailsFromFolder(lInboxSubfolders.Item(of + 1))
+                yield self.loadMailsFromFolder(lInboxSubfolders.Item(of + 1))
         elif self.subfolders and self.pattern:
             lInboxSubfolders = getattr(ofInbox, 'Folders')
             for of in range(lInboxSubfolders.__len__()):
                 # get specified MAPI-subfolder object and load its emails
                 if self.pattern.match(getattr(lInboxSubfolders.Item(of + 1), 'Name')):
-                    self.loadMailsFromFolder(lInboxSubfolders.Item(of + 1))
+                    yield self.loadMailsFromFolder(lInboxSubfolders.Item(of + 1))
 
     def loadMailsFromFolder(self, folder):
         # get items of the folder
