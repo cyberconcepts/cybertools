@@ -87,6 +87,8 @@ class AutoNamespace(BaseNamespace):
         return result
 
     def __getattr__(self, key):
+        if key.startswith('_'):     # no auto-creation for special attributes
+            raise AttributeError(key)
         return self[key]
 
 

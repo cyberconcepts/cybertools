@@ -73,7 +73,7 @@ class Element(dict):
         return result
 
     def __setattr__(self, key, value):
-        if key in self.realAttributes:
+        if key in self.realAttributes or key.startswith('_'):
             super(Element, self).__setattr__(key, value)
         else:
             self[key] = value
@@ -116,6 +116,8 @@ class AutoElement(Element):
     typeName = 'AutoElement'
 
     def __getattr__(self, key):
+        if key.startswith('_'):     # no auto-creation for special attributes
+            raise AttributeError(key)
         result = self.get(key, _not_found)
         if result is _not_found:
             result = self.children.get(key, _not_found)

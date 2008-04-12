@@ -23,6 +23,9 @@ be created as elements within the Options object.
   >>> config.i18n.languages
   ['de', 'en', 'it']
 
+  >>> config('i18n.languages')
+  ['de', 'en', 'it']
+
 Loading options as Python code
 ------------------------------
 

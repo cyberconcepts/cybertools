@@ -22,8 +22,10 @@ Basic implementations for configuration options
 $Id$
 """
 
+import os
 from zope.interface import implements
 
+from cybertools.meta.element import Element
 from cybertools.meta.interfaces import IOptions, IConfigurator
 from cybertools.meta.namespace import AutoNamespace, Executor, ExecutionError
 
@@ -31,6 +33,30 @@ from cybertools.meta.namespace import AutoNamespace, Executor, ExecutionError
 class Options(AutoNamespace):
 
     implements(IOptions)
+
+    def __call__(self, key, default=None):
+        value = self
+        for part in key.split('.'):
+            value = getattr(value, part)
+        if isinstance(value, Element):
+            value = default
+        return value
+
+
+class GlobalOptions(Options):
+
+    _filename = None
+    _lastChange = None
+
+    def __call__(self, key, default):
+        if self._filename is not None:
+            fn = self._filename
+            if os.path.exists(fn):
+                modified = os.path.getmtime(fn)
+                if self._lastChange is None or self._lastChange < modified:
+                    Configurator(self).load(file=fn)
+                    self._lastChange = modified
+        return super(GlobalOptions, self).__call__(key, default)
 
 
 class Configurator(object):

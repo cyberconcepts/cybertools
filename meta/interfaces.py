@@ -31,27 +31,24 @@ class IOptions(Interface):
         a file.
     """
 
-    def __contains__(key):
-        """ Return True if this object provides the option identified
-            by the key given.
-        """
+    def __call__(key):
+        """ Return the value belonging to the key given. The key may be a
+            dotted name - it will be splitted on dots and attributes
+            will be looked up in turn on the resulting objects.
 
-    def __iter__():
-        """ Return an iterator over the option keys provided by this
-            object.
-        """
+            Return None if no corresponding setting can be found.
 
-    def values():
-        """ Return an iterator over all settings.
+            The method may also provide some fallback mechanism when
+            the element is not defined in the current object.
         """
 
     def __getitem__(key):
-        """ Return the value belonging to the key given.
+        """ Return the value belonging to the key given. The key
+            must not contain dots.
         """
 
     def __getattr__(key):
-        """ Return the value belonging to the key given
-            (same as ``__getitem__()``).
+        """ Return the value belonging to the key given.
         """
 
     def __str__():
