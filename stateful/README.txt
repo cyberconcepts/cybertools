@@ -37,7 +37,7 @@ More complex states definitions
 We'll use a predefined simple publishing workflow that.
 
   >>> from cybertools.stateful.publishing import simplePublishing
-  >>> registerStatesDefinition(simplePublishing)
+  >>> registerStatesDefinition(simplePublishing())
 
   >>> demo = Demo()
   >>> demo.statesDefinition = 'publishing'

@@ -22,18 +22,17 @@ Definition of a simple publishing workflow.
 $Id$
 """
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from cybertools.stateful.definition import registerStatesDefinition
 from cybertools.stateful.definition import StatesDefinition
 from cybertools.stateful.definition import State, Transition
+from cybertools.stateful.interfaces import IStatesDefinition
 
 
-def simplePublishingFactory():
-    return simplePublishing
-
-
-simplePublishing = StatesDefinition('publishing',
+@implementer(IStatesDefinition)
+def simplePublishing():
+    return StatesDefinition('publishing',
         State('private', 'private', ('show',)),
         State('draft', 'draft', ('publish', 'hide',)),
         State('published', 'published', ('retract',)),
