@@ -25,38 +25,55 @@ $Id$
 client = ctypes = win32api = win32process = win32con = None
 
 class Mail(object):
-    
+
     #this is just a guess what a Outlook Mail Object Probably returns
-    Class = None
+    #Class = client.constants.olMail
 
     def __init__(self):
-        Class = self.__class__
-    
+        self.Class = client.constants.olMail
+        self.Subject = 'dummy'
+        self.SenderName = 'dummy'
+        self.To = 'dummy'
+        self.Body = 'dummy'
+
+    @property
     def _prop_map_get_(self):
         #here it is necessary of what attributes (called keys in outlok.py)
         #an Outlook Mail typically has
         # should return a tuple ()
-        pass
-    
+        return ('Subject', 'SenderName', 'To', 'Body')
+
+
+class Items(object):
+
+    def __init__(self):
+        self.data = {}
+        self.data[0] = Mail()
+        self.data[1] = Mail()
+        self.data[2] = Mail()
+
+    def Item(self, idx):
+        return self.data[idx-1]
+
+    def __len__(self):
+        return len(self.data)
+
 
 class OutlookFolder(object):
-    
-    Items = {}
+
     # Folders defines in Outlook the sub folders under the "Main" Folder
     Folders = None
-    
+
     def __init__(self):
         print "collecting Mails from folder"
-        self.Items[0] = Mail()
-        self.Items[1] = Mail()
-        self.Items[2] = Mail()
+        self.Items = Items()
 
 
 class OutlookNamespace(object):
-    
+
     def __init__(self):
         pass
-    
+
     def GetDefaultFolder(self, message=""):
         print "retrieving Outlook default folder"
         folder = OutlookFolder()
@@ -64,10 +81,10 @@ class OutlookNamespace(object):
 
 
 class OutlookApp(object):
-    
+
     def __init__(self):
         pass
-    
+
     def GetNamespace(self, message=""):
         print "Namespace " + message + " retrieved"
         oNamespace = OutlookNamespace()
@@ -75,17 +92,17 @@ class OutlookApp(object):
 
 
 class Message(object):
-    
+
     olFolderInbox = None
     # esp. for olMail, for further dummy implementations it is necessary
     # to find out, what class is expected. Meaning what type of object has
     # to be faked and what attributes it has. see outlook.py
     # loadMailsfromFolder
-    olMail = Mail()
-    
+    olMail = Mail
+
     def __init__(self):
         pass
-    
+
     def EnsureDispatch(self, message=""):
         print message + " retrieved"
         oApp = OutlookApp()
@@ -93,14 +110,14 @@ class Message(object):
 
 
 class client(object):
-    
+
     gencache = Message()
     constants = Message()
-    
+
     def __init__(self):
         pass
-    
+
 class ctypes(object):
-    
+
     def __init__(self):
         pass

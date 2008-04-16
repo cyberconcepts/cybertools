@@ -54,16 +54,20 @@ class OutlookCrawler(MailCrawler):
     pattern = ""
 
     def collect(self, filter=None):
-        self.collected = []
+        self.result = []
         self.d = defer.Deferred()
         self.oOutlookApp = None
         if self.findOutlook():
             self.fetchCriteria()
-            coiterate(self.crawlFolders()).addCallback(self.finished)
+            coiterate(self.crawlFolders()).addCallback(self.finished).addErrback(self.error)
         else:
             pass
             #self.d.addErrback([])
         return self.d
+
+    def error(self, reason):
+        print '***** error',
+        print reason
 
     def finished(self, result):
         self.d.callback(self.result)
@@ -83,19 +87,22 @@ class OutlookCrawler(MailCrawler):
             onMAPI.GetDefaultFolder(api.client.constants.olFolderInbox)
         # fetch mails from inbox
         if self.inbox:
-            self.loadMailsFromFolder(ofInbox)
+            for m in self.loadMailsFromFolder(ofInbox):
+                yield None
         # fetch mails of inbox subfolders
         if self.subfolders and self.pattern is None:
             lInboxSubfolders = getattr(ofInbox, 'Folders')
             for of in range(lInboxSubfolders.__len__()):
                 # get a MAPI-subfolder object and load its emails
-                yield self.loadMailsFromFolder(lInboxSubfolders.Item(of + 1))
+                for m in self.loadMailsFromFolder(lInboxSubfolders.Item(of + 1)):
+                    yield None
         elif self.subfolders and self.pattern:
             lInboxSubfolders = getattr(ofInbox, 'Folders')
             for of in range(lInboxSubfolders.__len__()):
                 # get specified MAPI-subfolder object and load its emails
                 if self.pattern.match(getattr(lInboxSubfolders.Item(of + 1), 'Name')):
-                    yield self.loadMailsFromFolder(lInboxSubfolders.Item(of + 1))
+                    for m in self.loadMailsFromFolder(lInboxSubfolders.Item(of + 1)):
+                        yield None
 
     def loadMailsFromFolder(self, folder):
         # get items of the folder
@@ -164,7 +171,7 @@ class OutlookCrawler(MailCrawler):
 
     def createEmailMime(self, emails):
         # Create the container (outer) email message.
-        msg = MIMEMultipart()
+        msg = MIMEMultipart.MIMEMultipart()
         msg['Subject'] = emails['Subject'].encode('utf-8')
         if emails.has_key('SenderEmailAddress'):
             sender = str(emails['SenderEmailAddress'].encode('utf-8'))

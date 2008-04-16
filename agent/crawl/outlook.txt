@@ -35,7 +35,7 @@ dlls".
 
 In the next step we request the start of a job, again via the controller.
 
-  >>> controller.enterJob('sample', 'sample02')
+  >>> controller.enterJob('sample', 'sample02', params=dict(inbox=True))
 
 The job is not executed immediately - we have to hand over control to
 the twisted reactor first.
@@ -46,4 +46,4 @@ the twisted reactor first.
   Namespace MAPI retrieved
   retrieving Outlook default folder
   collecting Mails from folder
-  Job 00001 completed; result: [];
+  Job 00001 completed; result: [...];
