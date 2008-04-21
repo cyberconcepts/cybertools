@@ -44,6 +44,7 @@ def test_suite():
             DocFileSuite('README.txt', optionflags=flags),
             DocFileSuite('crawl/README.txt', optionflags=flags),
             DocFileSuite('crawl/outlook.txt', optionflags=flags),
+            DocFileSuite('crawl/outlook_real.txt', optionflags=flags),
     ))
     return testSuite
 

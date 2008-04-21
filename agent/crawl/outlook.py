@@ -27,9 +27,6 @@ from email import MIMEMultipart
 
 from zope.interface import implements
 from twisted.internet import defer
-#import win32com.client
-#import ctypes
-#import win32api, win32process, win32con
 #The watsup import is needed as soon as we start handling the Outlook Pop-Up
 #again
 #This should also be integrated within the wrapper-api for doctests
@@ -113,8 +110,11 @@ class OutlookCrawler(MailCrawler):
                 if self.keys is None:
                     self.keys = []
                     for key in mail._prop_map_get_:
-                        if isinstance(getattr(mail, key), (int, str, unicode)):
-                            self.keys.append(key)
+                        try:
+                            if isinstance(getattr(mail, key), (int, str, unicode)):
+                                self.keys.append(key)
+                        except:
+                            pass
                 record = {}
                 for key in self.keys:
                     record[key] = getattr(mail, key)
@@ -122,8 +122,8 @@ class OutlookCrawler(MailCrawler):
                 msg = self.createEmailMime(record)
                 # Create a resource and append it to the result list
                 self.createResource(msg, folder, "Microsoft Office Outlook")
-                #return self.result
-                yield None
+                return self.result
+                #yield None --> nothing would be returned
 
     def login(self):
         pass

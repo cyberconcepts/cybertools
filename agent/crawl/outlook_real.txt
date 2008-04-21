@@ -1,0 +1,45 @@
+================================================
+Agents for Job Execution and Communication Tasks
+================================================
+
+  ($Id: outlook.txt 2522 2008-04-12 16:29:12Z scrat $)
+
+  >>> config = '''
+  ... controller(names=['core.sample'])
+  ... scheduler(name='core')
+  ... logger(name='default', standard=30)
+  ... system.winapi = 'use_outlook'
+  ... '''
+  >>> from cybertools.agent.main import setup
+  >>> master = setup(config)
+  Starting agent application...
+  Using controllers core.sample.
+
+
+OutlookCrawler
+==============
+
+The agent uses Twisted's cooperative multitasking model.
+
+OutlookCrawler is derived from MailCrawler. The OutlookCrawler returns a deferred
+which itself holds a list of MailResource Objects.
+
+Returns a deferred that must be supplied with a callback method (and in
+most cases also an errback method).
+
+The TestCase here is using subsidiary methods which replace calls to the "real Outlook
+dlls".
+
+  >>> controller = master.controllers[0]
+  >>> controller.createAgent('crawl.outlook', 'sample02')
+
+In the next step we request the start of a job, again via the controller.
+
+  >>> controller.enterJob('sample', 'sample02', params=dict(inbox=True))
+
+The job is not executed immediately - we have to hand over control to
+the twisted reactor first.
+
+  >>> from cybertools.agent.tests import tester
+  >>> tester.iterate()
+  Job 00001 completed; result: [<cybertools.agent.crawl.mail.MailResource object at ...>];
