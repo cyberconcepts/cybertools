@@ -24,6 +24,11 @@ $Id$
 
 client = ctypes = win32api = win32process = win32con = None
 
+
+class com_error(Exception):
+    pass
+
+
 class Mail(object):
 
     #this is just a guess what a Outlook Mail Object Probably returns

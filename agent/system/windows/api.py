@@ -23,16 +23,17 @@ $Id$
 """
 
 def setup(config):
-    global client, ctypes, win32api, win32process, win32con
+    global client, ctypes, win32api, win32process, win32con, com_error
     if config.system.winapi == 'testing':
         from cybertools.agent.testing.winapi import \
-                        client, ctypes, win32api, win32process, win32con
+                        client, ctypes, win32api, win32process, win32con, com_error
     else:
         try:
             from win32com import client
             import ctypes
             import win32api, win32process, win32con
+            from pywintypes import com_error
         except ImportError:
             from cybertools.agent.testing.winapi import \
-                        client, ctypes, win32api, win32process, win32con
+                        client, ctypes, win32api, win32process, win32con, com_error
 

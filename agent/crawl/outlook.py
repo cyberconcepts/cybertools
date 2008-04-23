@@ -27,7 +27,7 @@ from email import MIMEMultipart
 
 from zope.interface import implements
 from twisted.internet import defer
-from pywintypes import com_error
+#from pywintypes import com_error
 #The watsup import is needed as soon as we start handling the Outlook Pop-Up
 #again
 #This should also be integrated within the wrapper-api for doctests
@@ -114,7 +114,7 @@ class OutlookCrawler(MailCrawler):
                         try:
                             if isinstance(getattr(mail, key), (int, str, unicode)):
                                 self.keys.append(key)
-                        except com_error:
+                        except api.com_error:
                             pass
                 record = {}
                 for key in self.keys:

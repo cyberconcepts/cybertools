@@ -46,4 +46,4 @@ the twisted reactor first.
   Namespace MAPI retrieved
   retrieving Outlook default folder
   collecting Mails from folder
-  Job 00001 completed; result: [...];
+  Job 00001 completed; result: [<...MailResource...>, <...MailResource...>, <...MailResource...>];
