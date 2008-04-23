@@ -33,6 +33,8 @@ class State(object):
 
     implements(IState)
 
+    color = 'blue'
+
     def __init__(self, name, title, transitions, **kw):
         self.name = self.__name__ = name
         self.title = title

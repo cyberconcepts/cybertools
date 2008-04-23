@@ -1,8 +1,13 @@
 <!-- action macros -->
 
-<metal:action define-macro="action">
-    <div tal:condition="action/condition">
+<metal:action define-macro="action"
+              tal:condition="action/condition">
+    <div class="action"
+         tal:attributes="class action/cssClass;
+                         id action/dialogName|nothing;
+                         title action/description;">
         <a href="#" target="target_window" title="Description text"
+           tal:omit-tag="not:action/url"
            tal:attributes="href action/url;
                            target action/targetWindow;
                            title action/description;
