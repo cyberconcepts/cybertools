@@ -83,6 +83,9 @@ Let's provide a simple function for displaying query results.
   >>> def displayQuery(q):
   ...     return [intid.getObject(uid).id for uid in q.apply()]
 
+  >>> def displayQueryWithScores(q):
+  ...     return [(intid.getObject(uid).id, score) for uid, score in q.apply().items()]
+
 
 Field Index Queries
 ===================
