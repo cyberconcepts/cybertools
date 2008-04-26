@@ -37,6 +37,9 @@ class IntIdsStub(object):
         id = self.getId(ob)
         self.objs[id] = None
 
+    def __iter__(self):
+        return iter(xrange(len(self.objs)))
+
 
 class TestRelation(unittest.TestCase):
     "Basic tests for the relation package."
