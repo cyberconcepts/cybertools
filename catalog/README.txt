@@ -192,7 +192,9 @@ Keyword Index Queries
   >>> k1 = ('', 'k1')
   >>> displayQuery(AnyOf(k1, 'plone'))
   [5]
-  >>> displayQuery(AllOf(k1, ['plone', 'zope', 'zms']))
+  >>> displayQuery(AllOf(k1, ['plone', 'zop']))
   []
+  >>> displayQuery(AnyOf(k1, ['plone', 'zop']))
+  [5]
   >>> displayQuery(AllOf(k1, ['plone', 'zope']))
   [5]
