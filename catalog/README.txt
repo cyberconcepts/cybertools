@@ -78,13 +78,16 @@ And catalog them now.
   >>> for entry in content:
   ...     catalog.index_doc(intid.register(entry), entry)
 
-Let's provide a simple function for displaying query results.
+Let's provide two simple functions for displaying query results.
 
   >>> def displayQuery(q):
   ...     return [intid.getObject(uid).id for uid in q.apply()]
 
   >>> def displayQueryWithScores(q):
-  ...     return [(intid.getObject(uid).id, score) for uid, score in q.apply().items()]
+  ...     result = q.apply()
+  ...     if hasattr(result, 'items'):
+  ...         return [(intid.getObject(uid).id, score) for uid, score in result.items()]
+  ...     return [(intid.getObject(uid).id, 0.0) for uid in result]
 
 
 Field Index Queries
@@ -184,8 +187,8 @@ Text Index Queries
 
   >>> from cybertools.catalog.query import Text
   >>> t1 = ('', 't1')
-  >>> displayQuery(Text(t1, 'interesting'))
-  [6]
+  >>> displayQueryWithScores(Text(t1, 'interesting'))
+  [(6, 0.149...)]
 
 
 Keyword Index Queries
