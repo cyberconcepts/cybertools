@@ -189,6 +189,7 @@ Text Index Queries
   >>> t1 = ('', 't1')
   >>> displayQueryWithScores(Text(t1, 'interesting'))
   [(6, 0.149...)]
+  >>> displayQueryWithScores(Text(t1, 'interesting') & Eq(f1, 'Y')
 
 
 Keyword Index Queries
