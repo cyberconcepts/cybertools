@@ -44,6 +44,9 @@ We'll use a predefined simple publishing workflow that.
   >>> demo.getState()
   'draft'
 
+  >>> [t.title for t in demo.getAvailableTransitions()]
+  ['publish', 'hide', 'archive', 'remove']
+
 If we try to execute a transition that is not an outgoing transition
 of the current state we get an error.
 
