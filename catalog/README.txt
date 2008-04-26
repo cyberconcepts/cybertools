@@ -71,7 +71,7 @@ Now let's create some objects so that they'll be cataloged.
   ... Content(3, 'X', 'c'),
   ... Content(4, 'a', 'b', 'e'),
   ... Content(5, 'X', 'b', 'e', k1=('zope', 'plone')),
-  ... Content(6, 'Y', 'Z', t1='some interesting text')]
+  ... Content(6, 'Y', 'Z', t1='some very interesting text')]
 
 And catalog them now.
 
@@ -189,7 +189,14 @@ Text Index Queries
   >>> t1 = ('', 't1')
   >>> displayQueryWithScores(Text(t1, 'interesting'))
   [(6, 0.149...)]
-  >>> displayQueryWithScores(Text(t1, 'interesting') & Eq(f1, 'Y')
+  >>> displayQueryWithScores(Text(t1, 'interesting') & Eq(f1, 'Y'))
+  [(6, 1.149...)]
+  >>> displayQueryWithScores(Text(t1, 'interesting') | Eq(f1, 'a'))
+  [(1, 1.0), (2, 1.0), (4, 1.0), (6, 0.149...)]
+  >>> displayQueryWithScores(Text(t1, 'interesting') | Text(t1, 'text'))
+  [(6, 0.298...)]
+  >>> displayQueryWithScores(Text(t1, 'interesting') & Text(t1, 'text'))
+  [(6, 0.298...)]
 
 
 Keyword Index Queries
