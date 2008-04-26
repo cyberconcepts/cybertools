@@ -35,6 +35,7 @@ class Action(object):
 
     template = action_macros
     macroName = 'action'
+    target = None   # an explicitly specified object, use instead of view.context
     priority = 50
     condition = True
     permission = None
