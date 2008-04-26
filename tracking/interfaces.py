@@ -83,6 +83,10 @@ class ITrackingStorage(Interface):
             Return the new track item's id.
         """
 
+    def updateTrack(track, data):
+        """ Update an existing track with new data.
+        """
+
     def query(**criteria):
         """ Search for tracks. Possible criteria are: taskId, runId,
             userName, timeFrom, timeTo.
