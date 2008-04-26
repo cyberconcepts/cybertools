@@ -118,7 +118,13 @@ class OutlookCrawler(MailCrawler):
                             pass
                 record = {}
                 for key in self.keys:
-                    record[key] = getattr(mail, key)
+                    try:
+                        if isinstance(getattr(mail, key), (int, str, unicode, bool)):
+                            record[key] = getattr(mail, key)
+                        else:
+                            record[key] = "Invalid data format"
+                    except:
+                        record[key] = "Requested attribute not available"
                 # Create the mime email object
                 msg = self.createEmailMime(record)
                 # Create a resource and append it to the result list
@@ -172,21 +178,20 @@ class OutlookCrawler(MailCrawler):
     def createEmailMime(self, emails):
         # Create the container (outer) email message.
         msg = MIMEMultipart.MIMEMultipart()
-        msg['Subject'] = emails['Subject'].encode('utf-8')
-        if emails.has_key('SenderEmailAddress'):
-            sender = str(emails['SenderEmailAddress'].encode('utf-8'))
+        for key in emails.keys():
+            if isinstance(emails[key], (str, unicode)):
+                msg[key] = emails[key].encode('utf-8')
+            elif isinstance(emails[key], (list, tuple, dict)):
+                lst = []
+                for rec in emails[key]:
+                    lst.append(rec)
+                    msg[key] = COMMASPACE.join(lst)
+            else:
+                msg[key] = emails[key]
+        if emails.has_key('Body'):
+            msg.preamble = emails['Body'].encode('utf-8')
         else:
-            sender = str(emails['SenderName'].encode('utf-8'))
-        msg['From'] = sender
-        recipients = []
-        if emails.has_key('Recipients'):
-            for rec in range(emails['Recipients'].__len__()):
-                recipients.append(getattr(emails['Recipients'].Item(rec+1), 'Address'))
-                msg['To'] = COMMASPACE.join(recipients)
-        else:
-            recipients.append(emails['To'])
-            msg['To'] = COMMASPACE.join(recipients)
-        msg.preamble = emails['Body'].encode('utf-8')
+            msg.preamble = "e-Mail body not available"
         return msg
 
 agents.register(OutlookCrawler, Master, name='crawl.outlook')
