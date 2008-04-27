@@ -107,6 +107,7 @@ class TransitionEvent(ObjectEvent):
         self.transition = transition
         self.previousState = previousState
 
+
 # dummy default states definition
 
 defaultSD = StatesDefinition('default',

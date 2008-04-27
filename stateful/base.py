@@ -24,10 +24,11 @@ $Id$
 
 from persistent.interfaces import IPersistent
 from persistent.mapping import PersistentMapping
+from zope import component
 from zope.component import adapts
 from zope.interface import implements
 
-from cybertools.stateful.interfaces import IStateful
+from cybertools.stateful.interfaces import IStateful, IStatefulIndexInfo
 from cybertools.stateful.definition import statesDefinitions
 
 
@@ -93,4 +94,20 @@ class StatefulAdapter(Stateful):
             setattr(self.context, self.statesAttributeName, statesAttr)
         statesAttr[self.statesDefinition] = value
     state = property(getState, setState)
+
+
+class IndexInfo(object):
+
+    implements(IStatefulIndexInfo)
+
+    availableStatesDefinitions = []     # to be overwritten by subclass!
+
+    def __init__(self, context):
+        self.context = context
+
+    @property
+    def tokens(self):
+        for std in self.availableStatesDefinitions:
+            stf = component.getAdapter(self.context, IStateful, name=std)
+            yield ':'.join((std, stf.state))
 

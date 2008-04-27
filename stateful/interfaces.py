@@ -113,6 +113,18 @@ class IStatesDefinition(Interface):
         """
 
 
+class IStatefulIndexInfo(Interface):
+    """ Provide a list of tokens to be used for index the states
+        of an object in the catalog.
+    """
+
+    tokens = Attribute('A sequence of strings to be used for indexing the '
+                'states; format: [<statesdefinition name>:<state name>, ...].')
+
+    availableStatesDefinitions = Attribute('A sequence of strings with the '
+                'names of all states definitions currently available.')
+
+
 class ITransitionEvent(IObjectEvent):
     """ Fires when the state of an object is changed.
     """
