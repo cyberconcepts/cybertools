@@ -26,10 +26,13 @@ from persistent.interfaces import IPersistent
 from persistent.mapping import PersistentMapping
 from zope import component
 from zope.component import adapts
+from zope.component.interfaces import ObjectEvent
+from zope.event import notify
 from zope.interface import implements
 
-from cybertools.stateful.interfaces import IStateful, IStatefulIndexInfo
 from cybertools.stateful.definition import statesDefinitions
+from cybertools.stateful.interfaces import IStateful, IStatefulIndexInfo
+from cybertools.stateful.interfaces import ITransitionEvent
 
 
 class Stateful(object):
@@ -52,12 +55,12 @@ class Stateful(object):
         sd = self.getStatesDefinition()
         if isinstance(transition, basestring):
             sd.doTransitionFor(self, transition)
-            return
+            return transition
         available = [t.name for t in sd.getAvailableTransitionsFor(self)]
         for tr in transition:
             if tr in available:
                 sd.doTransitionFor(self, tr)
-                return
+                return tr
         raise ValueError("None of the transitions '%s' is available for state '%s'."
                                 % (repr(transition), self.getState()))
 
@@ -95,6 +98,12 @@ class StatefulAdapter(Stateful):
         statesAttr[self.statesDefinition] = value
     state = property(getState, setState)
 
+    def doTransition(self, transition, historyInfo=None):
+        previousState = self.getState()
+        transition = super(StatefulAdapter, self).doTransition(transition, historyInfo)
+        transition = self.getStatesDefinition().transitions[transition]
+        notify(TransitionEvent(self.context, transition, previousState))
+
 
 class IndexInfo(object):
 
@@ -110,4 +119,17 @@ class IndexInfo(object):
         for std in self.availableStatesDefinitions:
             stf = component.getAdapter(self.context, IStateful, name=std)
             yield ':'.join((std, stf.state))
+
+
+# event
+
+class TransitionEvent(ObjectEvent):
+
+    implements(ITransitionEvent)
+
+    def __init__(self, obj, transition, previousState):
+        super(TransitionEvent, self).__init__(obj)
+        self.transition = transition
+        self.previousState = previousState
+
 
