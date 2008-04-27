@@ -33,11 +33,12 @@ from cybertools.stateful.interfaces import IStatesDefinition
 @implementer(IStatesDefinition)
 def simplePublishing():
     return StatesDefinition('publishing',
-        State('private', 'private', ('show', 'archive', 'remove')),
-        State('draft', 'draft', ('publish', 'hide', 'archive', 'remove')),
-        State('published', 'published', ('retract', 'archive')),
-        State('archived', 'archived', ('show', 'remove')),
-        State('removed', 'removed', ('show',)),
+        State('private', 'private', ('show', 'archive', 'remove'), color='red'),
+        State('draft', 'draft', ('publish', 'hide', 'archive', 'remove'),
+              color='yellow'),
+        State('published', 'published', ('retract', 'archive'), color='green'),
+        State('archived', 'archived', ('show', 'remove'), color='lightblue'),
+        State('removed', 'removed', ('show',), icon='cancel.png'),
         Transition('show', 'show', 'draft'),
         Transition('hide', 'hide', 'private'),
         Transition('publish', 'publish', 'published'),

@@ -64,6 +64,9 @@ class Stateful(object):
         sd = self.getStatesDefinition()
         return sd.getAvailableTransitionsFor(self)
 
+    def getAvailableTransitionsForUser(self):
+        return self.getAvailableTransitions()
+
     def getStatesDefinition(self):
         return statesDefinitions.get(self.statesDefinition, None)
 

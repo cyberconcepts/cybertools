@@ -22,17 +22,21 @@ State definition implementation.
 $Id$
 """
 
+from zope.component.interfaces import ObjectEvent
+from zope.event import notify
 from zope.interface import implements
 from cybertools.util.jeep import Jeep
 
 from cybertools.stateful.interfaces import IState, ITransition
 from cybertools.stateful.interfaces import IStatesDefinition
+from cybertools.stateful.interfaces import ITransitionEvent
 
 
 class State(object):
 
     implements(IState)
 
+    icon = None
     color = 'blue'
 
     def __init__(self, name, title, transitions, **kw):
@@ -82,11 +86,26 @@ class StatesDefinition(object):
         if transition not in [t.name for t in self.getAvailableTransitionsFor(obj)]:
             raise ValueError("Transition '%s' is not reachable from state '%s'."
                                     % (transition, obj.getState()))
-        obj.state = self.transitions[transition].targetState
+        transObject = self.transitions[transition]
+        previousState = obj.state
+        obj.state = transObject.targetState
+        notify(TransitionEvent(obj, transObject, previousState))
 
     def getAvailableTransitionsFor(self, obj):
         state = obj.getState()
         return [self.transitions[t] for t in self.states[state].transitions]
+
+
+# event
+
+class TransitionEvent(ObjectEvent):
+
+    implements(ITransitionEvent)
+
+    def __init__(self, obj, transition, previousState):
+        super(TransitionEvent, self).__init__(obj)
+        self.transition = transition
+        self.previousState = previousState
 
 # dummy default states definition
 

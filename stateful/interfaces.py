@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ Interfaces for the `stateful` package.
 $Id$
 """
 
+from zope.component.interfaces import IObjectEvent
 from zope.interface import Interface, Attribute
 
 
@@ -71,6 +72,12 @@ class IStateful(Interface):
             provide the ITransition interface.
         """
 
+    def getAvailableTransitionsForUser():
+        """ Return the transitions for this object that are available for
+            the current user. This is a subset of all available transitions
+            for the current state.
+        """
+
 
 class IHistorizable(Interface):
     """ An object that may record history information, e.g. when
@@ -105,3 +112,10 @@ class IStatesDefinition(Interface):
         """ Return the transitions available for this object in its current state.
         """
 
+
+class ITransitionEvent(IObjectEvent):
+    """ Fires when the state of an object is changed.
+    """
+
+    transition = Attribute('The transition.')
+    previousState = Attribute('The name of the state before the transition.')
