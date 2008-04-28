@@ -53,14 +53,17 @@ class Stateful(object):
 
     def doTransition(self, transition, historyInfo=None):
         sd = self.getStatesDefinition()
+        previousState = self.getState()
         if isinstance(transition, basestring):
             sd.doTransitionFor(self, transition)
-            return transition
+            self.notify(transition, previousState)
+            return
         available = [t.name for t in sd.getAvailableTransitionsFor(self)]
         for tr in transition:
             if tr in available:
                 sd.doTransitionFor(self, tr)
-                return tr
+                self.notify(tr, previousState)
+                return
         raise ValueError("None of the transitions '%s' is available for state '%s'."
                                 % (repr(transition), self.getState()))
 
@@ -73,6 +76,10 @@ class Stateful(object):
 
     def getStatesDefinition(self):
         return statesDefinitions.get(self.statesDefinition, None)
+
+    def notify(self, transition, previousState):
+        """ To be implemented by subclass.
+        """
 
 
 class StatefulAdapter(Stateful):
@@ -98,11 +105,9 @@ class StatefulAdapter(Stateful):
         statesAttr[self.statesDefinition] = value
     state = property(getState, setState)
 
-    def doTransition(self, transition, historyInfo=None):
-        previousState = self.getState()
-        transition = super(StatefulAdapter, self).doTransition(transition, historyInfo)
-        transition = self.getStatesDefinition().transitions[transition]
-        notify(TransitionEvent(self.context, transition, previousState))
+    def notify(self, transition, previousState):
+        transObject = self.getStatesDefinition().transitions[transition]
+        notify(TransitionEvent(self.context, transObject, previousState))
 
 
 class IndexInfo(object):

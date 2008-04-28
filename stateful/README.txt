@@ -28,7 +28,6 @@ state.
 We can now execute the `finish` Transition.
 
   >>> demo.doTransition('finish')
-  'finish'
   >>> demo.getState()
   'finished'
 
