@@ -1,0 +1,42 @@
+<!-- $Id$ -->
+
+<configure
+    xmlns:zope="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="zope">
+
+  <zope:class class="cybertools.catalog.keyword.KeywordIndex">
+    <require permission="zope.ManageServices"
+             interface="zope.app.catalog.interfaces.IAttributeIndex
+                        zope.index.interfaces.IStatistics"
+             set_schema="zope.app.catalog.interfaces.IAttributeIndex" />
+  </zope:class>
+
+  <browser:addform
+      name="AddKeywordIndex"
+      label="Add a keyword index"
+      schema="zope.app.catalog.interfaces.IAttributeIndex"
+      permission="zope.ManageServices"
+      content_factory="cybertools.catalog.keyword.KeywordIndex"
+      arguments="field_name"
+      keyword_arguments="interface field_callable"
+      />
+
+  <browser:addMenuItem
+      title="Keyword Index"
+      description="Index items based on an a list of keyword values"
+      class="cybertools.catalog.keyword.KeywordIndex"
+      permission="zope.ManageServices"
+      view="AddKeywordIndex"
+     />
+
+  <browser:schemadisplay
+      name="index.html"
+      schema="cybertools.catalog.keyword.IKeywordIndex"
+      label="Keyword Index"
+      fields="interface field_name field_callable"
+      permission="zope.ManageServices"
+      menu="zmi_views" title="Configuration"
+      />
+
+</configure>
