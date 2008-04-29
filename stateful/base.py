@@ -26,7 +26,10 @@ from persistent.interfaces import IPersistent
 from persistent.mapping import PersistentMapping
 from zope import component
 from zope.component import adapts
-from zope.component.interfaces import ObjectEvent
+try:
+    from zope.component.interfaces import ObjectEvent
+except ImportError: # Zope 2.9
+    from zope.app.event.objectevent import ObjectEvent
 from zope.event import notify
 from zope.interface import implements
 

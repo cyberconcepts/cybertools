@@ -22,7 +22,10 @@ Interfaces for the `stateful` package.
 $Id$
 """
 
-from zope.component.interfaces import IObjectEvent
+try:
+    from zope.component.interfaces import IObjectEvent
+except ImportError: # Zope 2.9
+    from zope.app.event.interfaces import IObjectEvent
 from zope.interface import Interface, Attribute
 
 
