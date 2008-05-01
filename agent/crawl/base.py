@@ -27,7 +27,7 @@ from zope.interface import implements
 from cybertools.agent.base.agent import Master
 from cybertools.agent.core.agent import QueueableAgent
 from cybertools.agent.interfaces import ICrawler
-from cybertools.agent.interfaces import IResource
+from cybertools.agent.interfaces import IResource, IMetadataSet
 from cybertools.agent.components import agents
 from twisted.internet.defer import succeed
 
@@ -35,7 +35,7 @@ from twisted.internet.defer import succeed
 class Crawler(QueueableAgent):
 
     implements(ICrawler)
-    
+
     def __init__(self, master, params={}):
         super(Crawler, self).__init__(master)
 
@@ -54,6 +54,8 @@ class SampleCrawler(Crawler):
         d = succeed([])
         return d
 
+agents.register(SampleCrawler, Master, name='crawl.sample')
+
 
 class Resource(object):
 
@@ -71,6 +73,18 @@ class Resource(object):
         self.metadata = metadata
 
 
+class Metadata(dict):
 
-agents.register(SampleCrawler, Master, name='crawl.sample')
+    implements(IMetadataSet)
+
+    def __init__(self, data=dict()):
+        for k in data:
+            self[k] = data[k]
+
+    def asXML(self):
+        # TODO...
+        return ''
+
+    def set(self, key, value):
+        self['key'] = value
 

@@ -58,7 +58,7 @@ def setupEnvironment(config):
     from cybertools.agent.control import cmdline
     from cybertools.agent.system.windows import api
     api.setup(config)
-    from cybertools.agent.crawl import base, outlook
+    from cybertools.agent.crawl import base, filesystem, outlook
 
 
 def startReactor():

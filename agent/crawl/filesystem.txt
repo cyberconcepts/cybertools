@@ -1,0 +1,38 @@
+================================================
+Agents for Job Execution and Communication Tasks
+================================================
+
+  ($Id$)
+
+  >>> import os
+  >>> from time import time
+
+  >>> from cybertools.agent.tests import tester, baseDir
+  >>> config = '''
+  ... controller(names=['core.sample'])
+  ... scheduler(name='core')
+  ... logger(name='default', standard=30)
+  ... '''
+  >>> from cybertools.agent.main import setup
+  >>> master = setup(config)
+  Starting agent application...
+  Using controllers core.sample.
+
+
+Filesystem Crawler
+==================
+
+  >>> controller = master.controllers[0]
+  >>> controller.createAgent('crawl.filesystem', 'sample03')
+
+In the next step we request the start of a job, again via the controller.
+
+  >>> path = os.path.join(baseDir, 'testing', 'data')
+  >>> controller.enterJob('sample', 'sample03', params=dict(directory=path))
+
+The job is not executed immediately - we have to hand over control to
+the twisted reactor first.
+
+  >>> from cybertools.agent.tests import tester
+  >>> tester.iterate()
+  Job 00001 completed; result: [..., ...];
