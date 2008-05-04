@@ -45,8 +45,11 @@ class Mail(object):
     def _prop_map_get_(self):
         #here it is necessary of what attributes (called keys in outlok.py)
         #an Outlook Mail typically has
-        # should return a tuple ()
-        return ('Subject', 'SenderName', 'To', 'Body')
+        return {'Subject': "Testsubject",\
+                'SenderName': "TestSender",\
+                'To': "TestRecipient",\
+                'Body': "TestBody"
+                }
 
 
 class Items(object):

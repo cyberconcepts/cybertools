@@ -110,19 +110,21 @@ class OutlookCrawler(MailCrawler):
             if mail.Class == api.client.constants.olMail:
                 if self.keys is None:
                     self.keys = []
-                    for key in mail._prop_map_get_:
+                    for key in mail._prop_map_get_.items():
                         try:
-                            if isinstance(getattr(mail, key), (int, str, unicode)):
-                                self.keys.append(key)
+                            if isinstance(key[0], (int, str, unicode, bool)):
+                                self.keys.append(key[0])
                         except api.com_error:
                             pass
                 record = {}
                 for key in self.keys:
                     try:
-                        if isinstance(getattr(mail, key), (int, str, unicode, bool)):
-                            record[key] = getattr(mail, key)
-                        else:
-                            record[key] = "Invalid data format"
+                        if (hasattr(mail, key)):
+                            value = getattr(mail, key)
+                            if isinstance(value, (int, str, unicode, bool)):
+                                record[key] = value
+                            else:
+                                record[key] = "Invalid data format"
                     except:
                         record[key] = "Requested attribute not available"
                 # Create the mime email object
