@@ -26,7 +26,8 @@ $Id$
 """
 
 from BTrees.IFBTree import weightedIntersection, weightedUnion
-from BTrees.IFBTree import difference, IFBTree, IFBucket
+from BTrees.IFBTree import difference, IFBTree, IFBucket, IFSet
+from BTrees.IIBTree import IISet, union
 from zope.app.intid.interfaces import IIntIds
 from zope.app.catalog.catalog import ResultSet
 from zope.app.catalog.field import IFieldIndex
@@ -248,13 +249,17 @@ class KeywordTerm(IndexTerm):
 class AnyOf(KeywordTerm):
 
     def apply(self):
-        index = self.getIndex()
-        return index.search(self.values, 'or')
+        result = self.getIndex().search(self.values, 'or')
+        if isinstance(result, IFSet):
+            return result
+        return IFSet(result)
 
 
 class AllOf(KeywordTerm):
 
     def apply(self):
-        index = self.getIndex()
-        return index.search(self.values, 'and')
+        result = self.getIndex().search(self.values, 'and')
+        if isinstance(result, IFSet):
+            return result
+        return IFSet(result)
 
