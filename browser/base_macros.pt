@@ -25,7 +25,7 @@
 
 
 <metal:js define-macro="js-execute">
-    <script tal:content="macro/jsCall"></script>
+    <script type="text/javascript" tal:content="macro/jsCall"></script>
 </metal:js>
 
 
