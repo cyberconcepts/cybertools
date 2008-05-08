@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,11 +22,14 @@ Ordered container implementation.
 $Id$
 """
 
-from zope.app import zapi
-from zope.cachedescriptors.property import Lazy
+from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.app.container.browser.contents import JustContents
 from zope.app.i18n import ZopeMessageFactory as _
+from zope.cachedescriptors.property import Lazy
 from zope.interface import Interface
+
+
+contents_template = ViewPageTemplateFile('contents.pt')
 
 
 class ContainerView(JustContents):
@@ -38,11 +41,13 @@ class ContainerView(JustContents):
 
     # informations for the ajax.inner.html view (template):
 
-    @Lazy
-    def template(self):
-        basicView = zapi.getMultiAdapter((self.context, self.request),
-                        Interface, name=u'contents.html')
-        return basicView.index
+    template = contents_template
+
+    #@Lazy
+    #def template(self):
+    #    basicView = zapi.getMultiAdapter((self.context, self.request),
+    #                    Interface, name=u'contents.html')
+    #    return basicView.index
 
     @Lazy
     def macro(self):

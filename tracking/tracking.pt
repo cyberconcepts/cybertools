@@ -1,0 +1,75 @@
+<html metal:use-macro="context/@@standard_macros/view"
+    i18n:domain="zope">
+<body>
+
+
+<div metal:fill-slot="body">
+
+  <div metal:define-macro="contents"
+       id="body.contents"
+       tal:define="content_macros view/contents_template/macros">
+
+    <form name="tracks" method="post" action="."
+          tal:attributes="action request/URL"
+          tal:define="contents view/getTracks">
+
+      <metal:keep-batch use-macro="content_macros/keep_batch_params" />
+
+      <div class="page_error"
+           tal:condition="view/error"
+           tal:content="view/error"
+           i18n:translate="">
+        Error message
+      </div>
+
+      <table id="sortable" class="listing" summary="Content listing"
+             i18n:attributes="summary">
+
+        <thead>
+          <tr>
+            <th i18n:translate="">ID</th>
+            <th i18n:translate="">Task</th>
+            <th i18n:translate="">Run</th>
+            <th i18n:translate="">User</th>
+            <th i18n:translate="">Timestamp</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+        <metal:block tal:define="batch nocall:context/@@cybertools.reporter.batch;
+                                 batch python:batch.setup(contents)">
+          <tal:list repeat="item batch/items">
+          <tr tal:define="oddrow repeat/item/odd;
+                          url item/url;"
+              tal:attributes="class python:oddrow and 'even' or 'odd'" >
+            <td>
+              <a href="#"
+                 tal:attributes="href string:${url}/@@SelectedManagementView.html"
+                 tal:content="item/id">foo</a>
+            </td>
+            <td><a tal:omit-tag="not:item/taskUrl"
+                   tal:attributes="href item/taskUrl"
+                   tal:content="item/taskTitle"></a></td>
+            <td tal:content="item/run"></td>
+            <td><a tal:omit-tag="not:item/userUrl"
+                   tal:attributes="href item/userUrl"
+                   tal:content="item/userTitle"></a></td>
+            <td tal:content="item/timeStamp"></td>
+          </tr>
+          </tal:list>
+          <metal:nav use-macro="content_macros/batch_navigation_tr" />
+        </metal:block>
+
+        </tbody>
+      </table>
+
+    </form>
+
+
+  </div>
+
+
+</div>
+</body>
+</html>
