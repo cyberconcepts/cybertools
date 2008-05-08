@@ -61,16 +61,17 @@ class Resource(object):
 
     implements(IResource)
 
-    data = None
-    path = ""
-    application = ""
-    metadata = None
+    application = 'sample'
 
-    def __init__(self, data, path="", application="", metadata=None):
+    def __init__(self, data=None, file=None, path=None, application=None,
+                 metadata=None):
         self.data = data
+        self.file = file
         self.path = path
-        self.application = application
+        if application:
+            self.application = application
         self.metadata = metadata
+        self.subResources = []
 
 
 class Metadata(dict):

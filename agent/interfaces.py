@@ -196,21 +196,6 @@ class IScheduledJob(Interface):
         """
 
 
-class ICrawlingJob(IScheduledJob):
-    """ A job specifying a crawling task.
-    """
-
-    predefinedMetadata = Attribute('A mapping with metadata to be used '
-                                   'for all resources found.')
-
-
-class ITransportJob(IScheduledJob):
-    """ A job managing the the transfer of a resource to the server.
-    """
-
-    transporter = Attribute('The transporter agent to use for transfer.')
-
-
 # information objects
 
 class IResource(Interface):
@@ -218,17 +203,24 @@ class IResource(Interface):
         will be transferred to the server.
     """
 
-    data = Attribute('A string, file, or similar representation of the '
+    data = Attribute('A string representation of the '
                     'resource\'s content; may be None if the receiver of '
-                    'the information can retrieve the date from the path '
-                    'given.')
-    path = Attribute('A filesystem path or some other information '
-                    'uniquely identifying the resource on the client '
-                    'machine for the current user.')
+                    'the information can retrieve the data from the file or path '
+                    'attribute.')
+    file = Attribute('A file-like object providing the data via its read() '
+                    'method; may be None if the data or path attribute '
+                    'is given.')
+    path = Attribute('A filesystem path for accessing the resource; may be '
+                    'None if the data or file attribute is given.')
+    identifier = Attribute('A string (usually derived from the path) that '
+                    'uniquely identifies the resource.')
     application = Attribute('The name of the application that provided '
                     'the resource, e.g. "filesystem" or "mail".')
     metadata = Attribute('Information describing this resource; '
                     'should be an IMetadataSet object.')
+    subResources = Attribute('A collection of resources that are inherently '
+                    'connected to or parts of this resource, e.g. attachments '
+                    'of an email. Will be None or empty in most cases.')
 
 
 class IMetadataSet(Interface):
@@ -278,4 +270,3 @@ class ILogRecord(Interface):
         """ Return a string representation suitable for writing to a
             log file.
         """
-

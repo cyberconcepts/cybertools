@@ -53,10 +53,12 @@ class Controller(object):
 class SampleController(Controller):
 
     jobNumber = 0
+    result = None
 
     agents = (('sample01', 'base.sample'),)
 
     def notify(self, identifier, state, result=None, message=''):
+        self.result = result
         msg = ('Job %s %s; result: %s; %s' %
                (identifier, state, result, message))
         print msg

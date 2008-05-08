@@ -61,5 +61,3 @@ class Job(object):
         newJob.successors = [s.copy() for s in self.successors]
 
 jobs.register(Job, Scheduler, name='sample')
-
-

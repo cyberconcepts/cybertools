@@ -39,21 +39,21 @@ class MailCrawler(Crawler):
 
     def collect(self, filter=None):
         print 'MailCrawler is collecting.'
-        # d = self.crawlFolders()
-        d = succeed([])
+        d = self.crawlFolders()
         return d
 
     def fetchCriteria(self):
         pass
 
     def crawlFolders(self):
-        pass
+        return succeed([])
 
     def loadMailsFromFolder(self, folder):
         pass
 
-    def createResource(self, mail, path="", application="", metadata=None):
-        resource = MailResource(mail, path, application, metadata)
+    def createResource(self, mail, path=None, application=None, metadata=None):
+        resource = MailResource(mail, path=path, application=application,
+                                metadata=metadata)
         self.result.append(resource)
 
     def login(self):
@@ -61,6 +61,7 @@ class MailCrawler(Crawler):
 
 
 class MailResource(Resource):
-    pass
+
+    application = 'outlook'
 
 agents.register(MailCrawler, Master, name='crawl.mail')
