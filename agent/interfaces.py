@@ -214,6 +214,12 @@ class IResource(Interface):
                     'None if the data or file attribute is given.')
     identifier = Attribute('A string (usually derived from the path) that '
                     'uniquely identifies the resource.')
+    type = Attribute('A string denoting the type of the resource, e.g. '
+                    '"file" or "email".')
+    contentType = Attribute('A string denoting the MIME type of the data, '
+                    'e.g. "text/plain" or "application/octet-stream"')
+    encoding = Attribute('Optional: a string denoting the encoding of the '
+                    'file data, e.g. "UTF-8".')
     application = Attribute('The name of the application that provided '
                     'the resource, e.g. "filesystem" or "mail".')
     metadata = Attribute('Information describing this resource; '

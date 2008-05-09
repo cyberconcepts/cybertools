@@ -130,7 +130,7 @@ class OutlookCrawler(MailCrawler):
                 # Create the mime email object
                 msg = self.createEmailMime(record)
                 # Create a resource and append it to the result list
-                self.createResource(msg, folder, "Microsoft Office Outlook")
+                self.createResource(msg, application='outlook')
                 yield None
 
     def login(self):

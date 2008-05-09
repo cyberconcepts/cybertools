@@ -38,5 +38,5 @@ the twisted reactor first.
   Job 00001 completed; result: [..., ...];
 
   >>> r0 = controller.result[0]
-  >>> r0.metadata, r0.data.read()
+  >>> r0.metadata, r0.data
   ({'path': '...file1.txt'}, 'Data from file1.txt')

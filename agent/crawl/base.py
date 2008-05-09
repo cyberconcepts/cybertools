@@ -61,16 +61,18 @@ class Resource(object):
 
     implements(IResource)
 
+    data = file = path = None
+    type = 'sample'
+    contentType = 'text/plain'
+    encoding = ''
     application = 'sample'
+    metadata = None
 
-    def __init__(self, data=None, file=None, path=None, application=None,
-                 metadata=None):
-        self.data = data
-        self.file = file
-        self.path = path
-        if application:
-            self.application = application
-        self.metadata = metadata
+    def __init__(self, data=None, **kw):
+        if data is not None:
+            self.data = data
+        for k, v in kw.items():
+            setattr(self, k, v)
         self.subResources = []
 
 
@@ -79,8 +81,7 @@ class Metadata(dict):
     implements(IMetadataSet)
 
     def __init__(self, data=dict()):
-        for k in data:
-            self[k] = data[k]
+        self.update(data)
 
     def asXML(self):
         # TODO...

@@ -59,9 +59,11 @@ class MailCrawler(Crawler):
     def login(self):
         pass
 
+agents.register(MailCrawler, Master, name='crawl.mail')
+
 
 class MailResource(Resource):
 
-    application = 'outlook'
+    type = 'email'
+    application = 'mailclient'
 
-agents.register(MailCrawler, Master, name='crawl.mail')

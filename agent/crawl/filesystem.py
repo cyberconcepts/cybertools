@@ -35,7 +35,6 @@ from cybertools.agent.crawl.base import Crawler
 from cybertools.agent.util.task import coiterate
 
 
-
 class FilesystemCrawler(Crawler):
 
     def collect(self):
@@ -67,7 +66,7 @@ class FilesystemCrawler(Crawler):
             meta = dict(
                 path=filename,
             )
-            self.collected.append(FileResource(filename, Metadata(meta)))
+            self.collected.append(FileResource(path=filename, metadata=Metadata(meta)))
             yield None
 
 agents.register(FilesystemCrawler, Master, name='crawl.filesystem')
@@ -75,13 +74,12 @@ agents.register(FilesystemCrawler, Master, name='crawl.filesystem')
 
 class FileResource(Resource):
 
-    def __init__(self, path, metadata=None):
-        self.path = path
-        self.metadata = metadata
-
+    type = 'file'
     application = 'filesystem'
 
     @property
     def data(self):
-        return open(self.path, 'r')
-
+        f = open(self.path, 'r')
+        text = f.read()
+        f.close()
+        return text
