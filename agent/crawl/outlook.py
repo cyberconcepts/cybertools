@@ -40,6 +40,7 @@ from cybertools.agent.crawl.mail import MailResource
 from cybertools.agent.components import agents
 from cybertools.agent.system.windows import api
 from cybertools.agent.util.task import coiterate
+from cybertools.agent.util.codepages import codepages
 
 # some constants
 COMMASPACE = ', '
@@ -127,10 +128,9 @@ class OutlookCrawler(MailCrawler):
                                 record[key] = "Invalid data format"
                     except:
                         record[key] = "Requested attribute not available"
-                # Create the mime email object
-                msg = self.createEmailMime(record)
+                metadata = self.assembleMetadata(record)
                 # Create a resource and append it to the result list
-                self.createResource(msg, application='outlook')
+                self.createResource(mail, folder, metadata)
                 yield None
 
     def login(self):
@@ -177,23 +177,71 @@ class OutlookCrawler(MailCrawler):
             pass
         return outlookFound
 
-    def createEmailMime(self, emails):
-        # Create the container (outer) email message.
-        msg = MIMEMultipart.MIMEMultipart()
-        for key in emails.keys():
-            if isinstance(emails[key], (str, unicode)):
-                msg[key] = emails[key].encode('utf-8')
-            elif isinstance(emails[key], (list, tuple, dict)):
+    def assembleMetadata(self, mailAttr):
+        meta = {}
+        for key in mailAttr.keys():
+            if isinstance(mailAttr[key], (str, unicode))\
+               and mailAttr[key] != 'Body' and mailAttr[key] != 'HTMLBody':
+                meta[key] = mailAttr[key].encode('utf-8')
+            elif isinstance(mailAttr[key], (list, tuple, dict)):
                 lst = []
-                for rec in emails[key]:
+                for rec in mailAttr[key]:
                     lst.append(rec)
-                    msg[key] = COMMASPACE.join(lst)
+                    meta[key] = COMMASPACE.join(lst)
             else:
-                msg[key] = emails[key]
-        if emails.has_key('Body'):
-            msg.preamble = emails['Body'].encode('utf-8')
+                meta[key] = mailAttr[key]
+        metadata = self.createMetadata(meta)
+        return metadata
+    
+    def createResource(self, mail, folder, metadata):
+        enc = "not available"
+        textType = "not available"
+        attachments = []
+        ident = "EntryID not available"
+        if (hasattr(mail, 'BodyFormat')):
+            value = getattr(mail, 'BodyFormat')
+            if value == 1:
+                #1: it is a plain text mail, that is maybe decorated with
+                #some html Tags by Outlook for formatting
+                #so save it as plain text mail
+                if hasattr(mail, 'Body'):
+                    mailContent = getattr(mail, 'Body')
+                    textType = "text/plain"
+                else:
+                    mailContent = "Could not retrieve mail body"
+                    textType = "text/plain"
+            elif value == 2:
+                #2: it is a HTML mail
+                if hasattr(mail, 'HTMLBody'):
+                    mailContent = getattr(mail, 'HTMLBody')
+                    textType = "text/html"
+                else:
+                    mailContent = "Could not retrieve HTMLBody of mail"
+                    textType = "text/html"
         else:
-            msg.preamble = "e-Mail body not available"
-        return msg
+            #Could not determine BodyFormat. Try to retrieve plain text
+            if hasattr(mail, 'Body'):
+                mailContent = getattr(mail, 'Body')
+            else:
+                mailContent = "Could not retrieve mail body"
+        if hasattr(mail, 'InternetCodepage'):
+            Codepage = getattr(mail, 'InternetCodepage')
+            if codepages.has_key(Codepage):
+                enc = codepages[Codepage]
+        if hasattr(mail, 'EntryID'):
+            ident = getattr(mail, 'EntryID')
+        if hasattr(mail, 'Attachments'):
+            attachedElems = getattr(mail, 'Attachments')
+            for item in range(1, len(attachedElems)+1):
+                attachments.append(attachedElems.Item(item).FileName)
+        resource = MailResource(data=mailContent,\
+                                contentType=textType,\
+                                encoding=enc,\
+                                path=folder,\
+                                application='outlook',\
+                                identifier=ident,\
+                                metadata=metadata,\
+                                subResources=attachments)
+        self.result.append(resource)
 
 agents.register(OutlookCrawler, Master, name='crawl.outlook')

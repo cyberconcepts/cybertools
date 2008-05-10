@@ -26,6 +26,7 @@ from zope.interface import implements
 
 from cybertools.agent.base.agent import Agent, Master
 from cybertools.agent.crawl.base import Resource
+from cybertools.agent.crawl.base import Metadata
 from cybertools.agent.crawl.base import Crawler
 from cybertools.agent.components import agents
 from twisted.internet.defer import succeed
@@ -51,10 +52,14 @@ class MailCrawler(Crawler):
     def loadMailsFromFolder(self, folder):
         pass
 
-    def createResource(self, mail, path=None, application=None, metadata=None):
-        resource = MailResource(mail, path=path, application=application,
+    def createResource(self, data, path=None, application=None, metadata=None):
+        resource = MailResource(data=data, path=path, application=application,
                                 metadata=metadata)
         self.result.append(resource)
+        
+    def createMetadata(self, metadata):
+        metadata = Metadata(metadata)
+        return metadata
 
     def login(self):
         pass
