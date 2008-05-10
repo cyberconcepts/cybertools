@@ -18,6 +18,7 @@
 
 """
 Codepages Module
+$Id$
 """
 
 codepages = {28596: 'iso-8859-6',\
