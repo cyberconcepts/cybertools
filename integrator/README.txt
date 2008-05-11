@@ -22,7 +22,7 @@ Let's do some basic set up
 
 
 Accessing Objects in the Filesystem
-=======================================
+===================================
 
   >>> top = component.getUtility(IContainerFactory, name='filesystem')(testDir)
   >>> sorted(top)

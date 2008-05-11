@@ -35,12 +35,28 @@ from cybertools.integrator.base import ReadContainer, File, Image
 from cybertools.text import mimetypes
 
 
+baseAttributes = ['__class__', 'name', 'id', 'descr', 'notes',
+    'bound_sub_artifacts', 'creator', 'owner', 'owners',
+    'ctime', 'mtime', 'atime', 'lastEvent', 'createEvent',
+    'lastChange', 'lastMove', 'containers', 'access']
+
+standardAttributes = ['__class__', 'name', 'id', 'descr', 'mtime']
+
+additionalAttributes = ['banner', 'moderated', 'ratings']
+
+documentAttributes = ['vid', 'vstore', 'file_extensions', 'size', 'encoding', 'type']
+
+urlAttributes = ['url_link', 'last_verified', 'last_error', 'content_length',
+    'content_type', 'content_encoding', 'last_modified']
+
+classes = ['cl_core.Folder', 'cl_core.Document', 'cl_core.URL', ]
+
+
 # proxy classes
 
 class ReadContainer(ReadContainer):
 
     factoryName = 'bscw'
-    data = None
 
     @Lazy
     def data(self):
@@ -64,12 +80,13 @@ class ReadContainer(ReadContainer):
             return default
         item = self.data[key]
         if 'Folder' in item['__class__']:
-            return self.containerFactory(item['id'], server=self.server)
+            return self.containerFactory(item['id'], server=self.server,
+                                         name=item['name'])
         elif 'Document' in item['__class__']:
-            return self.fileFactory(item['id'], server=self.server,
-                                    type=item['type'])
+            return self.fileFactory(item['id'], item['type'], server=self.server,
+                                    name=item['name'])
         else:
-            return OtherObject(item['id'], server=self.server)
+            return OtherObject(item['id'], None, server=self.server, name=item['name'])
 
     def values(self):
         return [self.get(k) for k in self]
@@ -93,15 +110,7 @@ class File(File):
     data = property(getData)
 
     def getSize(self):
-        return os.stat(self.address)[stat.ST_SIZE]
-
-
-class Image(File):
-
-    width = height = 0
-
-    def getImageSize(self):
-        return self.width, self.height
+        return 0
 
 
 class OtherObject(File):
@@ -116,20 +125,16 @@ class ContainerFactory(ContainerFactory):
     proxyClass = ReadContainer
 
     def __call__(self, address, **kw):
-        server = ServerProxy(address)
-        name = kw.pop('name', '')
-        return self.proxyClass(name, server=server, **kw)
+        server = kw.pop('server')
+        if isinstance(server, basestring):  # just a URL, resolve for XML-RPC
+            server = ServerProxy(server)
+        return self.proxyClass(address, server=server, **kw)
 
 
 class FileFactory(FileFactory):
 
     def __call__(self, address, **kw):
-        contentType = kw.pop('type', None)
-        width = height = 0
+        contentType = kw.pop('type', 'application/octet-stream')
         obj = File(address, contentType, **kw)
-        if contentType.startswith('image/'):
-            return Image(address, contentType=contentType,
-                         width=width, height=height, **kw)
-        else:
-            obj.contentType = contentType
-            return obj
+        obj.contentType = contentType
+        return obj

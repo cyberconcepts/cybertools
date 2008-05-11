@@ -1,0 +1,34 @@
+=========================================
+Integrating objects from external systems
+=========================================
+
+Integration of external sources.
+
+  ($Id$)
+
+
+Accessing Objects on a Remote BSCW Repository
+=============================================
+
+In fact we do not access a remote repository but just a dummy (fake)
+repository for testing purposes.
+
+  >>> from cybertools.integrator.testing.bscw import BSCWServer, sampleObjects
+  >>> from cybertools.integrator.bscw import standardAttributes
+  >>> server = BSCWServer(sampleObjects)
+
+  >>> server.get_attributes('4', standardAttributes + ['containers'], 1, True)
+  [{...'name': 'public'...}, [{...'name': 'Introduction'...}]]
+
+Access via read container and file proxies
+------------------------------------------
+
+  >>> from zope import component
+  >>> from cybertools.integrator.bscw import ContainerFactory
+  >>> component.provideUtility(ContainerFactory(), name='bscw')
+
+  >>> from cybertools.integrator.interfaces import IContainerFactory
+  >>> root = component.getUtility(IContainerFactory, name='bscw')('4', server=server)
+
+  >>> sorted(root)
+  ['bs_5']
