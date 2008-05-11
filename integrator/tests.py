@@ -7,7 +7,7 @@ from zope.interface.verify import verifyClass
 
 
 baseDir = os.path.dirname(__file__)
-testDir = os.path.join(baseDir, 'testdata')
+testDir = os.path.join(baseDir, 'testing', 'data')
 
 
 class Test(unittest.TestCase):
