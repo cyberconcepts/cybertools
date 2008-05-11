@@ -7,7 +7,7 @@ from zope.interface.verify import verifyClass
 
 
 baseDir = os.path.dirname(os.path.dirname(__file__))
-testDir = os.path.join(baseDir, 'testing', 'data')
+testDir = os.path.join(baseDir, 'tests', 'data')
 
 flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
 
@@ -22,8 +22,7 @@ class Test(unittest.TestCase):
 def test_suite():
     return unittest.TestSuite((
                 unittest.makeSuite(Test),
-                DocFileSuite('../README.txt', optionflags=flags),
-                DocFileSuite('../bscw.txt', optionflags=flags),
+                DocFileSuite('../filesystem.txt', optionflags=flags),
             ))
 
 if __name__ == '__main__':

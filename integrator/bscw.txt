@@ -13,7 +13,7 @@ Accessing Objects on a Remote BSCW Repository
 In fact we do not access a remote repository but just a dummy (fake)
 repository for testing purposes.
 
-  >>> from cybertools.integrator.testing.bscw import BSCWServer, sampleObjects
+  >>> from cybertools.integrator.tests.bscw import BSCWServer, sampleObjects
   >>> from cybertools.integrator.bscw import standardAttributes
   >>> server = BSCWServer(sampleObjects)
 
