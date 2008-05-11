@@ -14,7 +14,7 @@ Let's do some basic set up
 
   >>> from zope import component
 
-  >>> from cybertools.integrator.tests import testDir
+  >>> from cybertools.integrator.tests.test_all import testDir
   >>> from cybertools.integrator.filesystem import ContainerFactory, FileFactory
   >>> from cybertools.integrator.interfaces import IContainerFactory
   >>> component.provideUtility(ContainerFactory(), name='filesystem')
