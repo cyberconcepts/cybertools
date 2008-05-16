@@ -40,7 +40,7 @@ We'll use a predefined simple publishing workflow that.
   >>> registerStatesDefinition(simplePublishing())
 
   >>> demo = Demo()
-  >>> demo.statesDefinition = 'publishing'
+  >>> demo.statesDefinition = 'simple_publishing'
   >>> demo.getState()
   'draft'
 
