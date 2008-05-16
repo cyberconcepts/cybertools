@@ -32,7 +32,7 @@ from cybertools.stateful.interfaces import IStatesDefinition
 
 @implementer(IStatesDefinition)
 def simplePublishing():
-    return StatesDefinition('publishing',
+    return StatesDefinition('simple_publishing',
         State('private', 'private', ('show', 'archive', 'remove'), color='red'),
         State('draft', 'draft', ('publish', 'hide', 'archive', 'remove'),
               color='yellow'),
