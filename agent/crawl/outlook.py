@@ -24,6 +24,7 @@ $Id$
 
 import re
 from email import MIMEMultipart
+import tempfile
 
 from zope.interface import implements
 from twisted.internet import defer
@@ -37,10 +38,11 @@ from twisted.internet import defer
 from cybertools.agent.base.agent import Agent, Master
 from cybertools.agent.crawl.mail import MailCrawler
 from cybertools.agent.crawl.mail import MailResource
+from cybertools.agent.crawl.filesystem import FileResource
 from cybertools.agent.components import agents
 from cybertools.agent.system.windows import api
 from cybertools.agent.util.task import coiterate
-from cybertools.agent.util.codepages import codepages
+from cybertools.agent.system.windows.codepages import codepages
 
 # some constants
 COMMASPACE = ', '
@@ -125,47 +127,13 @@ class OutlookCrawler(MailCrawler):
                             if isinstance(value, (int, str, unicode, bool)):
                                 record[key] = value
                             else:
-                                record[key] = "Invalid data format"
+                                record[key] = None
                     except:
-                        record[key] = "Requested attribute not available"
-                metadata = self.assembleMetadata(record)
+                        pass
+                metadata = self.assembleMetadata(folder, record)
                 # Create a resource and append it to the result list
                 self.createResource(mail, folder, metadata)
                 yield None
-
-    def login(self):
-        pass
-
-    def handleOutlookDialog(self):
-        """
-        This function handles the outlook dialog, which appears if someone
-        tries to access to MS Outlook.
-        """
-        hwnd = None
-        while True:
-            hwnd = api.ctypes.windll.user32.FindWindowExA(None, hwnd, None, None)
-            if hwnd == None:
-                    break
-            else:
-                val = u"\0" * 1024
-                api.ctypes.windll.user32.GetWindowTextW(hwnd, val, len(val))
-                val = val.replace(u"\000", u"")
-                if val and repr(val) == "u'Microsoft Office Outlook'":
-                    print repr(val)
-                    # get the Main Control
-                    form = api.findTopWindow(wantedText='Microsoft Office Outlook')
-                    controls = findControls(form)
-                    # get the check box
-                    checkBox = findControl(form, wantedText='Zugriff')
-                    setCheckBox(checkBox, 1)
-                    # get the combo box
-                    comboBox = findControl(form, wantedClass='ComboBox')
-                    items = getComboboxItems(comboBox)
-                    selectComboboxItem(comboBox, items[3])#'10 Minuten'
-                    # finally get the button and click it
-                    button = findControl(form, wantedText = 'Erteilen')
-                    clickButton(button)
-                    break
 
     def findOutlook(self):
         outlookFound = False
@@ -177,7 +145,7 @@ class OutlookCrawler(MailCrawler):
             pass
         return outlookFound
 
-    def assembleMetadata(self, mailAttr):
+    def assembleMetadata(self, folder, mailAttr):
         meta = {}
         for key in mailAttr.keys():
             if isinstance(mailAttr[key], (str, unicode))\
@@ -190,14 +158,15 @@ class OutlookCrawler(MailCrawler):
                     meta[key] = COMMASPACE.join(lst)
             else:
                 meta[key] = mailAttr[key]
+        meta["path"] = folder
         metadata = self.createMetadata(meta)
         return metadata
     
     def createResource(self, mail, folder, metadata):
-        enc = "not available"
-        textType = "not available"
+        enc = None
+        textType = "application/octet-stream"
         attachments = []
-        ident = "EntryID not available"
+        ident = None
         if (hasattr(mail, 'BodyFormat')):
             value = getattr(mail, 'BodyFormat')
             if value == 1:
@@ -208,7 +177,7 @@ class OutlookCrawler(MailCrawler):
                     mailContent = getattr(mail, 'Body')
                     textType = "text/plain"
                 else:
-                    mailContent = "Could not retrieve mail body"
+                    mailContent = ""
                     textType = "text/plain"
             elif value == 2:
                 #2: it is a HTML mail
@@ -233,14 +202,20 @@ class OutlookCrawler(MailCrawler):
         if hasattr(mail, 'Attachments'):
             attachedElems = getattr(mail, 'Attachments')
             for item in range(1, len(attachedElems)+1):
-                attachments.append(attachedElems.Item(item).FileName)
-        resource = MailResource(data=mailContent,\
-                                contentType=textType,\
-                                encoding=enc,\
-                                path=folder,\
-                                application='outlook',\
-                                identifier=ident,\
-                                metadata=metadata,\
+                fileHandle, filePath = tempfile.mkstemp(prefix="outlook")
+                item.SaveAsFile(fileHandle.name)
+                fileHandle.close()
+                fileRes = FileResource(data=None,
+                                       path=filePath,
+                                       metadata=self.createMetadata(filename=filePath))
+                attachments.append(fileRes)
+        resource = MailResource(data=mailContent,
+                                contentType=textType,
+                                encoding=enc,
+                                path=None,
+                                application='outlook',
+                                identifier=ident,
+                                metadata=metadata,
                                 subResources=attachments)
         self.result.append(resource)
 
