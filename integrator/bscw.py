@@ -30,8 +30,8 @@ from zope.cachedescriptors.property import Lazy
 from zope.contenttype import guess_content_type
 from zope.interface import implements, Attribute
 
-from cybertools.integrator.base import ContainerFactory, FileFactory
-from cybertools.integrator.base import ReadContainer, File, Image
+from cybertools.integrator.base import ContainerFactory, ItemFactory, FileFactory
+from cybertools.integrator.base import ReadContainer, Item, File, Image
 from cybertools.text import mimetypes
 
 
@@ -62,7 +62,10 @@ class ReadContainer(ReadContainer):
     def data(self):
         data = self.server.get_attributes(self.address,
                 ['__class__', 'type', 'id', 'name', 'descr', 'url_link'], 1, True)
-        return dict((item['id'], item) for item in data[1])
+        if len(data) > 1:
+            return dict((item['id'], item) for item in data[1])
+        else:
+            return {}
 
     def keys(self):
         return self.data.keys()
@@ -79,14 +82,16 @@ class ReadContainer(ReadContainer):
         if key not in self.data:
             return default
         item = self.data[key]
-        if 'Folder' in item['__class__']:
+        itemType = item['__class__'].split('.')[-1]
+        if itemType == 'Folder':
             return self.containerFactory(item['id'], server=self.server,
                                          name=item['name'])
-        elif 'Document' in item['__class__']:
-            return self.fileFactory(item['id'], item['type'], server=self.server,
-                                    name=item['name'])
+        elif itemType == 'Document':
+            return self.fileFactory(item['id'], contentType=item['type'],
+                                    server=self.server, name=item['name'])
         else:
-            return OtherObject(item['id'], None, server=self.server, name=item['name'])
+            return self.itemFactory(item['id'], server=self.server,
+                                    name=item['name'], type=itemType)
 
     def values(self):
         return [self.get(k) for k in self]
@@ -101,6 +106,13 @@ class ReadContainer(ReadContainer):
         return key in self.keys()
 
 
+class Item(Item):
+
+    @property
+    def icon(self):
+        return self.type.lower()
+
+
 class File(File):
 
     contentType = None
@@ -111,11 +123,6 @@ class File(File):
 
     def getSize(self):
         return 0
-
-
-class OtherObject(File):
-
-    data = u''
 
 
 # factory classes
@@ -131,10 +138,18 @@ class ContainerFactory(ContainerFactory):
         return self.proxyClass(address, server=server, **kw)
 
 
+class ItemFactory(ItemFactory):
+
+    proxyClass = Item
+
+
 class FileFactory(FileFactory):
 
     def __call__(self, address, **kw):
-        contentType = kw.pop('type', 'application/octet-stream')
-        obj = File(address, contentType, **kw)
+        contentType = kw.pop('contentType', 'application/octet-stream')
+        if contentType.startswith('image/'):
+            obj = Image(address, contentType, **kw)
+        else:
+            obj = File(address, contentType, **kw)
         obj.contentType = contentType
         return obj

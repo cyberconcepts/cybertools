@@ -95,6 +95,9 @@ class BSCWServer(object):
         return baseAttributes
 
     def get_document(self, id, version_id):
+        obj = self.objects.get(id)
+        if obj is None:
+            raise Fault(10101, 'Bad object id: %s' % id)
         return ''
 
     def get_path(id):

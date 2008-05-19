@@ -39,12 +39,16 @@ Accessing Objects in the Filesystem
   'application/x-tar'
   >>> file.getSize()
   432L
+  >>> file.icon
+  'tar'
 
   >>> logo = sub['loops_logo.png']
   >>> logo.contentType
   'image/png'
   >>> logo.getImageSize()
   (145, 42)
+  >>> logo.icon
+  'image'
 
   >>> html = top['index.html']
   >>> html.contentType
@@ -55,4 +59,6 @@ Accessing Objects in the Filesystem
       <a href="sub">Subdirectory</a>
       <a href="sub/demo.tgz">Demo</a>...
   </html>...
+  >>> html.icon
+  'html'
 

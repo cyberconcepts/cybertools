@@ -98,6 +98,7 @@ class File(File):
 class Image(File):
 
     width = height = 0
+    icon = 'image'
 
     def getImageSize(self):
         return self.width, self.height

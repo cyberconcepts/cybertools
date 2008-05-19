@@ -28,7 +28,25 @@ from zope.app.publication.interfaces import IFileContent
 from zope.interface import Interface, Attribute
 
 
-class IFile(IFile, IFileContent):
+class IProxy(Interface):
+
+    icon = Attribute('The name of an icon that may be used for symbolizing '
+                'this object.')
+
+
+class IReadContainer(IProxy, IReadContainer):
+    """ A readable container of items.
+    """
+
+
+class IItem(IProxy, Interface):
+    """ A terminal kind of object, i.e. not a container of other objects.
+    """
+
+
+class IFile(IItem, IFile, IFileContent):
+
+    contentType = Attribute('The MIME type of the object.')
 
     def getData(num):
         """ Return num bytes from the file`s data.
@@ -52,8 +70,12 @@ class IContainerFactory(IProxyFactory):
     """
 
 
+class IItemFactory(IProxyFactory):
+    """ Creates general terminal proxy objects.
+    """
+
+
 class IFileFactory(IProxyFactory):
     """ Creates file proxy objects for the external specification
         given.
     """
-

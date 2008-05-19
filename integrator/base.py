@@ -22,13 +22,15 @@ Base implementation for accessing external content objects.
 $Id$
 """
 
+import os
 from zope.app.container.contained import Contained
 from zope.cachedescriptors.property import Lazy
 from zope import component
 from zope.interface import implements
 
-from cybertools.integrator.interfaces import IContainerFactory, IFileFactory
-from cybertools.integrator.interfaces import IReadContainer, IFile, IImage
+from cybertools.integrator.interfaces import IContainerFactory
+from cybertools.integrator.interfaces import IItemFactory, IFileFactory
+from cybertools.integrator.interfaces import IReadContainer, IItem, IFile, IImage
 
 
 # proxy base (sample) classes
@@ -37,13 +39,19 @@ class ReadContainer(Contained):
 
     implements(IReadContainer)
 
-    factoryName = 'sample'
     __parent__ = None
+    factoryName = 'sample'
+
+    icon = 'folder'
 
     def __init__(self, address, **kw):
         self.address = address
         for k, v in kw.items():
             setattr(self, k, v)
+
+    @Lazy
+    def itemFactory(self):
+        return component.getUtility(IItemFactory, name=self.factoryName)
 
     @Lazy
     def fileFactory(self):
@@ -82,13 +90,23 @@ class ReadContainer(Contained):
     has_key = __contains__
 
 
-class File(object):
+class Item(object):
 
-    implements(IFile)
+    implements(IItem)
 
     contentType = None
-    data = None
+    icon = 'item'
     __parent__ = None
+
+    def __init__(self, address, **kw):
+        self.address = address
+        for k, v in kw.items():
+            setattr(self, k, v)
+
+
+class File(Item):
+
+    implements(IFile)
 
     def __init__(self, address, contentType, **kw):
         self.address = address
@@ -104,10 +122,16 @@ class File(object):
     def getSize(self):
         return len(self.data)
 
+    @property
+    def icon(self):
+        return (mimeTypes.get(self.contentType) or ['unknown'])[0]
 
-def Image(File):
+
+class Image(File):
 
     implements(IImage)
+
+    icon = 'image'
 
     def getImageSize(self):
         return 0, 0
@@ -130,9 +154,33 @@ class ContainerFactory(Factory):
     proxyClass = ReadContainer
 
 
+class ItemFactory(Factory):
+
+    implements(IItemFactory)
+
+    proxyClass = Item
+
+
 class FileFactory(Factory):
 
     implements(IFileFactory)
 
     proxyClass = File   # real implementations should also care about images
 
+
+# provide a dictionary of MIME types with extensions = icon names
+
+class MimeTypes(dict):
+
+    def __init__(self):
+        super(MimeTypes, self).__init__()
+        fn = os.path.join(os.path.dirname(__file__), 'mime.types')
+        mtFile = open(fn, 'r')
+        for line in mtFile:
+            line = line.strip()
+            if line:
+                parts = line.split()
+                self[parts[0]] = parts[1:]
+        mtFile.close()
+
+mimeTypes = MimeTypes()

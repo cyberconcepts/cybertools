@@ -20,15 +20,33 @@ repository for testing purposes.
   >>> server.get_attributes('4', standardAttributes + ['containers'], 1, True)
   [{...'name': 'public'...}, [{...'name': 'Introduction'...}]]
 
-Access via read container and file proxies
-------------------------------------------
+Access via read container and item/file proxies
+-----------------------------------------------
+
+Let's first register the proxy factory utilities.
 
   >>> from zope import component
-  >>> from cybertools.integrator.bscw import ContainerFactory
+  >>> from cybertools.integrator.bscw import ContainerFactory, ItemFactory, FileFactory
   >>> component.provideUtility(ContainerFactory(), name='bscw')
+  >>> component.provideUtility(ItemFactory(), name='bscw')
+  >>> component.provideUtility(FileFactory(), name='bscw')
+
+We can now access the root object of the BSCW repository
 
   >>> from cybertools.integrator.interfaces import IContainerFactory
   >>> root = component.getUtility(IContainerFactory, name='bscw')('4', server=server)
 
-  >>> sorted(root)
-  ['bs_5']
+  >>> sorted(root.items())
+  [('bs_5', <...ReadContainer object...>)]
+
+  >>> root.icon
+  'folder'
+
+  >>> bs_5 = root['bs_5']
+  >>> data = server.get_attributes('bs_5',
+  ...       ['__class__', 'type', 'id', 'name', 'descr', 'url_link'], 1, True)
+
+  >>> bs_5.items()
+  []
+  >>> bs_5.icon
+  'folder'
