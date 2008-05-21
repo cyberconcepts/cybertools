@@ -73,13 +73,25 @@ class CmdlineProtocol(basic.LineReceiver):
         commandParts = line.split()
         command = commandParts[0].lower()
         args = commandParts[1:]
+        posArgs = []
+        kwArgs = {}
+        for arg in args:
+            if '=' in arg:  # directory='...'
+                key, value = arg.split('=', 1)
+                if value in ('True', 'False'):
+                    value = eval(value)
+                elif value.isdigit():
+                    value = int(value)
+                kwArgs[key] = value
+            else:
+                posArgs.append(arg)
         try:
             method = getattr(self, 'do_' + command)
         except AttributeError, e:
             self.sendLine('Error: no such command.')
         else:
             try:
-                method(*args)
+                method(*posArgs, **kwArgs)
             except Exception, e:
                 self.sendLine('Error: ' + str(e))
         self.transport.write('> ')
@@ -94,6 +106,12 @@ class CmdlineProtocol(basic.LineReceiver):
     def do_shutdown(self):
         self.sendLine('Shutting down.')
         reactor.stop()
+
+    def do_agent(self, agentType, name):
+        self.controller.createAgent(agentType, name)
+
+    def do_job(self, jobType, agent, **kw):
+        self.controller.enterJob(jobType, agent, params=kw)
 
 
 class TelnetProtocol(CmdlineProtocol):
