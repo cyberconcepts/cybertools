@@ -24,33 +24,81 @@ Let's do some basic set up
 Accessing Objects in the Filesystem
 ===================================
 
+We access the top-level object (a directory) by calling the container (proxy)
+factory with the address (path) leading to the directory.
+
   >>> top = component.getUtility(IContainerFactory, name='filesystem')(testDir)
+
+This top-level object is a container with some sub-objects, that may be
+containers themeselves or terminal objects (items or files).
+
   >>> sorted(top)
   ['index.html', 'sub']
-  >>> len(top)
-  2
+
+A proxy provides a set of attributes that may be used for viewing the
+object or navigating to it.
+
+  >>> top.address
+  '...data'
+  >>> top.internalPath
+  ''
+  >>> top.icon
+  'folder'
+  >>> top.properties
+  {}
+  >>> top.title
+  'data'
+
+The external URL information may be used for directly linking to the
+external object - in the case of filesystem objects this is not possible
+in a general way, so this attribute is always None.
+
+  >>> top.externalUrlInfo is None
+  True
+
+Let's now have a look at the sub-objects found in the top-level container.
 
   >>> sub = top['sub']
   >>> sorted(sub)
   ['demo.tgz', 'index.html', 'loops_logo.png']
+  >>> sub.address
+  '...sub'
+  >>> sub.internalPath
+  'sub'
+  >>> sub.icon
+  'folder'
+  >>> sub.properties
+  {}
+  >>> sub.externalUrlInfo is None
+  True
+
+A file object has additional attributes/methods.
 
   >>> file = sub['demo.tgz']
+  >>> file.address
+  '...demo.tgz'
+  >>> file.internalPath
+  'sub/demo.tgz'
+  >>> file.icon
+  'tar'
   >>> file.contentType
   'application/x-tar'
   >>> file.getSize()
   432L
-  >>> file.icon
-  'tar'
 
   >>> logo = sub['loops_logo.png']
+  >>> logo.internalPath
+  'sub/loops_logo.png'
+  >>> logo.icon
+  'image'
   >>> logo.contentType
   'image/png'
   >>> logo.getImageSize()
   (145, 42)
-  >>> logo.icon
-  'image'
 
   >>> html = top['index.html']
+  >>> html.internalPath
+  'index.html'
   >>> html.contentType
   'text/html'
   >>> print html.data

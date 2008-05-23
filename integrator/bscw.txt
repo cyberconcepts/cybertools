@@ -34,13 +34,29 @@ Let's first register the proxy factory utilities.
 We can now access the root object of the BSCW repository
 
   >>> from cybertools.integrator.interfaces import IContainerFactory
-  >>> root = component.getUtility(IContainerFactory, name='bscw')('4', server=server)
+  >>> root = component.getUtility(IContainerFactory, name='bscw')('4', server=server,
+  ...                             baseUrl='http://localhost/bscw.cgi/')
 
   >>> sorted(root.items())
   [('bs_5', <...ReadContainer object...>)]
 
+  >>> root.address
+  '4'
+  >>> root.internalPath
+  ''
   >>> root.icon
   'folder'
+  >>> root.properties
+  {...'name': 'public'...}
+  >>> root.title
+  'public'
+  >>> root.description
+  'Public Repository'
+
+  >>> str(root.externalUrlInfo)
+  'http://localhost/bscw.cgi/4'
+
+Let's also have a look at the item contained in the root object.
 
   >>> bs_5 = root['bs_5']
   >>> data = server.get_attributes('bs_5',
@@ -48,5 +64,15 @@ We can now access the root object of the BSCW repository
 
   >>> bs_5.items()
   []
+  >>> bs_5.address
+  'bs_5'
+  >>> bs_5.internalPath
+  'bs_5'
   >>> bs_5.icon
   'folder'
+  >>> bs_5.properties
+  {...'name': 'Introduction'...}
+
+  >>> str(bs_5.externalUrlInfo)
+  'http://localhost/bscw.cgi/5'
+

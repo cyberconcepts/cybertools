@@ -32,6 +32,7 @@ from zope.interface import implements, Attribute
 
 from cybertools.integrator.base import ContainerFactory, ItemFactory, FileFactory
 from cybertools.integrator.base import ReadContainer, Item, File, Image
+from cybertools.integrator.base import ExternalUrlInfo
 from cybertools.text import mimetypes
 
 
@@ -54,14 +55,40 @@ classes = ['cl_core.Folder', 'cl_core.Document', 'cl_core.URL', ]
 
 # proxy classes
 
-class ReadContainer(ReadContainer):
+class BSCWProxyBase(object):
+
+    @Lazy
+    def externalUrlInfo(self):
+        id = self.address
+        if id.startswith('bs_'):
+            id = id[3:]
+        return ExternalUrlInfo(self.baseUrl, id)
+
+    @Lazy
+    def title(self):
+        return self.properties['name']
+
+    @Lazy
+    def description(self):
+        return self.properties.get('descr', u'')
+
+
+class ReadContainer(BSCWProxyBase, ReadContainer):
 
     factoryName = 'bscw'
 
     @Lazy
-    def data(self):
-        data = self.server.get_attributes(self.address,
+    def properties(self):
+        return self.attributes[0]
+
+    @Lazy
+    def attributes(self):
+        return self.server.get_attributes(self.address,
                 ['__class__', 'type', 'id', 'name', 'descr', 'url_link'], 1, True)
+
+    @Lazy
+    def data(self):
+        data = self.attributes
         if len(data) > 1:
             return dict((item['id'], item) for item in data[1])
         else:
@@ -83,15 +110,16 @@ class ReadContainer(ReadContainer):
             return default
         item = self.data[key]
         itemType = item['__class__'].split('.')[-1]
+        internalPath = '/'.join((self.internalPath, key)).strip('/')
+        params = dict(server=self.server, internalPath=internalPath,
+                      properties=item, baseUrl=self.baseUrl)
         if itemType == 'Folder':
-            return self.containerFactory(item['id'], server=self.server,
-                                         name=item['name'])
+            return self.containerFactory(item['id'], **params)
         elif itemType == 'Document':
             return self.fileFactory(item['id'], contentType=item['type'],
-                                    server=self.server, name=item['name'])
+                                    **params)
         else:
-            return self.itemFactory(item['id'], server=self.server,
-                                    name=item['name'], type=itemType)
+            return self.itemFactory(item['id'], **params)
 
     def values(self):
         return [self.get(k) for k in self]
@@ -106,18 +134,18 @@ class ReadContainer(ReadContainer):
         return key in self.keys()
 
 
-class Item(Item):
+class Item(BSCWProxyBase, Item):
 
     @property
     def icon(self):
         return self.type.lower()
 
 
-class File(File):
+class File(BSCWProxyBase, File):
 
     contentType = None
 
-    def getData(self):
+    def getData(self, num=None):
         return self.server.get_document()
     data = property(getData)
 
@@ -135,7 +163,9 @@ class ContainerFactory(ContainerFactory):
         server = kw.pop('server')
         if isinstance(server, basestring):  # just a URL, resolve for XML-RPC
             server = ServerProxy(server)
-        return self.proxyClass(address, server=server, **kw)
+            baseUrl = server
+        baseUrl = kw.pop('baseUrl', '')
+        return self.proxyClass(address, server=server, baseUrl=baseUrl, **kw)
 
 
 class ItemFactory(ItemFactory):

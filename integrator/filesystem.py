@@ -60,10 +60,13 @@ class ReadContainer(ReadContainer):
         if key not in self.keys():
             return default
         path = os.path.join(self.address, key)
+        internalPath = '/'.join((self.internalPath, key)).strip('/')
         if os.path.isdir(path):
-            return self.containerFactory(path, __parent__=self.__parent__)
+            return self.containerFactory(path, internalPath=internalPath,
+                            __parent__=self.__parent__)
         else:
-            return self.fileFactory(path, __parent__=self.__parent__)
+            return self.fileFactory(path, internalPath=internalPath,
+                            __parent__=self.__parent__)
 
     def values(self):
         return [self.get(k) for k in self]

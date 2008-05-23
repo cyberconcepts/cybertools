@@ -23,6 +23,7 @@ $Id$
 """
 
 import os
+from urllib import urlencode
 from zope.app.container.contained import Contained
 from zope.cachedescriptors.property import Lazy
 from zope import component
@@ -35,19 +36,39 @@ from cybertools.integrator.interfaces import IReadContainer, IItem, IFile, IImag
 
 # proxy base (sample) classes
 
-class ReadContainer(Contained):
-
-    implements(IReadContainer)
+class ProxyBase(object):
 
     __parent__ = None
     factoryName = 'sample'
 
-    icon = 'folder'
+    internalPath = ''
+    externalUrlInfo = None
+
+    description = u''
+    authors = ()
+    created = modified = None
 
     def __init__(self, address, **kw):
         self.address = address
         for k, v in kw.items():
             setattr(self, k, v)
+
+    @Lazy
+    def title(self):
+        if self.internalPath:
+            return self.internalPath.rsplit('/', 1)[-1]
+        return self.address.rsplit(os.path.sep, 1)[-1]
+
+
+class ReadContainer(ProxyBase, Contained):
+
+    implements(IReadContainer)
+
+    icon = 'folder'
+
+    @Lazy
+    def properties(self):
+        return {}
 
     @Lazy
     def itemFactory(self):
@@ -90,18 +111,12 @@ class ReadContainer(Contained):
     has_key = __contains__
 
 
-class Item(object):
+class Item(ProxyBase, object):
 
     implements(IItem)
 
-    contentType = None
     icon = 'item'
     __parent__ = None
-
-    def __init__(self, address, **kw):
-        self.address = address
-        for k, v in kw.items():
-            setattr(self, k, v)
 
 
 class File(Item):
@@ -109,10 +124,8 @@ class File(Item):
     implements(IFile)
 
     def __init__(self, address, contentType, **kw):
-        self.address = address
+        super(File, self).__init__(address, **kw)
         self.contentType = contentType
-        for k, v in kw.items():
-            setattr(self, k, v)
 
     def getData(self, num=None):
         return ''
@@ -135,6 +148,19 @@ class Image(File):
 
     def getImageSize(self):
         return 0, 0
+
+
+# URL info
+
+class ExternalUrlInfo(object):
+
+    def __init__(self, baseUrl='', path='', params=None):
+        self.baseUrl, self.path = baseUrl.strip('/'), path.strip('/')
+        self.params = params or {}
+
+    def __str__(self):
+        params = self.params and ('?' + urlencode(self.params)) or ''
+        return '%s/%s%s' % (self.baseUrl, self.path, params)
 
 
 # factory base (sample) classes
