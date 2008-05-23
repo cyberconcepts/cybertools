@@ -39,6 +39,8 @@ class CmdlineController(SampleController):
         prot = CmdlineProtocol()
         prot.controller = self
         stdio.StandardIO(prot)
+        self.results = {}
+
 
 controllers.register(CmdlineController, Master, name='cmdline')
 
@@ -80,8 +82,8 @@ class CmdlineProtocol(basic.LineReceiver):
                 key, value = arg.split('=', 1)
                 if value in ('True', 'False'):
                     value = eval(value)
-                elif value.isdigit():
-                    value = int(value)
+                #elif value.isdigit():
+                #    value = int(value)
                 kwArgs[key] = value
             else:
                 posArgs.append(arg)
@@ -97,6 +99,7 @@ class CmdlineProtocol(basic.LineReceiver):
         self.transport.write('> ')
 
     def do_help(self, command=None):
+        "Help"
         if command:
             self.sendLine(getattr(self, 'do_' + command).__doc__)
         else:
@@ -104,14 +107,21 @@ class CmdlineProtocol(basic.LineReceiver):
             self.sendLine("Valid commands: " +" ".join(commands))
 
     def do_shutdown(self):
+        "Shut down"
         self.sendLine('Shutting down.')
         reactor.stop()
 
-    def do_agent(self, agentType, name):
+    def do_agent(self, agentType='crawl.filesystem', name='a1'):
+        "Create agent"
         self.controller.createAgent(agentType, name)
 
-    def do_job(self, jobType, agent, **kw):
+    def do_job(self, jobType='sample', agent='a1', **kw):
+        "Enter job"
         self.controller.enterJob(jobType, agent, params=kw)
+
+    def do_showresult(self):
+        "Show last result"
+        print self.controller.result
 
 
 class TelnetProtocol(CmdlineProtocol):
