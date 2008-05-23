@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ $Id$
 from datetime import datetime
 from time import strptime, strftime
 from zope.interface import implements
+from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 from zope import component
 from zope.i18n.format import DateTimeParseError
@@ -49,6 +50,7 @@ class Field(Component):
     renderFactory = None
     default = None
     default_method = None
+    value_type = None
 
     fieldTypeInfo = None
     instance_name = None
@@ -261,3 +263,26 @@ class CalculatedFieldInstance(FieldInstance):
 
     def marshall(self, value):
         return str(value)
+
+
+class ListFieldInstance(FieldInstance):
+
+    @Lazy
+    def valueType(self):
+        return self.context.value_type
+
+    @Lazy
+    def valueFieldInstance(self):
+        instanceName = (self.valueType.instance_name or
+                        self.valueType.getFieldTypeInfo().instanceName)
+        return component.getAdapter(self.valueType, IFieldInstance, name=instanceName)
+
+    def marshall(self, value):
+        return [self.valueFieldInstance.marshall(v) for v in value]
+
+    def display(self, value):
+        return u' | '.join(self.valueFieldInstance.display(v) for v in value)
+
+    def unmarshall(self, value):
+        return [self.valueFieldInstance.unmarshall(v) for v in value]
+
