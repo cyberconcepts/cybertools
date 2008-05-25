@@ -126,16 +126,41 @@ class Items(object):
 
     def __init__(self):
         self.data = {}
-        self.data[0] = Mail(Subject="Python Training",
-                            SenderName="Mark Pilgrim",
-                            To="allPythonics@python.org",
-                            Body="The training will take place on Wed, 21st Dec.\
+        self.data[0] = Mail(subj="Python Training",
+                            sendName="Mark Pilgrim",
+                            to="allPythonics@python.org",
+                            body="The training will take place on Wed, 21st Dec.\
                                   Kindly check the enclosed invitation.",
                             BodyFormat=1,
                             Attachments=Attachments(["Invitation.pdf", "21.pdf"])
                             )
-        self.data[1] = Mail()
-        self.data[2] = Mail()
+        self.data[1] = Mail(subj="Information Technolgies Inc. Test it!",
+                            sendName="IT.org",
+                            to="allUser@internet.com",
+                            BodyFormat=2,
+                            HTMLBody="<html>\
+                                        <head>\
+                                        <title>Test-HTML-Mail</title>\
+                                        </head>\
+                                        <body>\
+                                        <h1>Das ist eine HTML-Mail</h1>\
+                                        <div align='center'>Hier steht \
+                                        <b>Beispiel</b>-Text</div>\
+                                        </body>\
+                                      </html>",
+                            SentOn="21.04.07"
+                            )
+        self.data[2] = Mail(subj="@ Product Details @",
+                            sendName="",
+                            senderEmailAddress="custominfo@enterprise.com",
+                            to="recipient1@mail.com, customer@web.de",
+                            BodyFormat=1,
+                            body="Dear customer,\
+                                  Hereby we submit you the information you ordered.\
+                                  Please feel free to ask anytime you want.\
+                                  Sincerely, Customer Support",
+                            SentOn="30.07.07"
+                            )
 
     def Item(self, idx):
         return self.data[idx-1]
