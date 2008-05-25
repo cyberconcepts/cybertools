@@ -29,34 +29,111 @@ class com_error(Exception):
     pass
 
 
+class Attachments(list):
+    
+    elemCount = 0
+    data = []
+
+    def __init__(self, files=[]):
+        for elem in files:
+            fileitem = Attachment(filename=elem)
+            self.data.append(fileitem)
+            print "Attachment: ", fileitem.FileName
+
+    @property
+    def Application(self):
+        print "Outlook application instance"
+        return "Outlook application instance"
+    
+    def Item(self, index):
+        return self.data[index-1]
+    
+    @property
+    def count(self):
+        print self.elemCount
+        return self.elemCount
+    
+##    @property
+##    def Data(self):
+##        return self.elemList
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def __iter__(self):
+        yield self.data
+        
+    def __getitem__(self, idx):
+        return self.data[idx]
+
+    
+class Attachment(object):
+    
+    File = ""
+    
+    def __init__(self, filename=""):
+        self.File = filename
+    
+    def SaveAsFile(self, path=""):
+        print "Attachment saved"
+    
+    @property
+    def Parent(self):
+        # return value of Attribute Parent is of type _MailItem
+        pass
+    
+    @property
+    def Type(self):
+        pass
+    
+    @property
+    def Size(self):
+        # the size property is not available in Outlook 2000
+        pass
+    
+    @property
+    def Application(self):
+        # Actual instance of Outlook application
+        pass
+    
+    @property
+    def FileName(self):
+        return self.File
+    
+    
 class Mail(object):
 
     #this is just a guess what a Outlook Mail Object Probably returns
     #Class = client.constants.olMail
 
-    def __init__(self):
+    def __init__(self, subj="", sendName="", to="", body="", **kw):
         self.Class = client.constants.olMail
-        self.Subject = 'dummy'
-        self.SenderName = 'dummy'
-        self.To = 'dummy'
-        self.Body = 'dummy'
+        self.Subject = subj
+        self.SenderName = sendName
+        self.To = to
+        self.Body = body
+        for k, v in kw.items():
+            setattr(self, k, v)
 
     @property
     def _prop_map_get_(self):
         #here it is necessary of what attributes (called keys in outlok.py)
         #an Outlook Mail typically has
-        return {'Subject': "Testsubject",\
-                'SenderName': "TestSender",\
-                'To': "TestRecipient",\
-                'Body': "TestBody"
-                }
+        return self.__dict__
 
 
 class Items(object):
 
     def __init__(self):
         self.data = {}
-        self.data[0] = Mail()
+        self.data[0] = Mail(Subject="Python Training",
+                            SenderName="Mark Pilgrim",
+                            To="allPythonics@python.org",
+                            Body="The training will take place on Wed, 21st Dec.\
+                                  Kindly check the enclosed invitation.",
+                            BodyFormat=1,
+                            Attachments=Attachments(["Invitation.pdf", "21.pdf"])
+                            )
         self.data[1] = Mail()
         self.data[2] = Mail()
 

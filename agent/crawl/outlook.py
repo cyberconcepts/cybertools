@@ -25,6 +25,7 @@ $Id$
 import re
 from email import MIMEMultipart
 import tempfile
+import os
 
 from zope.interface import implements
 from twisted.internet import defer
@@ -203,11 +204,13 @@ class OutlookCrawler(MailCrawler):
             attachedElems = getattr(mail, 'Attachments')
             for item in range(1, len(attachedElems)+1):
                 fileHandle, filePath = tempfile.mkstemp(prefix="outlook")
-                item.SaveAsFile(fileHandle.name)
-                fileHandle.close()
+                attachedItem = attachedElems.Item(item)
+                attachedItem.SaveAsFile(fileHandle)
+                os.close(fileHandle)
+                metadat = self.createMetadata({}, filename=filePath)
                 fileRes = FileResource(data=None,
                                        path=filePath,
-                                       metadata=self.createMetadata(filename=filePath))
+                                       metadata=metadat)
                 attachments.append(fileRes)
         resource = MailResource(data=mailContent,
                                 contentType=textType,

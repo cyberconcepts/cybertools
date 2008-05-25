@@ -46,4 +46,8 @@ the twisted reactor first.
   Namespace MAPI retrieved
   retrieving Outlook default folder
   collecting Mails from folder
+  Attachment: Invitation.pdf
+  Attachment: 21.pdf
+  Attachment saved
+  Attachment saved
   Job 00001 completed; result: [<...MailResource...>, <...MailResource...>, <...MailResource...>];
