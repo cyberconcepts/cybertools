@@ -1,0 +1,14 @@
+<!-- $Id$ -->
+
+<metal:listing define-macro="listing">
+    <dl>
+      <tal:item repeat="item view/content">
+        <dt>
+          <a tal:attributes="href python: view.getUrlForObject(item)"
+             tal:content="item/title" />
+        </dt>
+        <dd tal:content="item/description">
+        </dd>
+      </tal:item>
+    </dl>
+</metal:listing>

@@ -6,6 +6,8 @@ Integration of external sources.
 
   ($Id$)
 
+  >>> from zope.app.testing.setup import placefulSetUp, placefulTearDown
+  >>> site = placefulSetUp(True)
 
 Accessing Objects on a Remote BSCW Repository
 =============================================
@@ -75,4 +77,35 @@ Let's also have a look at the item contained in the root object.
 
   >>> str(bs_5.externalUrlInfo)
   'http://localhost/bscw.cgi/5'
+
+
+The BSCW Repository View
+========================
+
+  >>> class BSCWAccess(object):
+  ...     def __init__(self, server):
+  ...         self.server = server
+  ...     def getRepositoryURL(self):
+  ...         return self.server
+
+  >>> site['bscw'] = BSCWAccess(server)
+  >>> bscwAccess = site['bscw']
+
+  >>> from cybertools.integrator.browser.bscw import BSCWView
+  >>> from zope.publisher.browser import TestRequest
+  >>> view = BSCWView(bscwAccess, TestRequest())
+  >>> view.baseUrl = 'http://localhost/bscw.cgi/'
+  >>> view.baseId = '4'
+
+  >>> view.content()
+  [<...ReadContainer...>]
+
+  >>> view.getUrlForObject(view.content()[0])
+  'http://127.0.0.1/bscw?id=bs_5'
+
+
+Fin de partie
+=============
+
+  >>> placefulTearDown()
 
