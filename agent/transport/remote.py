@@ -18,7 +18,8 @@
 
 """
 Transferring information to or requesting information from a remote
-cybertools.agent instance with a corresponding server agent.
+cybertools.agent instance by transferring files to the remote system
+and sending requests to a corresponding remote controller.
 
 $Id$
 """

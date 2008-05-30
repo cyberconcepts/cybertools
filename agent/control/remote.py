@@ -17,8 +17,8 @@
 #
 
 """
-Transferring information to an application on the same machine, typically
-a loops site on a local Zope instance.
+Providing access for remote agent instances by listening for requests
+from remote transport agents.
 
 $Id$
 """

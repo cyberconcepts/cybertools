@@ -17,18 +17,18 @@
 #
 
 """
-Transferring files to a remote site via SCP.
+Transferring files to a remote site via SFTP.
 
 $Id$
 """
 
-from twisted.conch.ssh import connection
+from twisted.conch.ssh import channel, common, connection
 from twisted.conch.ssh import filetransfer, transport, userauth
 from twisted.internet import defer, protocol, reactor
 
 
-class FileTransferConnection(protocol.ClientFactory):
-    """ Transfers files to a remote SCP server.
+class FileTransfer(protocol.ClientFactory):
+    """ Transfers files to a remote SCP/SFTP server.
     """
 
     def __init__(self, host, port, username, password):
@@ -38,44 +38,43 @@ class FileTransferConnection(protocol.ClientFactory):
         reactor.connectTCP(host, port, self)
 
     def buildProtocol(self, addr):
-        protocol = self.protocol = ClientTransport(self.username, self.password)
+        protocol = self.protocol = ClientTransport(self)
         return protocol
 
     def copyToRemote(self, localPath, remotePath):
         """ Copies a file, returning a deferred.
         """
         d = defer.Deferred()
-        self.queue.append((localPath, remotePath, d))
-        #d = self.protocol.openFile('text.txt', filetransfer.FXF_WRITE, {})
-        #d.addCallback(self.write)
+        self.queue.append(dict(deferred=d,
+                               command='copyToRemote',
+                               localPath=localPath,
+                               remotePath=remotePath))
         return d
 
-    def write(self, file):
-        file.writeChunk(0, 'hello')
-        file.close()
-        return 'Done'
-
     def close(self):
+        # TODO: put in queue...
         self.protocol.transport.loseConnection()
         print 'connection closed'
 
 
 class ClientTransport(transport.SSHClientTransport):
 
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
+    def __init__(self, factory):
+        self.factory = factory
 
     def verifyHostKey(self, pubKey, fingerprint):
         # this is insecure!!!
         return defer.succeed(True)
 
     def connectionSecure(self):
-        self.requestService(UserAuth(self.username, self.password,
-                                     ClientConnection()))
+        self.requestService(UserAuth(self.factory, ClientConnection(self.factory)))
 
 
 class ClientConnection(connection.SSHConnection):
+
+    def __init__(self, factory):
+        connection.SSHConnection.__init__(self)
+        self.factory = factory
 
     def serviceStarted(self):
         self.openChannel(SFTPChannel(conn=self))
@@ -83,15 +82,33 @@ class ClientConnection(connection.SSHConnection):
 
 class SFTPChannel(channel.SSHChannel):
 
+    name = 'session'
+
+    def channelOpen(self, data):
+        d = self.conn.sendRequest(self, 'subsystem', common.NS('sftp'), wantReply=1)
+        d.addCallback(self.channelOpened)
+
     def channelOpened(self, data):
-        self.client = filetransfer.FileTransferClient
+        print 'channelOpened', data
+        self.client = filetransfer.FileTransferClient()
+        self.client.makeConnection(self)
+        self.dataReceived = self.client.dataReceived
+        self.execute()
+
+    def execute(self):
+        queue = self.conn.factory.queue
+        print 'execute, queue =', queue
+
+    def copyToRemote(self, params):
+        remotePath = params['remotePath']
+        d = self.protocol.openFile(remotePath, filetransfer.FXF_WRITE, {})
 
 
 class UserAuth(userauth.SSHUserAuthClient):
 
-    def __init__(self, user, password, connection):
-        userauth.SSHUserAuthClient.__init__(self, user, connection)
-        self.password = password
+    def __init__(self, factory, connection):
+        userauth.SSHUserAuthClient.__init__(self, factory.username, connection)
+        self.password = factory.password
 
     def getPassword(self, prompt=None):
         return defer.succeed(self.password)

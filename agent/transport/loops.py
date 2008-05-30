@@ -17,8 +17,7 @@
 #
 
 """
-Providing access for remote cybertools.agent instances by listening
-for requests from client agents.
+Transferring information to a loops site on a local Zope instance.
 
 $Id$
 """
