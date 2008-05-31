@@ -41,12 +41,14 @@ class FileTransfer(protocol.ClientFactory):
         protocol = self.protocol = ClientTransport(self)
         return protocol
 
-    def copyToRemote(self, localPath, remotePath):
+    def upload(self, localPath, remotePath):
         """ Copies a file, returning a deferred.
         """
         d = defer.Deferred()
+        # we put everything in a queue so that more than one file may
+        # be transferred in one connection.
         self.queue.append(dict(deferred=d,
-                               command='copyToRemote',
+                               command='upload',
                                localPath=localPath,
                                remotePath=remotePath))
         return d
@@ -56,6 +58,34 @@ class FileTransfer(protocol.ClientFactory):
         self.protocol.transport.loseConnection()
         print 'connection closed'
 
+
+class SFTPChannel(channel.SSHChannel):
+    """ An SSH channel using the SFTP subsystem for transferring files
+        and issuing other filesystem requests.
+    """
+
+    name = 'session'
+
+    def channelOpen(self, data):
+        d = self.conn.sendRequest(self, 'subsystem', common.NS('sftp'), wantReply=1)
+        d.addCallback(self.channelOpened)
+
+    def channelOpened(self, data):
+        self.client = filetransfer.FileTransferClient()
+        self.client.makeConnection(self)
+        self.dataReceived = self.client.dataReceived
+        self.execute()
+
+    def execute(self):
+        queue = self.conn.factory.queue
+        print 'execute, queue =', queue
+
+    def upload(self, params):
+        remotePath = params['remotePath']
+        d = self.protocol.openFile(remotePath, filetransfer.FXF_WRITE, {})
+
+
+# classes for managing the SSH protocol and connection
 
 class ClientTransport(transport.SSHClientTransport):
 
@@ -78,30 +108,6 @@ class ClientConnection(connection.SSHConnection):
 
     def serviceStarted(self):
         self.openChannel(SFTPChannel(conn=self))
-
-
-class SFTPChannel(channel.SSHChannel):
-
-    name = 'session'
-
-    def channelOpen(self, data):
-        d = self.conn.sendRequest(self, 'subsystem', common.NS('sftp'), wantReply=1)
-        d.addCallback(self.channelOpened)
-
-    def channelOpened(self, data):
-        print 'channelOpened', data
-        self.client = filetransfer.FileTransferClient()
-        self.client.makeConnection(self)
-        self.dataReceived = self.client.dataReceived
-        self.execute()
-
-    def execute(self):
-        queue = self.conn.factory.queue
-        print 'execute, queue =', queue
-
-    def copyToRemote(self, params):
-        remotePath = params['remotePath']
-        d = self.protocol.openFile(remotePath, filetransfer.FXF_WRITE, {})
 
 
 class UserAuth(userauth.SSHUserAuthClient):
