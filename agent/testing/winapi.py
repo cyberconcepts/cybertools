@@ -34,9 +34,9 @@ class Attachments(list):
     elemCount = 0
     data = []
 
-    def __init__(self, files=[]):
-        for elem in files:
-            fileitem = Attachment(filename=elem)
+    def __init__(self, params=[]):
+        for elem in params[0]:
+            fileitem = Attachment(filename=elem[0], ParentMail=elem[1])
             self.data.append(fileitem)
             print "Attachment: ", fileitem.FileName
 
@@ -50,12 +50,7 @@ class Attachments(list):
     
     @property
     def count(self):
-        print self.elemCount
-        return self.elemCount
-    
-##    @property
-##    def Data(self):
-##        return self.elemList
+        return len(data)
     
     def __len__(self):
         return len(self.data)
@@ -70,17 +65,19 @@ class Attachments(list):
 class Attachment(object):
     
     File = ""
+    parentMailObject = None
     
-    def __init__(self, filename=""):
+    def __init__(self, ParentMail, filename=""):
         self.File = filename
+        self.parentMailObject = ParentMail
     
     def SaveAsFile(self, path=""):
         print "Attachment saved"
     
     @property
     def Parent(self):
-        # return value of Attribute Parent is of type _MailItem
-        pass
+        " return value of Attribute Parent is of type _MailItem"
+        return self.parentMailObject
     
     @property
     def Type(self):
@@ -93,8 +90,8 @@ class Attachment(object):
     
     @property
     def Application(self):
-        # Actual instance of Outlook application
-        pass
+        " Actual instance of Outlook application"
+        return None
     
     @property
     def FileName(self):
@@ -114,6 +111,14 @@ class Mail(object):
         self.Body = body
         for k, v in kw.items():
             setattr(self, k, v)
+            
+    def addAttachment(self, **kw):
+        """
+        this is a method which probably does not exist in a real mail
+        Currently this is a work around to add attachments to a mail
+        """
+        for k, v in kw.items():
+            setattr(self, k, v)
 
     @property
     def _prop_map_get_(self):
@@ -123,17 +128,20 @@ class Mail(object):
 
 
 class Items(object):
+    
+    self.temp = {}
 
     def __init__(self):
-        self.data = {}
         self.data[0] = Mail(subj="Python Training",
                             sendName="Mark Pilgrim",
                             to="allPythonics@python.org",
                             body="The training will take place on Wed, 21st Dec.\
                                   Kindly check the enclosed invitation.",
-                            BodyFormat=1,
-                            Attachments=Attachments(["Invitation.pdf", "21.pdf"])
+                            BodyFormat=1
+                            ##Attachments=Attachments([("Invitation.pdf", self.data[0]), ("21.pdf", self.data[0])])
                             )
+        self.data[0].addAttachment(Attachments=Attachments([("Invitation.pdf", self.data[0]), ("21.pdf", self.data[0])]))
+        self.temp = self.data[0]
         self.data[1] = Mail(subj="Information Technolgies Inc. Test it!",
                             sendName="IT.org",
                             to="allUser@internet.com",

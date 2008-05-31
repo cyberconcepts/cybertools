@@ -207,7 +207,7 @@ class OutlookCrawler(MailCrawler):
                 attachedItem = attachedElems.Item(item)
                 attachedItem.SaveAsFile(fileHandle)
                 os.close(fileHandle)
-                metadat = self.createMetadata({}, filename=filePath)
+                metadat = self.createMetadata(dict(filename=filePath))
                 fileRes = FileResource(data=None,
                                        path=filePath,
                                        metadata=metadat)

@@ -57,10 +57,10 @@ class MailCrawler(Crawler):
                                 metadata=metadata)
         self.result.append(resource)
         
-    def createMetadata(self, metadata, **kw):
+    def createMetadata(self, metadata):
         metadata = Metadata(metadata)
-        for k, v in kw.items():
-            metadata[k] = v
+##        for k, v in kw.items():
+##            metadata[k] = v
         return metadata
 
     def login(self):
