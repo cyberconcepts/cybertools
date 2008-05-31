@@ -35,7 +35,7 @@ class Attachments(list):
     data = []
 
     def __init__(self, params=[]):
-        for elem in params[0]:
+        for elem in params:
             fileitem = Attachment(filename=elem[0], ParentMail=elem[1])
             self.data.append(fileitem)
             print "Attachment: ", fileitem.FileName
@@ -129,20 +129,19 @@ class Mail(object):
 
 class Items(object):
     
-    self.temp = {}
+    temp = {}
+    data = []
 
     def __init__(self):
-        self.data[0] = Mail(subj="Python Training",
+        self.data.append(Mail(subj="Python Training",
                             sendName="Mark Pilgrim",
                             to="allPythonics@python.org",
                             body="The training will take place on Wed, 21st Dec.\
                                   Kindly check the enclosed invitation.",
                             BodyFormat=1
-                            ##Attachments=Attachments([("Invitation.pdf", self.data[0]), ("21.pdf", self.data[0])])
-                            )
+                            ))
         self.data[0].addAttachment(Attachments=Attachments([("Invitation.pdf", self.data[0]), ("21.pdf", self.data[0])]))
-        self.temp = self.data[0]
-        self.data[1] = Mail(subj="Information Technolgies Inc. Test it!",
+        self.data.append(Mail(subj="Information Technolgies Inc. Test it!",
                             sendName="IT.org",
                             to="allUser@internet.com",
                             BodyFormat=2,
@@ -157,8 +156,8 @@ class Items(object):
                                         </body>\
                                       </html>",
                             SentOn="21.04.07"
-                            )
-        self.data[2] = Mail(subj="@ Product Details @",
+                            ))
+        self.data.append(Mail(subj="@ Product Details @",
                             sendName="",
                             senderEmailAddress="custominfo@enterprise.com",
                             to="recipient1@mail.com, customer@web.de",
@@ -168,7 +167,7 @@ class Items(object):
                                   Please feel free to ask anytime you want.\
                                   Sincerely, Customer Support",
                             SentOn="30.07.07"
-                            )
+                            ))
 
     def Item(self, idx):
         return self.data[idx-1]
