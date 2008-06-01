@@ -51,7 +51,7 @@ class Form(object):
     @Lazy
     def fieldRenderers(self):
         """ proof-of-concept - get a dictionary of renderers (macros) via
-            adaptatation.
+            adaptation.
         """
         return IRenderers(self)
 

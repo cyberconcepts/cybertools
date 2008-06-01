@@ -52,7 +52,7 @@ Field types
   >>> from cybertools.composer.schema.interfaces import fieldTypes
   >>> sorted(t.token for t in fieldTypes)
   ['checkbox', 'date', 'display', 'dropdown', 'email', 'fileupload', 'html',
-   'number', 'password', 'spacer', 'textarea', 'textline']
+   'list', 'number', 'password', 'spacer', 'textarea', 'textline']
 
   >>> from zope.schema.vocabulary import SimpleVocabulary
   >>> textFieldTypes = SimpleVocabulary([t for t in fieldTypes if t.token in
@@ -183,4 +183,4 @@ Macros / renderers
   >>> sorted(fieldRenderers.keys())
   [u'field', u'field_spacer', u'fields', u'form', u'input_checkbox',
    u'input_date', u'input_dropdown', u'input_fileupload', u'input_html',
-   u'input_password', u'input_textarea', u'input_textline']
+   u'input_list', u'input_password', u'input_textarea', u'input_textline']

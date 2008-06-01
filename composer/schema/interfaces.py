@@ -97,6 +97,7 @@ fieldTypes = SimpleVocabulary((
     FieldType('checkbox', 'checkbox', u'Checkbox', instanceName='boolean'),
     FieldType('dropdown', 'dropdown', u'Drop-down selection'),
     #FieldType('listbox', 'listbox', u'List box (multiple selection)'),
+    FieldType('list', 'list', u'List', instanceName='list'),
     FieldType('calculated', 'display', u'Calculated Value',
               instanceName='calculated'),
     FieldType('spacer', 'spacer', u'Spacer',

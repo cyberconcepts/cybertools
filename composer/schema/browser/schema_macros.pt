@@ -161,6 +161,18 @@
 </metal:dropdown>
 
 
+<metal:list define-macro="input_list">
+    <textarea name="field" rows="3" style="width: 450px"
+            tal:define="width field/width|nothing;
+                        height field/height|python:3"
+            tal:attributes="name name;
+                         rows python: height or 3;
+                         style python:
+                               'width: %s' % (width and str(width)+'px' or '450px');"
+            tal:content="data/?name|string:" />
+</metal:list>
+
+
 <metal:spacer define-macro="field_spacer">
   <tr>
     <td colspan="2" style="border-top:none; font-size: 50%">&nbsp;</td>

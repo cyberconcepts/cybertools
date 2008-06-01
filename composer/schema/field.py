@@ -216,10 +216,12 @@ class DateFieldInstance(NumberFieldInstance):
         if not value:
             return None
         value = ''.join(value)
-        return datetime(*(strptime(value, '%Y-%m-%dT%H:%M:%S')[:6]))
+        if value:
+            return datetime(*(strptime(value, '%Y-%m-%dT%H:%M:%S')[:6]))
+        return None
 
     def validate(self, value, data=None):
-        if value in ('', None):
+        if value in ('', ['', ''], None):
             if self.context.required:
                 self.setError('required_missing')
         else:
@@ -273,16 +275,27 @@ class ListFieldInstance(FieldInstance):
 
     @Lazy
     def valueFieldInstance(self):
-        instanceName = (self.valueType.instance_name or
-                        self.valueType.getFieldTypeInfo().instanceName)
+        if self.valueType is None:
+            return FieldInstance(self.context)
+        else:
+            instanceName = (self.valueType.instance_name or
+                            self.valueType.getFieldTypeInfo().instanceName)
         return component.getAdapter(self.valueType, IFieldInstance, name=instanceName)
 
     def marshall(self, value):
-        return [self.valueFieldInstance.marshall(v) for v in value]
+        if isinstance(value, basestring):
+            return value
+        return u'\n'.join(self.valueFieldInstance.marshall(v) for v in value)
+        #return [self.valueFieldInstance.marshall(v) for v in value]
 
     def display(self, value):
+        if isinstance(value, basestring):
+            return value
         return u' | '.join(self.valueFieldInstance.display(v) for v in value)
 
     def unmarshall(self, value):
-        return [self.valueFieldInstance.unmarshall(v) for v in value]
+        if isinstance(value, basestring):
+            value = value.split('\n')
+        return [self.valueFieldInstance.unmarshall(v)
+                        for v in value if v.strip()]
 

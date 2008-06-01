@@ -54,6 +54,7 @@ class SchemaFactory(object):
             schema.Datetime: ('date',),
             schema.Int: ('number',),
             schema.Bool: ('checkbox',),
+            schema.List: ('list',),
             schema.Choice: ('dropdown',),
             schema.Bytes: ('fileupload',),
             Email: ('email',),

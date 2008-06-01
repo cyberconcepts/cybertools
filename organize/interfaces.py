@@ -56,7 +56,8 @@ class IPerson(Interface):
                     description=_(u'The last name or surname'),)
     email = Email(title=_(u'E-Mail address'),
                     description=_(u'The standard email address of the person'),)
-    phoneNumbers = SimpleList(
+    #phoneNumbers = SimpleList(
+    phoneNumbers = schema.List(
                     value_type=schema.TextLine(),
                     default=[],
                     title=_(u'Phone numbers'),
@@ -97,7 +98,7 @@ class IAddress(Interface):
                     title=_(u'Country code'),
                     description=_(u'International two-letter country code'),
                     required=False,)
-    lines = LinesList(
+    lines = schema.List(
                     value_type=schema.TextLine(),
                     default=[],
                     title=_(u'Additional lines'),
