@@ -112,7 +112,8 @@ class ReadContainer(BSCWProxyBase, ReadContainer):
         itemType = item['__class__'].split('.')[-1]
         internalPath = '/'.join((self.internalPath, key)).strip('/')
         params = dict(server=self.server, internalPath=internalPath,
-                      properties=item, baseUrl=self.baseUrl)
+                      properties=item, baseUrl=self.baseUrl,
+                      itemType=itemType)
         if itemType == 'Folder':
             return self.containerFactory(item['id'], **params)
         elif itemType == 'Document':
@@ -138,11 +139,11 @@ class Item(BSCWProxyBase, Item):
 
     @property
     def icon(self):
-        return self.type.lower()
+        return self.itemType.lower()
 
     @Lazy
     def type(self):
-        return 'item'
+        return 'unknown'
 
 
 class File(BSCWProxyBase, File):
