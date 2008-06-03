@@ -34,16 +34,48 @@ from cybertools.integrator.interfaces import IContainerFactory
 listing_macros = ViewPageTemplateFile('listing.pt')
 
 
-class BSCWView(object):
-
-    template = listing_macros
-
-    baseUrl = ''
-    baseId = ''
+class BaseView(object):
 
     def __init__(self, context, request):
         self.context = context
         self.request = request
+
+    @Lazy
+    def title(self):
+        return self.context.title
+
+    @Lazy
+    def description(self):
+        return self.context.description
+
+    @Lazy
+    def url(self):
+        return absoluteURL(self.context, self.request)
+
+    @Lazy
+    def icon(self):
+        return '%s/++resource++%s.png' % (self.request.URL[0], self.context.icon)
+
+
+class ItemView(BaseView):
+
+    def __init__(self, context, request, parentView):
+        super(ItemView, self).__init__(context, request)
+        self.parentView = parentView
+
+    @Lazy
+    def url(self):
+        url = self.parentView.url
+        return '%s?id=%s' % (url, self.context.internalPath)
+
+
+class BSCWView(BaseView):
+
+    template = listing_macros
+    itemView = ItemView
+
+    baseUrl = ''
+    baseId = ''
 
     @Lazy
     def listing(self):
@@ -60,7 +92,8 @@ class BSCWView(object):
         id = self.request.form.get('id', id)
         factory = component.getUtility(IContainerFactory, name='bscw')
         root = factory(id, server=server, baseUrl=self.baseUrl)
-        return root.values()
+        for obj in root.values():
+            yield self.itemView(obj, self.request, self)
 
     def getUrlForObject(self, obj):
         url = absoluteURL(self.context, self.request)

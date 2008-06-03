@@ -4,8 +4,15 @@
     <dl>
       <tal:item repeat="item view/content">
         <dt>
-          <a tal:attributes="href python: view.getUrlForObject(item)"
-             tal:content="item/title" />
+          <a tal:attributes="href item/url">
+            <img width="16" height="16"
+                 src="http://localhost:8080/plone/folder_icon.gif"
+                 alt="BSCW Repository"
+                 tal:attributes="src item/icon" />
+          </a>
+          <a tal:attributes="href item/url">
+            <span tal:content="item/title" />
+          </a>
         </dt>
         <dd tal:content="item/description">
         </dd>

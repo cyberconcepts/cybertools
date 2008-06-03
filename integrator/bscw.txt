@@ -97,11 +97,14 @@ The BSCW Repository View
   >>> view.baseUrl = 'http://localhost/bscw.cgi/'
   >>> view.baseId = '4'
 
-  >>> view.content()
-  [<...ReadContainer...>]
+  >>> items = list(view.content())
+  >>> items
+  [<...bscw.ItemView...>]
 
-  >>> view.getUrlForObject(view.content()[0])
+  >>> items[0].url
   'http://127.0.0.1/bscw?id=bs_5'
+  >>> items[0].icon
+  'http://127.0.0.1/++resource++folder.png'
 
 
 Fin de partie

@@ -140,6 +140,10 @@ class Item(BSCWProxyBase, Item):
     def icon(self):
         return self.type.lower()
 
+    @Lazy
+    def type(self):
+        return 'item'
+
 
 class File(BSCWProxyBase, File):
 
