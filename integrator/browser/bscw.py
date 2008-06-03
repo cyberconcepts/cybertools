@@ -31,7 +31,7 @@ from cybertools.integrator.bscw import ContainerFactory
 from cybertools.integrator.interfaces import IContainerFactory
 
 
-listing_macros = ViewPageTemplateFile('listing.pt')
+view_macros = ViewPageTemplateFile('view.pt')
 
 
 class BaseView(object):
@@ -71,7 +71,7 @@ class ItemView(BaseView):
 
 class BSCWView(BaseView):
 
-    template = listing_macros
+    viewTemplate = view_macros
     itemView = ItemView
 
     baseUrl = ''
@@ -79,9 +79,14 @@ class BSCWView(BaseView):
 
     @Lazy
     def listing(self):
-        return self.template.macros['listing']
+        return self.viewTemplate.macros['listing']
 
-    def content(self):
+    @Lazy
+    def heading(self):
+        return self.viewTemplate.macros['heading']
+
+    @Lazy
+    def remoteProxy(self):
         url = self.context.getRepositoryURL()
         if isinstance(url, basestring):
             server, id = url.rsplit('/', 1)
@@ -91,10 +96,17 @@ class BSCWView(BaseView):
             id = self.baseId
         id = self.request.form.get('id', id)
         factory = component.getUtility(IContainerFactory, name='bscw')
-        root = factory(id, server=server, baseUrl=self.baseUrl)
-        for obj in root.values():
+        return factory(id, server=server, baseUrl=self.baseUrl)
+
+    @Lazy
+    def item(self):
+        return self.itemView(self.remoteProxy, self.request, self)
+
+    def content(self):
+        proxy = self.remoteProxy
+        for obj in proxy.values():
             yield self.itemView(obj, self.request, self)
 
-    def getUrlForObject(self, obj):
-        url = absoluteURL(self.context, self.request)
-        return '%s?id=%s' % (url, obj.internalPath)
+    #def getUrlForObject(self, obj):
+    #    url = absoluteURL(self.context, self.request)
+    #    return '%s?id=%s' % (url, obj.internalPath)

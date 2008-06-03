@@ -1,5 +1,14 @@
 <!-- $Id$ -->
 
+<metal:view define-macro="heading"
+            tal:define="item view/item">
+    <h2>
+      <img tal:attributes="src item/icon" />
+      <span tal:content="item/title">Title</span>
+    </h2>
+</metal:view>
+
+
 <metal:listing define-macro="listing">
     <dl>
       <tal:item repeat="item view/content">
