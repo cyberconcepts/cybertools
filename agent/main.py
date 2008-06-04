@@ -55,7 +55,8 @@ def setup(configInfo=None):
 def setupEnvironment(config):
     from cybertools.agent.base import agent, control, job, log, schedule
     from cybertools.agent.core import agent, control, schedule
-    from cybertools.agent.control import cmdline
+    from cybertools.agent.control import cmdline, remote
+    from cybertools.agent.transport import remote, loops
     from cybertools.agent.system.windows import api
     api.setup(config)
     from cybertools.agent.crawl import base, filesystem, outlook

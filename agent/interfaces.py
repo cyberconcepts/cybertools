@@ -121,7 +121,7 @@ class ITransporter(IAgent):
 
     serverURL = Attribute('URL of the server the resources will be '
                           'transferred to. The URL also determines the '
-                          'transfer protocol, e.g. HTTP or FTP.')
+                          'transfer protocol, e.g. HTTP or SFTP.')
     method = Attribute('Transport method, e.g. PUT.')
     machineName = Attribute('Name under which the local machine is '
                             'known to the server.')
