@@ -31,6 +31,8 @@ class FileTransfer(protocol.ClientFactory):
     """ Transfers files to a remote SCP/SFTP server.
     """
 
+    channel = None
+
     def __init__(self, host, port, username, password):
         self.username = username
         self.password = password
@@ -51,6 +53,9 @@ class FileTransfer(protocol.ClientFactory):
                                command='upload',
                                localPath=localPath,
                                remotePath=remotePath))
+        if len(self.queue) == 1 and self.channel is not None:
+            # the channel has emptied the queue
+            self.channel.execute()
         return d
 
     def close(self):
@@ -75,14 +80,33 @@ class SFTPChannel(channel.SSHChannel):
         self.client.makeConnection(self)
         self.dataReceived = self.client.dataReceived
         self.execute()
+        self.conn.factory.channel = self
 
     def execute(self):
         queue = self.conn.factory.queue
-        print 'execute, queue =', queue
+        if queue:
+            command = queue.pop()
+            commandName = command.pop('command')
+            method = getattr(self, 'command_' + commandName, None)
+            if method is not None:
+                self.params = command
+                method()
 
-    def upload(self, params):
+    def command_upload(self):
+        params = self.params
         remotePath = params['remotePath']
-        d = self.protocol.openFile(remotePath, filetransfer.FXF_WRITE, {})
+        d = self.client.openFile(remotePath,
+                    filetransfer.FXF_WRITE | filetransfer.FXF_CREAT, {})
+        print 'command_upload', params
+        d.addCallbacks(self.writeChunk, self.logError)
+
+    def writeChunk(self, clientFile):
+        print 'writeChunk', clientFile
+        params = self.params
+        d = clientFile.writeChunk(0, 'Hello World')
+
+    def logError(self, reason):
+        print 'error', reason
 
 
 # classes for managing the SSH protocol and connection
