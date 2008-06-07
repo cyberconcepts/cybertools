@@ -59,7 +59,7 @@ We can now access the root object of the BSCW repository.
   >>> root.description
   'Public Repository'
 
-  >>> str(root.externalUrlInfo)
+  >>> str(root.externalURLInfo)
   'http://localhost/bscw.cgi/4'
 
 Let's also have a look at the item contained in the root object.
@@ -79,7 +79,7 @@ Let's also have a look at the item contained in the root object.
   >>> bs_5.properties
   {...'name': 'Introduction'...}
 
-  >>> str(bs_5.externalUrlInfo)
+  >>> str(bs_5.externalURLInfo)
   'http://localhost/bscw.cgi/5'
 
 

@@ -22,6 +22,8 @@ BSCW repository view.
 $Id$
 """
 
+from datetime import datetime
+from time import strptime
 from zope.app.pagetemplate import ViewPageTemplateFile
 from zope import component
 from zope.cachedescriptors.property import Lazy
@@ -50,6 +52,10 @@ class BaseView(object):
         return self.context.description
 
     @Lazy
+    def modified(self):
+        return self.context.modified
+
+    @Lazy
     def url(self):
         return absoluteURL(self.context, self.request)
 
@@ -76,12 +82,21 @@ class BSCWView(BaseView):
     itemView = ItemView
 
     @Lazy
-    def listing(self):
-        return self.viewTemplate.macros['listing']
+    def dataMacro(self):
+        return self.viewTemplate.macros['data']
 
     @Lazy
-    def heading(self):
+    def headingMacro(self):
         return self.viewTemplate.macros['heading']
+
+    @Lazy
+    def itemMacro(self):
+        typeName = self.remoteProxy.itemType.lower()
+        return self.viewTemplate.macros.get(typeName, self.defaultMacro)
+
+    @Lazy
+    def defaultMacro(self):
+        return self.viewTemplate.macros['default']
 
     @Lazy
     def remoteProxy(self):
@@ -97,4 +112,3 @@ class BSCWView(BaseView):
         proxy = self.remoteProxy
         for obj in proxy.values():
             yield self.itemView(obj, self.request, self)
-

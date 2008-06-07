@@ -2,39 +2,67 @@
 
 <metal:view define-macro="heading"
             tal:define="item view/item">
+
+    <p i18n:translate="box_last_modified" />
     <h2>
       <img tal:attributes="src item/icon" />
       <span tal:content="item/title">Title</span>
     </h2>
+    <p class="description"
+       tal:content="item/description" />
+    <p tal:define="url view/remoteProxy/externalURLInfo">
+      <a tal:attributes="href url"
+         tal:content="url">Link</a>
+    </p>
 </metal:view>
 
 
 <metal:data define-macro="data">
+  <metal:block use-macro="view/viewTemplate/macros/properties" />
+  <metal:block use-macro="view/itemMacro" />
+</metal:data>
+
+
+<metal:properties define-macro="properties">
+  <div tal:content="view/remoteProxy/properties" />
+</metal:properties>
+
+
+<metal:data define-macro="default">
+  <div tal:content="view/remoteProxy/itemType"></div>
 </metal:data>
 
 
 <metal:document define-macro="document">
+  <div></div>
 </metal:document>
 
 
 <metal:url define-macro="url">
+  <div tal:define="url view/remoteProxy/properties/url_link">
+    <a tal:attributes="href url"
+       tal:content="url">Link</a>
+  </div>
 </metal:url>
 
 
-<metal:listing define-macro="listing">
-    <dl tal:condition="python: view.remoteProxy.itemType == 'Folder'">
+<metal:folder define-macro="folder">
+    <dl>
       <tal:item repeat="item view/content">
         <dt>
           <a tal:attributes="href item/url">
             <img width="16" height="16"
                  tal:attributes="src item/icon" />
           </a>
-          <a tal:attributes="href item/url">
-            <span tal:content="item/title" />
-          </a>
+          <a tal:attributes="href item/url"><span tal:content="item/title" /></a>
+          <span class="documentByLine">
+            &mdash;
+            <span i18n:translate="box_last_modified">last modified:</span>
+            <span tal:content="item/modified" />
+          </span>
         </dt>
         <dd tal:content="item/description">
         </dd>
       </tal:item>
     </dl>
-</metal:listing>
+</metal:folder>

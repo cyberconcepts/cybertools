@@ -23,6 +23,8 @@ $Id$
 """
 
 import os
+from datetime import datetime
+from time import strptime
 from xmlrpclib import ServerProxy
 from zope import component
 from zope.app.file.image import getImageInfo
@@ -32,7 +34,7 @@ from zope.interface import implements, Attribute
 
 from cybertools.integrator.base import ContainerFactory, ItemFactory, FileFactory
 from cybertools.integrator.base import ReadContainer, Item, File, Image
-from cybertools.integrator.base import ExternalUrlInfo
+from cybertools.integrator.base import ExternalURLInfo
 from cybertools.integrator.interfaces import IContainerFactory
 from cybertools.integrator.interfaces import IItemFactory, IFileFactory
 from cybertools.text import mimetypes
@@ -43,7 +45,7 @@ baseAttributes = ['__class__', 'name', 'id', 'descr', 'notes',
     'ctime', 'mtime', 'atime', 'lastEvent', 'createEvent',
     'lastChange', 'lastMove', 'containers', 'access']
 
-standardAttributes = ['__class__', 'name', 'id', 'descr', 'mtime']
+minimalAttributes = ['__class__', 'name', 'id', 'descr', 'mtime']
 
 additionalAttributes = ['banner', 'moderated', 'ratings']
 
@@ -51,6 +53,10 @@ documentAttributes = ['vid', 'vstore', 'file_extensions', 'size', 'encoding', 't
 
 urlAttributes = ['url_link', 'last_verified', 'last_error', 'content_length',
     'content_type', 'content_encoding', 'last_modified']
+
+standardAttributes = ['__class__', 'type', 'id', 'name', 'descr',
+            'ctime', 'mtime', 'creator', 'owner', 'owner',
+            'url_link', 'size', 'encoding']
 
 classes = ['cl_core.Folder', 'cl_core.Document', 'cl_core.URL', ]
 
@@ -77,8 +83,7 @@ class BSCWConnection(object):
             self.baseURL, self.rootId = url.rsplit('/', 1)
 
     def getItem(self, address):
-        return self.server.get_attributes(address,
-                ['__class__', 'type', 'id', 'name', 'descr', 'url_link'], 1, True)
+        return self.server.get_attributes(address, standardAttributes, 1, True)
 
     def getProxy(self, item=None, address=None, parentPath=''):
         if item is None:
@@ -117,11 +122,11 @@ class BSCWConnection(object):
 class BSCWProxyBase(object):
 
     @Lazy
-    def externalUrlInfo(self):
+    def externalURLInfo(self):
         id = self.address
         if id.startswith('bs_'):
             id = id[3:]
-        return ExternalUrlInfo(self.baseURL, id)
+        return ExternalURLInfo(self.baseURL, id)
 
     @Lazy
     def attributes(self):
@@ -138,6 +143,11 @@ class BSCWProxyBase(object):
     @Lazy
     def description(self):
         return self.properties.get('descr', u'')
+
+    @Lazy
+    def modified(self):
+        dt = self.properties['mtime']
+        return dt and datetime(*(strptime(str(dt), '%Y%m%dT%H:%M:%SZ')[0:6])) or ''
 
 
 class ReadContainer(BSCWProxyBase, ReadContainer):
@@ -205,19 +215,16 @@ class File(BSCWProxyBase, File):
         return 0
 
 
+class Image(File, Image):
+
+    pass
+
+
 # factory classes
 
 class ContainerFactory(ContainerFactory):
 
     proxyClass = ReadContainer
-
-    def xxx__call__(self, address, **kw):
-        server = kw.pop('server')
-        if isinstance(server, basestring):  # just a URL, resolve for XML-RPC
-            server = ServerProxy(server)
-            baseURL = server
-        baseURL = kw.pop('baseURL', '')
-        return self.proxyClass(address, server=server, baseURL=baseURL, **kw)
 
 
 class ItemFactory(ItemFactory):

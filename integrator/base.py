@@ -152,7 +152,7 @@ class Image(File):
 
 # URL info
 
-class ExternalUrlInfo(object):
+class ExternalURLInfo(object):
 
     def __init__(self, baseUrl='', path='', params=None):
         self.baseUrl, self.path = baseUrl.strip('/'), path.strip('/')
