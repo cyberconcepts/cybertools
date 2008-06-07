@@ -33,6 +33,8 @@ from zope.interface import implements, Attribute
 from cybertools.integrator.base import ContainerFactory, ItemFactory, FileFactory
 from cybertools.integrator.base import ReadContainer, Item, File, Image
 from cybertools.integrator.base import ExternalUrlInfo
+from cybertools.integrator.interfaces import IContainerFactory
+from cybertools.integrator.interfaces import IItemFactory, IFileFactory
 from cybertools.text import mimetypes
 
 
@@ -53,6 +55,63 @@ urlAttributes = ['url_link', 'last_verified', 'last_error', 'content_length',
 classes = ['cl_core.Folder', 'cl_core.Document', 'cl_core.URL', ]
 
 
+class BSCWConnection(object):
+
+    factoryName = 'bscw'
+
+    baseURL = rootId = ''
+
+    def __init__(self, url, server=None):
+        self.repositoryURL = url
+        self.setURLs()
+        if server is None:
+            server = ServerProxy(self.baseURL())
+        self.server = server
+
+    def getRepositoryURL(self):
+        return self.repositoryURL
+
+    def setURLs(self):
+        url = self.getRepositoryURL()
+        if url:
+            self.baseURL, self.rootId = url.rsplit('/', 1)
+
+    def getItem(self, address):
+        return self.server.get_attributes(address,
+                ['__class__', 'type', 'id', 'name', 'descr', 'url_link'], 1, True)
+
+    def getProxy(self, item=None, address=None, parentPath=''):
+        if item is None:
+            if address is None:
+                address = self.rootId
+            item = self.getItem(address)[0]
+        address = item['id']
+        itemType = item['__class__'].split('.')[-1]
+        internalPath = '/'.join((parentPath, address)).strip('/')
+        params = dict(connection=self, internalPath=internalPath,
+                      properties=item, baseURL=self.baseURL,
+                      itemType=itemType)
+        if itemType == 'Folder':
+            return self.containerFactory(address, **params)
+        elif itemType == 'Document':
+            return self.fileFactory(address, contentType=item['type'],
+                                    **params)
+        else:
+            return self.itemFactory(address, **params)
+
+    @Lazy
+    def itemFactory(self):
+        return component.getUtility(IItemFactory, name=self.factoryName)
+
+    @Lazy
+    def fileFactory(self):
+        return component.getUtility(IFileFactory, name=self.factoryName)
+
+    @Lazy
+    def containerFactory(self):
+        return component.getUtility(IContainerFactory, name=self.factoryName)
+
+
 # proxy classes
 
 class BSCWProxyBase(object):
@@ -62,7 +121,15 @@ class BSCWProxyBase(object):
         id = self.address
         if id.startswith('bs_'):
             id = id[3:]
-        return ExternalUrlInfo(self.baseUrl, id)
+        return ExternalUrlInfo(self.baseURL, id)
+
+    @Lazy
+    def attributes(self):
+        return self.connection.getItem(self.address)
+
+    @Lazy
+    def properties(self):
+        return self.attributes[0]
 
     @Lazy
     def title(self):
@@ -76,15 +143,6 @@ class BSCWProxyBase(object):
 class ReadContainer(BSCWProxyBase, ReadContainer):
 
     factoryName = 'bscw'
-
-    @Lazy
-    def properties(self):
-        return self.attributes[0]
-
-    @Lazy
-    def attributes(self):
-        return self.server.get_attributes(self.address,
-                ['__class__', 'type', 'id', 'name', 'descr', 'url_link'], 1, True)
 
     @Lazy
     def data(self):
@@ -109,18 +167,7 @@ class ReadContainer(BSCWProxyBase, ReadContainer):
         if key not in self.data:
             return default
         item = self.data[key]
-        itemType = item['__class__'].split('.')[-1]
-        internalPath = '/'.join((self.internalPath, key)).strip('/')
-        params = dict(server=self.server, internalPath=internalPath,
-                      properties=item, baseUrl=self.baseUrl,
-                      itemType=itemType)
-        if itemType == 'Folder':
-            return self.containerFactory(item['id'], **params)
-        elif itemType == 'Document':
-            return self.fileFactory(item['id'], contentType=item['type'],
-                                    **params)
-        else:
-            return self.itemFactory(item['id'], **params)
+        return self.connection.getProxy(item)
 
     def values(self):
         return [self.get(k) for k in self]
@@ -164,13 +211,13 @@ class ContainerFactory(ContainerFactory):
 
     proxyClass = ReadContainer
 
-    def __call__(self, address, **kw):
+    def xxx__call__(self, address, **kw):
         server = kw.pop('server')
         if isinstance(server, basestring):  # just a URL, resolve for XML-RPC
             server = ServerProxy(server)
-            baseUrl = server
-        baseUrl = kw.pop('baseUrl', '')
-        return self.proxyClass(address, server=server, baseUrl=baseUrl, **kw)
+            baseURL = server
+        baseURL = kw.pop('baseURL', '')
+        return self.proxyClass(address, server=server, baseURL=baseURL, **kw)
 
 
 class ItemFactory(ItemFactory):

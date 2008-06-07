@@ -9,14 +9,24 @@
 </metal:view>
 
 
+<metal:data define-macro="data">
+</metal:data>
+
+
+<metal:document define-macro="document">
+</metal:document>
+
+
+<metal:url define-macro="url">
+</metal:url>
+
+
 <metal:listing define-macro="listing">
-    <dl>
+    <dl tal:condition="python: view.remoteProxy.itemType == 'Folder'">
       <tal:item repeat="item view/content">
         <dt>
           <a tal:attributes="href item/url">
             <img width="16" height="16"
-                 src="http://localhost:8080/plone/folder_icon.gif"
-                 alt="BSCW Repository"
                  tal:attributes="src item/icon" />
           </a>
           <a tal:attributes="href item/url">

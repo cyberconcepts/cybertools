@@ -12,7 +12,7 @@ Integration of external sources.
 Accessing Objects on a Remote BSCW Repository
 =============================================
 
-In fact we do not access a remote repository but just a dummy (fake)
+During testing we do not access a remote repository but just a dummy (fake)
 repository for testing purposes.
 
   >>> from cybertools.integrator.tests.bscw import BSCWServer, sampleObjects
@@ -33,19 +33,23 @@ Let's first register the proxy factory utilities.
   >>> component.provideUtility(ItemFactory(), name='bscw')
   >>> component.provideUtility(FileFactory(), name='bscw')
 
-We can now access the root object of the BSCW repository
+We can now access the root object of the BSCW repository.
 
-  >>> from cybertools.integrator.interfaces import IContainerFactory
-  >>> root = component.getUtility(IContainerFactory, name='bscw')('4', server=server,
-  ...                             baseUrl='http://localhost/bscw.cgi/')
+  >>> from cybertools.integrator.bscw import BSCWConnection
+  >>> connection = BSCWConnection('http://localhost/bscw.cgi/4',
+  ...                             server=server)
+
+  >>> root = connection.getProxy()
+  >>> root
+  <...bscw.ReadContainer...>
 
   >>> sorted(root.items())
-  [('bs_5', <...ReadContainer object...>)]
+  [('bs_5', <...bscw.ReadContainer object...>)]
 
   >>> root.address
-  '4'
+  'bs_4'
   >>> root.internalPath
-  ''
+  'bs_4'
   >>> root.icon
   'folder'
   >>> root.properties
@@ -65,7 +69,7 @@ Let's also have a look at the item contained in the root object.
   ...       ['__class__', 'type', 'id', 'name', 'descr', 'url_link'], 1, True)
 
   >>> bs_5.items()
-  []
+  [('bs_6', <...bscw.File ...>), ('bs_7', <...bscw.Item ...>)]
   >>> bs_5.address
   'bs_5'
   >>> bs_5.internalPath
@@ -82,13 +86,7 @@ Let's also have a look at the item contained in the root object.
 The BSCW Repository View
 ========================
 
-  >>> class BSCWAccess(object):
-  ...     def __init__(self, server):
-  ...         self.server = server
-  ...     def getRepositoryURL(self):
-  ...         return self.server
-
-  >>> site['bscw'] = BSCWAccess(server)
+  >>> site['bscw'] = connection
   >>> bscwAccess = site['bscw']
 
   >>> from cybertools.integrator.browser.bscw import BSCWView

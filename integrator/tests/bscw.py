@@ -31,6 +31,7 @@ class Artifact(dict):
 
     attributes = bscw.baseAttributes
     repository = None
+    content = ''
 
     def __init__(self, id, **kw):
         if not id.startswith('bs_'):
@@ -69,14 +70,19 @@ class BSCWRepository(dict):
 sampleObjects = BSCWRepository(
     Artifact('4', name='public', descr='Public Repository', children=['5'],
                   containers=[dict(__id__='4711', name='Community of Anonymous')]),
-    Artifact('5', name='Introduction', descr='Introduction to BSCW'),
+    Artifact('5', name='Introduction', descr='Introduction to BSCW',
+             children=['6', '7']),
+    Artifact('6', name='Overview', descr='BSCW Overview',
+             __class__='cl_core.Document', type='application/pdf'),
+    Artifact('7', name='BSCW Home', descr='BSCW Homepage',
+             __class__='cl_core.URL', url_link='http://www.bscw.de/'),
 )
 
 
 class BSCWServer(object):
 
     def __init__(self, objects):
-        self. objects = objects
+        self.objects = objects
 
     def get_attributes(self, id=None, attribute_names=['__id__', 'name'], depth=0,
                        nested=False, offset=0, number=0, sorted_by=None):
@@ -84,11 +90,14 @@ class BSCWServer(object):
         if obj is None:
             raise Fault(10101, 'Bad object id: %s' % id)
         result = [obj.getData(attribute_names)]
+        children = []
         if nested:
             for level in range(depth):
                 for id in obj.children:
-                    result.append(self.get_attributes(id, attribute_names,
-                                  depth-1, nested, offset, number, sorted_by))
+                    if not children:
+                        result.append(children)
+                    children.append(self.get_attributes(id, attribute_names,
+                                    depth-1, nested, offset, number, sorted_by)[0])
         return result
 
     def get_attributenames(self, __class__):
@@ -98,7 +107,7 @@ class BSCWServer(object):
         obj = self.objects.get(id)
         if obj is None:
             raise Fault(10101, 'Bad object id: %s' % id)
-        return ''
+        return obj.get('content', '')
 
     def get_path(id):
         return self.get_attributes(id, ['containers'])[0].get('containers', [])

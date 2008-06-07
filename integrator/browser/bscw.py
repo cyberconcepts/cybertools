@@ -29,6 +29,7 @@ from zope.traversing.browser import absoluteURL
 
 from cybertools.integrator.bscw import ContainerFactory
 from cybertools.integrator.interfaces import IContainerFactory
+from cybertools.integrator.interfaces import IItemFactory, IFileFactory
 
 
 view_macros = ViewPageTemplateFile('view.pt')
@@ -74,9 +75,6 @@ class BSCWView(BaseView):
     viewTemplate = view_macros
     itemView = ItemView
 
-    baseUrl = ''
-    baseId = ''
-
     @Lazy
     def listing(self):
         return self.viewTemplate.macros['listing']
@@ -87,16 +85,9 @@ class BSCWView(BaseView):
 
     @Lazy
     def remoteProxy(self):
-        url = self.context.getRepositoryURL()
-        if isinstance(url, basestring):
-            server, id = url.rsplit('/', 1)
-            self.baseUrl = server
-        else:   # already a real server object
-            server = url
-            id = self.baseId
-        id = self.request.form.get('id', id)
-        factory = component.getUtility(IContainerFactory, name='bscw')
-        return factory(id, server=server, baseUrl=self.baseUrl)
+        id = self.request.form.get('id')
+        proxy = self.context.getProxy(address=id)
+        return proxy
 
     @Lazy
     def item(self):
@@ -107,6 +98,3 @@ class BSCWView(BaseView):
         for obj in proxy.values():
             yield self.itemView(obj, self.request, self)
 
-    #def getUrlForObject(self, obj):
-    #    url = absoluteURL(self.context, self.request)
-    #    return '%s?id=%s' % (url, obj.internalPath)
