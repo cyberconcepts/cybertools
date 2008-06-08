@@ -37,7 +37,6 @@ from cybertools.integrator.base import ReadContainer, Item, File, Image
 from cybertools.integrator.base import ExternalURLInfo
 from cybertools.integrator.interfaces import IContainerFactory
 from cybertools.integrator.interfaces import IItemFactory, IFileFactory
-from cybertools.text import mimetypes
 
 
 baseAttributes = ['__class__', 'name', 'id', 'descr', 'notes',
