@@ -75,6 +75,13 @@ class ItemView(BaseView):
         url = self.parentView.url
         return '%s?id=%s' % (url, self.context.internalPath)
 
+    @property
+    def breadCrumbs(self):
+        for p in reversed(list(self.context.parents)):
+            view = ItemView(p, self.request, self.parentView)
+            yield dict(url=view.url, title=view.title)
+        yield dict(url=self.url, title=self.title)
+
 
 class BSCWView(BaseView):
 
@@ -112,3 +119,4 @@ class BSCWView(BaseView):
         proxy = self.remoteProxy
         for obj in proxy.values():
             yield self.itemView(obj, self.request, self)
+

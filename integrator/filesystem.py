@@ -32,7 +32,6 @@ from zope.interface import implements, Attribute
 
 from cybertools.integrator.base import ContainerFactory, FileFactory
 from cybertools.integrator.base import ReadContainer, File, Image
-from cybertools.text import mimetypes
 
 
 # proxy classes

@@ -42,7 +42,7 @@ from cybertools.integrator.interfaces import IItemFactory, IFileFactory
 baseAttributes = ['__class__', 'name', 'id', 'descr', 'notes',
     'bound_sub_artifacts', 'creator', 'owner', 'owners',
     'ctime', 'mtime', 'atime', 'lastEvent', 'createEvent',
-    'lastChange', 'lastMove', 'containers', 'access']
+    'lastChange', 'lastMove', 'location', 'containers', 'access']
 
 minimalAttributes = ['__class__', 'name', 'id', 'descr', 'mtime']
 
@@ -54,8 +54,9 @@ urlAttributes = ['url_link', 'last_verified', 'last_error', 'content_length',
     'content_type', 'content_encoding', 'last_modified']
 
 standardAttributes = ['__class__', 'type', 'id', 'name', 'descr',
-            'ctime', 'mtime', 'creator', 'owner', 'owner',
-            'url_link', 'size', 'encoding']
+            'ctime', 'mtime', 'creator', 'owner', 'owners',
+            'url_link', 'size', 'encoding',
+            'containers', 'location']
 
 classes = ['cl_core.Folder', 'cl_core.Document', 'cl_core.URL', ]
 
@@ -81,14 +82,14 @@ class BSCWConnection(object):
         if url:
             self.baseURL, self.rootId = url.rsplit('/', 1)
 
-    def getItem(self, address):
-        return self.server.get_attributes(address, standardAttributes, 1, True)
+    def getItem(self, address, nested=True):
+        return self.server.get_attributes(address, standardAttributes, 1, nested)
 
-    def getProxy(self, item=None, address=None, parentPath=''):
+    def getProxy(self, item=None, address=None, parentPath='', nested=True):
         if item is None:
             if address is None:
                 address = self.rootId
-            item = self.getItem(address)[0]
+            item = self.getItem(address, nested=nested)[0]
         address = item['id']
         itemType = item['__class__'].split('.')[-1]
         internalPath = '/'.join((parentPath, address)).strip('/')
@@ -122,9 +123,7 @@ class BSCWProxyBase(object):
 
     @Lazy
     def externalURLInfo(self):
-        id = self.address
-        if id.startswith('bs_'):
-            id = id[3:]
+        id = self.address.lstrip('bs_')
         return ExternalURLInfo(self.baseURL, id)
 
     @Lazy
@@ -147,6 +146,18 @@ class BSCWProxyBase(object):
     def modified(self):
         dt = self.properties['mtime']
         return dt and datetime(*(strptime(str(dt), '%Y%m%dT%H:%M:%SZ')[0:6])) or ''
+
+    @property
+    def parents(self):
+        if self.address.lstrip('bs_') == self.connection.rootId:
+            return
+        parentId = self.properties['location']['__id__'].lstrip('bs_')
+        p = self.connection.getProxy(address=parentId, nested=False)
+        while parentId != self.connection.rootId:
+            yield p
+            parentId = p.properties['location']['__id__'].lstrip('bs_')
+            p = self.connection.getProxy(address=parentId)
+        yield p
 
 
 class ReadContainer(BSCWProxyBase, ReadContainer):

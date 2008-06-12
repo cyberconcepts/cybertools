@@ -51,25 +51,27 @@ class BSCWRepository(dict):
         for obj in objs:
             self[obj.id] = obj
             obj.repository = self
-        self.updateContainersAttribute()
+        self.updateLocation()
 
     def get(self, key, default=None):
         if not key.startswith('bs_'):
             key = 'bs_' + key
         return super(BSCWRepository, self).get(key, default)
 
-    def updateContainersAttribute(self):
+    def updateLocation(self):
         for obj in self.values():
             for c in obj.children:
                 child = self.get(c)
                 if child is not None:
-                    containerInfo = dict(__id__=child.id, name=child['name'])
-                    child.setdefault('containers', []).append(containerInfo)
+                    containerInfo = dict(__id__=obj.id, name=obj['name'])
+                    child['containers'] = [containerInfo]
+                    child['location'] = containerInfo
 
 
 sampleObjects = BSCWRepository(
     Artifact('4', name='public', descr='Public Repository', children=['5'],
-                  containers=[dict(__id__='4711', name='Community of Anonymous')]),
+                  containers=[dict(__id__='4711', name='Community of Anonymous')],
+                  location=dict(__id__='4711', name='Community of Anonymous')),
     Artifact('5', name='Introduction', descr='Introduction to BSCW',
              children=['6', '7']),
     Artifact('6', name='Overview', descr='BSCW Overview',

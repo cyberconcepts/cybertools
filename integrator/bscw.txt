@@ -62,6 +62,9 @@ We can now access the root object of the BSCW repository.
   >>> str(root.externalURLInfo)
   'http://localhost/bscw.cgi/4'
 
+  >>> list(root.parents)
+  []
+
 Let's also have a look at the item contained in the root object.
 
   >>> bs_5 = root['bs_5']
@@ -81,6 +84,16 @@ Let's also have a look at the item contained in the root object.
 
   >>> str(bs_5.externalURLInfo)
   'http://localhost/bscw.cgi/5'
+
+  >>> bs_5.properties['containers']
+  [{'name': 'public', '__id__': 'bs_4'}]
+
+  >>> [p.address for p in bs_5.parents]
+  ['bs_4']
+
+  >>> bs_6 = bs_5['bs_6']
+  >>> [p.address for p in bs_6.parents]
+  ['bs_5', 'bs_4']
 
 
 The BSCW Repository View
@@ -103,6 +116,10 @@ The BSCW Repository View
   'http://127.0.0.1/bscw?id=bs_5'
   >>> items[0].icon
   'http://127.0.0.1/++resource++folder.png'
+
+  >>> list(items[0].breadCrumbs)
+  [{'url': 'http://127.0.0.1/bscw?id=bs_4', 'title': 'public'},
+   {'url': 'http://127.0.0.1/bscw?id=bs_5', 'title': 'Introduction'}]
 
 
 Fin de partie
