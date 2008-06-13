@@ -26,3 +26,71 @@ $Id$
 
 from zope.interface import implements
 
+from cybertools.agent.core.agent import QueueableAgent
+from cybertools.agent.interfaces import ITransporter
+from cybertools.agent.transport.rpcclient import RPCClient
+from cybertools.agent.crawl.base import Metadata
+from cybertools.agent.crawl.mail import MailResource
+from cybertools.agent.crawl.filesystem import FileResource
+
+
+class Transporter(QueueableAgent):
+
+    implements(ITransporter)
+    
+    serverURL = ''
+    method = ''
+    machineName = ''
+    userName = ''
+    password = ''
+    xmlrpcClient = ''
+    resource = None
+
+    def __init__(self, master, params={}):
+        super(Transporter, self).__init__(master)
+        if params.has_key(serverURL):
+            self.xmlrpcClient = RPCClient(self.serverURL)
+
+    def transfer(self, resource):
+        """ Transfer the resource (an object providing IResource)
+            to the server and return a Deferred.
+        """
+        deferred = self.xmlrpcClient.transferResource(resource)
+        # concept test method
+        # sftp transfer here with callback to self.cb_sendMetadata
+        deferred.addCallback(self.cb_sendMetadata)
+        deferred.addErrback(self.cb_errorHandler)
+
+    def cb_sendMetadata(self, serverResponse=''):
+        """
+        After the resource object has been sent successfully to the
+        RPCServer this method is invoked by a callback from the
+        transfer method and is sending the according metadata of the resource.
+        """
+        # maybe react here to a special server response like
+        # e.g. delay because of server being in heavy load condition
+        deferred = self.xmlrpcClient.transferMetadata(self.resource.metadata)
+        deferred.addCallback(self.cb_transferDone)
+        deferred.addErrback(self.cb_errorHandler)
+    
+    def cb_errorHandler(self, errorInfo):
+        """
+        This is a callback error Handler
+        """
+        print errorInfo
+        self.xmlrpcClient.close()
+        
+    def cb_transferDone(self, successMessage=''):
+        """
+        This callback method is called when resource and metadata
+        have been transferred successfully.
+        """
+        pass
+
+#    def process(self):
+#        return self.collect()
+
+#    def collect(self, filter=None):
+#        d = defer.succeed([])
+#        return d
+

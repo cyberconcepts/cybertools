@@ -17,12 +17,10 @@
 #
 
 """
-Providing access for remote agent instances by listening for requests
-from remote transport agents.
+Controller that accepts, forwards and stores data received by the
+rpcserver
 
 $Id$
 """
 
 from zope.interface import implements
-
-
