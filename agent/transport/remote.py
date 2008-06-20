@@ -25,13 +25,16 @@ $Id$
 """
 
 from zope.interface import implements
+from twisted.web import xmlrpc
 
 from cybertools.agent.core.agent import QueueableAgent
 from cybertools.agent.interfaces import ITransporter
-from cybertools.agent.transport.rpcclient import RPCClient
 from cybertools.agent.crawl.base import Metadata
 from cybertools.agent.crawl.mail import MailResource
 from cybertools.agent.crawl.filesystem import FileResource
+from cybertools.agent.components import agents
+from cybertools.util.config import Configurator
+
 
 
 class Transporter(QueueableAgent):
@@ -39,49 +42,47 @@ class Transporter(QueueableAgent):
     implements(ITransporter)
     
     serverURL = ''
+    server = ''
     method = ''
     machineName = ''
     userName = ''
     password = ''
-    xmlrpcClient = ''
     resource = None
 
-    def __init__(self, master, params={}):
+    def __init__(self, master, configuration):
         super(Transporter, self).__init__(master)
-        if params.has_key(serverURL):
-            self.xmlrpcClient = RPCClient(self.serverURL)
+        if isinstance(configuration, Configurator):
+            self.config = configuration
+        else:   # configuration is path to config file
+            self.config = Configurator()
+            self.config.load(configuration)
+            
+        self.serverURL = self.config.xmlrpcClient.serverURL
+        self.server = xmlrpc.Proxy(self.serverURL)
+        self.method = self.config.xmlrpcClient.method
+        self.machineName = self.config.xmlrpcClient.machineName
+        self.userName = self.config.xmlrpcClient.userName
+        self.password = self.config.xmlrpcClient.password
 
     def transfer(self, resource):
         """ Transfer the resource (an object providing IResource)
             to the server and return a Deferred.
         """
-        deferred = self.xmlrpcClient.transferResource(resource)
-        # concept test method
-        # sftp transfer here with callback to self.cb_sendMetadata
-        deferred.addCallback(self.cb_sendMetadata)
-        deferred.addErrback(self.cb_errorHandler)
-
-    def cb_sendMetadata(self, serverResponse=''):
-        """
-        After the resource object has been sent successfully to the
-        RPCServer this method is invoked by a callback from the
-        transfer method and is sending the according metadata of the resource.
-        """
-        # maybe react here to a special server response like
-        # e.g. delay because of server being in heavy load condition
-        deferred = self.xmlrpcClient.transferMetadata(self.resource.metadata)
-        deferred.addCallback(self.cb_transferDone)
-        deferred.addErrback(self.cb_errorHandler)
+        deferred = self.server.callRemote('getMetadata', resource.metadata)
+        deferred.addCallback(self.transferDone)
+        deferred.addErrback(self.errorHandler)
     
-    def cb_errorHandler(self, errorInfo):
+    def errorHandler(self, errorInfo):
         """
-        This is a callback error Handler
+        Invoked as a callback from self.transfer
+        Error handler.
         """
         print errorInfo
-        self.xmlrpcClient.close()
+        self.server.close()
         
-    def cb_transferDone(self, successMessage=''):
+    def transferDone(self, successMessage=''):
         """
+        Invoked as a callback from self.transfer
         This callback method is called when resource and metadata
         have been transferred successfully.
         """
@@ -94,3 +95,4 @@ class Transporter(QueueableAgent):
 #        d = defer.succeed([])
 #        return d
 
+agents.register(Transporter, Master, name='transport.remote')

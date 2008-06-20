@@ -25,6 +25,7 @@ $Id$
 
 from twisted.web import xmlrpc, server, resource
 from twisted.internet import defer, reactor
+from cybertools.agent.base.agent import Agent
 
 application = None
 
