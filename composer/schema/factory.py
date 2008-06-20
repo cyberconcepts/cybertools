@@ -66,7 +66,10 @@ class SchemaFactory(object):
     def __call__(self, interface, **kw):
         fieldMapping = self.fieldMapping
         fields = []
+        omit = kw.pop('omit', [])
         for fname in schema.getFieldNamesInOrder(interface):
+            if fname in omit:
+                continue
             field = interface[fname]
             info = fieldMapping.get(field.__class__) or ('textline',)
             voc = (getattr(field, 'vocabulary', ()) or
