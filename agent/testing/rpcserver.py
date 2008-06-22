@@ -17,19 +17,12 @@
 #
 
 """
-Providing access for remote agent instances by listening for requests
-from remote transport agents.
+Fake rpcserver for testing purposes
 
 $Id$
 """
 
-from twisted.web import xmlrpc, server, resource
-from twisted.internet import defer, reactor
-from cybertools.agent.base.agent import Agent
-
-application = None
-
-class RPCServer(xmlrpc.XMLRPC):
+class RPCServer(object):
 
     serverURL = ''
     method = ''
@@ -37,7 +30,6 @@ class RPCServer(xmlrpc.XMLRPC):
     userName = ''
     password = ''
     controller = ''
-    close = reactor.stop
 
     def __init__(self, serverURL = '', method = '', machineName = '',
                  userName = '', password = '', controlObj= None):
@@ -47,33 +39,24 @@ class RPCServer(xmlrpc.XMLRPC):
         self.userName = userName
         self.password = password
         self.controller = controlObj
-        xmlrpc.XMLRPC.__init__(self)
+        
+    def callRemote(self, methodName, *params):
+        """
+        intended to simulate the callRemote command of a real xmlrpcserver
+        that takes a method name and calls the method, returning the results
+        as xml formatted strings
+        """
+        method = getattr(self, methodName)
+        return method(*params)
 
-    def xmlrpc_transfer(self, resource):
-        if self.controller is not None:
-            # pass resource object to controller
-            # this is done BEFORE the metadata is handed over
-            # call notify method of controller
-            pass
-        print resource
-        return "Resource received: ", resource
-
-    def xmlrpc_getMetadata(self, metadata):
+    def getMetadata(self, metadata):
         if self.controller is not None:
             # pass metadata to controller
             # this is done AFTER the resource (like e.g. file or mail)
             # is handed over
             pass
-        print metadata
-        metadata = "Echo: ", metadata
-        return metadata
+        return "Metadata received!"
 
     def xmlrpc_shutdownRPCServer():
-        self.close()
-
-
-if __name__ == '__main__':
-    from twisted.internet import reactor
-    site = RPCServer()
-    reactor.listenTCP(8082, server.Site(site))
-    reactor.run()
+        return "xmlrRPC server shutdown completed!"
+    

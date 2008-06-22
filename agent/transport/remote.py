@@ -25,8 +25,9 @@ $Id$
 """
 
 from zope.interface import implements
-from twisted.web import xmlrpc
+from cybertools.agent.system import rpcapi
 
+from cybertools.agent.base.agent import Master
 from cybertools.agent.core.agent import QueueableAgent
 from cybertools.agent.interfaces import ITransporter
 from cybertools.agent.crawl.base import Metadata
@@ -34,7 +35,6 @@ from cybertools.agent.crawl.mail import MailResource
 from cybertools.agent.crawl.filesystem import FileResource
 from cybertools.agent.components import agents
 from cybertools.util.config import Configurator
-
 
 
 class Transporter(QueueableAgent):
@@ -49,20 +49,19 @@ class Transporter(QueueableAgent):
     password = ''
     resource = None
 
-    def __init__(self, master, configuration):
+    def __init__(self, master, params):
         super(Transporter, self).__init__(master)
-        if isinstance(configuration, Configurator):
-            self.config = configuration
-        else:   # configuration is path to config file
-            self.config = Configurator()
-            self.config.load(configuration)
-            
-        self.serverURL = self.config.xmlrpcClient.serverURL
-        self.server = xmlrpc.Proxy(self.serverURL)
-        self.method = self.config.xmlrpcClient.method
-        self.machineName = self.config.xmlrpcClient.machineName
-        self.userName = self.config.xmlrpcClient.userName
-        self.password = self.config.xmlrpcClient.password
+##        if isinstance(configuration, Configurator):
+##            self.config = configuration
+##        else:   # configuration is path to config file
+##            self.config = Configurator()
+##            self.config.load(configuration)
+        self.serverURL = params[serverURL]
+        self.server = rpcapi.xmlrpc.Proxy(self.serverURL)
+        self.method = params[method]
+        self.machineName = params[machineName]
+        self.userName = params[userName]
+        self.password = params[password]
 
     def transfer(self, resource):
         """ Transfer the resource (an object providing IResource)
@@ -86,6 +85,7 @@ class Transporter(QueueableAgent):
         This callback method is called when resource and metadata
         have been transferred successfully.
         """
+        print successMessage
         pass
 
 #    def process(self):
