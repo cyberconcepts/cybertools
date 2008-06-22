@@ -1,0 +1,45 @@
+================================================
+Agents for Job Execution and Communication Tasks
+================================================
+
+  ($Id$)
+
+  >>> config = '''
+  ... controller(names=['core.sample'])
+  ... scheduler(name='core')
+  ... logger(name='default', standard=30)
+  ... transportserver.xmlrpc = 'testing'
+  ... '''
+  >>> from cybertools.agent.main import setup
+  >>> master = setup(config)
+  Starting agent application...
+  Using controllers core.sample.
+
+
+Transporter
+==============
+
+The agent uses Twisted's cooperative multitasking model.
+
+The Transporter is used to contact an xmlrpc Server and transmit the metadata to the other
+loops system. The Transporter is derived from Queueable agent, because also here applies that only one
+item at a time is transmitted.
+
+Returns a deferred that must be supplied with a callback method (and in
+most cases also an errback method).
+
+This Testcase is using subsidiary methods to simulate a real xmlrpc server.
+
+  >>> controller = master.controllers[0]
+  >>> controller.createAgent('transport.remote', 'sample03')
+
+In the next step we request the start of a job, again via the controller.
+
+  >>> controller.enterJob('sample', 'sample03', params=dict(serverURL="", machineName="", method="", userName="", password=""))
+
+The job is not executed immediately - we have to hand over control to
+the twisted reactor first.
+
+  >>> from cybertools.agent.tests import tester
+  >>> tester.iterate()
+  Job 00001 completed; result: Metadata received!;
