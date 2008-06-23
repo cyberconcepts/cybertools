@@ -25,9 +25,6 @@ $Id: rpcapi.py
 def setup(config):
     global xmlrpc
     if config.transportserver.xmlrpc == 'testing':
-        from cybertools.agent.testing.rpcserver import RPCServer
+        from cybertools.agent.testing.rpcserver import RPCServer, xmlrpc
     else:
-        try:
-            from twisted.web import xmlrpc
-        except ImportError:
-            from cybertools.agent.testing.rpcserver import RPCServer
+        from twisted.web import xmlrpc
