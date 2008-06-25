@@ -59,6 +59,8 @@ def setupEnvironment(config):
     from cybertools.agent.transport import remote, loops
     from cybertools.agent.system.windows import api
     api.setup(config)
+    from cybertools.agent.system import rpcapi
+    rpcapi.setup(config)
     from cybertools.agent.crawl import base, filesystem, outlook
 
 

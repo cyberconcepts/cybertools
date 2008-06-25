@@ -24,9 +24,10 @@ and sending requests to a corresponding remote controller.
 $Id$
 """
 
+from twisted.internet import defer
 from zope.interface import implements
-from cybertools.agent.system import rpcapi
 
+from cybertools.agent.system import rpcapi
 from cybertools.agent.base.agent import Master
 from cybertools.agent.core.agent import QueueableAgent
 from cybertools.agent.interfaces import ITransporter
@@ -40,7 +41,7 @@ from cybertools.util.config import Configurator
 class Transporter(QueueableAgent):
 
     implements(ITransporter)
-    
+
     serverURL = ''
     server = ''
     method = ''
@@ -49,44 +50,46 @@ class Transporter(QueueableAgent):
     password = ''
     resource = None
 
-    def __init__(self, master, params):
+    def __init__(self, master):
         super(Transporter, self).__init__(master)
-##        if isinstance(configuration, Configurator):
-##            self.config = configuration
-##        else:   # configuration is path to config file
-##            self.config = Configurator()
-##            self.config.load(configuration)
-        self.serverURL = params[serverURL]
+        config = master.config
+        #self.serverURL = params[serverURL]
         self.server = rpcapi.xmlrpc.Proxy(self.serverURL)
-        self.method = params[method]
-        self.machineName = params[machineName]
-        self.userName = params[userName]
-        self.password = params[password]
+        #self.method = params[method]
+        #self.machineName = params[machineName]
+        #self.userName = params[userName]
+        #self.password = params[password]
+
+    def process(self):
+        return self.transfer(self.params['resource'])
 
     def transfer(self, resource):
         """ Transfer the resource (an object providing IResource)
             to the server and return a Deferred.
         """
-        deferred = self.server.callRemote('getMetadata', resource.metadata)
-        deferred.addCallback(self.transferDone)
-        deferred.addErrback(self.errorHandler)
-    
+        #return self.server.callRemote('getMetadata', resource.metadata)
+        self.deferred = defer.Deferred()
+        d = self.server.callRemote('getMetadata', resource.metadata)
+        d.addCallback(self.transferDone)
+        d.addErrback(self.errorHandler)
+        return self.deferred
+
     def errorHandler(self, errorInfo):
         """
         Invoked as a callback from self.transfer
         Error handler.
         """
         print errorInfo
-        self.server.close()
-        
-    def transferDone(self, successMessage=''):
+        #self.server.close()
+
+    def transferDone(self, result):
         """
         Invoked as a callback from self.transfer
         This callback method is called when resource and metadata
         have been transferred successfully.
         """
-        print successMessage
-        pass
+        #print 'transferDone:', successMessage
+        self.deferred.callback(result)
 
 #    def process(self):
 #        return self.collect()

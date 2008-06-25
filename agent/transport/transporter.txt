@@ -35,11 +35,15 @@ This Testcase is using subsidiary methods to simulate a real xmlrpc server.
 
 In the next step we request the start of a job, again via the controller.
 
-  >>> controller.enterJob('sample', 'sample03', params=dict(serverURL="", machineName="", method="", userName="", password=""))
+  >>> from cybertools.agent.crawl.base import Metadata, Resource
+  >>> md01 = Metadata(dict(filename='dummy.txt'))
+  >>> r01 = Resource()
+  >>> r01.metadata = md01
+  >>> controller.enterJob('sample', 'sample03', params=dict(resource=r01))
 
 The job is not executed immediately - we have to hand over control to
 the twisted reactor first.
 
   >>> from cybertools.agent.tests import tester
   >>> tester.iterate()
-  Job 00001 completed; result: Metadata received!;
+  Job 00001 completed; result: Metadata accepted by server;

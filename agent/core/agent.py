@@ -72,6 +72,7 @@ class QueueableAgent(Agent):
 
     def error(self, result):
         print '*** error', result
+        job = self.currentJob
         job.state = states.aborted
         self.log(self.currentJob, result='Error')
         self.master.notify(job, result)

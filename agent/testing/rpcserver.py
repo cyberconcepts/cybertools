@@ -24,6 +24,7 @@ $Id$
 
 from twisted.internet.defer import succeed
 
+
 class RPCServer(object):
 
     serverURL = ''
@@ -41,55 +42,56 @@ class RPCServer(object):
         self.userName = userName
         self.password = password
         self.controller = controlObj
-        
+
     def getMetadata(self, metadata):
         if self.controller is not None:
             # pass metadata to controller
             # this is done AFTER the resource (like e.g. file or mail)
             # is handed over
             pass
-        deferred = defer.succeed('Metadata accepted by server')
+        deferred = succeed('Metadata accepted by server')
         return deferred
 
     def xmlrpc_shutdownRPCServer():
         return "xmlrRPC server shutdown completed!"
 
 
-class xmlrpc(object):
-     
+class XmlRpc(object):
+
      Proxy = None
      XMLRPC = None
      Handler = None
      XMLRPCIntrospection = None
      QueryProtocol = None
      _QueryFactory = None
-     
+
      def __init__(self):
-         self.Proxy = Proxy()
-         self.XMLRPC = XMLRPC()
-         self.Handler = Handler()
-         self.XMLRPCIntrospection = XMLRPCIntrospection()
-         self.QueryProtocol = QueryProtocol()
-         self._QueryFactory = _QueryFactory()
-     
+         self.Proxy = Proxy
+         #self.XMLRPC = XMLRPC()
+         #self.Handler = Handler()
+         #self.XMLRPCIntrospection = XMLRPCIntrospection()
+         #self.QueryProtocol = QueryProtocol()
+         #self._QueryFactory = _QueryFactory()
+
      def addIntrospection(self, xmlrpc):
          pass
-     
+
+
 class Proxy(object):
-     
+
      url = ''
      user = None
      password = None
      allowNone = False
      queryFactory = None
-     
+
      def __init__(self, url, user=None, password=None, allowNone=False):
          self.url = url
          self.user = user
          self.password = password
          self.allowNone = allowNone
          self.RPCServer = RPCServer()
-         
+
      def callRemote(self, methodName, *params):
         """
         intended to simulate the callRemote command of a real xmlrpcserver
@@ -99,32 +101,35 @@ class Proxy(object):
         method = getattr(self.RPCServer, methodName)
         return method(*params)
 
-    
+
+xmlrpc = XmlRpc()
+
+
 class XMLRPC(object):
-    
+
     def __init__(self):
         pass
 
-    
+
 class Handler(object):
-    
+
     def __init__(self):
         pass
 
-    
+
 class XMLRPCIntrospection(object):
-    
+
     def __init__(self):
         pass
 
-    
+
 class QueryProtocol(object):
-    
+
     def __init__(self):
         pass
 
-    
+
 class _QueryFactory(object):
-    
+
     def __init__(self):
         pass
