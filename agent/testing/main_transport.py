@@ -70,5 +70,5 @@ if __name__ == '__main__':
     master = setup()
     controller = master.controllers[0]
     controller.createAgent('transport.remote', 'sample03')
-    controller.enterJob('sample', 'sample03', params=dict(serverURL='', machineName='', method='', userName='', password=''))
+    controller.enterJob('sample', 'sample03', params=dict(resource='xxx'))
     startReactor()

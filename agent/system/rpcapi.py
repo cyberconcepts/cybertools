@@ -24,7 +24,7 @@ $Id: rpcapi.py
 
 def setup(config):
     global xmlrpc
-    if config.transportserver.xmlrpc == 'testing':
+    if config.transport.remote.server == 'testing':
         from cybertools.agent.testing.rpcserver import RPCServer, xmlrpc
     else:
         from twisted.web import xmlrpc

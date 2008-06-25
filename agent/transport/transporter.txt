@@ -8,7 +8,8 @@ Agents for Job Execution and Communication Tasks
   ... controller(names=['core.sample'])
   ... scheduler(name='core')
   ... logger(name='default', standard=30)
-  ... transportserver.xmlrpc = 'testing'
+  ... transport.remote.server = 'testing'
+  ... transport.remote.url = 'http://localhost:8123'
   ... '''
   >>> from cybertools.agent.main import setup
   >>> master = setup(config)

@@ -53,7 +53,7 @@ class Transporter(QueueableAgent):
     def __init__(self, master):
         super(Transporter, self).__init__(master)
         config = master.config
-        #self.serverURL = params[serverURL]
+        self.serverURL = config.transport.remote.url
         self.server = rpcapi.xmlrpc.Proxy(self.serverURL)
         #self.method = params[method]
         #self.machineName = params[machineName]
