@@ -85,7 +85,9 @@ class Editor(BaseInstance):
             name = f.name
             ftype = f.fieldType
             fi = formState.fieldInstances[name]
-            value = fi.unmarshall(data.get(name, u''))
+            #rawValue = data.get(name, u'')
+            rawValue = fi.getRawValue(data, name, u'')
+            value = fi.unmarshall(rawValue)
             if ftype in fieldHandlers:  # caller wants special treatment of field
                 fieldHandlers[ftype](context, value, fi, formState)
             else:
@@ -104,7 +106,8 @@ class Editor(BaseInstance):
             if f.readonly:
                 continue
             fi = f.getFieldInstance(self)
-            value = data.get(f.name)
+            #value = data.get(f.name)
+            value = fi.getRawValue(data, f.name)
             fi.validate(value, data)
             formState.fieldInstances.append(fi)
             formState.severity = max(formState.severity, fi.severity)

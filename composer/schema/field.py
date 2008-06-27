@@ -144,6 +144,9 @@ class FieldInstance(object):
                 return method()
         return self.context.defaultValue
 
+    def getRawValue(self, data, key, default=None):
+        return data.get(key, default)
+
     def marshall(self, value):
         return value or u''
         #return toStr(value)

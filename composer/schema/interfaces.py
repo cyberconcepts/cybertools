@@ -204,19 +204,25 @@ class IFieldInstance(Interface):
     severity = Attribute("An integer giving a state or error "
                     "code, 0 meaning 'OK'.")
 
+    def getRawValue(data, key, default=None):
+        """ Extract a raw value for the field from the data given
+            using the key; if no corresponding value is found return
+            the default.
+        """
+
     def marshall(value):
         """ Return a string (possibly unicode) representation of the
             value given that may be used for editing.
         """
 
     def display(value):
-        """ Return a string (possibly unicode) representation of the
+        """ Return a string- (possibly unicode-) based representation of the
             value given that may be used for presentation.
         """
 
-    def unmarshall(strValue):
-        """ Return the internal (real) value corresponding to the string
-            value given.
+    def unmarshall(rawValue):
+        """ Return the internal (real) value corresponding to the
+            raw value given.
         """
 
     def validate(value, data=None):
