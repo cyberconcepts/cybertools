@@ -27,6 +27,7 @@ import os
 from twisted.internet import reactor
 
 from cybertools.agent.base.agent import Master
+from cybertools.agent.crawl.base import Metadata, Resource
 
 
 application = None  # contains application object if started via twistd
@@ -70,5 +71,8 @@ if __name__ == '__main__':
     master = setup()
     controller = master.controllers[0]
     controller.createAgent('transport.remote', 'sample03')
-    controller.enterJob('sample', 'sample03', params=dict(resource='xxx'))
+    metadata01 = Metadata(dict(filename='dummy.txt'))
+    res01 = Resource()
+    res01.metadata = metadata01
+    controller.enterJob('sample', 'sample03', params=dict(resource=res01))
     startReactor()
