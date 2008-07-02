@@ -28,6 +28,7 @@ from twisted.internet import defer
 from zope.interface import implements
 
 from cybertools.agent.system import rpcapi
+#from cybertools.agent.system import sftpapi
 from cybertools.agent.base.agent import Master
 from cybertools.agent.core.agent import QueueableAgent
 from cybertools.agent.interfaces import ITransporter
@@ -55,6 +56,7 @@ class Transporter(QueueableAgent):
         config = master.config
         self.serverURL = config.transport.remote.url
         self.server = rpcapi.xmlrpc.Proxy(self.serverURL)
+        #self.ftpServer = FileTransfer(host, port, username, password)
         #self.method = params[method]
         #self.machineName = params[machineName]
         #self.userName = params[userName]
@@ -69,6 +71,7 @@ class Transporter(QueueableAgent):
         """
         #return self.server.callRemote('getMetadata', resource.metadata)
         self.deferred = defer.Deferred()
+        # d = self.ftpServer.upload()
         d = self.server.callRemote('getMetadata', resource.metadata)
         d.addCallback(self.transferDone)
         d.addErrback(self.errorHandler)
