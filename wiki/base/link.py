@@ -25,7 +25,7 @@ $Id$
 import re
 from zope.interface import implements
 
-from cybertools.wiki.interfaces import ILink, ILinkFormat, ILinkManager
+from cybertools.wiki.interfaces import ILink
 
 
 class Link(object):
@@ -39,67 +39,4 @@ class Link(object):
     def __init__(self, source, target):
         self.source = source
         self.target = target
-
-
-class BaseLinkFormat(object):
-
-    implements(ILinkFormat)
-
-    manager = None
-
-    name = 'base'
-    internalFormat = '##%s##'
-    internalRegexp = re.compile(r'##(.+)##(.+)##')
-
-    def __init__(self, context):
-        self.context = context
-
-    def unmarshall(self, text):
-        return self.externalRegexp.sub(self.processLink, text)
-
-    def marshall(self, text):
-        return text
-
-    def display(self, text):
-        return text
-
-    def processLink(self, match):
-        ref, label = match.group(1).split(' ', 1)
-        link = Link(self.context, ref)
-        link.original = match.group(0)
-        link.label = label
-        self.manager.register(link)
-        return self.externalFormat % (self.internalFormat % link.identifier)
-
-
-class DoubleBracketLinkFormat(BaseLinkFormat):
-
-    name = 'doublebracket'
-    externalFormat = '[[%s]]'
-    externalRegexp = re.compile(r'\[\[(.+)\]\]')
-
-
-class LinkManager(object):
-
-    implements(ILinkManager)
-
-    def __init__(self):
-        self.links = {}
-
-    def register(self, link):
-        if link.identifier is None:
-            self.generateIdentifier(link)
-        if link.identifier not in self.links:
-            self.links[link.identifier] = link
-            link.manager = self
-
-    def unregister(self, link):
-        if link.identifier in self.links:
-            del self.links[link.identifier]
-            link.manager = None
-
-    def generateIdentifier(self, link):
-        identifier = '%07i' % (max(self.links.keys() or [0]) + 1)
-        link.identifier = identifier
-        return identifier
 

@@ -25,17 +25,15 @@ $Id$
 from zope.interface import Interface, Attribute
 
 
-# links
-
-class ILinkManager(Interface):
-    """Manages (and possibly contains) links of all kinds.
+class IWikiManager(Interface):
+    """Manages (and possibly contains) all kinds of wiki-related objects.
     """
 
-    def register(link):
+    def registerLink(link):
         """Register (store) a link.
         """
 
-    def unregister(link):
+    def unregisterLink(link):
         """Remove a link.
         """
 
@@ -52,11 +50,14 @@ class ILink(Interface):
     target = Attribute('Link target.')
 
 
-class ILinkFormat(Interface):
+class IFormat(Interface):
     """Identifies links in texts and transforms text correspondingly.
     """
 
-    manager = Attribute('The link manager this link format is associated with.')
+    manager = Attribute('The Wiki manager this format is associated with.')
+
+
+class IFormatInstance(Interface):
 
     def unmarshall(text):
         """Analyse the text given extracting all links and registering them

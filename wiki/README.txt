@@ -5,31 +5,24 @@ Yet Another WikiWiki Framework
   ($Id$)
 
 
-Links and Link Management
-=========================
+A Very Basic Wiki Format
+========================
 
-  >>> from cybertools.wiki.base import link
+We first set up a format (a utility) and create a format instance
+from it. The instance needs a wiki page as its context - to simplify
+things during testing we just use a bare object.
 
-  >>> manager = link.LinkManager()
-
-  >>> input = ('This is text with a [[wikilink Wiki Link]] and a '
-  ...          '`RestructuredText Link <rstxlink>`__')
-
+  >>> from cybertools.wiki.base.format import BasicFormat
+  >>> format = BasicFormat()
   >>> page = object()
-  >>> format = link.DoubleBracketLinkFormat(page)
-  >>> format.manager = manager
+  >>> instance = format.getInstance(page)
 
-  >>> format.unmarshall(input)
-  'This is text with a [[##0000001##]] and a `RestructuredText Link <rstxlink>`__'
+Now we enter some simple text and request the format instance to
+unmarshall it, i.e. to convert it from the editable to the internal
+representation.
 
-  >>> link = manager.links['0000001']
+  >>> input = ('This is text with a [[Wiki Link]].\n\n'
+  ...          'It also contains a second line.')
 
-  >>> link.original
-  '[[wikilink Wiki Link]]'
-
-  >>> link.target
-  'wikilink'
-
-  >>> link.label
-  'Wiki Link'
-
+  >>> instance.unmarshall(input)
+  'This is text with a [[${l0000001}]].\n\nIt also contains a second line.'
