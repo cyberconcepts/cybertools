@@ -39,6 +39,7 @@ class Instance(BaseInstance):
 
     aspect = 'schema.editor.default'
     template = None
+    view = None
 
     def applyTemplate(self, *args, **kw):
         #result = dict(__name__=self.context.__name__)

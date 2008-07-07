@@ -5,6 +5,11 @@
    xmlns:browser="http://namespaces.zope.org/browser"
    i18n_domain="zope">
 
+  <adapter
+      factory="cybertools.reporter.resultset.ContentRow"
+      provides="cybertools.reporter.interfaces.IRow"
+      />
+
   <include package=".browser" />
 
 </configure>

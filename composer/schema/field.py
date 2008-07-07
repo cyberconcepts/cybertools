@@ -33,7 +33,7 @@ from zope.i18n.locales import locales
 
 from cybertools.composer.base import Component
 from cybertools.composer.schema.interfaces import IField, IFieldInstance
-from cybertools.composer.schema.interfaces import fieldTypes
+from cybertools.composer.schema.interfaces import fieldTypes, undefined
 from cybertools.composer.schema.schema import formErrors
 from cybertools.util.format import toStr, toUnicode
 
@@ -61,7 +61,8 @@ class Field(Component):
     def __init__(self, name, title=None, fieldType='textline', **kw):
         assert name
         self.__name__ = name
-        title = title or u''
+        #title = title or u''
+        title = title or name
         self.fieldType = fieldType
         super(Field, self).__init__(title, __name__=name, **kw)
         self.title = title
@@ -127,6 +128,7 @@ class FieldInstance(object):
     adapts(IField)
 
     clientInstance = None
+    value = undefined
 
     def __init__(self, context):
         self.context = context

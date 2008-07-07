@@ -25,15 +25,18 @@ $Id$
 
 # TODO: move the generic stuff to cybertools.reporter.result
 
+from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
-from zope.interface import implements
+from zope.interface import Interface, implements
 
-from cybertools.composer.schema.schema import Schema
+from cybertools.composer.schema import Schema
+from cybertools.composer.schema.instance import Instance
 from cybertools.reporter.interfaces import IDataSource
 from cybertools.reporter.interfaces import IResultSet, IRow, ICell
 
 
 class Cell(object):
+    # TODO: replace Cell by FieldInstance
 
     implements(ICell)
 
@@ -61,7 +64,7 @@ class Cell(object):
     url = urlTitle = u''
 
 
-class Row(object):
+class Row(Instance):
 
     implements(IRow)
 
@@ -69,15 +72,31 @@ class Row(object):
         self.context = context
         self.resultSet = resultSet
 
-    @property
+    @Lazy
     def schema(self):
         return self.resultSet.schema
 
+    @Lazy
+    def fields(self):
+        return self.schema.fields
+
     @property
     def cells(self):
-        for f in self.resultSet.schema.fields:
+        for f in self.schema.fields:
             rf = f.renderFactory or Cell
             yield rf(f, getattr(self.context, f.name), self)
+
+
+class ContentRow(Instance):
+    """ A row adapter for standard content objects.
+    """
+
+    implements(IRow)
+    adapts(Interface)
+
+    @Lazy
+    def fields(self):
+        return self.template.fields
 
 
 class ResultSet(object):
@@ -96,3 +115,9 @@ class ResultSet(object):
         for o in iter(self.context):
             yield Row(o, self)
 
+    def getRows(self):
+        for o in iter(self.context):
+            row = IRow(o)
+            row.resultSet = self
+            row.template = self.schema
+            yield row

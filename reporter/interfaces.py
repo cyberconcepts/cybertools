@@ -55,6 +55,7 @@ class IRow(Interface):
 class ICell(Interface):
     """ A single cell of a listing or table.
     """
+    # TODO: replace Cell by FieldInstance
 
     field = Attribute(u'The schema field the cell belongs to.')
 

@@ -192,6 +192,8 @@ class IField(IComponent):
                         'field instance.')
 
 
+undefined = object()    # A marker for a field instance value not set.
+
 class IFieldInstance(Interface):
     """ An adapter for checking and converting data values coming
         from or being displayed on an external system (like a browser form).
@@ -201,18 +203,28 @@ class IFieldInstance(Interface):
     name = Attribute('Field name.')
     change = Attribute('A tuple ``(oldValue, newValue)`` or None.')
     errors = Attribute('A sequence of error infos.')
-    severity = Attribute("An integer giving a state or error "
-                    "code, 0 meaning 'OK'.")
+    severity = Attribute('An integer giving a state or error '
+                    'code, 0 meaning OK.')
+    clientInstance = Attribute('An optional adapter to a client object that '
+                    'provides or receives data processed by this field instance.')
+    value = Attribute ('May contain the current value of the field '
+                    'for later reuse. Default is ``undefined``. '
+                    'If the ``change`` attribute is set ``value`` should '
+                    'be equal to ``change[1]``.')
 
     def getRawValue(data, key, default=None):
         """ Extract a raw value for the field from the data given
             using the key; if no corresponding value is found return
-            the default.
+            the default. The value returned may then be turned
+            byt self.unmarshall() to the real (internal) value.
         """
 
     def marshall(value):
         """ Return a string (possibly unicode) representation of the
-            value given that may be used for editing.
+            value given that may be used for editing. In case of complex
+            or structured fields (list, mapping, object fields) the return
+            value may also be a structured object (typically a list or
+            mapping) built up form string (unicode) values.
         """
 
     def display(value):
@@ -220,9 +232,9 @@ class IFieldInstance(Interface):
             value given that may be used for presentation.
         """
 
-    def unmarshall(rawValue):
+    def unmarshall(inputValue):
         """ Return the internal (real) value corresponding to the
-            raw value given.
+            input (external, raw) value given.
         """
 
     def validate(value, data=None):

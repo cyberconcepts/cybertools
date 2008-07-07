@@ -7,15 +7,12 @@ A Basic API for Reports and Listings
 TO DO...
 
   >>> from zope import component
-  >>> from zope.interface import directlyProvides
 
 
 Listings
 ========
 
   >>> from cybertools.reporter.data import DataSource
-  >>> from cybertools.reporter.resultset import ResultSet
-  >>> from cybertools.reporter.interfaces import IResultSet
 
 Let's start with the Person class from the cybertools.organize package - we will
 then provide a listing of persons...
@@ -29,38 +26,42 @@ then provide a listing of persons...
   >>> persons = DataSource([Person(f, s, date(*[int(d) for d in b.split('-')]))
   ...                         for f, s, b in pdata])
 
+  >>> from cybertools.reporter.resultset import ResultSet, ContentRow
+  >>> from cybertools.reporter.interfaces import IResultSet, IRow
   >>> component.provideAdapter(ResultSet)
-  >>> rset = IResultSet(persons)
-
-  >>> len(list(rset.rows))
-  3
-
-As we have not yet provided a schema for the result set the rows are
-empty.
-
-  >>> r1 = rset.rows.next()
-  >>> list(r1.cells)
-  []
-
-So let's assign a schema to the result set.
+  >>> component.provideAdapter(ContentRow, provides=IRow)
 
   >>> from cybertools.composer.schema.schema import Schema
   >>> from cybertools.composer.schema.field import Field
-  >>> rset.schema = Schema(Field(u'firstName'), Field(u'lastName'), Field(u'birthDate'))
-  >>> r1 = rset.rows.next()
-  >>> [c.text for c in r1.cells]
-  [u'Smith', u'John', u'1956-08-01']
+  >>> from cybertools.composer.schema.field import FieldInstance, DateFieldInstance
+  >>> component.provideAdapter(FieldInstance)
+  >>> component.provideAdapter(DateFieldInstance, name='date')
+
+  >>> rset = IResultSet(persons)
+  >>> rset.schema = Schema(Field(u'firstName'), Field(u'lastName'),
+  ...                      Field(u'birthDate', fieldType='date'))
+
+  >>> rows = list(rset.getRows())
+  >>> len(rows)
+  3
+
+  >>> for r in rows:
+  ...     print r.applyTemplate()
+  {u'lastName': u'John', u'birthDate': '1956-08-01', u'firstName': u'Smith'}
+  {u'lastName': u'David', u'birthDate': '1972-12-24', u'firstName': u'Waters'}
+  {u'lastName': u'Carla', u'birthDate': '1981-10-11', u'firstName': u'Myers'}
 
 For the browser presentation we can also use a browser view providing
 the result set with extended attributes:
 
-  >>> #rsView = component.getMultiAdapter((context, TestRequest()), IBrowserView)
+  >>> #rsView = component.getMultiAdapter((rset, TestRequest()), IBrowserView)
+
 
 The reporter package also includes facilities for sorting the rows in a
 result set and splitting a result into batches.
 
 Sorting
--------
+=======
 
 
 Batching
