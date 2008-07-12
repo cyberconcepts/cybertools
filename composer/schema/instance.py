@@ -23,6 +23,7 @@ $Id$
 """
 
 from BTrees.OOBTree import OOBTree
+from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 from zope.interface import implements, Interface
 
@@ -30,6 +31,7 @@ from cybertools.composer.instance import Instance as BaseInstance
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.interfaces import IClient
 from cybertools.composer.schema.schema import FormState
+from cybertools.util.jeep import Jeep
 
 
 class Instance(BaseInstance):
@@ -42,7 +44,6 @@ class Instance(BaseInstance):
     view = None
 
     def applyTemplate(self, *args, **kw):
-        #result = dict(__name__=self.context.__name__)
         result = {}
         mode = kw.get('mode', 'view')
         template = self.template
@@ -58,6 +59,18 @@ class Instance(BaseInstance):
                 value = (mode == 'view' and fi.display(value)) or fi.marshall(value)
                 result[name] = value
         return result
+
+    def getFieldInstances(self):
+        fieldInstances = Jeep()
+        template = self.template
+        if template is not None:
+            for f in template.components:
+                fieldInstances[f.name] = f.getFieldInstance(self)
+        return fieldInstances
+
+    @Lazy
+    def fieldInstances(self):
+        return self.getFieldInstances()
 
 
 class Editor(BaseInstance):

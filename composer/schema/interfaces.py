@@ -28,6 +28,7 @@ from zope.i18nmessageid import MessageFactory
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
 from cybertools.composer.interfaces import ITemplate, IComponent
+from cybertools.composer.interfaces import IInstance as IBaseInstance
 
 _ = MessageFactory('zope')
 
@@ -249,6 +250,26 @@ class IFieldInstance(Interface):
 class IFormState(Interface):
     """ Represents the state of all fields when editing.
     """
+
+    fieldInstances = Attribute('A mapping ``{fieldName: fieldInstance, ...}``.')
+    changed = Attribute('True if one of the fields has been changed')
+    severity = Attribute("An integer giving an overall state or error "
+                    "code, typically the maximum of the field instances' "
+                    "severities.")
+
+
+class IInstance(IBaseInstance):
+    """ An instance adapter for arbitrary client objects, using a schema.
+    """
+
+    fieldInstances = Attribute('A mapping ``{fieldName: fieldInstance, ...}``.')
+
+
+class IEditor(IInstance):
+    """ An instance adapter for a client object that represents the state
+        of all fields when editing.
+    """
+    # TODO: make IFormState + implementations obsolete
 
     fieldInstances = Attribute('A mapping ``{fieldName: fieldInstance, ...}``.')
     changed = Attribute('True if one of the fields has been changed')
