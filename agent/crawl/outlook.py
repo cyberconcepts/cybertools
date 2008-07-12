@@ -167,6 +167,7 @@ class OutlookCrawler(MailCrawler):
         enc = None
         textType = "application/octet-stream"
         attachments = []
+        mailContent = ""
         ident = None
         if (hasattr(mail, 'BodyFormat')):
             value = getattr(mail, 'BodyFormat')
@@ -186,14 +187,14 @@ class OutlookCrawler(MailCrawler):
                     mailContent = getattr(mail, 'HTMLBody')
                     textType = "text/html"
                 else:
-                    mailContent = "Could not retrieve HTMLBody of mail"
+                    mailContent = ""
                     textType = "text/html"
         else:
             #Could not determine BodyFormat. Try to retrieve plain text
             if hasattr(mail, 'Body'):
                 mailContent = getattr(mail, 'Body')
             else:
-                mailContent = "Could not retrieve mail body"
+                mailContent = ""
         if hasattr(mail, 'InternetCodepage'):
             Codepage = getattr(mail, 'InternetCodepage')
             if codepages.has_key(Codepage):
@@ -205,17 +206,21 @@ class OutlookCrawler(MailCrawler):
             for item in range(1, len(attachedElems)+1):
                 fileHandle, filePath = tempfile.mkstemp(prefix="outlook")
                 attachedItem = attachedElems.Item(item)
-                attachedItem.SaveAsFile(fileHandle)
+                attachedItem.SaveAsFile(filePath)
                 os.close(fileHandle)
                 metadat = self.createMetadata(dict(filename=filePath))
                 fileRes = FileResource(data=None,
                                        path=filePath,
                                        metadata=metadat)
                 attachments.append(fileRes)
+        fileHandle, filePath = tempfile.mkstemp(prefix="olmail")
+        filePointer = os.fdopen(fileHandle, "w")
+        filePointer.write(mailContent)
+        filePointer.close()
         resource = MailResource(data=mailContent,
                                 contentType=textType,
                                 encoding=enc,
-                                path=None,
+                                path=filePath,
                                 application='outlook',
                                 identifier=ident,
                                 metadata=metadata,
