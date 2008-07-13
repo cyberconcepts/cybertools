@@ -215,6 +215,7 @@ class OutlookCrawler(MailCrawler):
                 attachments.append(fileRes)
         fileHandle, filePath = tempfile.mkstemp(prefix="olmail")
         filePointer = os.fdopen(fileHandle, "w")
+        mailContent = mailContent.encode('utf-8')
         filePointer.write(mailContent)
         filePointer.close()
         resource = MailResource(data=mailContent,

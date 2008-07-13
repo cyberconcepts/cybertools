@@ -26,6 +26,7 @@ $Id$
 
 from twisted.internet import defer
 from zope.interface import implements
+import os
 
 from cybertools.agent.system import rpcapi
 from cybertools.agent.system import sftpapi
@@ -71,10 +72,8 @@ class Transporter(QueueableAgent):
         """
         #return self.server.callRemote('getMetadata', resource.metadata)
         self.deferred = defer.Deferred()
-        # here the filename is to be specified for the remote path
-        # the filename has to be created artificially by the tempfile
-        # mechanism?
-        d = self.ftpServer.upload(resource.path, 'remote')
+        remoteFile = os.path.basename(resource.path)
+        d = self.ftpServer.upload(resource.path, remoteFile)
         d = self.server.callRemote('getMetadata', resource.metadata)
         d.addCallback(self.transferDone)
         d.addErrback(self.errorHandler)
