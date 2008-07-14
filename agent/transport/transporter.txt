@@ -9,6 +9,7 @@ Agents for Job Execution and Communication Tasks
   ... scheduler(name='core')
   ... logger(name='default', standard=30)
   ... transport.remote.server = 'testing'
+  ... transport.remote.sftp = 'testing'
   ... transport.remote.url = 'http://localhost:8123'
   ... '''
   >>> from cybertools.agent.main import setup
@@ -40,6 +41,7 @@ In the next step we request the start of a job, again via the controller.
   >>> md01 = Metadata(dict(filename='dummy.txt'))
   >>> r01 = Resource()
   >>> r01.metadata = md01
+  >>> r01.path = 'resource.txt'
   >>> controller.enterJob('sample', 'sample03', params=dict(resource=r01))
 
 The job is not executed immediately - we have to hand over control to

@@ -26,13 +26,12 @@ from twisted.internet.defer import succeed
 
 
 class FileTransfer(object):
-    
-    
+
+
     def __init__(self,  host, port, username, password):
         pass
-    
+
     def upload(self, localPath, remotePath):
         deferred = succeed('Upload completed')
         return deferred
-        pass
 

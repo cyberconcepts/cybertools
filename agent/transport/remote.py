@@ -46,6 +46,7 @@ class Transporter(QueueableAgent):
 
     serverURL = ''
     server = ''
+    host = port = None
     method = ''
     machineName = ''
     userName = ''
@@ -57,7 +58,8 @@ class Transporter(QueueableAgent):
         config = master.config
         self.serverURL = config.transport.remote.url
         self.server = rpcapi.xmlrpc.Proxy(self.serverURL)
-        self.ftpServer = sftpapi.FileTransfer(host, port, username, password)
+        self.ftpServer = sftpapi.FileTransfer(self.host, self.port,
+                                self.userName, self.password)
         #self.method = params[method]
         #self.machineName = params[machineName]
         #self.userName = params[userName]
@@ -74,9 +76,11 @@ class Transporter(QueueableAgent):
         self.deferred = defer.Deferred()
         remoteFile = os.path.basename(resource.path)
         d = self.ftpServer.upload(resource.path, remoteFile)
-        d = self.server.callRemote('getMetadata', resource.metadata)
-        d.addCallback(self.transferDone)
+        #d = self.server.callRemote('getMetadata', resource.metadata)
         d.addErrback(self.errorHandler)
+        d.addCallback(lambda result:
+                self.server.callRemote('getMetadata', dict(resource.metadata)))
+        d.addCallback(self.transferDone)
         return self.deferred
 
     def errorHandler(self, errorInfo):
