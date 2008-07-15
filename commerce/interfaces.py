@@ -38,7 +38,7 @@ class IShop(Interface):
     """ A shop with products and customers.
     """
 
-    name = schema.TextLine(
+    name = schema.ASCII(
             title=_(u'Shop name'),
             description=_(u'An internal name uniquely identifying the shop.'),
             default=u'',
@@ -57,7 +57,37 @@ class IShop(Interface):
 
     products = Attribute(u'The products available in this shop.')
     categories = Attribute(u'The product categories provided by this shop.')
+    suppliers = Attribute(u'The suppliers providing products for '
+                    u'this shop.')
     customers = Attribute(u'The customers registered for this shop.')
+
+
+# suppliers
+
+class ISupplier(Interface):
+    """ Manufactures or supplies products.
+    """
+
+    name = schema.ASCII(
+            title=_(u'Supplier name'),
+            description=_(u'An internal name uniquely identifying the supplier.'),
+            default=u'',
+            required=True)
+    title = schema.TextLine(
+            title=_(u'Title'),
+            description=_(u'Short title of the supplier.'),
+            default=u'',
+            required=True)
+    description = schema.Text(
+            title=_(u'Description'),
+            description=_(u'A medium-length description.'),
+            default=u'',
+            missing_value=u'',
+            required=False)
+
+    products = Attribute(u'The products provided by this supplier.')
+    categories = Attribute(u'The primary product categories this supplier '
+                    u'provides products of.')
 
 
 # products
@@ -66,7 +96,7 @@ class IProduct(Interface):
     """ A certain class of similar objects that may be put in a shopping cart.
     """
 
-    productId = schema.TextLine(
+    productId = schema.ASCII(
             title=_(u'Product Identifier'),
             description=_(u'A name or number uniquely identifiying the '
                     u'product within a shop.'),
@@ -85,6 +115,8 @@ class IProduct(Interface):
             required=False)
 
     categories = Attribute(u'The product categories this product belongs to.')
+    suppliers = Attribute(u'The suppliers (typically only one) providing '
+                    u'this product.')
     shops = Attribute(u'The shops providing this product.')
 
 
@@ -107,6 +139,7 @@ class ICategory(Interface):
     products = Attribute(u'The products belonging to this category.')
     subcategories = Attribute(u'The sub-categories belonging to this category.')
     shops = Attribute(u'The shops providing this category.')
+    suppliers = Attribute(u'The suppliers providing products of this category.')
 
 
 # customers
@@ -116,7 +149,7 @@ class ICustomer(Interface):
         representing a customer of one or more shops.
     """
 
-    customerId = schema.TextLine(
+    customerId = schema.ASCII(
             title=_(u'Customer Identifier'),
             description=_(u'A name or number uniquely identifiying the customer.'),
             default=u'',
@@ -133,7 +166,7 @@ class IOrder(Interface):
     """
 
     orderId = Attribute(u'Order Identifier')
-    shop = Attribute(u'The shop this order is for.')
+    shop = Attribute(u'The shop this order belongs to.')
     customer = Attribute(u'The customer issuing this order.')
 
 
@@ -141,8 +174,13 @@ class IOrderItem(Interface):
     """
     """
 
+    quantity = schema.Int(
+            title=_(u'Quantity'),
+            description=_(u'The number of product items ordered.'),
+            default=1,
+            required=True)
+
     order = Attribute(u'Order this order item belongs to.')
     product = Attribute(u'The product represented by this order item.')
-    amount = Attribute(u'The number of product items ordered.')
     unitPrice = Attribute(u'The basic unit price for one of the product '
                     u'items ordered.')
