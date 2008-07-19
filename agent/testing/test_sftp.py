@@ -9,7 +9,7 @@ def output(x):
 
 ft = FileTransfer('cy05.de', 22, 'scrat', '...')
 
-d = ft.upload('text.txt', 'text.txt')
+d = ft.upload('d:\\text.txt', 'text.txt')
 d.addCallback(output)
 
 reactor.callLater(3, ft.close)

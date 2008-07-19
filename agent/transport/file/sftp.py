@@ -26,6 +26,7 @@ from twisted.conch.ssh import channel, common, connection
 from twisted.conch.ssh import filetransfer, transport, userauth
 from twisted.internet import defer, protocol, reactor
 
+CHUNKSIZE = 8096
 
 class FileTransfer(protocol.ClientFactory):
     """ Transfers files to a remote SCP/SFTP server.
@@ -104,19 +105,30 @@ class SFTPChannel(channel.SSHChannel):
         d.addCallbacks(self.writeChunk, self.logError)
 
     def writeChunk(self, remoteFile):
-        # data = self.localFile.read(chunkSize)
-        # if len(data) < chunkSize():
-        #     write rest
-        #     addCallbacks(self.finished, self.logError)
-        print 'writeChunk', remoteFile
-        d = remoteFile.writeChunk(0, 'Hello World')
+        data = self.localFile.read(CHUNKSIZE)
+        if len(data) < CHUNKSIZE:
+            # write rest
+            print "[DEBUG] **** WRITING REMAINING CHUNK\n"
+            print "[DEBUG] **** len(data): ", len(data)
+            print "[DEBUG] **** data: %s \n" %(data)
+            self.d = remoteFile.writeChunk(len(data), data)
+            self.d.addCallbacks(self.finished, self.logError)
+        print "[DEBUG] **** WRITING CHUNK\n"
+        #self.d = remoteFile.writeChunk(CHUNKSIZE, data)
+        #self.d.addCallbacks(self.writeChunk, self.logError)
+        d = remoteFile.writeChunk(CHUNKSIZE, data)
         d.addCallbacks(self.writeChunk, self.logError)
 
     def logError(self, reason):
         print 'error', reason
 
     def finished(self, result):
-        self.deferred.callback('finished')
+        #self.deferred.callback('finished')
+        print "[DEBUG] **** finished has been called\n"
+        print "[DEBUG] **** result: ", result
+        self.localFile.close()
+        self.d.callback('finished')
+        #result.callback('finished')
 
 
 # classes for managing the SSH protocol and connection

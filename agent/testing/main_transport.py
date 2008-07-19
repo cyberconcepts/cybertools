@@ -23,6 +23,11 @@ Agent application.
 $Id$
 """
 
+import sys
+
+print "****printing sys.path****"
+for elem in sys.path:
+    print elem
 import os
 from twisted.internet import reactor
 
@@ -59,6 +64,8 @@ def setupEnvironment(config):
     from cybertools.agent.control import cmdline
     from cybertools.agent.system import rpcapi
     rpcapi.setup(config)
+    from cybertools.agent.system import sftpapi
+    sftpapi.setup(config)
     from cybertools.agent.transport import remote
 
 
@@ -74,5 +81,6 @@ if __name__ == '__main__':
     metadata01 = Metadata(dict(filename='dummy.txt'))
     res01 = Resource()
     res01.metadata = metadata01
+    res01.path = '/dummydir/dummyfile'
     controller.enterJob('sample', 'sample03', params=dict(resource=res01))
     startReactor()
