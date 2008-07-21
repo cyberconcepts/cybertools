@@ -191,7 +191,7 @@ class ReadContainer(BSCWProxyBase, ReadContainer):
 
     def values(self):
         return sorted((self.get(k) for k in self),
-                      key=lambda x: x.title.lower())
+                      key=lambda x: (x.itemType != 'Folder', x.title.lower()))
 
 
     def __len__(self):

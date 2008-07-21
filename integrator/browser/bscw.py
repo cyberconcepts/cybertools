@@ -77,10 +77,12 @@ class ItemView(BaseView):
 
     @property
     def breadCrumbs(self):
-        for p in reversed(list(self.context.parents)):
+        parents = list(self.context.parents)
+        for p in reversed(parents[:-1]):
             view = ItemView(p, self.request, self.parentView)
             yield dict(url=view.url, title=view.title)
-        yield dict(url=self.url, title=self.title)
+        #if parents:
+        #    yield dict(url=self.url, title=self.title)
 
 
 class BSCWView(BaseView):
