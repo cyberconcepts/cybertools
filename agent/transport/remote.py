@@ -73,7 +73,7 @@ class Transporter(QueueableAgent):
         """
         #return self.server.callRemote('getMetadata', resource.metadata)
         self.deferred = defer.Deferred()
-        print "**** RESOURCE.PATH: ", resource.path
+        #print "**** RESOURCE.PATH: ", resource.path
         remoteFile = os.path.basename(resource.path)
         d = self.ftpServer.upload(resource.path, remoteFile)
         #d = self.server.callRemote('getMetadata', resource.metadata)

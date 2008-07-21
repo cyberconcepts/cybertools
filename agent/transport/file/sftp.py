@@ -26,12 +26,11 @@ from twisted.conch.ssh import channel, common, connection
 from twisted.conch.ssh import filetransfer, transport, userauth
 from twisted.internet import defer, protocol, reactor
 
-CHUNKSIZE = 8096
+CHUNKSIZE = 4096
 
 class FileTransfer(protocol.ClientFactory):
     """ Transfers files to a remote SCP/SFTP server.
     """
-
     channel = None
 
     def __init__(self, host, port, username, password):
@@ -72,6 +71,8 @@ class SFTPChannel(channel.SSHChannel):
     """
 
     name = 'session'
+    remFile = ''
+    remOffset = 0
 
     def channelOpen(self, data):
         d = self.conn.sendRequest(self, 'subsystem', common.NS('sftp'), wantReply=1)
@@ -105,31 +106,24 @@ class SFTPChannel(channel.SSHChannel):
         d.addCallbacks(self.writeChunk, self.logError)
 
     def writeChunk(self, remoteFile):
+        if isinstance(remoteFile, tuple) == False:
+            self.remFile = remoteFile
         data = self.localFile.read(CHUNKSIZE)
         if len(data) < CHUNKSIZE:
-            # write rest
-            print "[DEBUG] **** WRITING REMAINING CHUNK\n"
-            print "[DEBUG] **** len(data): ", len(data)
-            print "[DEBUG] **** data: %s \n" %(data)
-            self.d = remoteFile.writeChunk(len(data), data)
+            self.d = self.remFile.writeChunk(self.remOffset, data)
             self.d.addCallbacks(self.finished, self.logError)
-        print "[DEBUG] **** WRITING CHUNK\n"
-        #self.d = remoteFile.writeChunk(CHUNKSIZE, data)
-        #self.d.addCallbacks(self.writeChunk, self.logError)
-        d = remoteFile.writeChunk(CHUNKSIZE, data)
-        d.addCallbacks(self.writeChunk, self.logError)
+        else:
+            self.d = self.remFile.writeChunk(self.remOffset, data)
+            self.remOffset = self.remOffset + CHUNKSIZE
+            self.d.addCallbacks(self.writeChunk, self.logError)
 
     def logError(self, reason):
         print 'error', reason
 
     def finished(self, result):
-        #self.deferred.callback('finished')
-        print "[DEBUG] **** finished has been called\n"
-        print "[DEBUG] **** result: ", result
         self.localFile.close()
+        self.remFile.close()
         self.d.callback('finished')
-        #result.callback('finished')
-
 
 # classes for managing the SSH protocol and connection
 
