@@ -7,7 +7,7 @@ from cybertools.agent.transport.file.sftp import FileTransfer
 def output(x):
     print x
 
-ft = FileTransfer('cy05.de', 22, 'scrat', 'pyjmfha')
+ft = FileTransfer('cy05.de', 22, 'scrat', '...')
 
 d = ft.upload('d:\\text2.rtf', 'text.txt')
 d.addCallback(output)

@@ -46,7 +46,7 @@ class FileTransfer(protocol.ClientFactory):
     def upload(self, localPath, remotePath):
         """ Copies a file, returning a deferred.
         """
-        d = defer.Deferred()
+        d = self.deferred = defer.Deferred()
         # we put everything in a queue so that more than one file may
         # be transferred in one connection.
         self.queue.append(dict(deferred=d,
@@ -56,7 +56,6 @@ class FileTransfer(protocol.ClientFactory):
         if len(self.queue) == 1 and self.channel is not None:
             # the channel has emptied the queue
             self.channel.execute()
-        self.deferred = d
         return d
 
     def close(self):
@@ -102,7 +101,6 @@ class SFTPChannel(channel.SSHChannel):
         self.localFile = open(localPath, 'rb')
         d = self.client.openFile(remotePath,
                     filetransfer.FXF_WRITE | filetransfer.FXF_CREAT, {})
-        print 'command_upload', params
         d.addCallbacks(self.writeChunk, self.logError)
 
     def writeChunk(self, remoteFile):
@@ -123,7 +121,8 @@ class SFTPChannel(channel.SSHChannel):
     def finished(self, result):
         self.localFile.close()
         self.remFile.close()
-        self.d.callback('finished')
+        #self.d.callback('finished')
+        self.conn.factory.deferred.callback('finished')
 
 # classes for managing the SSH protocol and connection
 

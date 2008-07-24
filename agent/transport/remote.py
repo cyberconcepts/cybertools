@@ -44,25 +44,18 @@ class Transporter(QueueableAgent):
 
     implements(ITransporter)
 
-    serverURL = ''
-    server = ''
-    host = port = None
-    method = ''
+    port = 22
     machineName = ''
-    userName = ''
-    password = ''
-    resource = None
 
     def __init__(self, master):
         super(Transporter, self).__init__(master)
         config = master.config
-        self.serverURL = config.transport.remote.url
-        self.server = rpcapi.xmlrpc.Proxy(self.serverURL)
-        self.ftpServer = sftpapi.FileTransfer(self.host, self.port, self.userName, self.password)
-        #self.method = params[method]
-        #self.machineName = params[machineName]
-        #self.userName = params[userName]
-        #self.password = params[password]
+        serverURL = config.transport.remote.url
+        self.server = rpcapi.xmlrpc.Proxy(serverURL)
+        userName = config.transport.remote.ftp.user
+        password = config.transport.remote.ftp.password
+        host = config.transport.remote.ftp.url
+        self.ftpServer = sftpapi.FileTransfer(host, self.port, userName, password)
 
     def process(self):
         return self.transfer(self.params['resource'])
@@ -71,12 +64,9 @@ class Transporter(QueueableAgent):
         """ Transfer the resource (an object providing IResource)
             to the server and return a Deferred.
         """
-        #return self.server.callRemote('getMetadata', resource.metadata)
         self.deferred = defer.Deferred()
-        #print "**** RESOURCE.PATH: ", resource.path
         remoteFile = os.path.basename(resource.path)
         d = self.ftpServer.upload(resource.path, remoteFile)
-        #d = self.server.callRemote('getMetadata', resource.metadata)
         d.addErrback(self.errorHandler)
         d.addCallback(lambda result:
                 self.server.callRemote('getMetadata', dict(resource.metadata)))
@@ -97,14 +87,6 @@ class Transporter(QueueableAgent):
         This callback method is called when resource and metadata
         have been transferred successfully.
         """
-        #print 'transferDone:', successMessage
         self.deferred.callback(result)
-
-#    def process(self):
-#        return self.collect()
-
-#    def collect(self, filter=None):
-#        d = defer.succeed([])
-#        return d
 
 agents.register(Transporter, Master, name='transport.remote')

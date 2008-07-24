@@ -64,7 +64,7 @@ class RPCServer(xmlrpc.XMLRPC):
             # this is done AFTER the resource (like e.g. file or mail)
             # is handed over
             pass
-        print metadata
+        print '*** metadata', metadata
         metadata = "Echo: ", metadata
         return metadata
 
@@ -76,4 +76,5 @@ if __name__ == '__main__':
     from twisted.internet import reactor
     site = RPCServer()
     reactor.listenTCP(8082, server.Site(site))
+    print '*** listening...'
     reactor.run()

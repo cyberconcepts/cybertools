@@ -24,10 +24,6 @@ $Id$
 """
 
 import sys
-
-print "****printing sys.path****"
-for elem in sys.path:
-    print elem
 import os
 from twisted.internet import reactor
 
@@ -81,6 +77,6 @@ if __name__ == '__main__':
     metadata01 = Metadata(dict(filename='dummy.txt'))
     res01 = Resource()
     res01.metadata = metadata01
-    res01.path = '/dummydir/dummyfile'
+    res01.path = 'data/file1.txt'
     controller.enterJob('sample', 'sample03', params=dict(resource=res01))
     startReactor()
