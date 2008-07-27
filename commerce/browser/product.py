@@ -26,7 +26,7 @@ from zope import component
 from zope.cachedescriptors.property import Lazy
 
 
-class ProcuctView(object):
+class ProductView(object):
 
     def __init__(self, context, request):
         self.context = context

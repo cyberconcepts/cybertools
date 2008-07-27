@@ -41,7 +41,7 @@ class IShop(Interface):
     name = schema.ASCII(
             title=_(u'Shop name'),
             description=_(u'An internal name uniquely identifying the shop.'),
-            default=u'',
+            default='',
             required=True)
     title = schema.TextLine(
             title=_(u'Title'),
@@ -52,9 +52,7 @@ class IShop(Interface):
             title=_(u'Description'),
             description=_(u'A medium-length description.'),
             default=u'',
-            missing_value=u'',
             required=False)
-
     products = Attribute(u'The products available in this shop.')
     categories = Attribute(u'The product categories provided by this shop.')
     suppliers = Attribute(u'The suppliers providing products for '
@@ -71,7 +69,7 @@ class ISupplier(Interface):
     name = schema.ASCII(
             title=_(u'Supplier name'),
             description=_(u'An internal name uniquely identifying the supplier.'),
-            default=u'',
+            default='',
             required=True)
     title = schema.TextLine(
             title=_(u'Title'),
@@ -96,11 +94,11 @@ class IProduct(Interface):
     """ A certain class of similar objects that may be put in a shopping cart.
     """
 
-    productId = schema.ASCII(
+    productId = schema.ASCIILine(
             title=_(u'Product Identifier'),
             description=_(u'A name or number uniquely identifiying the '
                     u'product within a shop.'),
-            default=u'',
+            default='',
             required=True)
     title = schema.TextLine(
             title=_(u'Title'),
@@ -112,6 +110,11 @@ class IProduct(Interface):
             description=_(u'A medium-length description of the product.'),
             default=u'',
             missing_value=u'',
+            required=False)
+    fullDescription = schema.Text(
+            title=_(u'Full description'),
+            description=_(u'The full description of the object.'),
+            default=u'',
             required=False)
 
     categories = Attribute(u'The product categories this product belongs to.')
@@ -152,7 +155,7 @@ class ICustomer(Interface):
     customerId = schema.ASCII(
             title=_(u'Customer Identifier'),
             description=_(u'A name or number uniquely identifiying the customer.'),
-            default=u'',
+            default='',
             required=True)
 
     client = Attribute(u'The (real) client object of the customer role.')
