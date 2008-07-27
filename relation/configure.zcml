@@ -5,7 +5,7 @@
    xmlns:browser="http://namespaces.zope.org/browser"
    i18n_domain="zope">
 
-  <localUtility class=".registry.RelationRegistry">
+  <class class=".registry.RelationRegistry">
     <require
         permission="zope.View"
         interface=".interfaces.IRelationRegistryQuery"
@@ -27,7 +27,7 @@
         permission="zope.ManageServices"
         />
     <factory id="cybertools.relation.registry.RelationRegistry" />
-  </localUtility>
+  </class>
 
   <adapter
         for=".interfaces.IRelation"
