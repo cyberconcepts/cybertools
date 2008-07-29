@@ -116,6 +116,12 @@ class IProduct(Interface):
             description=_(u'The full description of the object.'),
             default=u'',
             required=False)
+    advantages = schema.Text(
+            title=_(u'Vorteile'),
+            description=_(u'Produktvorteile.'),
+            default=u'',
+            missing_value=u'',
+            required=False)
 
     categories = Attribute(u'The product categories this product belongs to.')
     suppliers = Attribute(u'The suppliers (typically only one) providing '
