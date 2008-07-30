@@ -28,6 +28,7 @@ from zope.interface import Interface, Attribute
 from zope.i18nmessageid import MessageFactory
 from loops import util
 from cybertools.util.jeep import Jeep, Term
+from loops import util
 
 _ = MessageFactory('cybertools.commerce')
 
@@ -122,8 +123,8 @@ class IProduct(Interface):
             missing_value=u'',
             required=False)
     fullDescription = schema.Text(
-            title=_(u'Full Description'),
-            description=_(u'Full Description'),
+            title=_(u'Full description'),
+            description=_(u'The full description of the product.'),
             default=u'',
             required=False)
     advantages = schema.Text(
@@ -145,9 +146,9 @@ class IProduct(Interface):
                     ('2', _(u'Bald im Programm')),
                     ('3', _(u'Nicht im Programm')),
                 )),
-            default=u'',
+            default='1',
             required=True)
-            
+
     categories = Attribute(u'The product categories this product belongs to.')
     suppliers = Attribute(u'The suppliers (typically only one) providing '
                     u'this product.')
