@@ -26,7 +26,7 @@ from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from zope.interface import Interface, Attribute
 from zope.i18nmessageid import MessageFactory
-
+from loops import util
 from cybertools.util.jeep import Jeep, Term
 
 _ = MessageFactory('cybertools.commerce')
@@ -101,32 +101,58 @@ class IProduct(Interface):
             default='',
             required=True)
     title = schema.TextLine(
-            title=_(u'Title'),
-            description=_(u'Short title of the product.'),
+            title=_(u'Artikelname'),
+            description=_(u'Artikelname'),
             default=u'',
             required=True)
+    manufnumber = schema.TextLine(
+            title=_(u'Manufacturer Number'),
+            description=_(u'Manufacturer Number'),
+            default=u'',
+            required=False)
+    headline = schema.TextLine(
+            title=_(u'Headline'),
+            description=_(u'special headline'),
+            default=u'',
+            required=False)
     description = schema.Text(
             title=_(u'Description'),
-            description=_(u'A medium-length description of the product.'),
+            description=_(u'Description'),
             default=u'',
             missing_value=u'',
             required=False)
     fullDescription = schema.Text(
-            title=_(u'Full description'),
-            description=_(u'The full description of the object.'),
+            title=_(u'Full Description'),
+            description=_(u'Full Description'),
             default=u'',
             required=False)
     advantages = schema.Text(
-            title=_(u'Vorteile'),
-            description=_(u'Produktvorteile.'),
+            title=_(u'Advantages'),
+            description=_(u'Advantages'),
             default=u'',
             missing_value=u'',
             required=False)
-
+    manufwarranty = schema.Text(
+            title=_(u'Manufacturer Warranty'),
+            description=_(u'Manufacturer Warranty'),
+            default=u'',
+            required=False)
+    state = schema.Choice(
+            title=_(u'State'),
+            description=_(u'State'),
+            source=util.KeywordVocabulary((
+                    ('1', _(u'Im Programm')),
+                    ('2', _(u'Bald im Programm')),
+                    ('3', _(u'Nicht im Programm')),
+                )),
+            default=u'',
+            required=True)
+            
     categories = Attribute(u'The product categories this product belongs to.')
     suppliers = Attribute(u'The suppliers (typically only one) providing '
                     u'this product.')
     shops = Attribute(u'The shops providing this product.')
+    warranty = Attribute('Warranty of the Product')
 
 
 class ICategory(Interface):
