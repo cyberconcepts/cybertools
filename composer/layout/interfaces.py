@@ -33,6 +33,15 @@ from cybertools.composer.interfaces import IInstance
 _ = MessageFactory('cybertools.composer')
 
 
+class ILayoutManager(Interface):
+    """ A utility that manages layouts and regions.
+    """
+
+    def register(layout, regionName):
+        """ Register the layout instance given for the region specified.
+        """
+
+
 class ILayout(ITemplate):
     """ Represents an ordered sequence of layout elements.
     """
@@ -91,6 +100,10 @@ class ILayoutInstance(IInstance):
                     u'specifying the parameter values entered for the components. '
                     u'If a component is a layout the value is a corresponding '
                     u'layout instance.')
+
+    def registerFor(regionName):
+        """ Register the layout instance for the region specified.
+        """
 
 
 class IRegion(Interface):

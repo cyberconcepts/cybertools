@@ -36,6 +36,3 @@ class Region(object):
     def __init__(self, name):
         self.name = name
         self.layouts = []
-
-
-regions = {}

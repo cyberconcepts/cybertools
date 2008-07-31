@@ -22,13 +22,27 @@ Basic classes for layouts and layout components.
 $Id$
 """
 
+from zope import component
 from zope.interface import implements
 
 from cybertools.composer.base import Component, Element, Compound
 from cybertools.composer.base import Template
+from cybertools.composer.layout.interfaces import ILayoutManager
 from cybertools.composer.layout.interfaces import ILayout, ILayoutInstance
-from cybertools.composer.layout.interfaces import IRegion
+from cybertools.composer.layout.region import Region
 from cybertools.util.jeep import Jeep
+
+
+class LayoutManager(object):
+
+    implements(ILayoutManager)
+
+    def __init__(self):
+        self.regions = {}
+
+    def register(self, layout, regionName):
+        region = self.regions.setdefault(regionName, Region(regionName))
+        region.layouts.append(layout)
 
 
 class Layout(Template):
@@ -48,21 +62,10 @@ class LayoutInstance(object):
         self.template = template
         self.context = context
 
+    def registerFor(self, regionName):
+        manager = component.getUtility(ILayoutManager)
+        manager.register(self, regionName)
+
     @property
     def renderer(self):
         return self.template.renderer
-
-
-class Region(object):
-
-    implements(IRegion)
-
-    allowedLayoutCategories = None
-
-    def __init__(self, name):
-        self.name = name
-
-    @property
-    def layouts(self):
-        return []
-

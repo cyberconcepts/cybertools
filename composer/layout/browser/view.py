@@ -27,7 +27,7 @@ from zope.interface import Interface, implements
 from zope.cachedescriptors.property import Lazy
 from zope.app.pagetemplate import ViewPageTemplateFile
 
-from cybertools.composer.layout.region import regions
+from cybertools.composer.layout.interfaces import ILayoutManager
 
 
 class BaseView(object):
@@ -64,7 +64,8 @@ class LayoutView(BaseView):
         return ViewResources(self)
 
     def getRegion(self, key):
-        return regions['.'.join((self.name, key))]
+        manager = component.getUtility(ILayoutManager)
+        return manager.regions.get('.'.join((self.name, key)))
 
 
 class Page(LayoutView):
@@ -84,6 +85,8 @@ class ViewLayouts(object):
     def __getitem__(self, key):
         view = self.view
         region = view.getRegion(key)
+        if region is None:
+            return []
         return [LayoutView(layout, view.request, name=key)
                 for layout in region.layouts]
 

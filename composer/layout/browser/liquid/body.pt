@@ -1,7 +1,7 @@
 <body class="tundra"
       metal:define-macro="body">
 
-    <!--<div id="global">
+    <div id="global">
       <div class="top">
         <tal:sub repeat="view view/layouts/logo">
           <metal:sub use-macro="view/renderer" /></tal:sub>
@@ -11,7 +11,7 @@
     </div>
 
     <div id="menu">
-        <tal:sub repeat="view view/layouts/portlets_left">
+        <tal:sub repeat="view view/layouts/column1">
           <metal:sub use-macro="view/renderer" />
         </tal:sub>
     </div>
@@ -23,10 +23,10 @@
     </div>
 
     <div id="sub-section">
-        <tal:sub repeat="view view/layouts/portlets_right">
+        <tal:sub repeat="view view/layouts/column2">
           <metal:sub use-macro="view/renderer" />
         </tal:sub>
-    </div>-->
+    </div>
 
     <div id="footer" class="footer">
         <tal:sub repeat="view view/layouts/footer">
