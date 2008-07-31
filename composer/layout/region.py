@@ -17,7 +17,7 @@
 #
 
 """
-Region class(es) + default regions registry.
+Region implementation.
 
 $Id$
 """

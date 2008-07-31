@@ -38,7 +38,7 @@ class ILayoutManager(Interface):
     """
 
     def register(layout, regionName):
-        """ Register the layout instance given for the region specified.
+        """ Register the layout given for the region specified.
         """
 
 
@@ -65,6 +65,10 @@ class ILayout(ITemplate):
                 required=False,)
 
     renderer = Attribute(u'An object responsible for rendering the layout.')
+
+    def registerFor(regionName):
+        """ Register the layout for the region specified.
+        """
 
 
 class ILayoutComponent(IComponent):
@@ -96,15 +100,6 @@ class ILayoutInstance(IInstance):
 
     renderer = Attribute(u'An object responsible for rendering the layout.')
 
-    componentAttributes = Attribute(u'A mapping``{componentName: value, ...}`` '
-                    u'specifying the parameter values entered for the components. '
-                    u'If a component is a layout the value is a corresponding '
-                    u'layout instance.')
-
-    def registerFor(regionName):
-        """ Register the layout instance for the region specified.
-        """
-
 
 class IRegion(Interface):
     """ A part of a layout "canvas" that may be filled with layout objects.
@@ -118,4 +113,4 @@ class IRegion(Interface):
                 value_type=schema.ASCIILine(),
                 required=False,)
 
-    layouts = Attribute(u'The layout instances currently assigned to this region.')
+    layouts = Attribute(u'The layouts currently assigned to this region.')

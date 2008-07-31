@@ -27,6 +27,7 @@ from zope.interface import Interface, implements
 from zope.cachedescriptors.property import Lazy
 from zope.app.pagetemplate import ViewPageTemplateFile
 
+from cybertools.composer.layout.base import Layout, LayoutInstance
 from cybertools.composer.layout.interfaces import ILayoutManager
 
 
@@ -47,13 +48,32 @@ class BaseView(object):
         return self.template(self)
 
 
+class Page(BaseView):
+
+    def __call__(self):
+        layout = Layout()
+        layout.renderer = ViewPageTemplateFile('main.pt').macros['page']
+        instance = LayoutInstance(self.context)
+        instance.template = layout
+        view = LayoutView(instance, self.request, name='page')
+        view.body = view.layouts['body'][0]
+        return view.template(view)
+
+
 class LayoutView(BaseView):
 
     name = 'base'
 
     @Lazy
+    def client(self):
+        return self.context.context
+
+    @Lazy
     def renderer(self):
-        return self.context.renderer
+        renderer = self.context.renderer
+        if renderer is None:
+            raise ValueError('No renderer found for %r.' % self.context)
+        return renderer
 
     @Lazy
     def layouts(self):
@@ -68,14 +88,7 @@ class LayoutView(BaseView):
         return manager.regions.get('.'.join((self.name, key)))
 
 
-class Page(LayoutView):
-
-    name = 'page'
-
-    #@Lazy
-    def body(self):
-        return self.layouts['body'][0]()
-
+# subview providers
 
 class ViewLayouts(object):
 
@@ -87,8 +100,13 @@ class ViewLayouts(object):
         region = view.getRegion(key)
         if region is None:
             return []
-        return [LayoutView(layout, view.request, name=key)
-                for layout in region.layouts]
+        subviews = []
+        for layout in region.layouts:
+            instance = LayoutInstance(view.client)
+            instance.template = layout
+            instance.view = view
+            subviews.append(LayoutView(instance, view.request, name=key))
+        return subviews
 
 
 class ViewResources(object):

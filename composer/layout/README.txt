@@ -19,24 +19,26 @@ Browser Views
   >>> from zope.traversing.adapters import DefaultTraversable
   >>> component.provideAdapter(DefaultTraversable, (Interface,))
 
-  >>> from cybertools.composer.layout.browser.layout import PageLayout
-  >>> pageLayout = PageLayout()
-  >>> pageLayoutInstance = LayoutInstance(pageLayout)
-
   >>> from zope.app.pagetemplate import ViewPageTemplateFile
+
+  >>> #pageLayout = Layout()
+  >>> #pageLayout.renderer = ViewPageTemplateFile('browser/main.pt').macros['page']
 
   >>> bodyLayout = Layout()
   >>> bodyLayout.renderer = ViewPageTemplateFile('browser/liquid/body.pt').macros['body']
-  >>> LayoutInstance(bodyLayout).registerFor('page.body')
+  >>> bodyLayout.registerFor('page.body')
 
-  >>> standardRenderers = ViewPageTemplateFile('browser/standard.pt').macros
   >>> footerLayout = Layout()
+  >>> standardRenderers = ViewPageTemplateFile('browser/standard.pt').macros
   >>> footerLayout.renderer = standardRenderers['footer']
-  >>> LayoutInstance(footerLayout).registerFor('body.footer')
+  >>> footerLayout.registerFor('body.footer')
 
   >>> from cybertools.composer.layout.browser.view import Page
   >>> from zope.publisher.browser import TestRequest
-  >>> page = Page(pageLayoutInstance, TestRequest())
+  >>> #instance = LayoutInstance(None)
+  >>> #instance.template = pageLayout
+  >>> #page = Page(instance, TestRequest())
+  >>> page = Page(None, TestRequest())
 
   >>> page()
   u'<!DOCTYPE ...>...<html ...>...</html>...

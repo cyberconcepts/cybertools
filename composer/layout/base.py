@@ -49,22 +49,23 @@ class Layout(Template):
 
     implements(ILayout)
 
-    name = u''
+    name = ''
     manager = None
     renderer = None
+
+    def registerFor(self, regionName):
+        manager = component.getUtility(ILayoutManager)
+        manager.register(self, regionName)
 
 
 class LayoutInstance(object):
 
     implements(ILayoutInstance)
 
-    def __init__(self, template, context=None):
-        self.template = template
-        self.context = context
+    template = None
 
-    def registerFor(self, regionName):
-        manager = component.getUtility(ILayoutManager)
-        manager.register(self, regionName)
+    def __init__(self, context):
+        self.context = context
 
     @property
     def renderer(self):
