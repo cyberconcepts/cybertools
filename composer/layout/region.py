@@ -17,40 +17,14 @@
 #
 
 """
-Basic classes for layouts and layout components.
+Region class(es) + default regions registry.
 
 $Id$
 """
 
 from zope.interface import implements
 
-from cybertools.composer.base import Component, Element, Compound
-from cybertools.composer.base import Template
-from cybertools.composer.layout.interfaces import ILayout, ILayoutInstance
 from cybertools.composer.layout.interfaces import IRegion
-from cybertools.util.jeep import Jeep
-
-
-class Layout(Template):
-
-    implements(ILayout)
-
-    name = u''
-    manager = None
-    renderer = None
-
-
-class LayoutInstance(object):
-
-    implements(ILayoutInstance)
-
-    def __init__(self, template, context=None):
-        self.template = template
-        self.context = context
-
-    @property
-    def renderer(self):
-        return self.template.renderer
 
 
 class Region(object):
@@ -61,8 +35,7 @@ class Region(object):
 
     def __init__(self, name):
         self.name = name
+        self.layouts = []
 
-    @property
-    def layouts(self):
-        return []
 
+regions = {}

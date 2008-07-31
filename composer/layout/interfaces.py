@@ -1,4 +1,4 @@
-#
+
 #  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@ from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
 from cybertools.composer.interfaces import ITemplate, IComponent
-from cybertools.composer.interfaces import IInstance as IBaseInstance
+from cybertools.composer.interfaces import IInstance
 
 _ = MessageFactory('cybertools.composer')
 
@@ -37,7 +37,7 @@ class ILayout(ITemplate):
     """ Represents an ordered sequence of layout elements.
     """
 
-    name = schema.ASCII(
+    name = schema.ASCIILine(
                 title=_(u'Layout name'),
                 description=_(u'The internal name of the layout.'),
                 required=True,)
@@ -49,13 +49,20 @@ class ILayout(ITemplate):
                 title=_(u'Description'),
                 description=_(u'A medium-length description.'),
                 required=False,)
+    category = schema.ASCIILine(
+                title=_(u'Layout category'),
+                description=_(u'The name of a layout category this layout '
+                    u'belongs to.'),
+                required=False,)
+
+    renderer = Attribute(u'An object responsible for rendering the layout.')
 
 
 class ILayoutComponent(IComponent):
     """ May be used for data entry or display.
     """
 
-    name = schema.ASCII(
+    name = schema.ASCIILine(
                 title=_(u'Component name'),
                 description=_(u'The internal name of the component'),
                 required=True,)
@@ -73,10 +80,29 @@ class ILayoutComponent(IComponent):
                     u'or a listing, ...')
 
 
-class ILayoutInstance(IBaseInstance):
+class ILayoutInstance(IInstance):
     """ An instance adapter for an arbitrary client object that associates
         it with a layout.
     """
 
+    renderer = Attribute(u'An object responsible for rendering the layout.')
+
     componentAttributes = Attribute(u'A mapping``{componentName: value, ...}`` '
-                    u'specifying the parameter values entered for the components.')
+                    u'specifying the parameter values entered for the components. '
+                    u'If a component is a layout the value is a corresponding '
+                    u'layout instance.')
+
+
+class IRegion(Interface):
+    """ A part of a layout "canvas" that may be filled with layout objects.
+    """
+
+    allowedLayoutCategories = schema.List(
+                title=_(u'Allowed layout categories'),
+                description=_(u'A collection of names of layout categories '
+                        u'to which layouts may belong that may be placed '
+                        u'in this region'),
+                value_type=schema.ASCIILine(),
+                required=False,)
+
+    layouts = Attribute(u'The layout instances currently assigned to this region.')

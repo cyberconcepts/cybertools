@@ -1,0 +1,37 @@
+<body class="tundra"
+      metal:define-macro="body">
+
+    <!--<div id="global">
+      <div class="top">
+        <tal:sub repeat="view view/layouts/logo">
+          <metal:sub use-macro="view/renderer" /></tal:sub>
+        <tal:sub repeat="view view/layouts/top_actions">
+          <metal:sub use-macro="view/renderer" /></tal:sub>
+      </div>
+    </div>
+
+    <div id="menu">
+        <tal:sub repeat="view view/layouts/portlets_left">
+          <metal:sub use-macro="view/renderer" />
+        </tal:sub>
+    </div>
+
+    <div id="content">
+        <tal:sub repeat="view view/layouts/content">
+          <metal:sub use-macro="view/renderer" />
+        </tal:sub>
+    </div>
+
+    <div id="sub-section">
+        <tal:sub repeat="view view/layouts/portlets_right">
+          <metal:sub use-macro="view/renderer" />
+        </tal:sub>
+    </div>-->
+
+    <div id="footer" class="footer">
+        <tal:sub repeat="view view/layouts/footer">
+          <metal:sub use-macro="view/renderer" />
+        </tal:sub>
+    </div>
+
+</body>

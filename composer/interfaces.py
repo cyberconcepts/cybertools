@@ -63,8 +63,8 @@ class IInstance(Interface):
 
     context = Attribute('Object this instance adapter has been created for')
     template = Attribute('A template to be used for this instance')
-    aspect = Attribute('A dotted name that helps to store and retrieve the '
-                    'template.')
+    aspect = Attribute('Optional: a dotted name that may help to store and '
+                    'retrieve the template.')
 
     def applyTemplate(*args, **kw):
         """ Apply the template using the instance's context. Note that this
