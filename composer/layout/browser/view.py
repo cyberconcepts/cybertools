@@ -115,4 +115,6 @@ class ViewResources(object):
         self.view = view
 
     def __getitem__(self, key):
+        print key
+        # TODO...
         return []
