@@ -22,6 +22,10 @@ Browser Views
   >>> from zope.traversing.adapters import DefaultTraversable
   >>> component.provideAdapter(DefaultTraversable, (Interface,))
 
+  >>> css = Layout()  # ResourceCollection()
+  >>> css.renderer = standardRenderers['css'] # resourceRenderers['css']
+  >>> css.registerFor('page.css')
+
   >>> bodyLayout = Layout()
   >>> bodyLayout.renderer = ViewPageTemplateFile('browser/liquid/body.pt').macros['body']
   >>> bodyLayout.registerFor('page.body')
@@ -35,4 +39,4 @@ Browser Views
   >>> page = Page(None, TestRequest())
 
   >>> page()
-  u'<!DOCTYPE ...>...<html ...>...</html>...
+  u'<!DOCTYPE ...>...<html ...>...</html>...'
