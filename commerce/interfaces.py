@@ -123,8 +123,8 @@ class IProduct(Interface):
             missing_value=u'',
             required=False)
     fullDescription = schema.Text(
-            title=_(u'Full description'),
-            description=_(u'The full description of the product.'),
+            title=_(u'Full Description'),
+            description=_(u'Full Description'),
             default=u'',
             required=False)
     advantages = schema.Text(
@@ -133,11 +133,65 @@ class IProduct(Interface):
             default=u'',
             missing_value=u'',
             required=False)
-    manufwarranty = schema.Text(
+    includes = schema.Text(
+            title=_(u'Includes'),
+            description=_(u'Includes'),
+            default=u'',
+            missing_value=u'',
+            required=False)
+    remarks = schema.Text(
+            title=_(u'Remarks'),
+            description=_(u'Remarks'),
+            default=u'',
+            missing_value=u'',
+            required=False)
+    intremarks = schema.Text(
+            title=_(u'internal Remarks'),
+            description=_(u'internal Remarks'),
+            default=u'',
+            missing_value=u'',
+            required=False)
+    manufwarranty = schema.TextLine(
             title=_(u'Manufacturer Warranty'),
             description=_(u'Manufacturer Warranty'),
             default=u'',
             required=False)
+    warranty = schema.Choice(
+            title=_(u'Warranty'),
+            description=_(u'Warranty'),
+            source=util.KeywordVocabulary((
+                    ('w1', _(u'14 Tage')),
+                    ('w2', _(u'3 Monate')),
+                    ('w3', _(u'6 Monate')),
+                    ('w4', _(u'1 Jahr')),
+                    ('w5', _(u'2 Jahre')),
+                    ('w6', _(u'3 Jahre')),
+                    ('w7', _(u'4 Jahre')),
+                    ('w8', _(u'5 Jahre')),
+                    ('w9', _(u'6 Jahre')),
+                    ('w10', _(u'Keine Garantie')),
+                    ('w11', _(u'Wie Einzelartikel')),
+                )),
+            default=u'w1',
+            required=True)
+    originalwarranty = schema.Choice(
+            title=_(u'Original Warranty'),
+            description=_(u'Original Warranty'),
+            source=util.KeywordVocabulary((
+                    ('ow1', _(u'14 Tage')),
+                    ('ow2', _(u'3 Monate')),
+                    ('ow3', _(u'6 Monate')),
+                    ('ow4', _(u'1 Jahr')),
+                    ('ow5', _(u'2 Jahre')),
+                    ('ow6', _(u'3 Jahre')),
+                    ('ow7', _(u'4 Jahre')),
+                    ('ow8', _(u'5 Jahre')),
+                    ('ow9', _(u'6 Jahre')),
+                    ('ow10', _(u'Keine Garantie')),
+                    ('ow11', _(u'Wie Einzelartikel')),
+                )),
+            default=u'ow1',
+            required=True)
     state = schema.Choice(
             title=_(u'State'),
             description=_(u'State'),
@@ -146,14 +200,43 @@ class IProduct(Interface):
                     ('2', _(u'Bald im Programm')),
                     ('3', _(u'Nicht im Programm')),
                 )),
-            default='1',
+            default=u'1',
             required=True)
-
+    oldstock = schema.Bool(
+            title=_(u'Old Stock'),
+            description=_(u'Old Stock'),
+            required=False)
+    retail = schema.Bool(
+            title=_(u'Retail'),
+            description=_(u'Reatil'),
+            required=False)
+    notinstock = schema.Bool(
+            title=_(u'Not In Stock'),
+            description=_(u'Not In Stock'),
+            required=False)
+    rohs = schema.Bool(
+            title=_(u'RoHS'),
+            description=_(u'RoHS'),
+            required=False)
+    takepicture = schema.Bool(
+            title=_(u'Take Picture'),
+            description=_(u'Take Picture'),
+            required=False)
+    stocklist = schema.TextLine(
+            title=_(u'Stocklist'),
+            description=_(u'Stocklist'),
+            default=u'',
+            required=False)
+    special = schema.TextLine(
+            title=_(u'Special'),
+            description=_(u'Special'),
+            default=u'',
+            required=False)
+            
     categories = Attribute(u'The product categories this product belongs to.')
     suppliers = Attribute(u'The suppliers (typically only one) providing '
                     u'this product.')
     shops = Attribute(u'The shops providing this product.')
-    warranty = Attribute('Warranty of the Product')
 
 
 class ICategory(Interface):
