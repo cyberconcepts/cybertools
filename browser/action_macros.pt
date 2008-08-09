@@ -1,4 +1,7 @@
-<!-- action macros -->
+<html i18n:domain="loops">
+<!-- action macros
+     $Id$-->
+
 
 <metal:action define-macro="action"
               tal:condition="action/condition">
@@ -24,3 +27,6 @@
           tal:condition="action/innerHtmlId"
           tal:attributes="id action/innerHtmlId"></span>
 </metal:action>
+
+
+</html>
