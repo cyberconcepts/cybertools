@@ -22,10 +22,11 @@ Access to objects in a BSCW repository.
 $Id$
 """
 
+import logging
 import os
 from datetime import datetime
 from time import strptime
-from xmlrpclib import ServerProxy
+from xmlrpclib import ServerProxy, Fault
 from zope import component
 from zope.app.file.image import getImageInfo
 from zope.cachedescriptors.property import Lazy
@@ -83,13 +84,25 @@ class BSCWConnection(object):
             self.baseURL, self.rootId = url.rsplit('/', 1)
 
     def getItem(self, address, nested=True):
-        return self.server.get_attributes(address, standardAttributes, 1, nested)
+        try:
+            item = self.server.get_attributes(address, standardAttributes, 1, nested)
+        except Fault, excp:
+            logging.getLogger('cybertools.integrator.bscw').warn(str(excp))
+            item = None
+        except Exception, excp:
+            logging.getLogger('cybertools.integrator.bscw').error(str(excp))
+            item = None
+        return item
 
     def getProxy(self, item=None, address=None, parentPath='', nested=True):
         if item is None:
             if address is None:
                 address = self.rootId
-            item = self.getItem(address, nested=nested)[0]
+            items = self.getItem(address, nested=nested)
+            if items:
+                item = items[0]
+            else:
+                return None
         address = item['id']
         itemType = item['__class__'].split('.')[-1]
         internalPath = '/'.join((parentPath, address)).strip('/')
@@ -220,7 +233,15 @@ class File(BSCWProxyBase, File):
     contentType = None
 
     def getData(self, num=None):
-        return self.server.get_document()
+        try:
+            data = self.server.get_document()
+        except Fault, excp:
+            logging.getLogger('cybertools.integrator.bscw').warn(str(excp))
+            item = None
+        except Exception, excp:
+            logging.getLogger('cybertools.integrator.bscw').error(str(excp))
+            item = None
+        return data
     data = property(getData)
 
     def getSize(self):
