@@ -61,6 +61,10 @@ class IShop(Interface):
                     u'this shop.')
     customers = Attribute(u'The customers registered for this shop.')
 
+    def addProduct(product):
+        """ Add the product given to the shop's product listing.
+        """
+
 
 # suppliers
 
@@ -98,8 +102,7 @@ class IProduct(Interface):
 
     productId = schema.ASCIILine(
             title=_(u'Product Identifier'),
-            description=_(u'A name or number uniquely identifiying the '
-                    u'product within a shop.'),
+            description=_(u'A name or number uniquely identifiying the product.'),
             default='',
             required=True)
     title = schema.TextLine(

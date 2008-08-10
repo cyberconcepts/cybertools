@@ -17,25 +17,28 @@
 #
 
 """
-Product classes.
+Base classes.
 
 $Id$
 """
 
 from zope.interface import implements, Interface
 
-from cybertools.commerce.interfaces import IProduct
+from cybertools.commerce.interfaces import IShop
 
 
-class Product(object):
+class Shop(object):
 
-    implements(IProduct)
+    implements(IShop)
 
-    title = u'Product'
+    title = u'Shop'
 
     def __init__(self, name, title=None):
         self.name = name
         if title is not None:
             self.title = title
-        self.shops = {}
+        self.products = {}
 
+    def addProduct(self, product):
+        self.products[product.name] = product
+        product.shops[self.name] = self

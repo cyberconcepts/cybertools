@@ -17,8 +17,8 @@ msgstr "Artikel"
 msgid "Product Identifier"
 msgstr "Artikelnummer"
 
-msgid "A name or number uniquely identifiying the product within a shop."
-msgstr "Kurzbezeichnung oder Nummer, die den Artikel innerhalb eines Shops eindeutig identifiziert."
+msgid "A name or number uniquely identifiying the product."
+msgstr "Kurzbezeichnung oder Nummer, die den Artikel eindeutig identifiziert."
 
 msgid "Product Name"
 msgstr "Artikelbezeichnung"

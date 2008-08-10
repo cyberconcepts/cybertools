@@ -14,7 +14,7 @@ class Test(unittest.TestCase):
     "Basic tests."
 
     def testBasicStuff(self):
-        p = Product()
+        p = Product('p001')
 
 
 def test_suite():
