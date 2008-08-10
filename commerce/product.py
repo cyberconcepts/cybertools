@@ -31,11 +31,8 @@ class Product(object):
 
     implements(IProduct)
 
-    title = u'Product'
-
     def __init__(self, name, title=None):
         self.name = name
-        if title is not None:
-            self.title = title
+        self.title = title or u'Product'
         self.shops = {}
 

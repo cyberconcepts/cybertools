@@ -31,12 +31,9 @@ class Shop(object):
 
     implements(IShop)
 
-    title = u'Shop'
-
     def __init__(self, name, title=None):
         self.name = name
-        if title is not None:
-            self.title = title
+        self.title = title or u'Shop'
         self.products = {}
 
     def addProduct(self, product):
