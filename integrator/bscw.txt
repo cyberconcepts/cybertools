@@ -118,7 +118,8 @@ The BSCW Repository View
   'http://127.0.0.1/++resource++folder.png'
 
   >>> list(items[0].breadCrumbs)
-  []
+  [{'url': 'http://127.0.0.1/bscw?id=bs_4', 'title': 'public'},
+   {'url': 'http://127.0.0.1/bscw?id=bs_5', 'title': 'Introduction'}]
 
 The top and the current level are not shown, otherwise we would get:
 
