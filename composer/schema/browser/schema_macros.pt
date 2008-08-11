@@ -26,6 +26,12 @@
                       data view/data;
                       state view/formState">
     <table style="width: 100%">
+      <tbody tal:condition="state/severity">
+        <tr>
+          <td colspan="2">
+            <div class="error error-heading"
+                 i18n:translate="">Please correct the indicated errors.</div></td></tr>
+      </tbody>
       <tal:fields repeat="field fields">
         <tal:field define="name field/name;
                            errors state/fieldInstances/?name/errors|python: [];">
@@ -46,9 +52,9 @@
              style="padding: 4px; margin-bottom: 4px;">
         <tal:errors repeat="error errors">
           <tr>
-            <td colspan="2" style="padding: 4px"
-                i18n:translate=""
-                tal:content="error/description">???</td>
+            <td colspan="2" style="padding: 4px">
+              <div i18n:translate=""
+                   tal:content="error/description">???</div></td>
           </tr>
         </tal:errors>
         <tr>
