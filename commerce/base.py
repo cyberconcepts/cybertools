@@ -22,8 +22,9 @@ Base classes.
 $Id$
 """
 
-from zope.interface import implements, Interface
+from zope.interface import implements
 
+from cybertools.commerce.common import RelationSet
 from cybertools.commerce.interfaces import IShop
 
 
@@ -31,11 +32,10 @@ class Shop(object):
 
     implements(IShop)
 
+    mappingAttribute = RelationSet
+
     def __init__(self, name, title=None):
         self.name = name
         self.title = title or u'Shop'
-        self.products = {}
-
-    def addProduct(self, product):
-        self.products[product.name] = product
-        product.shops[self.name] = self
+        self.products = self.mappingAttribute(self, 'shops')
+        self.customers = self.mappingAttribute(self, 'shops')

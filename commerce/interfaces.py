@@ -61,10 +61,6 @@ class IShop(Interface):
                     u'this shop.')
     customers = Attribute(u'The customers registered for this shop.')
 
-    def addProduct(product):
-        """ Add the product given to the shop's product listing.
-        """
-
 
 # suppliers
 
@@ -159,8 +155,11 @@ class ICategory(Interface):
 # customers
 
 class ICustomer(Interface):
-    """ A role of - for example - a person or institution (the ``client``)
+    """ Typically a role of - for example - a person or institution (the ``client``)
         representing a customer of one or more shops.
+
+        The client may be None in which case the customer is an object on
+        its own.
     """
 
     customerId = schema.ASCII(
@@ -169,8 +168,9 @@ class ICustomer(Interface):
             default='',
             required=True)
 
-    client = Attribute(u'The (real) client object of the customer role.')
     shops = Attribute(u'The shops the client object is a customer of.')
+
+    client = Attribute(u'An optional (real) client object of the customer role.')
 
 
 # orders

@@ -17,22 +17,22 @@
 #
 
 """
-Product classes.
+Customer classes.
 
 $Id$
 """
 
 from zope.interface import implements, Interface
 
-from cybertools.commerce.interfaces import IProduct
+from cybertools.commerce.interfaces import ICustomer
 
 
-class Product(object):
+class Customer(object):
 
-    implements(IProduct)
+    implements(ICustomer)
 
-    def __init__(self, productId, title=None):
-        self.name = self.productId = productId
+    def __init__(self, customerId, title=None, client=None):
+        self.name = self.customerId = customerId
         self.title = title or u'unknown'
+        self.client = client
         self.shops = {}
-

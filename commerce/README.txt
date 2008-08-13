@@ -18,7 +18,7 @@ Now we add products to the shop.
   >>> from cybertools.commerce.product import Product
   >>> p001 = Product(u'p001', u'Silent Case')
 
-  >>> shop1.addProduct(p001)
+  >>> shop1.products.add(p001)
 
   >>> sorted((name, p.title) for name, p in shop1.products.items())
   [(u'p001', u'Silent Case')]
@@ -34,6 +34,9 @@ it belongs to.
 
 Customers
 =========
+
+  >>> from cybertools.commerce.customer import Customer
+  >>> c001 = Customer(u'c001', u'Your Local Store')
 
 
 Orders
