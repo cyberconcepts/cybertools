@@ -162,7 +162,7 @@ class ICustomer(Interface):
         its own.
     """
 
-    customerId = schema.ASCII(
+    customerId = schema.ASCIILine(
             title=_(u'Customer Identifier'),
             description=_(u'A name or number uniquely identifiying the customer.'),
             default='',
