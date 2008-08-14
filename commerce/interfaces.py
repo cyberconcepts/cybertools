@@ -172,6 +172,12 @@ class ICustomer(Interface):
             description=_(u'Customer name.'),
             default=u'',
             required=True)
+    description = schema.Text(
+            title=_(u'Description'),
+            description=_(u'A medium-length description of the category.'),
+            default=u'',
+            missing_value=u'',
+            required=False)
 
     shops = Attribute(u'The shops the client object is a customer of.')
 
