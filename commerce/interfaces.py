@@ -167,6 +167,11 @@ class ICustomer(Interface):
             description=_(u'A name or number uniquely identifiying the customer.'),
             default='',
             required=True)
+    title = schema.TextLine(
+            title=_(u'Customer Name'),
+            description=_(u'Customer name.'),
+            default=u'',
+            required=True)
 
     shops = Attribute(u'The shops the client object is a customer of.')
 
