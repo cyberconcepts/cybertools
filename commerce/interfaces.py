@@ -39,7 +39,7 @@ class IShop(Interface):
     """ A shop with products and customers.
     """
 
-    name = schema.ASCII(
+    name = schema.ASCIILine(
             title=_(u'Shop Identifier'),
             description=_(u'An internal name uniquely identifying the shop.'),
             default='',
@@ -68,7 +68,7 @@ class ISupplier(Interface):
     """ Manufactures or supplies products.
     """
 
-    name = schema.ASCII(
+    name = schema.ASCIILine(
             title=_(u'Supplier Identifier'),
             description=_(u'An internal name uniquely identifying the supplier.'),
             default='',
