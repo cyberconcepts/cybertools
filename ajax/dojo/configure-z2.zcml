@@ -1,0 +1,9 @@
+<!-- $Id$ -->
+
+<configure
+    xmlns="http://namespaces.zope.org/browser"
+    xmlns:zope="http://namespaces.zope.org/zope">
+
+  <resourceDirectory name="ajax.dojo" directory="dojo" />
+
+</configure>
