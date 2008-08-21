@@ -110,6 +110,14 @@ class ActionRegistry(object):
                     method = getattr(view, p, None)
                 if method is not None:
                     method()
+            condition = action.condition
+            if not isinstance(condition, bool):
+                if isinstance(condition, str):
+                    condition = getattr(view, condition, None)
+                if callable(condition):
+                    condition = condition()
+            if not condition:
+                continue
             yield action
 
 
