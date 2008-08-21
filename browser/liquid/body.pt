@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    <div id="menu">
+    <div id="menu" metal:define-macro="menu">
       <tal:portlet repeat="macro controller/macros/portlet_left">
         <metal:portlet use-macro="macro" />
       </tal:portlet>
@@ -37,13 +37,13 @@
       </metal:content>
     </div>
 
-    <div id="sub-section" define-macro="sub-section">
+    <div id="sub-section" metal:define-macro="sub-section">
       <tal:portlet repeat="macro controller/macros/portlet_right">
         <metal:portlet use-macro="macro" />
       </tal:portlet>
     </div>
 
-    <div id="footer" class="footer" define-macro="footer">
+    <div id="footer" class="footer" metal:define-macro="footer">
       <metal:footer define-slot="footer">
       Powered by <b><a href="http://www.python.org">Python</a></b> &middot;
       <b><a href="http://wiki.zope.org/zope3">Zope 3</a></b> &middot;
