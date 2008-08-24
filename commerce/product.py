@@ -24,6 +24,7 @@ $Id$
 
 from zope.interface import implements, Interface
 
+from cybertools.commerce.common import RelationSet
 from cybertools.commerce.interfaces import IProduct
 
 
@@ -31,8 +32,10 @@ class Product(object):
 
     implements(IProduct)
 
+    collection = RelationSet
+
     def __init__(self, productId, title=None):
         self.name = self.productId = productId
         self.title = title or u'unknown'
-        self.shops = {}
+        self.shops = self.collection(self, 'products')
 

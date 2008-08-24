@@ -32,10 +32,10 @@ class Shop(object):
 
     implements(IShop)
 
-    mappingAttribute = RelationSet
+    collection = RelationSet
 
     def __init__(self, name, title=None):
         self.name = name
         self.title = title or u'Shop'
-        self.products = self.mappingAttribute(self, 'shops')
-        self.customers = self.mappingAttribute(self, 'shops')
+        self.products = self.collection(self, 'shops')
+        self.customers = self.collection(self, 'shops')

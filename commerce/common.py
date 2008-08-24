@@ -32,7 +32,7 @@ class RelationSet(object):
 
     def add(self, related):
         self.data[related.name] = related
-        relatedData = getattr(related, self.attributeName)
+        relatedData = getattr(related, self.attributeName).data
         relatedData[self.parent.name] = self.parent
 
     def remove(self, related):
@@ -42,24 +42,9 @@ class RelationSet(object):
         else:
             name = related.name
         del self.data[name]
-        relatedData = getattr(related, self.attributeName)
+        relatedData = getattr(related, self.attributeName).data
         del relatedData[self.parent.name]
 
-    def __getitem__(self, key):
-        return self.data[key]
-
-    def get(self, key, default=None):
-        return self.data.get(key, default)
-
-    def __contains__(self, key):
-        return key in self.data
-
-    def items(self):
-        return self.data.items()
-
-    def keys(self):
-        return self.data.keys()
-
-    def values(self):
-        return self.data.values()
-
+    def __iter__(self):
+        for obj in self.data.values():
+            yield obj
