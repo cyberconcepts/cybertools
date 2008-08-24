@@ -36,11 +36,7 @@ class RelationSet(object):
         relatedData[self.parent.name] = self.parent
 
     def remove(self, related):
-        if isinstance(related, basestring):
-            name = related
-            related = self[name]
-        else:
-            name = related.name
+        name = related.name
         del self.data[name]
         relatedData = getattr(related, self.attributeName).data
         del relatedData[self.parent.name]

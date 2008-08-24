@@ -17,10 +17,10 @@ Let's start with two shops:
 Now we add products to the shops.
 
   >>> from cybertools.commerce.product import Product
-  >>> p001 = Product(u'p001', u'Silent Case')
-  >>> p002 = Product(u'p002', u'Portable Projector')
-  >>> p003 = Product(u'p003', u'HD Flatscreen Monitor')
-  >>> p004 = Product(u'p004', u'Giga Mainboard')
+  >>> p001 = Product(u'001', u'Silent Case')
+  >>> p002 = Product(u'002', u'Portable Projector')
+  >>> p003 = Product(u'003', u'HD Flatscreen Monitor')
+  >>> p004 = Product(u'004', u'Giga Mainboard')
 
   >>> shop1.products.add(p001)
   >>> shop1.products.add(p003)
@@ -29,8 +29,8 @@ Now we add products to the shops.
   >>> shop2.products.add(p003)
 
   >>> sorted((p.productId, p.title) for p in shop1.products)
-  [(u'p001', u'Silent Case'), (u'p003', u'HD Flatscreen Monitor'),
-   (u'p004', u'Giga Mainboard')]
+  [(u'001', u'Silent Case'), (u'003', u'HD Flatscreen Monitor'),
+   (u'004', u'Giga Mainboard')]
 
 Let's have a look at the product - it should correctly reference the shops
 it belongs to.
@@ -43,10 +43,10 @@ Customers
 =========
 
   >>> from cybertools.commerce.customer import Customer
-  >>> c001 = Customer(u'c001', u'Your Local Computer Store')
-  >>> c002 = Customer(u'c002', u'Speedy Gonzales')
-  >>> c003 = Customer(u'c003', u'TeeVee')
-  >>> c004 = Customer(u'c004', u'MacVideo')
+  >>> c001 = Customer(u'001', u'Your Local Computer Store')
+  >>> c002 = Customer(u'002', u'Speedy Gonzales')
+  >>> c003 = Customer(u'003', u'TeeVee')
+  >>> c004 = Customer(u'004', u'MacVideo')
 
   >>> shop1.customers.add(c001)
   >>> shop1.customers.add(c002)
@@ -56,8 +56,8 @@ Customers
   >>> shop2.customers.add(c004)
 
   >>> sorted((c.customerId, c.title) for c in shop1.customers)
-  [(u'c001', u'Your Local Computer Store'), (u'c002', u'Speedy Gonzales'),
-   (u'c004', u'MacVideo')]
+  [(u'001', u'Your Local Computer Store'), (u'002', u'Speedy Gonzales'),
+   (u'004', u'MacVideo')]
 
   >>> sorted((s.name, s.title) for s in c002.shops)
   [(u'shop1', u'PC up Ltd'), (u'shop2', u'Video up Ltd')]
