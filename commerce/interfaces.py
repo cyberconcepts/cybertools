@@ -33,6 +33,18 @@ from loops import util
 _ = MessageFactory('cybertools.commerce')
 
 
+# manager
+
+class IManager(Interface):
+    """ A top-level container, registry, manager that provides access to
+        all components of a commerce site.
+    """
+
+    shops = Attribute('All shops in this commerce manager.')
+    products = Attribute('All products in this commerce manager.')
+    customers = Attribute('All customers in this commerce manager.')
+
+
 # shops
 
 class IShop(Interface):

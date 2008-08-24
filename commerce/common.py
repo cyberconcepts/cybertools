@@ -23,6 +23,32 @@ $Id$
 """
 
 
+class ContainerAttribute(object):
+
+    def __init__(self, factory, idAttr='name'):
+        self.factory = factory
+        self.idAttr = idAttr
+        self.data = {}
+
+    def create(self, id, **kw):
+        if self.idAttr not in kw:
+            kw[self.idAttr] = id
+        obj = self.factory(id)
+        for k, v in kw.items():
+            setattr(obj, k, v)
+        self.data[id] = obj
+        return obj
+
+    def remove(self, id):
+        del self.data[id]
+
+    def get(self, id, default=None):
+        return self.data.get(id, default)
+
+    def __iter__(self):
+        return iter(self.data.values())
+
+
 class RelationSet(object):
 
     def __init__(self, parent, attributeName):
