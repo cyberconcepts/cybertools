@@ -11,6 +11,7 @@ Layout Management
   >>> component.provideUtility(LayoutManager())
 
   >>> from cybertools.composer.layout.base import Layout, LayoutInstance
+  >>> from cybertools.composer.layout.browser.liquid.default import BodyLayout
 
 
 Browser Views
@@ -26,8 +27,7 @@ Browser Views
   >>> css.renderer = standardRenderers['css'] # resourceRenderers['css']
   >>> css.registerFor('page.css')
 
-  >>> bodyLayout = Layout()
-  >>> bodyLayout.renderer = ViewPageTemplateFile('browser/liquid/body.pt').macros['body']
+  >>> bodyLayout = BodyLayout()
   >>> bodyLayout.registerFor('page.body')
 
   >>> footerLayout = Layout()

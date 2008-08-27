@@ -30,7 +30,7 @@ from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from cybertools.composer.interfaces import ITemplate, IComponent
 from cybertools.composer.interfaces import IInstance
 
-_ = MessageFactory('cybertools.composer')
+_ = MessageFactory('cybertools.composer.layout')
 
 
 class ILayoutManager(Interface):
