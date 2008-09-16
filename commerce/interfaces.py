@@ -42,6 +42,9 @@ class IManager(Interface):
 
     shops = Attribute('All shops in this commerce manager.')
     products = Attribute('All products in this commerce manager.')
+    categories = Attribute('All product categories in this commerce manager.')
+    manufacturers = Attribute('All manufacturers in this commerce manager.')
+    suppliers = Attribute('All suppliers in this commerce manager.')
     customers = Attribute('All customers in this commerce manager.')
 
 
@@ -69,15 +72,43 @@ class IShop(Interface):
 
     products = Attribute(u'The products available in this shop.')
     categories = Attribute(u'The product categories provided by this shop.')
+    manufacturers = Attribute(u'The manufacturers whose products are available '
+                    u'in this shop.')
     suppliers = Attribute(u'The suppliers providing products for '
                     u'this shop.')
     customers = Attribute(u'The customers registered for this shop.')
 
 
-# suppliers
+# manufacturers and suppliers
+
+class IManufacturer(Interface):
+    """ Produces products.
+    """
+
+    name = schema.ASCIILine(
+            title=_(u'Supplier Identifier'),
+            description=_(u'An internal name uniquely identifying the manufacturer.'),
+            default='',
+            required=True)
+    title = schema.TextLine(
+            title=_(u'Title'),
+            description=_(u'Short title of the manufacturer.'),
+            default=u'',
+            required=True)
+    description = schema.Text(
+            title=_(u'Description'),
+            description=_(u'A medium-length description.'),
+            default=u'',
+            missing_value=u'',
+            required=False)
+
+    products = Attribute(u'The products provided by this manufacturer.')
+    categories = Attribute(u'The primary product categories this manufacturer '
+                    u'provides products of.')
+
 
 class ISupplier(Interface):
-    """ Manufactures or supplies products.
+    """ Supplies products.
     """
 
     name = schema.ASCIILine(
@@ -137,6 +168,7 @@ class IProduct(Interface):
             required=False)
 
     categories = Attribute(u'The product categories this product belongs to.')
+    manufacturer = Attribute(u'The manufacturer providing this product.')
     suppliers = Attribute(u'The suppliers (typically only one) providing '
                     u'this product.')
     shops = Attribute(u'The shops providing this product.')
@@ -161,7 +193,6 @@ class ICategory(Interface):
     products = Attribute(u'The products belonging to this category.')
     subcategories = Attribute(u'The sub-categories belonging to this category.')
     shops = Attribute(u'The shops providing this category.')
-    suppliers = Attribute(u'The suppliers providing products of this category.')
 
 
 # customers
