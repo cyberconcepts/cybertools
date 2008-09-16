@@ -54,7 +54,6 @@ class Instance(BaseInstance):
                     continue
                 fi = f.getFieldInstance(self)
                 name = f.name
-                #value = getattr(self.context, name, f.defaultValue)
                 value = getattr(self.context, name) or fi.default
                 value = (mode == 'view' and fi.display(value)) or fi.marshall(value)
                 result[name] = value

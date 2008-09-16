@@ -33,7 +33,12 @@ from cybertools.composer.schema.schema import Schema
 
 
 class Email(schema.TextLine):
-    pass
+
+    __typeInfo__ = ('email',)
+
+
+# put field type name and other info in standard field classes.
+schema.Field.__typeInfo__ = ('textline',)
 
 
 class SchemaFactory(object):
@@ -45,8 +50,8 @@ class SchemaFactory(object):
     adapts(Interface)
 
     fieldMapping = {
-            schema.TextLine: ('textline',),
-            schema.ASCIILine: ('textline',),
+            #schema.TextLine: ('textline',),
+            #schema.ASCIILine: ('textline',),
             schema.Password: ('password',),
             schema.Text: ('textarea',),
             schema.ASCII: ('textarea',),
@@ -57,7 +62,7 @@ class SchemaFactory(object):
             schema.List: ('list',),
             schema.Choice: ('dropdown',),
             schema.Bytes: ('fileupload',),
-            Email: ('email',),
+            #Email: ('email',),
     }
 
     def __init__(self, context):
@@ -71,7 +76,9 @@ class SchemaFactory(object):
             if fname in omit:
                 continue
             field = interface[fname]
-            info = fieldMapping.get(field.__class__) or ('textline',)
+            info = fieldMapping.get(field.__class__)
+            if info is None:
+                info = getattr(field, '__typeInfo__', ('textline',))
             voc = (getattr(field, 'vocabulary', ()) or
                    getattr(field, 'vocabularyName', None))
             f = Field(field.getName(),

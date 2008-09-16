@@ -82,6 +82,7 @@ class FieldType(SimpleTerm):
             setattr(self, k, v)
 
 
+# TODO: register this object as a utility providing IFieldTypes
 fieldTypes = SimpleVocabulary((
     FieldType('textline', 'textline', u'Textline'),
     FieldType('password', 'password', u'Password'),
