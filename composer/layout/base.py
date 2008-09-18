@@ -22,6 +22,7 @@ Basic classes for layouts and layout components.
 $Id$
 """
 
+from zope.cachedescriptors.property import Lazy
 from zope import component
 from zope.interface import implements
 
@@ -37,8 +38,21 @@ class LayoutManager(object):
 
     implements(ILayoutManager)
 
-    def __init__(self):
-        self.regions = {}
+    @Lazy
+    def regions(self):
+        result = {}
+        for name, layout in component.getUtilitiesFor(ILayout):
+            region = result.setdefault(layout.regionName,
+                                       Region(layout.regionName))
+            region.layouts.append(layout)
+        return result
+
+    def getLayouts(self, key, **kw):
+        region = self.regions.get(key)
+        if region is None:
+            return []
+        # TODO: filter region.layouts
+        return region.layouts
 
     def register(self, layout, regionName):
         region = self.regions.setdefault(regionName, Region(regionName))
@@ -50,12 +64,19 @@ class Layout(Template):
     implements(ILayout)
 
     name = ''
-    manager = None
     renderer = None
+    regionName = None
+    skin = 'default'
+
+    def __init__(self, regionName, **kw):
+        self.regionName = regionName
+        for k, v in kw.items():
+            setattr(self, k, v)
 
     def registerFor(self, regionName):
         manager = component.getUtility(ILayoutManager)
         manager.register(self, regionName)
+        self.regionName = regionName
 
 
 class LayoutInstance(object):

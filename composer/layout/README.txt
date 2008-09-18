@@ -8,10 +8,11 @@ Layout Management
   >>> from zope.interface import Interface
 
   >>> from cybertools.composer.layout.base import LayoutManager
-  >>> component.provideUtility(LayoutManager())
+  >>> manager = LayoutManager()
+  >>> component.provideUtility(manager)
 
-  >>> from cybertools.composer.layout.base import Layout, LayoutInstance
-  >>> from cybertools.composer.layout.browser.liquid.default import BodyLayout
+  >>> from zope.traversing.adapters import DefaultTraversable
+  >>> component.provideAdapter(DefaultTraversable, (Interface,))
 
 
 Browser Views
@@ -20,19 +21,19 @@ Browser Views
   >>> from zope.app.pagetemplate import ViewPageTemplateFile
   >>> standardRenderers = ViewPageTemplateFile('browser/standard.pt').macros
 
-  >>> from zope.traversing.adapters import DefaultTraversable
-  >>> component.provideAdapter(DefaultTraversable, (Interface,))
+  >>> from cybertools.composer.layout.base import Layout
+  >>> from cybertools.composer.layout.interfaces import ILayout
 
-  >>> css = Layout()  # ResourceCollection()
-  >>> css.renderer = standardRenderers['css'] # resourceRenderers['css']
-  >>> css.registerFor('page.css')
+  >>> #css = Layout('page.css', renderer=standardRenderers['css'])
+  >>> # css = ResourceCollection('css', resourceRenderers['css'])
+  >>> #component.provideUtility(css, ILayout, name='css')
 
+  >>> from cybertools.composer.layout.browser.liquid.default import BodyLayout
   >>> bodyLayout = BodyLayout()
-  >>> bodyLayout.registerFor('page.body')
+  >>> component.provideUtility(bodyLayout, ILayout, name='body.liquid')
 
-  >>> footerLayout = Layout()
-  >>> footerLayout.renderer = standardRenderers['footer']
-  >>> footerLayout.registerFor('body.footer')
+  >>> footerLayout = Layout('body.footer', renderer=standardRenderers['footer'])
+  >>> component.provideUtility(footerLayout, ILayout, name='footer.default')
 
   >>> from cybertools.composer.layout.browser.view import Page
   >>> from zope.publisher.browser import TestRequest

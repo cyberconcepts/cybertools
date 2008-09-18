@@ -51,7 +51,7 @@ class BaseView(object):
 class Page(BaseView):
 
     def __call__(self):
-        layout = Layout()
+        layout = Layout('page')
         layout.renderer = ViewPageTemplateFile('main.pt').macros['page']
         instance = LayoutInstance(self.context)
         instance.template = layout
@@ -83,9 +83,9 @@ class LayoutView(BaseView):
     def resources(self):
         return ViewResources(self)
 
-    def getRegion(self, key):
+    def getLayoutsFor(self, key, **kw):
         manager = component.getUtility(ILayoutManager)
-        return manager.regions.get('.'.join((self.name, key)))
+        return manager.getLayouts('.'.join((self.name, key)), **kw)
 
 
 # subview providers
@@ -97,11 +97,8 @@ class ViewLayouts(object):
 
     def __getitem__(self, key):
         view = self.view
-        region = view.getRegion(key)
-        if region is None:
-            return []
         subviews = []
-        for layout in region.layouts:
+        for layout in view.getLayoutsFor(key):
             instance = LayoutInstance(view.client)
             instance.template = layout
             instance.view = view

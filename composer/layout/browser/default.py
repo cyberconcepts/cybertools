@@ -17,30 +17,17 @@
 #
 
 """
-Default layouts for the liquid skin.
+Default layouts.
 
 $Id$
 """
 
 from zope.app.pagetemplate import ViewPageTemplateFile
-from zope.cachedescriptors.property import Lazy
-from zope import component
-from zope.interface import implements
 
 from cybertools.composer.layout.base import Layout
 
 
-template = ViewPageTemplateFile('default.pt')
+standardRenderers = ViewPageTemplateFile('standard.pt').macros
 
 
-class BodyLayout(Layout):
-
-    regionName = 'page.body'
-
-    def __init__(self):
-        pass
-
-    @Lazy
-    def renderer(self):
-        return template.macros['body']
-
+footer = Layout('body.footer', renderer=standardRenderers['footer'])
