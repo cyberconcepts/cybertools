@@ -49,17 +49,7 @@ class LayoutManager(object):
 
     def getLayouts(self, key, instance):
         region = self.regions.get(key)
-        if region is None:
-            return []
-        result = []
-        for layout in region.layouts:
-            if self.check(layout, instance):
-                result.append(layout)
-        return result
-
-    def check(self, layout, instance):
-        if instance is None or instance.checkLayout(layout):
-            return True
+        return instance.getLayouts(region)
 
 
 class Layout(Template):
@@ -90,6 +80,8 @@ class LayoutInstance(object):
     def renderer(self):
         return self.template.renderer
 
-    def checkLayout(self, layout):
-        return True
+    def getLayouts(self, region):
+        if region is None:
+            return []
+        return region.layouts
 

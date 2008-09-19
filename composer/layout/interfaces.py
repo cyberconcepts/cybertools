@@ -108,9 +108,8 @@ class ILayoutInstance(IInstance):
 
     renderer = Attribute(u'An object responsible for rendering the layout.')
 
-    def checkLayout(layout):
-        """ Return True if the layout given is a valid sub-layout
-            for this instance.
+    def getLayouts(region):
+        """ Return a sequence of sub-layouts for the region given.
         """
 
 
