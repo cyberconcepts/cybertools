@@ -9,8 +9,8 @@
       </title>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-      <tal:css repeat="macro view/resources/css">
-        <metal:css use-macro="macro" />
+      <tal:css repeat="view view/layouts/css">
+        <metal:css use-macro="view/renderer" />
       </tal:css>
 
       <base href="." tal:attributes="href request/URL">

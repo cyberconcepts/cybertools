@@ -4,40 +4,52 @@ Layout Management
 
   ($Id$)
 
+Let's start with some basic setup; the traversable adapter is needed for
+rendering the page templates.
+
   >>> from zope import component
   >>> from zope.interface import Interface
+  >>> from zope.traversing.adapters import DefaultTraversable
+  >>> component.provideAdapter(DefaultTraversable, (Interface,))
 
-  >>> from cybertools.composer.layout.base import LayoutManager
+For testing we define a simple content class.
+
+  >>> class Document(object):
+  ...     text = ''
+
+The layout management is controlled by a global utility, the layout
+manager.
+
+  >>> from cybertools.composer.layout.base import LayoutManager, LayoutInstance
+  >>> from cybertools.composer.layout.interfaces import ILayout
+
   >>> manager = LayoutManager()
   >>> component.provideUtility(manager)
 
-  >>> from zope.traversing.adapters import DefaultTraversable
-  >>> component.provideAdapter(DefaultTraversable, (Interface,))
+The layouts themselves are also specified as utilities.
+
+  >>> #from cybertools.composer.layout.browser.liquid.default import css
+  >>> #component.provideUtility(css, ILayout, name='css')
+
+  >>> from cybertools.composer.layout.browser.liquid.default import body
+  >>> component.provideUtility(body, ILayout, name='body.liquid')
+
+  >>> from cybertools.composer.layout.browser.default import footer
+  >>> component.provideUtility(footer, ILayout, name='footer.default')
+
+In addition we have to provide at least one layout instance adapter that
+connects a layout with the client object.
+
+  >>> component.provideAdapter(LayoutInstance, (object,))
 
 
 Browser Views
 =============
 
-  >>> from zope.app.pagetemplate import ViewPageTemplateFile
-  >>> standardRenderers = ViewPageTemplateFile('browser/standard.pt').macros
-
-  >>> from cybertools.composer.layout.base import Layout
-  >>> from cybertools.composer.layout.interfaces import ILayout
-
-  >>> #css = Layout('page.css', renderer=standardRenderers['css'])
-  >>> # css = ResourceCollection('css', resourceRenderers['css'])
-  >>> #component.provideUtility(css, ILayout, name='css')
-
-  >>> from cybertools.composer.layout.browser.liquid.default import BodyLayout
-  >>> bodyLayout = BodyLayout()
-  >>> component.provideUtility(bodyLayout, ILayout, name='body.liquid')
-
-  >>> footerLayout = Layout('body.footer', renderer=standardRenderers['footer'])
-  >>> component.provideUtility(footerLayout, ILayout, name='footer.default')
-
   >>> from cybertools.composer.layout.browser.view import Page
   >>> from zope.publisher.browser import TestRequest
-  >>> page = Page(None, TestRequest())
+
+  >>> page = Page(Document(), TestRequest())
 
   >>> page()
   u'<!DOCTYPE ...>...<html ...>...</html>...'

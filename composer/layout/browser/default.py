@@ -27,7 +27,8 @@ from zope.app.pagetemplate import ViewPageTemplateFile
 from cybertools.composer.layout.base import Layout
 
 
-standardRenderers = ViewPageTemplateFile('standard.pt').macros
+defaultRenderers = ViewPageTemplateFile('default.pt').macros
 
 
-footer = Layout('body.footer', renderer=standardRenderers['footer'])
+footer = Layout('footer.default', 'body.footer',
+                renderer=defaultRenderers['footer'])

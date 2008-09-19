@@ -47,36 +47,34 @@ class LayoutManager(object):
             region.layouts.append(layout)
         return result
 
-    def getLayouts(self, key, **kw):
+    def getLayouts(self, key, instance):
         region = self.regions.get(key)
         if region is None:
             return []
-        # TODO: filter region.layouts
-        return region.layouts
+        result = []
+        for layout in region.layouts:
+            if self.check(layout, instance):
+                result.append(layout)
+        return result
 
-    def register(self, layout, regionName):
-        region = self.regions.setdefault(regionName, Region(regionName))
-        region.layouts.append(layout)
+    def check(self, layout, instance):
+        if instance is None or instance.checkLayout(layout):
+            return True
 
 
 class Layout(Template):
 
     implements(ILayout)
 
-    name = ''
+    title = description = u''
+    category = 'default'
     renderer = None
-    regionName = None
-    skin = 'default'
 
-    def __init__(self, regionName, **kw):
+    def __init__(self, name, regionName, **kw):
+        self.name = name
         self.regionName = regionName
         for k, v in kw.items():
             setattr(self, k, v)
-
-    def registerFor(self, regionName):
-        manager = component.getUtility(ILayoutManager)
-        manager.register(self, regionName)
-        self.regionName = regionName
 
 
 class LayoutInstance(object):
@@ -91,3 +89,7 @@ class LayoutInstance(object):
     @property
     def renderer(self):
         return self.template.renderer
+
+    def checkLayout(self, layout):
+        return True
+

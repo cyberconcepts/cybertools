@@ -37,9 +37,16 @@ class ILayoutManager(Interface):
     """ A utility that manages layouts and regions.
     """
 
-    def register(layout, regionName):
-        """ Register the layout given for the region specified.
+    def getLayouts(regionName, instance):
+        """ Return a sequence of layouts for the region given that are
+            valid sub-layouts for the layout instance given.
         """
+
+    def check(layout, instance):
+        """ Return True if the layout given is a valid sub-layout
+            for the instance given.
+        """
+
 
 
 class ILayout(ITemplate):
@@ -47,7 +54,7 @@ class ILayout(ITemplate):
     """
 
     name = schema.ASCIILine(
-                title=_(u'Layout name'),
+                title=_(u'Layout Name'),
                 description=_(u'The internal name of the layout.'),
                 required=True,)
     title = schema.TextLine(
@@ -63,12 +70,13 @@ class ILayout(ITemplate):
                 description=_(u'The name of a layout category this layout '
                     u'belongs to.'),
                 required=False,)
+    regionName = schema.ASCIILine(
+                title=_(u'Region Name'),
+                description=_(u'A dotted name that specifies the region '
+                    u'this layout should be used for.'),
+                required=True,)
 
     renderer = Attribute(u'An object responsible for rendering the layout.')
-
-    def registerFor(regionName):
-        """ Register the layout for the region specified.
-        """
 
 
 class ILayoutComponent(IComponent):
@@ -77,11 +85,11 @@ class ILayoutComponent(IComponent):
 
     name = schema.ASCIILine(
                 title=_(u'Component name'),
-                description=_(u'The internal name of the component'),
+                description=_(u'The internal name of the component.'),
                 required=True,)
     title = schema.TextLine(
                 title=_(u'Title'),
-                description=_(u'The title or label of the component'),
+                description=_(u'The title or label of the component.'),
                 required=True,)
     description = schema.Text(
                 title=_(u'Description'),
@@ -100,16 +108,25 @@ class ILayoutInstance(IInstance):
 
     renderer = Attribute(u'An object responsible for rendering the layout.')
 
+    def checkLayout(layout):
+        """ Return True if the layout given is a valid sub-layout
+            for this instance.
+        """
+
 
 class IRegion(Interface):
     """ A part of a layout "canvas" that may be filled with layout objects.
     """
 
+    name = schema.ASCIILine(
+                title=_(u'Region name'),
+                description=_(u'The internal name of the region.'),
+                required=True,)
     allowedLayoutCategories = schema.List(
                 title=_(u'Allowed layout categories'),
                 description=_(u'A collection of names of layout categories '
                         u'to which layouts may belong that may be placed '
-                        u'in this region'),
+                        u'in this region.'),
                 value_type=schema.ASCIILine(),
                 required=False,)
 

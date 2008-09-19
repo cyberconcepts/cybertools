@@ -27,37 +27,55 @@ from zope.interface import Interface, implements
 from zope.cachedescriptors.property import Lazy
 from zope.app.pagetemplate import ViewPageTemplateFile
 
-from cybertools.composer.layout.base import Layout, LayoutInstance
-from cybertools.composer.layout.interfaces import ILayoutManager
+from cybertools.composer.layout.base import Layout
+from cybertools.composer.layout.interfaces import ILayoutManager, ILayoutInstance
 
 
 class BaseView(object):
 
     template = ViewPageTemplateFile('base.pt')
 
-    def __init__(self, context, request, name=None):
+    page = None
+    parent = None
+    skin = None
+
+    def __init__(self, context, request, **kw):
         self.context = self.__parent__ = context
         self.request = request
-        if name is not None:
-            self.name = name
-
-    def update(self):
-        return True
+        for k, v in kw.items():
+            setattr(self, k, v)
 
     def __call__(self):
         return self.template(self)
 
+    def update(self):
+        return True
+
 
 class Page(BaseView):
 
+    macroName = 'page'
+
+    @Lazy
+    def rootView(self):
+        return self
+
     def __call__(self):
-        layout = Layout('page')
-        layout.renderer = ViewPageTemplateFile('main.pt').macros['page']
-        instance = LayoutInstance(self.context)
+        layout = Layout('page', 'page')
+        layout.renderer = ViewPageTemplateFile('main.pt').macros[self.macroName]
+        instance = ILayoutInstance(self.context)
         instance.template = layout
-        view = LayoutView(instance, self.request, name='page')
+        view = LayoutView(instance, self.request, name='page',
+                          parent=self, page=self)
         view.body = view.layouts['body'][0]
+        instance.view = view
         return view.template(view)
+
+    @Lazy
+    def resourceBase(self):
+        skinSetter = self.skin and ('/++skin++' + self.skin.__name__) or ''
+        # TODO: put '/@@' etc after path to site instead of directly after URL0
+        return self.request.URL[0] + skinSetter + '/@@/'
 
 
 class LayoutView(BaseView):
@@ -83,9 +101,9 @@ class LayoutView(BaseView):
     def resources(self):
         return ViewResources(self)
 
-    def getLayoutsFor(self, key, **kw):
+    def getLayoutsFor(self, key):
         manager = component.getUtility(ILayoutManager)
-        return manager.getLayouts('.'.join((self.name, key)), **kw)
+        return manager.getLayouts('.'.join((self.name, key)), self.context)
 
 
 # subview providers
@@ -99,10 +117,12 @@ class ViewLayouts(object):
         view = self.view
         subviews = []
         for layout in view.getLayoutsFor(key):
-            instance = LayoutInstance(view.client)
+            instance = ILayoutInstance(view.client)
             instance.template = layout
-            instance.view = view
-            subviews.append(LayoutView(instance, view.request, name=key))
+            v = LayoutView(instance, view.request, name=key,
+                           parent=view, page=view.page)
+            instance.view = v
+            subviews.append(v)
         return subviews
 
 
