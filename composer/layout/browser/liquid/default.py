@@ -27,11 +27,16 @@ from zope.cachedescriptors.property import Lazy
 from zope import component
 from zope.interface import implements
 
+from cybertools.browser.liquid import Liquid
 from cybertools.composer.layout.base import Layout
-
+from cybertools.composer.layout.browser.standard import standardRenderers
 
 defaultRenderers = ViewPageTemplateFile('default.pt').macros
 
-body = Layout('body.liquid', 'page.body',
-              renderer=defaultRenderers['body'])
+
+css = Layout('css.liquid', 'page.css', renderer=standardRenderers['css'],
+             media='all', resource='liquid.css', skin=Liquid)
+
+body = Layout('body.liquid', 'page.body', renderer=defaultRenderers['body'],
+              skin=Liquid)
 

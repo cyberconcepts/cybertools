@@ -1,3 +1,66 @@
+<body metal:define-macro="body">
+
+    <div>
+      <div>
+        <tal:sub repeat="view view/layouts/logo">
+          <metal:sub use-macro="view/renderer" /></tal:sub>
+        <tal:sub repeat="view view/layouts/top_actions">
+          <metal:sub use-macro="view/renderer" /></tal:sub>
+      </div>
+    </div>
+
+    <div>
+        <tal:sub repeat="view view/layouts/column1">
+          <metal:sub use-macro="view/renderer" />
+        </tal:sub>
+    </div>
+
+    <div>
+        <tal:sub repeat="view view/layouts/content">
+          <metal:sub use-macro="view/renderer" />
+        </tal:sub>
+    </div>
+
+    <div>
+        <tal:sub repeat="view view/layouts/column2">
+          <metal:sub use-macro="view/renderer" />
+        </tal:sub>
+    </div>
+
+    <div>
+        <tal:sub repeat="view view/layouts/footer">
+          <metal:sub use-macro="view/renderer" />
+        </tal:sub>
+    </div>
+
+</body>
+
+
+<div metal:define-macro="logo">
+  Logo
+</div>
+
+
+<div metal:define-macro="top_actions">
+  Top actions
+</div>
+
+
+<div metal:define-macro="column1">
+  Column 1
+</div>
+
+
+<div metal:define-macro="content">
+  Content
+</div>
+
+
+<div metal:define-macro="column2">
+  Column 2
+</div>
+
+
 <div metal:define-macro="footer">
-  Some footer text.
+  Powered by Zope.
 </div>

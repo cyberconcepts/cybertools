@@ -1,7 +1,8 @@
-<metal:css define-macro="css">
-  <!--<style type="text/css" media="all"
-         tal:attributes="media view/media"
-         tal:content="string:@import url(${view/page/resourceBase}${view/context/resourceName});">
+<metal:css define-macro="css"
+           tal:define="layout view/context/template">
+  <style type="text/css" media="all"
+         tal:attributes="media layout/media"
+         tal:content="string:@import url(${view/page/resourceBase}${layout/resource});">
       @import url(some.css);
-  </style>-->
+  </style>
 </metal:css>

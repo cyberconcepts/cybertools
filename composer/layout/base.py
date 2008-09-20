@@ -49,7 +49,7 @@ class LayoutManager(object):
 
     def getLayouts(self, key, instance):
         region = self.regions.get(key)
-        return instance.getLayouts(region)
+        return sorted(instance.getLayouts(region), key=lambda x: x.order)
 
 
 class Layout(Template):
@@ -59,6 +59,7 @@ class Layout(Template):
     title = description = u''
     category = 'default'
     renderer = None
+    order = 0
 
     def __init__(self, name, regionName, **kw):
         self.name = name

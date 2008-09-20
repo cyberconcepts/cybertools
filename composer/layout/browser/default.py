@@ -30,5 +30,18 @@ from cybertools.composer.layout.base import Layout
 defaultRenderers = ViewPageTemplateFile('default.pt').macros
 
 
-footer = Layout('footer.default', 'body.footer',
-                renderer=defaultRenderers['footer'])
+logo = Layout('logo.default', 'body.logo', renderer=defaultRenderers['logo'])
+
+top_actions = Layout('top_actions.default', 'body.top_actions',
+                     renderer=defaultRenderers['top_actions'])
+
+column1 = Layout('column1.default', 'body.column1',
+                 renderer=defaultRenderers['column1'])
+
+content = Layout('content.default', 'body.content',
+                 renderer=defaultRenderers['content'])
+
+column2 = Layout('column2.default', 'body.column2',
+                 renderer=defaultRenderers['column2'])
+
+footer = Layout('footer.default', 'body.footer', renderer=defaultRenderers['footer'])

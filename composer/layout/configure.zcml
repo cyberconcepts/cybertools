@@ -1,8 +1,17 @@
 <!-- $Id$ -->
 
 <configure
-    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zope="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="cybertools.composer">
+
+  <zope:utility
+        factory="cybertools.composer.layout.base.LayoutManager" />
+
+  <zope:adapter
+        for="*"
+        factory="cybertools.composer.layout.base.LayoutInstance" />
+
+  <include package=".browser" />
 
 </configure>

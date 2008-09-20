@@ -25,6 +25,7 @@ $Id$
 from zope.interface import implements
 
 from cybertools.composer.layout.interfaces import IRegion
+from cybertools.util.jeep import Jeep
 
 
 class Region(object):
@@ -35,4 +36,4 @@ class Region(object):
 
     def __init__(self, name):
         self.name = name
-        self.layouts = []
+        self.layouts = Jeep()

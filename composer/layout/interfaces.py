@@ -77,6 +77,7 @@ class ILayout(ITemplate):
                 required=True,)
 
     renderer = Attribute(u'An object responsible for rendering the layout.')
+    order = Attribute(u'A number that may be used as a sorting key.')
 
 
 class ILayoutComponent(IComponent):

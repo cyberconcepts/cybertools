@@ -29,6 +29,3 @@ from cybertools.composer.layout.base import Layout
 
 standardRenderers = ViewPageTemplateFile('standard.pt').macros
 
-
-footer = Layout('footer.default', 'body.footer',
-                renderer=standardRenderers['footer'])
