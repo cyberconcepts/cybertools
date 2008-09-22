@@ -50,10 +50,13 @@ class FileSystemStorage(object):
     def setData(self, address, data, params={}):
         subDir = params.get('subdirectory')
         fn = self.getDir(address, subDir)
+        directory = os.path.dirname(fn)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
         f = open(fn, 'wb')
         f.write(data)
         f.close()
-        print 'cybertools.storage: file %s written' % fn
+        #print 'cybertools.storage: file %s written' % fn
         # TODO: transaction management:
         # write to temp file in subDir, keep address in internal dictionary
         # transaction.manager.get().join(FSSDataManager(address, temp))
