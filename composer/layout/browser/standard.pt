@@ -30,3 +30,12 @@
       @import url(some.css);
   </style>
 </metal:css>
+
+<metal:image define-macro="image"
+           tal:define="layout view/context/template">
+	<img src="cttlogo.jpg" alt="CTT Logo" width="178" height="111"
+          tal:attributes="src string:${view/page/resourceBase}${layout/src};
+                          alt layout/alt;
+                          width layout/width;
+                          height layout/height" />
+</metal:image>
