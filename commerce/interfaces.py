@@ -189,11 +189,21 @@ class ICategory(Interface):
             default=u'',
             missing_value=u'',
             required=False)
+    order = schema.Int(
+            title=_(u'Sortingorder'),
+            description=_(u'Sortingorder'),
+            default=0,
+            required=False)
+    visible = schema.Bool(
+            title=_(u'Visible'),
+            description=_(u'Visible in Menu'),
+            default=True,
+            required=False)
 
     products = Attribute(u'The products belonging to this category.')
     subcategories = Attribute(u'The sub-categories belonging to this category.')
     shops = Attribute(u'The shops providing this category.')
-
+    accessories = Attribute(u'Accessories for this category.')
 
 # customers
 
