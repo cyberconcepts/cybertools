@@ -1,3 +1,27 @@
+<metal:page define-macro="page"><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+        tal:define="body view/body">
+
+    <head metal:define-macro="head">
+      <title metal:define-macro="title"
+           tal:content="options/title|view/headTitle|context/title|default">
+        Powered by Zope 3
+      </title>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+      <tal:css repeat="view view/layouts/css">
+        <metal:css use-macro="view/renderer" />
+      </tal:css>
+
+      <base href="." tal:attributes="href request/URL">
+    </head>
+    <body tal:replace="structure body" />
+
+  </html>
+
+</metal:page>
+
+
 <metal:css define-macro="css"
            tal:define="layout view/context/template">
   <style type="text/css" media="all"

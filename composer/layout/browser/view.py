@@ -28,7 +28,8 @@ from zope.cachedescriptors.property import Lazy
 from zope.app.pagetemplate import ViewPageTemplateFile
 
 from cybertools.composer.layout.base import Layout
-from cybertools.composer.layout.interfaces import ILayoutManager, ILayoutInstance
+from cybertools.composer.layout.interfaces import ILayoutManager
+from cybertools.composer.layout.interfaces import ILayout, ILayoutInstance
 
 
 class BaseView(object):
@@ -54,15 +55,14 @@ class BaseView(object):
 
 class Page(BaseView):
 
-    macroName = 'page'
+    layoutName = 'page'
 
     @Lazy
     def rootView(self):
         return self
 
     def __call__(self):
-        layout = Layout('page', 'page')
-        layout.renderer = ViewPageTemplateFile('main.pt').macros[self.macroName]
+        layout = component.getUtility(ILayout, name=self.layoutName)
         instance = ILayoutInstance(self.context)
         instance.template = layout
         view = LayoutView(instance, self.request, name='page',
@@ -124,13 +124,3 @@ class ViewLayouts(object):
             instance.view = v
             subviews.append(v)
         return subviews
-
-
-class ViewResources(object):
-
-    def __init__(self, view):
-        self.view = view
-
-    def __getitem__(self, key):
-        # TODO...
-        return []

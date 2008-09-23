@@ -59,7 +59,8 @@ class Layout(Template):
     title = description = u''
     category = 'default'
     renderer = None
-    order = 0
+    order = 50
+    sublayouts = None
 
     def __init__(self, name, regionName, **kw):
         self.name = name
@@ -84,5 +85,6 @@ class LayoutInstance(object):
     def getLayouts(self, region):
         if region is None:
             return []
-        return region.layouts
-
+        sublayouts = self.template.sublayouts
+        return [l for l in region.layouts
+                    if sublayouts is None or l.name in sublayouts]

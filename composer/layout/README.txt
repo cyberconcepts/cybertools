@@ -28,6 +28,9 @@ manager.
 
 The layouts themselves are also specified as utilities.
 
+  >>> from cybertools.composer.layout.browser.default import page
+  >>> component.provideUtility(page, ILayout, name='page')
+
   >>> from cybertools.composer.layout.browser.liquid.default import css
   >>> component.provideUtility(css, ILayout, name='css.liquid')
 

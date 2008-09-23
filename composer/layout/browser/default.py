@@ -25,10 +25,14 @@ $Id$
 from zope.app.pagetemplate import ViewPageTemplateFile
 
 from cybertools.composer.layout.base import Layout
+from cybertools.composer.layout.browser.standard import standardRenderers
 
 
 defaultRenderers = ViewPageTemplateFile('default.pt').macros
 
+
+page = Layout('page', 'page', renderer=standardRenderers['page'],
+              sublayouts=set(['css.liquid', 'body.liquid']))
 
 logo = Layout('logo.default', 'body.logo', renderer=defaultRenderers['logo'])
 
