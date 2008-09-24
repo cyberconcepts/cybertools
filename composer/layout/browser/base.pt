@@ -1,1 +1,1 @@
-<metal:render use-macro="nocall:view/renderer" />
+<metal:render use-macro="view/renderer" />

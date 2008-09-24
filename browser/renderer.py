@@ -17,16 +17,30 @@
 #
 
 """
-Default layouts.
+Use ZPT macros as layout renderers.
 
 $Id$
 """
 
-from zope.app.pagetemplate import ViewPageTemplateFile
 
-from cybertools.browser.renderer import RendererFactory
-from cybertools.composer.layout.base import Layout
+class RendererFactory(object):
+    """ Provider for ZPT macros.
+    """
 
+    def __init__(self, template):
+        self.template = template
 
-standardRenderers = RendererFactory(ViewPageTemplateFile('standard.pt'))
+    def get(self, key, default=None):
+        return self.template.macros.get(key, default)
 
+    def __getitem__(self, key):
+        return self.template.macros[key]
+
+    def __getattr__(self, key):
+        """ Convenience method for retrieving callable renderer for layout.
+        """
+        return lambda key=key: self[key]
+
+    def __repr__(self):
+        return ('<RendererFactory, template=%r, macros=%r>' %
+                    (self.template, self.template.macros.keys()))
