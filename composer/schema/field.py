@@ -209,7 +209,7 @@ class DateFieldInstance(NumberFieldInstance):
         if value is None:
             return ''
         view = self.clientInstance.view
-        langInfo = view and view.languageInfo or None
+        langInfo = view and getattr(view, 'languageInfo', None) or None
         format = self.context.display_format or ('dateTime', 'short')
         if langInfo:
             locale = locales.getLocale(langInfo.language)

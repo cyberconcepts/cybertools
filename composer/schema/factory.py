@@ -39,6 +39,7 @@ class Email(schema.TextLine):
 
 # put field type name and other info in standard field classes.
 schema.Field.__typeInfo__ = ('textline',)
+schema.Choice.__typeInfo__ = ('dropdown',)
 
 
 class SchemaFactory(object):
@@ -61,7 +62,7 @@ class SchemaFactory(object):
             schema.Float: ('number',),
             schema.Bool: ('checkbox',),
             schema.List: ('list',),
-            schema.Choice: ('dropdown',),
+            #schema.Choice: ('dropdown',),
             schema.Bytes: ('fileupload',),
             #Email: ('email',),
     }
@@ -84,6 +85,7 @@ class SchemaFactory(object):
                    getattr(field, 'vocabularyName', None))
             f = Field(field.getName(),
                     fieldType=info[0],
+                    fieldTypeInfo=len(info) > 1 and info[1] or None,
                     required=field.required,
                     default=field.default,
                     default_method=getattr(field, 'default_method', None),
@@ -91,6 +93,9 @@ class SchemaFactory(object):
                     title=field.title,
                     description=field.description,
                     readonly=field.readonly,
-                    nostore=getattr(field, 'nostore', False),)
+                    #value_type=getattr(field, 'value_type', None),
+                    nostore=getattr(field, 'nostore', False),
+                    multiple=getattr(field, 'multiple', False),
+                    baseField=field,)
             fields.append(f)
         return Schema(name=interface.__name__, *fields, **kw)
