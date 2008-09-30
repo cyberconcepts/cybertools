@@ -72,7 +72,7 @@ class BSCWConnection(object):
         self.repositoryURL = url
         self.setURLs()
         if server is None:
-            server = ServerProxy(self.baseURL())
+            server = ServerProxy(self.baseURL)
         self.server = server
 
     def getRepositoryURL(self):
