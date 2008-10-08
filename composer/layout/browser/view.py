@@ -56,13 +56,23 @@ class BaseView(object):
 class Page(BaseView):
 
     layoutName = 'page'
+    layoutNames = ['page']
 
     @Lazy
     def rootView(self):
         return self
 
     def __call__(self):
-        layout = component.getUtility(ILayout, name=self.layoutName)
+        # use LayoutManager to retrieve page region;
+        # then search in self.layoutNames for a fit
+        manager = component.getUtility(ILayoutManager)
+        layouts = manager.regions['page'].layouts
+        layoutNames = layouts.keys()
+        layout = None
+        for n in self.layoutNames:
+            if n in layoutNames:
+                layout = layouts[n]
+                break
         instance = ILayoutInstance(self.context)
         instance.template = layout
         view = LayoutView(instance, self.request, name='page',
@@ -97,10 +107,6 @@ class LayoutView(BaseView):
     def layouts(self):
         return ViewLayouts(self)
 
-    @Lazy
-    def resources(self):
-        return ViewResources(self)
-
     def getLayoutsFor(self, key):
         manager = component.getUtility(ILayoutManager)
         return manager.getLayouts('.'.join((self.name, key)), self.context)
@@ -116,9 +122,7 @@ class ViewLayouts(object):
     def __getitem__(self, key):
         view = self.view
         subviews = []
-        for layout in view.getLayoutsFor(key):
-            instance = ILayoutInstance(view.client)
-            instance.template = layout
+        for instance in view.getLayoutsFor(key):
             v = LayoutView(instance, view.request, name=key,
                            parent=view, page=view.page)
             instance.view = v

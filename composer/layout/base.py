@@ -44,12 +44,14 @@ class LayoutManager(object):
         for name, layout in component.getUtilitiesFor(ILayout):
             region = result.setdefault(layout.regionName,
                                        Region(layout.regionName))
+            # layout.name = name
             region.layouts.append(layout)
         return result
 
     def getLayouts(self, key, instance):
         region = self.regions.get(key)
-        return sorted(instance.getLayouts(region), key=lambda x: x.order)
+        return sorted(instance.getLayouts(region),
+                      key=lambda x: x.template.order)
 
 
 class Layout(Template):
@@ -83,8 +85,15 @@ class LayoutInstance(object):
         return self.template.renderer
 
     def getLayouts(self, region):
+        """ Return sublayout instances.
+        """
         if region is None:
             return []
+        result = []
         sublayouts = self.template.sublayouts
-        return [l for l in region.layouts
-                    if sublayouts is None or l.name in sublayouts]
+        for l in region.layouts:
+            if sublayouts is None or l.name in sublayouts:
+                li = ILayoutInstance(self.context)
+                li.template = l
+                result.append(li)
+        return result
