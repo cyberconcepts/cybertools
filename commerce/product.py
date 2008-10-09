@@ -26,6 +26,7 @@ from zope.interface import implements, Interface
 
 from cybertools.commerce.common import RelationSet
 from cybertools.commerce.interfaces import IProduct, ICategory
+from cybertools.commerce.interfaces import IManufacturer, ISupplier
 
 
 class Product(object):
@@ -39,6 +40,7 @@ class Product(object):
         self.title = title or u'unknown'
         self.shops = self.collection(self, 'products')
 
+
 class Category(object):
 
     implements(ICategory)
@@ -48,4 +50,20 @@ class Category(object):
     def __init__(self, title=None):
         self.title = title or u'unknown'
         self.shops = self.collection(self, 'categories')
+
+
+class Manufacturer(object):
+
+    implements(IManufacturer)
+
+    def __init__(self, title=None):
+        self.title = title or u'unknown'
+
+
+class Supplier(object):
+
+    implements(ISupplier)
+
+    def __init__(self, title=None):
+        self.title = title or u'unknown'
 
