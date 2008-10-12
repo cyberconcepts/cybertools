@@ -54,10 +54,13 @@ def toStr(value, encoding='UTF-8'):
         return value.encode(encoding)
     return str(value)
 
-def toUnicode(value, encoding='UTF-8'):
+def toUnicode(value, encoding='UTF-8', fallback='ISO8859-15'):
     if isinstance(value, unicode):
         return value
     elif isinstance(value, str):
-        return value.decode(encoding)
+        try:
+            return value.decode(encoding)
+        except UnicodeDecodeError:
+            return value.decode(fallback)
     else:
         return u''
