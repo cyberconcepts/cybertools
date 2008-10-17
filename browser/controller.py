@@ -83,7 +83,7 @@ class Macros(dict):
 
     def __init__(self, controller):
         self.controller = controller
-        self.identifiers = set()
+        self.identifiers = {}
 
     def register(self, slot, identifier=None, template=None, name=None,
                  priority=50, **kw):
@@ -91,20 +91,27 @@ class Macros(dict):
             # make sure a certain resource is only registered once
             if identifier in self.identifiers:
                 return
-            self.identifiers.add(identifier)
+            #self.identifiers.add(identifier)
+            self.identifiers[identifier] = True
         if template is None:
             template = self.standardTemplate
         if name is None:
             name = slot
-        macro = Macro(template, name, priority, **kw)
+        macro = Macro(template, name, priority, identifier=identifier, **kw)
         entry = self.setdefault(slot, [])
         entry.append(macro)
 
+    def hide(self, identifier):
+        self.identifiers[identifier] = False
+
     def __getitem__(self, key):
-        return list(sorted(self.get(key, []), key=lambda x: x.priority))
+        return [m for m in sorted(self.get(key, []), key=lambda x: x.priority)
+                  if self.identifiers.get(m.identifier, True)]
 
 
 class Macro(object):
+
+    identifier = ''
 
     def __init__(self, template, name, priority, **kw):
         self.template = template

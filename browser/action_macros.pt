@@ -8,7 +8,8 @@
     <div class="action"
          tal:attributes="class action/cssClass;
                          id action/dialogName|nothing;
-                         title action/description;">
+                         title action/description;"
+         i18n:attributes="title">
         <a href="#" target="target_window" title="Description text"
            tal:omit-tag="not:action/url"
            tal:attributes="href action/url;
@@ -18,7 +19,8 @@
            i18n:attributes="title"><img src="#" alt="icon"
                tal:condition="action/icon"
                tal:attributes="src string:$resourceBase${action/icon};
-                               alt action/description" />
+                               alt action/description"
+               i18n:attributes="alt" />
            <span i18n:translate=""
                  tal:condition="action/title"
                  tal:content="action/title">Action Title</span></a>

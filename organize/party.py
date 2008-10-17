@@ -48,10 +48,11 @@ class Person(object):
     def age(self):
         return self.ageAt(date.today())
 
-    def ageAt(self, date):
-        if not self.birthDate:
+    def ageAt(self, dt):
+        bd = self.birthDate
+        if not bd:
             return None
-        return int((date - self.birthDate).days/365.25)
+        return int((dt - date(bd.year, bd.month, bd.day)).days/365.25)
 
 
 class Address(object):
