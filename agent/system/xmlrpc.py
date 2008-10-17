@@ -17,24 +17,14 @@
 #
 
 """
-Controller that receives and responds to requests from a browser (AJAX) client;
-in parallel it sends  informations to the client by responding to
-polling requests from the client.
+Configuration controlled import of twisted xmlrpc functionality
 
-$Id$
+$Id: rpcapi.py
 """
 
-from zope.interface import implements
-
-from cybertools.agent.base.agent import Master
-from cybertools.agent.core.control import SampleController
-from cybertools.agent.components import controllers
-
-
-class ClientController(SampleController):
-
-    def setup(self):
-        super(ClientController, self).setup()
-
-
-controllers.register(ClientController, Master, name='ajaxclient')
+def setup(config):
+    global xmlrpc
+    if config.transport.remote.server == 'testing':
+        from cybertools.agent.testing.rpcserver import xmlrpc
+    else:
+        from twisted.web import xmlrpc

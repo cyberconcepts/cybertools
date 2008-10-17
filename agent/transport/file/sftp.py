@@ -28,6 +28,7 @@ from twisted.internet import defer, protocol, reactor
 
 CHUNKSIZE = 4096
 
+
 class FileTransfer(protocol.ClientFactory):
     """ Transfers files to a remote SCP/SFTP server.
     """

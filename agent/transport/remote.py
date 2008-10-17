@@ -28,8 +28,8 @@ from twisted.internet import defer
 from zope.interface import implements
 import os
 
-from cybertools.agent.system import rpcapi
-from cybertools.agent.system import sftpapi
+from cybertools.agent.system import xmlrpc
+from cybertools.agent.system import sftp
 from cybertools.agent.base.agent import Master
 from cybertools.agent.core.agent import QueueableAgent
 from cybertools.agent.interfaces import ITransporter
@@ -51,11 +51,11 @@ class Transporter(QueueableAgent):
         super(Transporter, self).__init__(master)
         config = master.config
         serverURL = config.transport.remote.url
-        self.server = rpcapi.xmlrpc.Proxy(serverURL)
+        self.server = xmlrpc.xmlrpc.Proxy(serverURL)
         userName = config.transport.remote.ftp.user
         password = config.transport.remote.ftp.password
         host = config.transport.remote.ftp.url
-        self.ftpServer = sftpapi.FileTransfer(host, self.port, userName, password)
+        self.ftpServer = sftp.FileTransfer(host, self.port, userName, password)
 
     def process(self):
         return self.transfer(self.params['resource'])

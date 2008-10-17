@@ -19,13 +19,13 @@ Agents for Job Execution and Communication Tasks
 
 
 Transporter
-==============
+===========
 
 The agent uses Twisted's cooperative multitasking model.
 
-The Transporter is used to contact an xmlrpc Server and transmit the metadata to the other
-loops system. The Transporter is derived from Queueable agent, because also here applies that only one
-item at a time is transmitted.
+The Transporter is used to contact an xmlrpc Server and transmit the metadata
+to the other loops system. The Transporter is derived from Queueable agent
+to ensure that only one item at a time is transmitted.
 
 Returns a deferred that must be supplied with a callback method (and in
 most cases also an errback method).

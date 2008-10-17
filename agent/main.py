@@ -53,17 +53,19 @@ def setup(configInfo=None):
 
 
 def setupEnvironment(config):
+    # self registration of components:
     from cybertools.agent.base import agent, control, job, log, schedule
     from cybertools.agent.core import agent, control, schedule
-    from cybertools.agent.control import cmdline, remote, ajaxclient
+    from cybertools.agent.control import cmdline, remote
+    from cybertools.agent.crawl import base, filesystem, outlook
     from cybertools.agent.transport import remote, loops
+    # API registration:
     from cybertools.agent.system.windows import api
     api.setup(config)
-    from cybertools.agent.system import rpcapi
-    rpcapi.setup(config)
-    from cybertools.agent.system import sftpapi
-    sftpapi.setup(config)
-    from cybertools.agent.crawl import base, filesystem, outlook
+    from cybertools.agent.system import http, xmlrpc, sftp
+    http.setup(config)
+    xmlrpc.setup(config)
+    sftp.setup(config)
 
 
 def startReactor():

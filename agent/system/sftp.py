@@ -17,14 +17,14 @@
 #
 
 """
-Configuration controlled import of twisted xmlrpc functionality
+Configuration-controlled import of sftp functionality.
 
 $Id: rpcapi.py
 """
 
 def setup(config):
-    global xmlrpc
-    if config.transport.remote.server == 'testing':
-        from cybertools.agent.testing.rpcserver import RPCServer, xmlrpc
+    global FileTransfer
+    if config.transport.remote.sftp == 'testing':
+        from cybertools.agent.testing.sftp import FileTransfer
     else:
-        from twisted.web import xmlrpc
+        from cybertools.agent.transport.file.sftp import FileTransfer

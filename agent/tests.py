@@ -42,6 +42,7 @@ def test_suite():
     testSuite = unittest.TestSuite((
             unittest.makeSuite(Test),
             DocFileSuite('README.txt', optionflags=flags),
+            DocFileSuite('talk/README.txt', optionflags=flags),
             DocFileSuite('crawl/README.txt', optionflags=flags),
             DocFileSuite('crawl/filesystem.txt', optionflags=flags),
             DocFileSuite('crawl/outlook.txt', optionflags=flags),

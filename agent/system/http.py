@@ -17,14 +17,15 @@
 #
 
 """
-Configuration controlled import of sftp functionality
+Configuration-controlled import of HTTP communication functionality.
 
 $Id: rpcapi.py
 """
 
 def setup(config):
-    global FileTransfer
-    if config.transport.remote.sftp == 'testing':
-        from cybertools.agent.testing.sftp import FileTransfer
+    global listener, getPage
+    if config.talk.http == 'testing':
+        from cybertools.agent.testing.http import listener, getPage
     else:
-        from cybertools.agent.transport.file.sftp import FileTransfer
+        from twisted.internet import reactor as listener
+        from twisted.web.client import getPage
