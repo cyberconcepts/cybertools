@@ -17,7 +17,9 @@
 #
 
 """
-Controller that accepts and processes requests via XML-RPC.
+Controller that receives and responds to requests from a browser (AJAX) client;
+in parallel it sends  informations to the client by responding to
+polling requests from the client.
 
 $Id$
 """
@@ -29,10 +31,10 @@ from cybertools.agent.core.control import SampleController
 from cybertools.agent.components import controllers
 
 
-class RemoteController(SampleController):
+class ClientController(SampleController):
 
     def setup(self):
-        super(RemoteController, self).setup()
+        super(ClientController, self).setup()
 
 
-controllers.register(RemoteController, Master, name='remote')
+controllers.register(ClientController, Master, name='ajaxclient')
