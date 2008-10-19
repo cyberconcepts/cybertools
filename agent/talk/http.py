@@ -28,7 +28,10 @@ from twisted.web.server import Site
 from zope.interface import implements
 
 from cybertools.agent.base.agent import Master
+from cybertools.agent.components import servers, clients
 from cybertools.agent.system.http import listener
+from cybertools.agent.talk.interfaces import IServer, IClient
+from cybertools.agent.talk.interfaces import ISession, IInteraction
 
 
 class RootResource(Resource):
@@ -46,10 +49,45 @@ class CommandHandler(Resource):
         return '{"message": "OK"}'
 
 
-class Handler(object):
+class HttpServer(object):
 
-    def listen(self, port):
-        return listener.listenTCP(port, Site(RootResource()))
+    implements(IServer)
 
-    def send(self, clientId, data):
-        return defer.Deferred()
+    def __init__(self, agent):
+        self.agent = agent
+        self.port = agent.config.talk.server.http.port
+        self.subscribers = {}
+
+    def setup(self):
+        print 'Setting up HTTP handler for port %i.' % self.port
+        listener.listenTCP(self.port, Site(RootResource()))
+
+    def subscribe(self, subscriber, aspect):
+        pass
+
+    def unsubscribe(self, subscriber, aspect):
+        pass
+
+    def send(self, client, data, interaction=None):
+        return defer.Deferred() # Interaction
+
+servers.register(HttpServer, Master, name='http')
+
+
+class HttpClient(object):
+
+    implements(IClient)
+
+    def __init__(self, agent):
+        self.agent = agent
+
+    def logon(self, subscriber, url):
+        return defer.Deferred() # Session
+
+    def logoff(self, session):
+        pass
+
+    def send(self, session, data, interaction=None):
+        return defer.Deferred() # Interaction
+
+clients.register(HttpClient, Master, name='http')

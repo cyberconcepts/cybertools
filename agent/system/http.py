@@ -19,12 +19,12 @@
 """
 Configuration-controlled import of HTTP communication functionality.
 
-$Id: rpcapi.py
+$Id$
 """
 
 def setup(config):
     global listener, getPage
-    if config.talk.http == 'testing':
+    if config.talk.http.handler == 'testing':
         from cybertools.agent.testing.http import listener, getPage
     else:
         from twisted.internet import reactor as listener

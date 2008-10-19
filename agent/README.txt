@@ -128,6 +128,8 @@ We make the contollers provide the specifications via the master agent's
 ``setup()`` method.
 
   >>> master.setup()
+  Starting agent application...
+  Using controllers base.sample.
 
 Other Agents
 ------------

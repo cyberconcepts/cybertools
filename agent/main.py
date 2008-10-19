@@ -47,18 +47,10 @@ def setup(configInfo=None):
     master = Master(configInfo)
     setupEnvironment(master.config)
     master.setup()
-    print 'Starting agent application...'
-    print 'Using controllers %s.' % ', '.join(master.config.controller.names)
     return master
 
 
 def setupEnvironment(config):
-    # self registration of components:
-    from cybertools.agent.base import agent, control, job, log, schedule
-    from cybertools.agent.core import agent, control, schedule
-    from cybertools.agent.control import cmdline, remote
-    from cybertools.agent.crawl import base, filesystem, outlook
-    from cybertools.agent.transport import remote, loops
     # API registration:
     from cybertools.agent.system.windows import api
     api.setup(config)
@@ -66,6 +58,13 @@ def setupEnvironment(config):
     http.setup(config)
     xmlrpc.setup(config)
     sftp.setup(config)
+    # self registration of components:
+    from cybertools.agent.base import agent, control, job, log, schedule
+    from cybertools.agent.core import agent, control, schedule
+    from cybertools.agent.control import cmdline, remote
+    from cybertools.agent.crawl import base, filesystem, outlook
+    from cybertools.agent.talk import http
+    from cybertools.agent.transport import remote, loops
 
 
 def startReactor():

@@ -27,6 +27,7 @@ from zope.interface import implements
 from cybertools.agent.common import states
 from cybertools.agent.components import agents, controllers, jobs
 from cybertools.agent.components import loggers, schedulers
+from cybertools.agent.components import servers, clients
 from cybertools.agent.interfaces import IAgent
 from cybertools.util.config import Configurator
 
@@ -71,15 +72,22 @@ class Master(Agent):
         self.master = self
         self.controllers = []
         self.children = {}
+        self.servers = []
 
     def setup(self):
         config = self.config
         self.logger = loggers(self, name=config.logger.name)
+        print 'Starting agent application...'
         for n in config.controller.names:
             self.controllers.append(controllers(self, n))
         self.scheduler = schedulers(self, name=config.scheduler.name)
         for cont in self.controllers:
             cont.setup()
+        print 'Using controllers %s.' % ', '.join(config.controller.names)
+        for n in  config.talk.server.names:
+            server = servers(self, n)
+            self.servers.append(server)
+            server.setup()
 
     def setupAgents(self, controller, agentSpecs):
         for spec in agentSpecs:
