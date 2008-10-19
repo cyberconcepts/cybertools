@@ -17,7 +17,7 @@
 #
 
 """
-Handling asynchronous and possibly asymmetric communication tasks.
+Handling asynchronous and possibly asymmetric communication tasks via HTTP.
 
 $Id$
 """
@@ -30,8 +30,38 @@ from zope.interface import implements
 from cybertools.agent.base.agent import Master
 from cybertools.agent.components import servers, clients
 from cybertools.agent.system.http import listener
+from cybertools.agent.talk.base import Session, Interaction
 from cybertools.agent.talk.interfaces import IServer, IClient
-from cybertools.agent.talk.interfaces import ISession, IInteraction
+
+
+# server implementation
+
+class HttpServer(object):
+
+    implements(IServer)
+
+    def __init__(self, agent):
+        self.agent = agent
+        self.port = agent.config.talk.server.http.port
+        self.subscribers = {}
+        self.sessions = {}
+        self.site = Site(RootResource())
+
+    def setup(self):
+        print 'Setting up HTTP handler for port %i.' % self.port
+        listener.listenTCP(self.port, self.site)
+
+    def subscribe(self, subscriber, aspect):
+        pass
+
+    def unsubscribe(self, subscriber, aspect):
+        pass
+
+    def send(self, session, data, interaction=None):
+        # respond to open poll request or put in queue
+        return defer.Deferred() # Interaction
+
+servers.register(HttpServer, Master, name='http')
 
 
 class RootResource(Resource):
@@ -46,33 +76,11 @@ class CommandHandler(Resource):
         self.command = path
 
     def render(self, request):
+        #
         return '{"message": "OK"}'
 
 
-class HttpServer(object):
-
-    implements(IServer)
-
-    def __init__(self, agent):
-        self.agent = agent
-        self.port = agent.config.talk.server.http.port
-        self.subscribers = {}
-
-    def setup(self):
-        print 'Setting up HTTP handler for port %i.' % self.port
-        listener.listenTCP(self.port, Site(RootResource()))
-
-    def subscribe(self, subscriber, aspect):
-        pass
-
-    def unsubscribe(self, subscriber, aspect):
-        pass
-
-    def send(self, client, data, interaction=None):
-        return defer.Deferred() # Interaction
-
-servers.register(HttpServer, Master, name='http')
-
+# client implementation
 
 class HttpClient(object):
 
@@ -81,10 +89,10 @@ class HttpClient(object):
     def __init__(self, agent):
         self.agent = agent
 
-    def logon(self, subscriber, url):
+    def connect(self, subscriber, url, credentials=None):
         return defer.Deferred() # Session
 
-    def logoff(self, session):
+    def disconnect(self, session):
         pass
 
     def send(self, session, data, interaction=None):

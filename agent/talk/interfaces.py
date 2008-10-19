@@ -57,7 +57,7 @@ class IClient(Interface):
         sent data to or receive data from the server.
     """
 
-    def logon(subscriber, url, credentials=None):
+    def connect(subscriber, url, credentials=None):
         """ Connect to a server using the URL given, optionally logging in
             with the credentials given.
 
@@ -67,7 +67,7 @@ class IClient(Interface):
             this may then be used sending data to the server.
         """
 
-    def logoff(session):
+    def disconnect(session):
         """ Close the connection for the session given.
         """
 
@@ -97,8 +97,8 @@ class ISession(Interface):
         a remote client connection within a server.
     """
 
-    issuer = Attribute("""The issuer of the session, i.e. the server or
-                client object, respectively.""")
+    manager = Attribute("""The server or client object, respectively, that
+                created the session.""")
 
     state = Attribute("""A string specifying the current state of the session:
                 'logon': The remote client is trying to connect/log in,
