@@ -35,6 +35,8 @@ class IState(Interface):
     title = Attribute('A user-readable name or title of the state')
     transitions = Attribute('A sequence of strings naming the transitions '
                     'that can be executed from this state')
+    security = Attribute('A callable setting the security settings for '
+                    'an object in this state when executed.')
 
 
 class ITransition(Interface):

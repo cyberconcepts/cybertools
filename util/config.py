@@ -26,6 +26,8 @@ $Id$
 import os
 from zope.interface import implements
 
+from cybertools.util.jeep import Jeep
+
 
 _not_found = object()
 

@@ -33,6 +33,7 @@ class State(object):
 
     implements(IState)
 
+    security = lambda context: None
     icon = None
     color = 'blue'
 
