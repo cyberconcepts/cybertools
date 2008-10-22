@@ -7,14 +7,7 @@
    >
 
   <resourceDirectory name="cybertools.icons" directory="icons" />
-
-  <!--<page for="*"
-        name="main.html"
-        template="main.pt"
-        class="cybertools.browser.view.GenericView"
-        permission="zope.Public"
-        menu="zmi_views" title="View"
-        />-->
+  <resourceDirectory name="cybertools.jocy" directory="jocy" />
 
   <menuItem
         for="*"
@@ -31,12 +24,6 @@
         template="liquid/body.pt"
         permission="zope.Public"
         />
-
-  <!--<page name="controller"
-        for="zope.publisher.interfaces.browser.IBrowserView"
-        class="cybertools.browser.controller.Controller"
-        permission="zope.Public"
-        />-->
 
   <zope:adapter
         for="* zope.publisher.interfaces.browser.IBrowserRequest"
