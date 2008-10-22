@@ -33,11 +33,8 @@
 
 <metal:image define-macro="image"
            tal:define="layout view/context/template">
-	<img src="cttlogo.jpg" alt="CTT Logo" width="178" height="111"
-          tal:attributes="src string:${view/page/resourceBase}${layout/src};
-                          alt layout/alt;
-                          width layout/width;
-                          height layout/height" />
-	<img src="seit1979.jpg" alt="seit 1979" width="451" height="111" style="margin-left: 2em;"
-          tal:attributes="src string:${view/page/resourceBase}seit1979.jpg;" />
+    <img tal:attributes="src string:${view/page/resourceBase}${layout/src};
+                         alt layout/alt;
+                         width layout/width;
+                         height layout/height" />
 </metal:image>
