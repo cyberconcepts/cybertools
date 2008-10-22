@@ -66,13 +66,13 @@ class MediaAssetFile(object):
         self.mimeType = contentType
 
     def getData(self, variant=None):
-        if variant == None:
+        if variant is None:
             return self.getOriginalData()
         path = self.getPath(variant)
         if not os.path.exists(path):
             getLogger('Asset Manager').warn(
                 'Media asset directory for transformation %r not found.' % variant)
-            return ''
+            return self.getOriginalData()
         f = open(path, 'rb')
         data =f.read()
         f.close()
@@ -110,7 +110,7 @@ class MediaAssetFile(object):
         assetdir = os.path.dirname(path)
         if not os.path.exists(assetdir):
             os.makedirs(assetdir)
-        excInfo = None  # Save info of exceptions that may occure
+        excInfo = None  # Save info of exceptions that may occur
         try:
             mediaFile = PILTransform()
             mediaFile.open(oldassetdir)
@@ -132,7 +132,7 @@ class MediaAssetFile(object):
                         mediaFile.crop(*dims)
                 elif command == "size":
                     size = [int(i) for i in args.split(",")]
-                    if size and len(size)==2:
+                    if size and len(size) == 2:
                         mediaFile.resize(*size)
             outputFormat = self.getContentType(variant)
             mediaFile.save(path, outputFormat)
