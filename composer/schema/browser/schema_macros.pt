@@ -84,25 +84,26 @@
 
 
 <metal:textline define-macro="input_textline">
-    <input type="text" name="field" style="width: 450px"
+    <input type="text" name="field" style="width: 450px; height: 1.5em"
            dojoType="dijit.form.ValidationTextBox"
            tal:define="width field/width|nothing"
            tal:attributes="name name; id name;
                            style python:
-                                'width: %s' % (width and str(width)+'px' or '450px');
+                                ('width: %s;;' % (width and str(width)+'px' or '450px')) +
+                                'height: 1.5em;;';
                            value data/?name|string:;
                            required field/required_js;" />
 </metal:textline>
 
 
 <metal:textline define-macro="input_date">
-    <input type="text" name="field" style="width: 8em"
+    <input type="text" name="field" style="width: 8em; height: 1.5em"
            dojoType="dijit.form.DateTextBox"
            tal:define="width field/width|nothing"
            tal:attributes="name name;
                            value data/?name|string:;
                            required field/required_js" />
-    <input type="text" name="field" style="width: 6em"
+    <input type="text" name="field" style="width: 6em; height: 1.5em"
            dojoType="dijit.form.TimeTextBox"
            tal:define="width field/width|nothing"
            tal:attributes="name name;
