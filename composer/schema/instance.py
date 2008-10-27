@@ -55,7 +55,10 @@ class Instance(BaseInstance):
                 fi = f.getFieldInstance(self)
                 name = f.name
                 value = getattr(self.context, name) or fi.default
-                value = (mode == 'view' and fi.display(value)) or fi.marshall(value)
+                if mode == 'view':
+                    value = fi.display(value)
+                else:
+                    value = fi.marshall(value)
                 result[name] = value
         return result
 

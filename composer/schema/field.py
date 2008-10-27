@@ -154,7 +154,7 @@ class FieldInstance(object):
         #return toStr(value)
 
     def display(self, value):
-        return value
+        return value or u''
         #return toStr(value)
 
     def unmarshall(self, value):
