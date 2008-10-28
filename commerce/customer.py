@@ -25,7 +25,7 @@ $Id$
 from zope.interface import implements, Interface
 
 from cybertools.commerce.common import RelationSet
-from cybertools.commerce.interfaces import ICustomer
+from cybertools.commerce.interfaces import ICustomer, IAddress
 
 
 class Customer(object):
@@ -39,3 +39,9 @@ class Customer(object):
         self.title = title or u'unknown'
         self.client = client
         self.shops = self.collection(self, 'customers')
+
+
+class Address(object):
+
+    implements(IAddress)
+

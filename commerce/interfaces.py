@@ -26,8 +26,9 @@ from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from zope.interface import Interface, Attribute
 from zope.i18nmessageid import MessageFactory
-from loops import util
+
 from cybertools.util.jeep import Jeep, Term
+from cybertools.organize.interfaces import IAddress
 from loops import util
 
 _ = MessageFactory('cybertools.commerce')
@@ -235,6 +236,24 @@ class ICustomer(Interface):
     shops = Attribute(u'The shops the client object is a customer of.')
 
     client = Attribute(u'An optional (real) client object of the customer role.')
+
+
+addressTypesVoc = util.KeywordVocabulary((
+        ('standard', _(u'Standard Address')),
+        ('invoice', _(u'Invoice Address')),
+        ('shipping', _(u'Shipping Address')),
+        ('defaultShipping', _(u'Default Shipping Address')),
+))
+
+
+class IAddress(IAddress):
+
+    addressType = schema.Choice(
+            title=_(u'Address Type'),
+            description=_(u'Address type.'),
+            source=addressTypesVoc,
+            default='standard',
+            required=False)
 
 
 # orders
