@@ -29,7 +29,8 @@ from zope import component
 from zope.cachedescriptors.property import Lazy
 from zope.traversing.browser import absoluteURL
 
-from cybertools.integrator.bscw import ContainerFactory
+from cybertools.integrator.base import mimeTypes
+from cybertools.integrator.bscw import ContainerFactory, File
 from cybertools.integrator.interfaces import IContainerFactory
 from cybertools.integrator.interfaces import IItemFactory, IFileFactory
 
@@ -71,9 +72,21 @@ class ItemView(BaseView):
         self.parentView = parentView
 
     @Lazy
+    def baseName(self):
+        return self.context.icon
+
+    @Lazy
     def url(self):
+        if isinstance(self.context, File):
+            return self.downloadUrl
         url = self.parentView.url
         return '%s?id=%s' % (url, self.context.internalPath)
+
+    @Lazy
+    def downloadUrl(self):
+        urlInfo = self.context.externalURLInfo
+        extension = (mimeTypes.get(self.context.contentType) or ['bin'])[0]
+        return '%s/d%s/%s.%s' % (urlInfo.baseUrl, urlInfo.path, self.title, extension)
 
     @property
     def breadCrumbs(self):
