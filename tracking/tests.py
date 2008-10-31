@@ -1,7 +1,11 @@
 # $Id$
 
 import unittest, doctest
+import os
 from zope.testing.doctestunit import DocFileSuite
+
+
+testDir = os.path.join(os.path.dirname(__file__), 'testdata')
 
 
 class Test(unittest.TestCase):

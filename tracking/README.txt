@@ -140,3 +140,27 @@ Tracking Views
 
   >>> from cybertools.tracking.browser import TrackingStorageView
 
+
+Track Read Access via a Log File
+================================
+
+  >>> import os
+  >>> from cybertools.tracking.tests import testDir
+  >>> from cybertools.tracking.logfile import Logger
+
+  >>> logfile = os.path.join(testDir, 'test.log')
+  >>> logger = Logger('test', logfile)
+
+  >>> logger.log('Test message #1')
+  >>> logger.log('Test message #2')
+
+  >>> logger.doRollover()
+  >>> logger.log('Test message #3')
+
+
+Fin de partie
+=============
+
+  >>> for fn in os.listdir(testDir):
+  ...     if '.log' in fn:
+  ...         os.unlink(os.path.join(testDir, fn))
