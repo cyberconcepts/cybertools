@@ -31,8 +31,8 @@ class Logger(object):
 
     handler = None
 
-    def __init__(self, logname, logfile, logformat='%(asctime)s;%(message)s',
-                 **kw):
+    def __init__(self, logname, logfile,
+                 logformat='%(asctime)s;%(message)s', **kw):
         self.logname = logname
         self.logfile = logfile
         self.logformat = logformat

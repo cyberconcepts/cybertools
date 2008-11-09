@@ -172,19 +172,23 @@ class TrackingStorage(BTreeContainer):
         trackId = self.idFromNum(self.trackNum)
         return trackId, self.trackNum
 
-    def saveUserTrack(self, taskId, runId, userName, data, update=False):
+    def saveUserTrack(self, taskId, runId, userName, data, update=False, timeStamp=None):
+        ts = timeStamp or getTimeStamp()
         if not runId:
             runId = self.currentRuns.get(taskId) or self.startRun(taskId)
         run = self.getRun(runId=runId)
         if run is None:
             raise ValueError('Invalid run: %i.' % runId)
-        run.end = getTimeStamp()
+        if run.end < ts:
+            run.end = ts
         if update:
             track = self.getLastUserTrack(taskId, runId, userName)
             if track is not None:
                 return self.updateTrack(track, data)
         trackId, trackNum = self.generateTrackId()
         track = self.trackFactory(taskId, runId, userName, data)
+        if timeStamp:
+            track.timeStamp = timeStamp
         self[trackId] = track
         self.indexTrack(trackNum, track)
         return trackId
