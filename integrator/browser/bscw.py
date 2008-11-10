@@ -85,10 +85,13 @@ class ItemView(BaseView):
     @Lazy
     def downloadUrl(self):
         urlInfo = self.context.externalURLInfo
+        baseUrl = urlInfo.baseUrl
+        while 'bscw.cgi' in baseUrl and not baseUrl.endswith('bscw.cgi'):
+            baseUrl, ignore = baseUrl.rsplit('/', 1)
         extension = '.' + (mimeTypes.get(self.context.contentType) or ['bin'])[0]
         if self.title.endswith(extension):
             extension = ''
-        return '%s/d%s/%s%s' % (urlInfo.baseUrl, urlInfo.path, self.title, extension)
+        return '%s/d%s/%s%s' % (baseUrl, urlInfo.path, self.title, extension)
 
     @property
     def breadCrumbs(self):
