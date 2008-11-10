@@ -28,7 +28,7 @@ from zope.interface import Interface, Attribute
 from zope.i18nmessageid import MessageFactory
 
 from cybertools.util.jeep import Jeep, Term
-from cybertools.organize.interfaces import IAddress
+from cybertools.organize.interfaces import IAddress as IBaseAddress
 from loops import util
 
 _ = MessageFactory('cybertools.commerce')
@@ -246,7 +246,7 @@ addressTypesVoc = util.KeywordVocabulary((
 ))
 
 
-class IAddress(IAddress):
+class IAddress(IBaseAddress):
 
     addressType = schema.Choice(
             title=_(u'Address Type'),
