@@ -48,7 +48,7 @@ class GlobalOptions(Options):
     _filename = None
     _lastChange = None
 
-    def __call__(self, key, default):
+    def __call__(self, key, default=None):
         if self._filename is not None:
             fn = self._filename
             if os.path.exists(fn):
