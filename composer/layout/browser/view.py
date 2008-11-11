@@ -111,6 +111,10 @@ class LayoutView(BaseView):
         manager = component.getUtility(ILayoutManager)
         return manager.getLayouts('.'.join((self.name, key)), self.context)
 
+    @Lazy
+    def title(self):
+        return self.client.title
+
 
 # subview providers
 

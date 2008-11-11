@@ -4,7 +4,7 @@
 
     <head metal:define-macro="head">
       <title metal:define-macro="title"
-           tal:content="options/title|view/headTitle|context/title|default">
+           tal:content="options/title|view/headTitle|view/title|default">
         Powered by Zope 3
       </title>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -15,6 +15,7 @@
 
       <base href="." tal:attributes="href request/URL">
     </head>
+
     <body tal:replace="structure body" />
 
   </html>
@@ -31,8 +32,9 @@
   </style>
 </metal:css>
 
+
 <metal:image define-macro="image"
-           tal:define="layout view/context/template">
+             tal:define="layout view/context/template">
     <img tal:attributes="src string:${view/page/resourceBase}${layout/src};
                          alt layout/alt;
                          width layout/width;
