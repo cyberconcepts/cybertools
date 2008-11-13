@@ -23,6 +23,7 @@ $Id$
 """
 
 from datetime import datetime
+from logging import getLogger
 from time import strptime, strftime
 from zope.interface import implements
 from zope.cachedescriptors.property import Lazy
@@ -233,7 +234,9 @@ class DateFieldInstance(NumberFieldInstance):
             try:
                 self.unmarshall(value)
             except (TypeError, ValueError, DateTimeParseError), e:
-                print '*** invalid_datetime:', value, e
+                #print '*** invalid_datetime:', value, e
+                getLogger('cybertools').warn(
+                        'DateFieldInstance: invalid datetime: %s, %s' % (value, e))
                 self.setError('invalid_datetime')
 
 
