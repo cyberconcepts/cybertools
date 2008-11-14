@@ -1,0 +1,44 @@
+==========================
+JSON Endoding and Decoding
+==========================
+
+$Id$
+
+This is a stripped-down version of simplejson
+by Bob Ippolito, http://undefined.org/python/
+
+  >>> from cybertools.util.json import dumps, loads
+
+Encoding basic Python object hierarchies::
+
+    >>> dumps(['foo', {'bar': ('baz', None, 1.0, 2)}])
+    '["foo", {"bar": ["baz", null, 1.0, 2]}]'
+    >>> print dumps("\"foo\bar")
+    "\"foo\bar"
+    >>> print dumps(u'\u1234')
+    "\u1234"
+    >>> print dumps('\\')
+    "\\"
+    >>> print dumps({"c": 0, "b": 0, "a": 0}, sort_keys=True)
+    {"a": 0, "b": 0, "c": 0}
+
+Compact encoding::
+
+    >>> dumps([1,2,3,{'4': 5, '6': 7}], separators=(',',':'))
+    '[1,2,3,{"4":5,"6":7}]'
+
+Pretty printing::
+
+    >>> print dumps({'4': 5, '6': 7}, sort_keys=True, indent=4)
+    {
+        "4": 5,
+        "6": 7
+    }
+
+Decoding JSON::
+
+    >>> loads('["foo", {"bar":["baz", null, 1.0, 2]}]')
+    [u'foo', {u'bar': [u'baz', None, 1.0, 2]}]
+    >>> loads('"\\"foo\\bar"')
+    u'"foo\x08ar'
+
