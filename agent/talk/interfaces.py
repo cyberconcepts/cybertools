@@ -24,8 +24,6 @@ $Id$
 
 from zope.interface import Interface, Attribute
 
-from cybertools.util.jeep import Jeep
-
 
 class IServer(Interface):
     """ A server waits for connection requests from a client. A connected

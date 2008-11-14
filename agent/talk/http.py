@@ -36,6 +36,7 @@ from cybertools.agent.talk.interfaces import IServer, IClient
 
 # server implementation
 
+#@server
 class HttpServer(object):
 
     implements(IServer)
@@ -82,6 +83,7 @@ class CommandHandler(Resource):
 
 # client implementation
 
+#@client
 class HttpClient(object):
 
     implements(IClient)
