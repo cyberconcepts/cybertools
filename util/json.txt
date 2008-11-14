@@ -1,5 +1,5 @@
 ==========================
-JSON Endoding and Decoding
+JSON Encoding and Decoding
 ==========================
 
 $Id$
