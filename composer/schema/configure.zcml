@@ -3,7 +3,7 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
-    i18n_domain="zope">
+    i18n_domain="cybertools.composer.schema">
 
   <adapter factory="cybertools.composer.schema.client.ClientFactory" />
   <adapter factory="cybertools.composer.schema.instance.ClientInstance" />

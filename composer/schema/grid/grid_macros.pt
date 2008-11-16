@@ -1,0 +1,24 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      i18n:domain="cybertools.composer.schema">
+<body>
+
+
+<metal:input define-macro="input_grid">
+
+    <span dojoType="dojo.data.ItemFileWriteStore"
+          tal:attributes="jsId string:store_$name;
+                          data data/?name"/>
+
+    <table dojoType="dojox.grid.DataGrid"
+           style="width: 35em; height: 15em"
+           tal:attributes="name name; id name;
+                           store string:store_$name">
+     <thead>
+       <tr>
+         <tal:header repeat="column field/columns">
+           <th tal:attributes="field column/name"
+               tal:content="column/title">Column Title</th>
+         </tal:header>
+       </tr></thead></table>
+
+</metal:input>
