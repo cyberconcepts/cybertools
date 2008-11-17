@@ -61,6 +61,7 @@ class Layout(Template):
     title = description = u''
     category = 'default'
     renderer = None
+    instanceName = ''
     order = 50
     sublayouts = None
 
@@ -93,7 +94,8 @@ class LayoutInstance(object):
         sublayouts = self.template.sublayouts
         for l in region.layouts:
             if sublayouts is None or l.name in sublayouts:
-                li = ILayoutInstance(self.context)
+                li = component.getAdapter(self.context, ILayoutInstance,
+                                          name=l.instanceName)
                 li.template = l
                 result.append(li)
         return result

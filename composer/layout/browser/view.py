@@ -73,7 +73,8 @@ class Page(BaseView):
             if n in layoutNames:
                 layout = layouts[n]
                 break
-        instance = ILayoutInstance(self.context)
+        instance = component.getAdapter(self.context, ILayoutInstance,
+                                        name=layout.instanceName)
         instance.template = layout
         view = LayoutView(instance, self.request, name='page',
                           parent=self, page=self)
