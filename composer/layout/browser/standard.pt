@@ -1,6 +1,7 @@
 <metal:page define-macro="page"><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
-        tal:define="body view/body">
+        tal:define="body view/body;
+                    layout view/context/template">
 
     <head metal:define-macro="head">
       <title metal:define-macro="title"
@@ -12,6 +13,9 @@
       <tal:css repeat="view view/layouts/css">
         <metal:css use-macro="view/renderer" />
       </tal:css>
+
+      <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"
+            tal:attributes="href string:${view/page/resourceBase}${layout/favicon}" />
 
       <base href="." tal:attributes="href request/URL">
     </head>

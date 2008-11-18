@@ -5,6 +5,10 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="cybertools.composer">
 
+  <browser:resourceDirectory name="default" directory="resources" />
+
+  <!-- main layouts -->
+
   <zope:utility
         component="cybertools.composer.layout.browser.default.page"
         provides="cybertools.composer.layout.interfaces.ILayout"

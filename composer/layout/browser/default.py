@@ -33,7 +33,8 @@ defaultRenderers = RendererFactory(ViewPageTemplateFile('default.pt'))
 
 
 page = Layout('page', 'page', renderer=standardRenderers['page'],
-              sublayouts=set(['css.liquid', 'body.liquid']))
+              sublayouts=set(['css.liquid', 'body.liquid']),
+              favicon='default/favicon.png')
 
 logo = Layout('logo.default', 'body.logo', renderer=defaultRenderers.logo)
 
