@@ -186,7 +186,10 @@ class NumberFieldInstance(FieldInstance):
     def unmarshall(self, value):
         if not value:
             return None
-        return int(value)
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return float(value)
 
     def validate(self, value, data=None):
         if value in ('', None):
