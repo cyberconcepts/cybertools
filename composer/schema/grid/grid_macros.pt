@@ -3,7 +3,9 @@
 <body>
 
 
-<metal:input define-macro="input_grid">
+<metal:input define-macro="input_grid"
+             tal:define="fieldInstance python: field.getFieldInstance(view.instance);
+                         columns fieldInstance/columnTypes">
 
     <span dojoType="dojo.data.ItemFileWriteStore"
           tal:attributes="jsId string:store_$name;
@@ -15,7 +17,7 @@
                            store string:store_$name">
      <thead>
        <tr>
-         <tal:header repeat="column field/columns">
+         <tal:header repeat="column columns">
            <th tal:attributes="field column/name"
                tal:content="column/title">Column Title</th>
          </tal:header>

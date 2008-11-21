@@ -28,8 +28,63 @@ from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 import zope.schema
 
+from cybertools.composer.schema.factory import createField
+from cybertools.composer.schema.field import ListFieldInstance
 from cybertools.composer.schema.interfaces import IField, IFieldInstance
 from cybertools.composer.schema.interfaces import fieldTypes, undefined
 from cybertools.util.format import toStr, toUnicode
+from cybertools.util import json
 
 
+class GridFieldInstance(ListFieldInstance):
+
+    @Lazy
+    def columnTypes(self):
+        return [createField(t) for t in self.context.baseField.column_types]
+
+    @Lazy
+    def columnFieldInstances(self):
+        result = []
+        for f in self.columnTypes:
+            instanceName = (f.instance_name or
+                            f.getFieldTypeInfo().instanceName)
+            result.append(component.getAdapter(f, IFieldInstance,
+                                               name=instanceName))
+        return result
+
+    def marshall(self, value):
+        if isinstance(value, basestring):
+            return value
+        # TODO: marshall values!
+        v = value or []
+        empty = {}
+        for fi in self.columnFieldInstances:
+            default = fi.default
+            if default is None:
+                default = ''
+            empty[fi.name] = str(default)
+        for i in range(3):
+            v.append(empty)
+        return json.dumps(dict(items=v))
+
+    def display(self, value):
+        headers = [fi.context.title for fi in self.columnFieldInstances]
+        rows = []
+        for item in value or []:
+            row = []
+            for fi in self.columnFieldInstances:
+                row.append(fi.display(item[fi.name]))
+            rows.append(row)
+        return dict(headers=headers, rows=rows)
+
+    def unmarshall(self, value):
+        if not value:
+            return []
+        result = []
+        rows = json.loads(value)['items']
+        for row in rows:
+            item = {}
+            for fi in self.columnFieldInstances:
+                item[fi.name] = fi.unmarshall(row[fi.name])
+            result.append(item)
+        return result

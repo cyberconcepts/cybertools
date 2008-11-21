@@ -99,3 +99,25 @@ class SchemaFactory(object):
                     baseField=field,)
             fields.append(f)
         return Schema(name=interface.__name__, *fields, **kw)
+
+
+def createField(field, info=None):
+    if info is None:
+        info = getattr(field, '__typeInfo__', ('textline',))
+    voc = (getattr(field, 'vocabulary', ()) or
+           getattr(field, 'vocabularyName', None))
+    f = Field(field.getName(),
+              fieldType=info[0],
+              fieldTypeInfo=len(info) > 1 and info[1] or None,
+              required=field.required,
+              default=field.default,
+              default_method=getattr(field, 'default_method', None),
+              vocabulary=voc,
+              title=field.title,
+              description=field.description,
+              readonly=field.readonly,
+              #value_type=getattr(field, 'value_type', None),
+              nostore=getattr(field, 'nostore', False),
+              multiple=getattr(field, 'multiple', False),
+              baseField=field,)
+    return f
