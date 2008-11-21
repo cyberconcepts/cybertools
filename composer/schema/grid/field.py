@@ -78,13 +78,22 @@ class GridFieldInstance(ListFieldInstance):
         return dict(headers=headers, rows=rows)
 
     def unmarshall(self, value):
+        value = value.strip()
         if not value:
             return []
         result = []
         rows = json.loads(value)['items']
         for row in rows:
             item = {}
+            empty = True
             for fi in self.columnFieldInstances:
-                item[fi.name] = fi.unmarshall(row[fi.name])
-            result.append(item)
+                value = fi.unmarshall(row[fi.name])
+                item[fi.name] = value
+                if fi.default is not None:
+                    if value != fi.default:
+                        empty = False
+                elif value:
+                    empty = False
+            if not empty:
+                result.append(item)
         return result
