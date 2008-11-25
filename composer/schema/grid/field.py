@@ -23,9 +23,10 @@ $Id$
 """
 
 from zope import component
-from zope.interface import implements
-from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
+from zope.interface import implements
+from zope.app.pagetemplate import ViewPageTemplateFile
+from zope.cachedescriptors.property import Lazy
 import zope.schema
 
 from cybertools.composer.schema.factory import createField
@@ -34,6 +35,9 @@ from cybertools.composer.schema.interfaces import IField, IFieldInstance
 from cybertools.composer.schema.interfaces import fieldTypes, undefined
 from cybertools.util.format import toStr, toUnicode
 from cybertools.util import json
+
+
+grid_macros = ViewPageTemplateFile('grid_macros.pt')
 
 
 class GridFieldInstance(ListFieldInstance):

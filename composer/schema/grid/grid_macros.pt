@@ -6,21 +6,37 @@
 <metal:input define-macro="input_grid"
              tal:define="fieldInstance python: field.getFieldInstance(view.instance);
                          columns fieldInstance/columnTypes">
-
-    <span dojoType="dojo.data.ItemFileWriteStore"
-          tal:attributes="jsId string:store_$name;
-                          data data/?name"/>
-
-    <table dojoType="dojox.grid.DataGrid"
-           style="width: 35em; height: 15em"
-           tal:attributes="name name; id name;
+    <script type="text/javascript" language="JavaScript"
+            tal:content="string:
+                data_$name = dojo.fromJson('${data/?name}');
+                store_$name = new dojo.data.ItemFileWriteStore({data: data_$name});
+                store_$name._saveEverything = function(ccb, ecb, data) {
+                        dojo.byId('$name').value = data;
+                    };
+                dojo.connect(dojo.byId('editForm'), 'onsubmit', function(evt) {
+                        dijit.byId('grid_$name').edit.apply();
+                        store_$name.save();
+                    });">
+    </script>
+    <textarea rows="3" style="display: none"
+              tal:attributes="name name; id name">
+    </textarea>
+    <table dojoType="dojox.grid.DataGrid" query="{name: '*'}"
+           style="width: 100%; height: 12em"
+           singleClickEdit="true"
+           tal:attributes="id string:grid_$name;
                            store string:store_$name">
-     <thead>
-       <tr>
-         <tal:header repeat="column columns">
-           <th tal:attributes="field column/name"
-               tal:content="column/title">Column Title</th>
-         </tal:header>
-       </tr></thead></table>
-
+      <thead>
+        <tr>
+          <tal:header repeat="column columns">
+            <th width="auto" editable="true"
+                tal:attributes="field column/name"
+                tal:content="column/title">Column Title</th>
+          </tal:header>
+        </tr></thead>
+    </table>
 </metal:input>
+
+
+</body>
+</html>
