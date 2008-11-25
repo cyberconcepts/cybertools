@@ -62,8 +62,9 @@ class GridFieldInstance(ListFieldInstance):
         # TODO: marshall values!
         v = value or []
         for row in v:
-            for k in row:
-                row[k] = row[k].replace('\n', '\\n')
+            for k, v in row.items():
+                if isinstance(v, basestring):
+                    row[k] = v.replace('\n', '\\n')
         empty = {}
         for fi in self.columnFieldInstances:
             default = fi.default
