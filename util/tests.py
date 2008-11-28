@@ -28,6 +28,7 @@ def test_suite():
         doctest.DocFileSuite('json.txt', optionflags=flags),
         doctest.DocFileSuite('jeep.txt', optionflags=flags),
         doctest.DocFileSuite('randomname.txt', optionflags=flags),
+        doctest.DocFileSuite('version.txt', optionflags=flags),
         ))
 
 if __name__ == '__main__':

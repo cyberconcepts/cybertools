@@ -30,7 +30,7 @@ class Jeep(object):
 
     _attributes = ('_sequence',)
 
-    def __init__(self, seq=[]):
+    def __init__(self, seq=[], **kw):
         if isinstance(seq, Jeep):
             self._sequence = list(seq.keys())
             for key, value in seq.items():
@@ -44,6 +44,8 @@ class Jeep(object):
                     object.__setattr__(self, attr, value)
                 else:
                     self.append(item)
+        for k, v in kw.items():
+            self[k] = v
 
     def __len__(self):
         return len(self._sequence)
