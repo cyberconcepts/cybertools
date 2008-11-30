@@ -10,14 +10,14 @@ $Id$
 
   >>> v = versions.get('cybertools.util.version')
   >>> v
-  cybertools.util.version 0.4-3005
+  cybertools.util.version 0.4-3014
   >>> print v
-  0.4-3005
+  0.4-3014
   >>> v.short
   '0.4'
 
   >>> v = versions.get('foo')
   >>> v
-  foo 0.0-0000
+  foo 0.0-3014
   >>> print v
-  0.0-0000
+  0.0-3014

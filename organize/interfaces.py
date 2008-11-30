@@ -406,3 +406,14 @@ class IServiceProvider(Interface):
     """ A party, that is responsible for providing a service.
     """
 
+
+# jobs
+
+class IJobManager(Interface):
+    """ Collects and executes jobs.
+    """
+
+    def process():
+        """ Do what has to be done...
+        """
+
