@@ -93,6 +93,8 @@ class StatefulAdapter(Stateful):
 
     statesAttributeName = '__stateful_states__'
 
+    request = None
+
     def __init__(self, context):
         self.context = context
 
@@ -110,7 +112,7 @@ class StatefulAdapter(Stateful):
 
     def notify(self, transition, previousState):
         transObject = self.getStatesDefinition().transitions[transition]
-        notify(TransitionEvent(self.context, transObject, previousState))
+        notify(TransitionEvent(self.context, transObject, previousState, self.request))
 
 
 class IndexInfo(object):
@@ -135,9 +137,10 @@ class TransitionEvent(ObjectEvent):
 
     implements(ITransitionEvent)
 
-    def __init__(self, obj, transition, previousState):
+    def __init__(self, obj, transition, previousState, request=None):
         super(TransitionEvent, self).__init__(obj)
         self.transition = transition
         self.previousState = previousState
+        self.request = request
 
 

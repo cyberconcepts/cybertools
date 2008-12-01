@@ -83,6 +83,8 @@ class IStateful(Interface):
             for the current state.
         """
 
+    request = Attribute('Optional publication request.')
+
 
 class IHistorizable(Interface):
     """ An object that may record history information, e.g. when
@@ -136,3 +138,4 @@ class ITransitionEvent(IObjectEvent):
 
     transition = Attribute('The transition.')
     previousState = Attribute('The name of the state before the transition.')
+    request = Attribute('Optional publication request.')
