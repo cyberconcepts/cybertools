@@ -1,11 +1,11 @@
 <!-- $Id$ -->
 
 <configure
-   xmlns="http://namespaces.zope.org/zope"
-   i18n_domain="zope"
-   >
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="zope">
 
   <include package=".browser" />
+  <include package=".organize" />
   <include package=".relation" />
   <include package=".reporter" />
 
