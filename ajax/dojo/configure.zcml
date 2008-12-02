@@ -20,6 +20,16 @@
         provides="cybertools.composer.layout.interfaces.ILayout"
         name="js.dojo.require" />
 
+  <zope:utility
+        component="cybertools.ajax.dojo.layout.dojoCss"
+        provides="cybertools.composer.layout.interfaces.ILayout"
+        name="css.dojo" />
+
+  <zope:utility
+        component="cybertools.ajax.dojo.layout.dojoCssTundra"
+        provides="cybertools.composer.layout.interfaces.ILayout"
+        name="css.dojo.tundra" />
+
   <zope:adapter
         for="*"
         name="dojo"

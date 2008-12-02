@@ -27,6 +27,7 @@ from zope.cachedescriptors.property import Lazy
 
 from cybertools.browser.renderer import RendererFactory
 from cybertools.composer.layout.base import Layout, LayoutInstance
+from cybertools.composer.layout.browser.standard import standardRenderers
 
 dojoRenderers = RendererFactory(ViewPageTemplateFile('macros.pt'))
 
@@ -37,6 +38,12 @@ dojo = Layout('js.dojo', 'page.js', renderer=dojoRenderers.dojo,
 dojoRequire = Layout('js.dojo.require', 'page.js',
                 renderer=dojoRenderers.dojo_require,
                 instanceName='dojo', order=50)
+
+dojoCss = Layout('css.dojo', 'page.css', renderer=standardRenderers.css,
+             media='all', resource='ajax.dojo/dojo/resources/dojo.css')
+
+dojoCssTundra = Layout('css.dojo.tundra', 'page.css', renderer=standardRenderers.css,
+             media='all', resource='ajax.dojo/dijit/themes/tundra/tundra.css')
 
 
 class DojoLayoutInstance(LayoutInstance):
