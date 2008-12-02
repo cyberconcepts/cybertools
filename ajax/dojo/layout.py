@@ -49,5 +49,5 @@ class DojoLayoutInstance(LayoutInstance):
         packages = djInfo.get('requirements', set())
         out = StringIO()
         for p in packages:
-            out.write('dojo.require(%s); ' % p)
+            out.write("dojo.require('%s'); " % p)
         return out.getvalue()
