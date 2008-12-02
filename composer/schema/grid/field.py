@@ -64,7 +64,7 @@ class GridFieldInstance(ListFieldInstance):
         for row in v:
             for k, vr in row.items():
                 if isinstance(vr, basestring):
-                    row[k] = vr.replace('\n', '\\n')
+                    row[k] = vr.replace('\n', '\\n').replace('"', '\\"')
         empty = {}
         for fi in self.columnFieldInstances:
             default = fi.default

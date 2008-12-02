@@ -59,7 +59,7 @@
         </tal:errors>
         <tr>
           <tal:field>
-            <td style="padding: 4px; border-top: none"
+            <td style="padding: 4px; border-top: none; vertical-align: top"
                 tal:attributes="title field/description">
               <b tal:content="field/title">...</b><span
                     tal:condition="field/required">&nbsp;*</span>
