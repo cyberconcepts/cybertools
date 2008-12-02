@@ -1,24 +1,42 @@
 <!-- $Id$ -->
 
 <configure
-    xmlns="http://namespaces.zope.org/browser"
-    xmlns:zope="http://namespaces.zope.org/zope"
-    i18n_domain="zope">
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zope="http://namespaces.zope.org/zope">
 
-  <resourceDirectory name="ajax.dojo" directory="dojo" />
+  <!-- resources -->
 
-  <page
+  <browser:resourceDirectory name="ajax.dojo" directory="dojo" />
+
+  <!-- layouts -->
+
+  <zope:utility
+        component="cybertools.ajax.dojo.layout.dojo"
+        provides="cybertools.composer.layout.interfaces.ILayout"
+        name="js.dojo" />
+
+  <zope:utility
+        component="cybertools.ajax.dojo.layout.dojoRequire"
+        provides="cybertools.composer.layout.interfaces.ILayout"
+        name="js.dojo.require" />
+
+  <zope:adapter
+        for="*"
+        name="dojo"
+        factory="cybertools.ajax.dojo.layout.DojoLayoutInstance" />
+
+  <!-- views -->
+
+  <browser:page
       for="*"
       name="ajax.dojo"
       template="macros.pt"
-      permission="zope.Public"
-      />
+      permission="zope.Public" />
 
-  <page
+  <browser:page
       for="*"
       name="ajax.inner.html"
       template="../innerHtml.pt"
-      permission="zope.ManageContent"
-      />
+      permission="zope.ManageContent" />
 
 </configure>

@@ -1,8 +1,24 @@
-<metal:def define-macro="main">
+<!-- $Id$ -->
 
+<metal:def define-macro="main">
   <script type="text/javascript" src="ajax.dojo/dojo.js"
           tal:attributes="src context/++resource++ajax.dojo/dojo/dojo.js;
                           djConfig macro/djConfig|nothing">
   </script>
-
 </metal:def>
+
+
+<metal:js define-macro="dojo">
+  <script type="text/javascript"
+          src="/@@/ajax.dojo/dojo/dojo.js"
+          tal:attributes="djConfig view/context/djConfig|nothing">
+  </script>
+</metal:js>
+
+
+<metal:js define-macro="dojo_require"
+          tal:define="layout view/context/template">
+  <script type="text/javascript" language="JavaScript"
+          tal:content="view/context/content">
+  </script>
+</metal:js>

@@ -206,6 +206,7 @@ class ICategory(Interface):
     shops = Attribute(u'The shops providing this category.')
     accessories = Attribute(u'Accessories for this category.')
 
+
 # customers
 
 class ICustomer(Interface):

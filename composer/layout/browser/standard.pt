@@ -14,6 +14,10 @@
         <metal:css use-macro="view/renderer" />
       </tal:css>
 
+      <tal:js repeat="view view/layouts/js">
+        <metal:js use-macro="view/renderer" />
+      </tal:js>
+
       <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"
             tal:attributes="href string:${view/page/resourceBase}${layout/favicon}" />
 
@@ -35,6 +39,22 @@
       @import url(some.css);
   </style>
 </metal:css>
+
+
+<metal:js define-macro="js"
+          tal:define="layout view/context/template">
+  <script type="text/javascript"
+          tal:attributes="src string:${view/page/resourceBase}${layout/resource});">
+  </script>
+</metal:js>
+
+
+<metal:js define-macro="js-execute"
+          tal:define="layout view/context/template">
+  <script type="text/javascript" language="JavaScript"
+          tal:content="layout/content">
+  </script>
+</metal:js>
 
 
 <metal:image define-macro="image"

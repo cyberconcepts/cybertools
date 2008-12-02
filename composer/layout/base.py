@@ -70,6 +70,13 @@ class Layout(Template):
         self.regionName = regionName
         for k, v in kw.items():
             setattr(self, k, v)
+        #self.register()
+
+    def register(self):
+        existing = component.queryUtility(ILayout, name=self.name)
+        if existing:
+            raise ValueError('Layout %s has already been registered.' % self.name)
+        component.provideUtility(self, provides=ILayout, name=self.name)
 
 
 class LayoutInstance(object):
