@@ -40,10 +40,12 @@ dojoRequire = Layout('js.dojo.require', 'page.js',
                 instanceName='dojo', order=50)
 
 dojoCss = Layout('css.dojo', 'page.css', renderer=standardRenderers.css,
-             media='all', resource='ajax.dojo/dojo/resources/dojo.css')
+             media='all', resource='ajax.dojo/dojo/resources/dojo.css',
+             order=10)
 
 dojoCssTundra = Layout('css.dojo.tundra', 'page.css', renderer=standardRenderers.css,
-             media='all', resource='ajax.dojo/dijit/themes/tundra/tundra.css')
+             media='all', resource='ajax.dojo/dijit/themes/tundra/tundra.css',
+             order=11)
 
 
 class DojoLayoutInstance(LayoutInstance):
