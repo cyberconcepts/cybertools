@@ -1,0 +1,36 @@
+<html metal:use-macro="context/@@standard_macros/view"
+      i18n:domain="zope">
+<body>
+
+
+<div metal:fill-slot="body">
+  <h1>Track Details for <span tal:content="view/id" /></h1>
+  <table>
+    <tr>
+      <td>Task:</td>
+      <td><a tal:omit-tag="not:view/taskUrl"
+             tal:attributes="href view/taskUrl"
+             tal:content="view/taskTitle" /></td>
+    </tr>
+    <tr>
+      <td>Run:</td>
+      <td tal:content="view/run"></td>
+    </tr>
+    <tr>
+      <td>User:</td>
+      <td><a tal:omit-tag="not:view/userUrl"
+             tal:attributes="href view/userUrl"
+             tal:content="view/userTitle" /></td>
+    </tr>
+    <tr>
+      <td>Timestamp:</td>
+      <td tal:content="view/timeStamp"></td>
+    </tr>
+  </table>
+  <h2>Data</h2>
+  <div tal:content="context/data" />
+</div>
+
+
+</body>
+</html>

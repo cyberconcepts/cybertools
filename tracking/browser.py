@@ -33,20 +33,21 @@ from cybertools.container.base import ContainerView, contents_template
 from cybertools.tracking.btree import timeStamp2ISO
 
 
-tracking_template = ViewPageTemplateFile('tracking.pt')
+tracks_template = ViewPageTemplateFile('tracks.pt')
+track_template = ViewPageTemplateFile('track.pt')
 
 
 class TrackingStorageView(ContainerView):
 
     contents_template = contents_template
-    template = tracking_template
+    template = tracks_template
 
     def __call__(self):
         return self.template()
 
     def getTracks(self):
         for tr in reversed(removeSecurityProxy(self.context.values())):
-            view = component.queryMultiAdapter((tr, self.request))
+            view = component.queryMultiAdapter((tr, self.request), name='index.html')
             if view:
                 yield view
             else:
@@ -55,9 +56,14 @@ class TrackingStorageView(ContainerView):
 
 class TrackView(object):
 
+    template = track_template
+
     def __init__(self, context, request):
         self.context = context
         self.request = request
+
+    def __call__(self):
+        return self.template()
 
     @Lazy
     def id(self):
