@@ -25,8 +25,7 @@ $Id$
 import re
 from zope.interface import implements
 
-from cybertools.wiki.base.link import Link
-from cybertools.wiki.base.manager import SampleManager
+from cybertools.wiki.base.link import Link, LinkManager
 from cybertools.wiki.interfaces import IFormat, IFormatInstance
 
 
@@ -73,7 +72,7 @@ class BasicFormat(object):
 
     def __init__(self, manager=None):
         if manager is None:
-            manager = SampleManager()
+            manager = LinkManager()
         self.manager = manager
 
     def getInstance(self, context):

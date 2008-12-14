@@ -25,7 +25,34 @@ $Id$
 import re
 from zope.interface import implements
 
-from cybertools.wiki.interfaces import ILink
+from cybertools.wiki.interfaces import ILink, ILinkManager
+
+
+class LinkManager(object):
+    """ A very basic link manager implementation.
+    """
+
+    implements(ILinkManager)
+
+    def __init__(self):
+        self.links = {}
+
+    def registerLink(self, link):
+        if link.identifier is None:
+            self.generateLinkIdentifier(link)
+        if link.identifier not in self.links:
+            self.links[link.identifier] = link
+            link.manager = self
+
+    def unregisterLink(self, link):
+        if link.identifier in self.links:
+            del self.links[link.identifier]
+            link.manager = None
+
+    def generateLinkIdentifier(self, link):
+        identifier = 'l%07i' % (max(self.links.keys() or [0]) + 1)
+        link.identifier = identifier
+        return identifier
 
 
 class Link(object):

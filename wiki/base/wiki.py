@@ -17,37 +17,30 @@
 #
 
 """
-A Wiki manager, i.e. a repository for pages and other information like
-links, images, etc.
+A Wiki manager managing wikis and wiki-related objects, esp plugins.
 
 $Id$
 """
 
 from zope.interface import implements
 
-from cybertools.wiki.interfaces import IWikiManager
+from cybertools.wiki.interfaces import IWikiManager, IWiki, IWikiPage
 
 
-class SampleManager(object):
-    """ A very basic Wiki manager implementation.
-    """
+class WikiManager(object):
+
+    implements(IWikiManager)
 
     def __init__(self):
-        self.links = {}
+        self.wikis = {}
+        self.plugins = {}
 
-    def registerLink(self, link):
-        if link.identifier is None:
-            self.generateLinkIdentifier(link)
-        if link.identifier not in self.links:
-            self.links[link.identifier] = link
-            link.manager = self
 
-    def unregisterLink(self, link):
-        if link.identifier in self.links:
-            del self.links[link.identifier]
-            link.manager = None
+class Wiki(object):
 
-    def generateLinkIdentifier(self, link):
-        identifier = 'l%07i' % (max(self.links.keys() or [0]) + 1)
-        link.identifier = identifier
-        return identifier
+    implements(IWiki)
+
+
+class WikiPage(object):
+
+    implements(IWikiPage)
