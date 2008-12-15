@@ -76,9 +76,11 @@ class WikiPage(object):
         return self.write(self.parse())
 
     def parse(self):
+        # TODO: delegate to parser plugin
         return publish_doctree(self.text)
 
     def write(self, tree):
+        # TODO: delegate to writer plugin, use translator plugins
         writer = Writer()
         writer.translator_class = HTMLBodyTranslator
         return publish_from_doctree(tree, writer=writer)
