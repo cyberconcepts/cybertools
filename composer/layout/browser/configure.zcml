@@ -7,42 +7,11 @@
 
   <browser:resourceDirectory name="default" directory="resources" />
 
-  <!-- main layouts -->
+  <!-- layouts -->
 
-  <zope:utility
-        component="cybertools.composer.layout.browser.default.page"
-        provides="cybertools.composer.layout.interfaces.ILayout"
-        name="page" />
+  <zope:module module="cybertools.composer.layout.browser.default" />
 
-  <zope:utility
-        component="cybertools.composer.layout.browser.default.logo"
-        provides="cybertools.composer.layout.interfaces.ILayout"
-        name="logo.default" />
-
-  <zope:utility
-        component="cybertools.composer.layout.browser.default.top_actions"
-        provides="cybertools.composer.layout.interfaces.ILayout"
-        name="column2.top_actions" />
-
-  <zope:utility
-        component="cybertools.composer.layout.browser.default.column1"
-        provides="cybertools.composer.layout.interfaces.ILayout"
-        name="column1.default" />
-
-  <zope:utility
-        component="cybertools.composer.layout.browser.default.content"
-        provides="cybertools.composer.layout.interfaces.ILayout"
-        name="content.default" />
-
-  <zope:utility
-        component="cybertools.composer.layout.browser.default.column2"
-        provides="cybertools.composer.layout.interfaces.ILayout"
-        name="column2.default" />
-
-  <zope:utility
-        component="cybertools.composer.layout.browser.default.footer"
-        provides="cybertools.composer.layout.interfaces.ILayout"
-        name="footer.default" />
+  <!-- skin-specific layouts -->
 
   <include package=".liquid" />
 

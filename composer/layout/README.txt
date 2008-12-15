@@ -26,34 +26,11 @@ manager.
   >>> manager = LayoutManager()
   >>> component.provideUtility(manager)
 
-The layouts themselves are also specified as utilities.
+The layouts themselves are also specified as utilities that are automatically
+registered when we import the modules they are defined in.
 
-  >>> from cybertools.composer.layout.browser.default import page
-  >>> component.provideUtility(page, ILayout, name='page')
-
-  >>> from cybertools.composer.layout.browser.liquid.default import css
-  >>> component.provideUtility(css, ILayout, name='css.liquid')
-
-  >>> from cybertools.composer.layout.browser.liquid.default import body
-  >>> component.provideUtility(body, ILayout, name='body.liquid')
-
-  >>> from cybertools.composer.layout.browser.default import logo
-  >>> component.provideUtility(logo, ILayout, name='logo.default')
-
-  >>> from cybertools.composer.layout.browser.default import top_actions
-  >>> component.provideUtility(top_actions, ILayout, name='top_actions.default')
-
-  >>> from cybertools.composer.layout.browser.default import column1
-  >>> component.provideUtility(column1, ILayout, name='column1.default')
-
-  >>> from cybertools.composer.layout.browser.default import content
-  >>> component.provideUtility(content, ILayout, name='content.default')
-
-  >>> from cybertools.composer.layout.browser.default import column2
-  >>> component.provideUtility(column2, ILayout, name='column2.default')
-
-  >>> from cybertools.composer.layout.browser.default import footer
-  >>> component.provideUtility(footer, ILayout, name='footer.default')
+  >>> from cybertools.composer.layout.browser import default
+  >>> from cybertools.composer.layout.browser.liquid import default
 
 In addition we have to provide at least one layout instance adapter that
 connects a layout with the client object.

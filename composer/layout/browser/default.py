@@ -32,22 +32,19 @@ from cybertools.composer.layout.browser.standard import standardRenderers
 defaultRenderers = RendererFactory(ViewPageTemplateFile('default.pt'))
 
 
-page = Layout('page', 'page', renderer=standardRenderers['page'],
-              sublayouts=set(['css.liquid', 'body.liquid']),
-              favicon='default/favicon.png')
+Layout('page', 'page', renderer=standardRenderers['page'],
+       sublayouts=set(['css.liquid', 'body.liquid']),
+       favicon='default/favicon.png')
 
-logo = Layout('logo.default', 'body.logo', renderer=defaultRenderers.logo)
+Layout('logo.default', 'body.logo', renderer=defaultRenderers.logo)
 
-top_actions = Layout('top_actions.default', 'body.top_actions',
-                     renderer=defaultRenderers.top_actions)
+Layout('top_actions.default', 'body.top_actions',
+       renderer=defaultRenderers.top_actions)
 
-column1 = Layout('column1.default', 'body.column1',
-                 renderer=defaultRenderers.column1)
+Layout('column1.default', 'body.column1', renderer=defaultRenderers.column1)
 
-content = Layout('content.default', 'body.content',
-                 renderer=defaultRenderers.content)
+Layout('content.default', 'body.content', renderer=defaultRenderers.content)
 
-column2 = Layout('column2.default', 'body.column2',
-                 renderer=defaultRenderers.column2)
+Layout('column2.default', 'body.column2', renderer=defaultRenderers.column2)
 
-footer = Layout('footer.default', 'body.footer', renderer=defaultRenderers.footer)
+Layout('footer.default', 'body.footer', renderer=defaultRenderers.footer)

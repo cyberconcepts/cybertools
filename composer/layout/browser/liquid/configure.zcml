@@ -8,14 +8,8 @@
   <browser:resource
         name="liquid.css" file="base.css" />
 
-  <zope:utility
-        component="cybertools.composer.layout.browser.liquid.default.css"
-        provides="cybertools.composer.layout.interfaces.ILayout"
-        name="css.liquid" />
+  <!-- layouts -->
 
-  <zope:utility
-        component="cybertools.composer.layout.browser.liquid.default.body"
-        provides="cybertools.composer.layout.interfaces.ILayout"
-        name="body.liquid" />
+  <zope:module module="cybertools.composer.layout.browser.liquid.default" />
 
 </configure>
