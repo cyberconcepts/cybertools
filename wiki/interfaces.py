@@ -26,7 +26,67 @@ from zope.interface import Interface, Attribute
 
 
 class IWikiManager(Interface):
-    """Manages (and possibly contains) all kinds of wiki-related objects.
+    """ Manages wikis and wiki-related objects, like plugins.
+    """
+
+    wikis = Attribute('A collection of wikis managed by this object.')
+
+    def addWiki(wiki):
+        """ Register the wiki given.
+        """
+
+    def removeWiki(wiki):
+        """ Remove the wiki given from the list of wikis.
+        """
+
+
+class IWiki(Interface):
+    """ A collection of wiki pages, or - more generally - wiki components.
+    """
+
+    manager = Attribute('The wiki manager this wiki is managed by.')
+    name = Attribute('The name or address of the wiki unique within the '
+                'scope of the wiki manager.')
+    pages = Attribute('A collection of the pages belonging to this wiki.')
+
+    def createPage(name, title=None):
+        """ Create a new wiki page identified by the name (address -
+            may be a path) given and return it.
+        """
+
+    def removePage(name):
+        """ Remove the page identified by name from the wiki, cleaning up
+            all information related to the page.
+        """
+
+
+class IWikiPage(Interface):
+    """ An object representing a page of a wiki.
+    """
+
+    wiki = Attribute('The wiki this page belongs to.')
+    name = Attribute('A page name or address unique within the wiki.')
+    title = Attribute('A short string describing the wiki page the may be '
+                'use as a page title.')
+    text = Attribute('The page content in input text format.')
+
+    def render():
+        """ Convert the text of the page to presentation format.
+        """
+
+    def parse():
+        """ Convert the text of the page to a document tree.
+        """
+
+    def write(tree):
+        """ Convert the document tree given to presentation format.
+        """
+
+
+# wiki elements
+
+class ILinkManager(Interface):
+    """Manages (and possibly contains) all kinds of wiki-related links.
     """
 
     def registerLink(link):

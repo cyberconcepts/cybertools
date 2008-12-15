@@ -33,14 +33,48 @@ class WikiManager(object):
 
     def __init__(self):
         self.wikis = {}
-        self.plugins = {}
+
+    def addWiki(self, wiki):
+        name = wiki.name
+        if name in self.wikis:
+            raise ValueError("Wiki '%s' already registered." % name)
+        self.wikis[name] = wiki
+        wiki.manager = self
+        return wiki
 
 
 class Wiki(object):
 
     implements(IWiki)
 
+    def __init__(self, name, title=None):
+        self.name = name
+        self.title = title or name
+        self.pages = {}
+
+    def createPage(self, name, title=None):
+        if name in self.pages:
+            raise ValueError("Name '%s' already present." % name)
+        page = self.pages[name] = WikiPage(name, title)
+        page.wiki = self
+        return page
+
 
 class WikiPage(object):
 
     implements(IWikiPage)
+
+    text = u''
+
+    def __init__(self, name, title=None):
+        self.name = name
+        self.title = title or name
+
+    def render(self):
+        return self.write(self.parse())
+
+    def parse(self):
+        return self.text
+
+    def write(self, tree):
+        return tree

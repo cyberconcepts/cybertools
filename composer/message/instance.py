@@ -88,10 +88,10 @@ class DataProvider(object):
         if key.startswith('@@'):
             if client is None:
                 return '$' + key
-            viewName = key[2:]
-            request = self.data.get('request') or TestRequest()
-            view = component.queryMultiAdapter(
-                    (client.manager, request), name=viewName)
+            view = self.getView(key[2:])
+            #request = self.data.get('request') or TestRequest()
+            #view = component.queryMultiAdapter(
+            #        (client.manager, request), name=key[2:])
             if view is not None:
                 return view()
             else:
@@ -123,6 +123,11 @@ class DataProvider(object):
             return self.data[key]
         else:
             raise KeyError(key)
+
+    def getView(self, name):
+        request = self.data.get('request') or TestRequest()
+        return component.queryMultiAdapter(
+                    (self.context.client.manager, request), name=viewName)
 
 
 class MessageTemplate(Template):
