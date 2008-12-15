@@ -22,6 +22,8 @@ A Wiki manager managing wikis and wiki-related objects, esp plugins.
 $Id$
 """
 
+from docutils.core import publish_doctree, publish_from_doctree
+from docutils.writers.html4css1 import HTMLTranslator, Writer
 from zope.interface import implements
 
 from cybertools.wiki.interfaces import IWikiManager, IWiki, IWikiPage
@@ -74,7 +76,15 @@ class WikiPage(object):
         return self.write(self.parse())
 
     def parse(self):
-        return self.text
+        return publish_doctree(self.text)
 
     def write(self, tree):
-        return tree
+        writer = Writer()
+        writer.translator_class = HTMLBodyTranslator
+        return publish_from_doctree(tree, writer=writer)
+
+
+class HTMLBodyTranslator(HTMLTranslator):
+
+    def astext(self):
+        return u''.join(self.body_pre_docinfo + self.docinfo + self.body)

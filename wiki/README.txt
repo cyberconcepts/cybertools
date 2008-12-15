@@ -26,8 +26,12 @@ We format the content of the start page using the restructured text format.
 As we have not yet registered any formatting plugins rendering the page
 returns it content unchanged.
 
+  >>> tree = startPage.parse()
+
   >>> print startPage.render()
-  **Welcome to the Demo Wiki**
+  <p><strong>Welcome to the Demo Wiki</strong></p>
+
+**Welcome to the Demo Wiki**
 
 
 A Very Basic Wiki Format
