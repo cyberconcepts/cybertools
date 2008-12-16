@@ -35,9 +35,9 @@ from cybertools.composer.layout.browser.standard import standardRenderers
 defaultRenderers = RendererFactory(ViewPageTemplateFile('default.pt'))
 
 
-css = Layout('css.liquid', 'page.css', renderer=standardRenderers['css'],
-             media='all', resource='liquid.css', skin=Liquid)
+Layout('css.liquid', 'page.css', renderer=standardRenderers['css'],
+       media='all', resource='liquid.css', skin=Liquid)
 
-body = Layout('body.liquid', 'page.body', renderer=defaultRenderers.body,
-              skin=Liquid)
+Layout('body.liquid', 'page.body', renderer=defaultRenderers.body,
+       skin=Liquid)
 

@@ -49,9 +49,6 @@ class BaseView(object):
     def __call__(self):
         return self.template(self)
 
-    def update(self):
-        return True
-
 
 class Page(BaseView):
 
@@ -115,6 +112,15 @@ class LayoutView(BaseView):
     @Lazy
     def title(self):
         return self.client.title
+
+    def update(self):
+        action = self.request.form.get('action')
+        if action:
+            processor = component.queryMultiAdapter((self.client, self.request),
+                                                    name=action)
+            if processor is not None:
+                return processor.update()
+        return True
 
 
 # subview providers
