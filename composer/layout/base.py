@@ -44,7 +44,6 @@ class LayoutManager(object):
         for name, layout in component.getUtilitiesFor(ILayout):
             region = result.setdefault(layout.regionName,
                                        Region(layout.regionName))
-            # layout.name = name
             region.layouts.append(layout)
         return result
 
