@@ -89,9 +89,6 @@ class DataProvider(object):
             if client is None:
                 return '$' + key
             view = self.getView(key[2:])
-            #request = self.data.get('request') or TestRequest()
-            #view = component.queryMultiAdapter(
-            #        (client.manager, request), name=key[2:])
             if view is not None:
                 return view()
             else:
@@ -127,7 +124,7 @@ class DataProvider(object):
     def getView(self, name):
         request = self.data.get('request') or TestRequest()
         return component.queryMultiAdapter(
-                    (self.context.client.manager, request), name=viewName)
+                    (self.context.client.manager, request), name=name)
 
 
 class MessageTemplate(Template):
