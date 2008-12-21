@@ -417,3 +417,36 @@ class IJobManager(Interface):
         """ Do what has to be done...
         """
 
+
+# work
+
+class IWorkItem(Interface):
+    """ A single piece of work, started and finished at a certain time,
+        done by exactly one party (usually a person).
+    """
+
+    task = Attribute('The task this work item belongs to.')
+    runId = Attribute('Used for recurring tasks: identifies the run '
+                '(execution instance) of the task the work item belongs to.')
+    party = Attribute('Whoever does the work, usually a person.')
+    state = Attribute('The current state the work item is in.')
+    comment = Attribute('A note about what has been done, and why...')
+    # optional plan fields; duration (and effort) may be derived from start and end
+    planStart = Attribute('When the work should start.')
+    planEnd = Attribute('When the work should be finished.')
+    planDuration = Attribute('How long it may take to finish the work.')
+    planEffort = Attribute('How much effort (time units) it might take '
+                'to finish the work.')
+    # real stuff; duration (and effort) may be derived from start and end
+    start = Attribute('When the work was started.')
+    end = Attribute('When the work was finished.')
+    duration = Attribute('How long it took to finish the work.')
+    effort = Attribute('How much effort (time units) it took to finish the work.')
+    # work item handling
+    creator = Attribute('The party that has set up the work item.')
+    predecessor = Attribute('Optional: a work item this work item was created from.')
+    continuation = Attribute('Optional: a work item that was created from this one '
+                'to continue the work.')
+    newTask = Attribute('Optional: a new task that has been created based '
+                'on this work item.')
+

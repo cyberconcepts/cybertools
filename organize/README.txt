@@ -52,3 +52,12 @@ Service Management
 ==================
 
   >>> from cybertools.organize.service import Service
+
+(See cyberapps.tumsm for comprehensive description and tests.)
+
+
+Work
+====
+
+  >>> from cybertools.organize.work import WorkItem
+

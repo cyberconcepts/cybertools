@@ -51,7 +51,7 @@ class IMessage(ITemplate):
     """ A complex message that may be expanded using instance data.
     """
 
-    name = schema.ASCII(
+    name = schema.ASCIILine(
                 title=_(u'Name'),
                 description=_(u'The internal name of the message.'),
                 required=True,)

@@ -24,7 +24,6 @@ $Id$
 
 from zope.interface import implementer
 
-from cybertools.stateful.definition import registerStatesDefinition
 from cybertools.stateful.definition import StatesDefinition
 from cybertools.stateful.definition import State, Transition
 from cybertools.stateful.interfaces import IStatesDefinition
