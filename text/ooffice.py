@@ -44,8 +44,6 @@ class OOTransform(base.BaseFileTransform):
         zf = zipfile.ZipFile(fr, "r")
         parser.feed(zf.read("content.xml"))
         zf.close()
-        #fr.close()
-        #return [handler.getText()]
         return handler.getText()
 
 
