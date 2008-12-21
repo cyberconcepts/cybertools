@@ -109,3 +109,26 @@ Excel Spreadsheets
   >>> u'lamb' in words
   True
 
+OpenOffice
+----------
+
+  >>> from cybertools.text.ooffice import OOTransform
+  >>> transform = OOTransform(None)
+  >>> f = open(os.path.join(testdir, 'mary.odt'))
+  >>> result = transform(f)
+  >>> print log
+  >>> words = result.split()
+  >>> len(words)
+  89
+  >>> u'lamb' in words
+  True
+
+  >>> f = open(os.path.join(testdir, 'mary.ods'))
+  >>> result = transform(f)
+  >>> len(result.split())
+  89
+
+  >>> f = open(os.path.join(testdir, 'mary.odp'))
+  >>> result = transform(f)
+  >>> len(result.split())
+  99
