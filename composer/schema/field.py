@@ -307,6 +307,6 @@ class ListFieldInstance(FieldInstance):
     def unmarshall(self, value):
         if isinstance(value, basestring):
             value = value.split('\n')
-        return [self.valueFieldInstance.unmarshall(v)
+        return [self.valueFieldInstance.unmarshall(v.strip())
                         for v in value if v.strip()]
 

@@ -1,0 +1,9 @@
+<!-- $Id$ -->
+
+<configure
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zope="http://namespaces.zope.org/zope">
+
+  <browser:resourceDirectory name="fckeditor" directory="." />
+
+</configure>
