@@ -74,6 +74,8 @@ class Track(Persistent):
         self.data = data
 
     def update(self, newData):
+        if not newData:
+            return
         self.timeStamp = getTimeStamp()
         data = self.data
         data.update(newData)
@@ -186,6 +188,8 @@ class TrackingStorage(BTreeContainer):
                 return self.updateTrack(track, data)
         trackId, trackNum = self.generateTrackId()
         track = self.trackFactory(taskId, runId, userName, data)
+        track.__parent__ = self
+        track.__name__ = trackId
         if timeStamp:
             track.timeStamp = timeStamp
         self[trackId] = track

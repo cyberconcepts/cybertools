@@ -449,11 +449,32 @@ class IWorkItem(Interface):
     effort = Attribute('How much effort (time units) it took to finish the work.')
     # work item handling
     creator = Attribute('The party that has set up the work item.')
+    created = Attribute('The timeStamp of the initial creation of the work item.')
+    assigned = Attribute('The timeStamp of the assignment of the work item.')
     predecessor = Attribute('Optional: a work item this work item was created from.')
     continuation = Attribute('Optional: a work item that was created from this one '
                 'to continue the work.')
     newTask = Attribute('Optional: a new task that has been created based '
                 'on this work item.')
+
+    def setInitData(**kw):
+        """ Set initial work item data (if allowed by the current state);
+            values not given will be derived if appropriate.
+        """
+
+    def assign(party):
+        """ Assign the work item to the party given.
+        """
+
+    def startWork(**kw):
+        """ Start working on the work item; properties may be given
+            as keyword arguments.
+        """
+
+    def stopWork(transition='finish', **kw):
+        """ Finish working on the work item; properties may be given
+            as keyword arguments.
+        """
 
 
 class IWorkItems(Interface):

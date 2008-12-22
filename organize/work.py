@@ -25,13 +25,14 @@ $Id$
 from zope import component
 from zope.component import adapts
 from zope.interface import implementer, implements
+from zope.traversing.api import getParent
 
 from cybertools.organize.interfaces import IWorkItem, IWorkItems
 from cybertools.stateful.base import Stateful
 from cybertools.stateful.definition import StatesDefinition
 from cybertools.stateful.definition import State, Transition
 from cybertools.stateful.interfaces import IStatesDefinition
-from cybertools.tracking.btree import Track
+from cybertools.tracking.btree import Track, getTimeStamp
 from cybertools.tracking.interfaces import ITrackingStorage
 
 
@@ -62,8 +63,6 @@ class WorkItem(Stateful):
     def getStatesDefinition(self):
         return component.getUtility(IStatesDefinition, name=self.statesDefinition)
 
-    # work item attributes (except state that is provided by stateful
-
 
 class WorkItemTrack(WorkItem, Track):
     """ A work item that may be stored as a track in a tracking storage.
@@ -73,21 +72,93 @@ class WorkItemTrack(WorkItem, Track):
     index_attributes = metadata_attributes
     typeName = 'WorkItem'
 
-    initAttributes = set(['description', 'predecessor',
+    initAttributes = set(['party', 'description', 'predecessor',
                           'planStart', 'planEnd', 'planDuration', 'planEffort'])
 
     def __init__(self, taskId, runId, userName, data={}):
-        for k in data:
-            if k not in initAttributes:
-                raise ValueError("Illegal initial attribute: '%s'." % k)
-        super(WorkItemTrack, self).__init__(taskId, runId, userName, data)
+        super(WorkItemTrack, self).__init__(taskId, runId, userName)
         self.state = self.getState()    # make initial state persistent
+        self.data['creator'] = userName
+        self.data['created'] = self.timeStamp
+        self.setInitData(**data)
 
     def __getattr__(self, attr):
-        value = self.data.get(attr, _not_found)
-        if value is _not_found:
+        if attr not in IWorkItem:
             raise AttributeError(attr)
-        return value
+        return self.data.get(attr, None)
+
+    @property
+    def party(self):
+        return self.userName
+
+    def setInitData(self, **kw):
+        for k in kw:
+            if k not in self.initAttributes:
+                raise ValueError("Illegal initial attribute: '%s'." % k)
+        party = kw.pop('party', None)
+        if party is not None:
+            if self.state != 'created':
+                raise ValueError("Attribute 'party' may not be set in the state '%s'" %
+                                 self.state)
+            else:
+                self.userName = party
+                indexChanged = True
+        self.checkOverwrite(kw)
+        updatePlanData = False
+        indexChanged = False
+        data = self.data
+        for k, v in kw.items():
+            data[k] = v
+            if k.startswith('plan'):
+                updatePlanData = True
+        if self.planStart is not None and self.planStart != self.timeStamp:
+            self.timeStamp = self.planStart
+            indexChanged = True
+        if updatePlanData and self.planStart:
+            data['planEnd'], data['planDuration'], data['planEffort'] = \
+                recalcTimes(self.planStart, self.planEnd,
+                            self.planDuration, self.planEffort)
+        if indexChanged:
+            self.reindex()
+
+    def assign(self, party=None):
+        self.doTransition('assign')
+        self.data['assigned'] = getTimeStamp()
+        if party is not None:
+            self.userName = party
+        self.reindex()
+
+    def startWork(self, **kw):
+        self.checkOverwrite(kw)
+        self.doTransition('start')
+        start = self.data['start'] = kw.pop('start', None) or getTimeStamp()
+        self.timeStamp = start
+        self.reindex()
+
+    def stopWork(self, transition='finish', **kw):
+        self.checkOverwrite(kw)
+        self.doTransition(transition)
+        self.reindex()
+
+    def reindex(self):
+        getParent(self).updateTrack(self, {})   # force reindex
+
+    def checkOverwrite(self, kw):
+        for k, v in kw.items():
+            #old = data.get(k)
+            old = getattr(self, k, None)
+            if old is not None and old != v:
+                raise ValueError("Attribute '%s' already set to '%s'." % (k, old))
+
+
+def recalcTimes(start, end, duration, effort):
+    if duration is None and start and end:
+        duration = end - start
+    if end is None and start and duration:
+        end = start + duration
+    if effort is None and duration:
+        effort = duration
+    return end, duration, effort
 
 
 class WorkItems(object):

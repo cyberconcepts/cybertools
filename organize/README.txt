@@ -91,5 +91,39 @@ We are now ready to set up the tracking storage.
 The work management only deals with the IDs or names of tasks and persons,
 so we do not have to set up real objects.
 
-  >>> workItems.add('001', 'john')
-  <WorkItem ['001', 1, 'john', '2008-12-22 12:07', 'created']: {}>
+  >>> wi01 = workItems.add('001', 'john')
+  >>> wi01
+  <WorkItem ['001', 1, 'john', '...', 'created']:
+   {'created': ..., 'creator': 'john'}>
+
+Properties that have not been set explicitly default to None; properties
+not specified in the IWorkItem interface will lead to an AttributeError.
+
+  >>> wi01.description is None
+  True
+  >>> wi01.something
+  Traceback (most recent call last):
+  ...
+  AttributeError: something
+
+Certain (not all) properties may be set after creation.
+
+  >>> wi01.setInitData(planStart=1229955772, planDuration=600, party='jim')
+  >>> wi01
+  <WorkItem ['001', 1, 'jim', '2008-12-22 14:22', 'created']:
+   {'created': ..., 'planEnd': 1229956372, 'planDuration': 600,
+    'planStart': 1229955772, 'creator': 'john', 'planEffort': 600}>
+
+Change work item states
+-----------------------
+
+  >>> wi01.assign()
+  >>> wi01.state
+  'assigned'
+
+  >>> wi01.startWork(start=1229958000)
+  >>> wi01
+  <WorkItem ['001', 1, 'jim', '2008-12-22 15:00', 'running']:
+   {'created': ..., 'planEnd': 1229956372, 'start': 1229958000,
+    'assigned': ..., 'planDuration': 600, 'planStart': 1229955772,
+    'creator': 'john', 'planEffort': 600}>
