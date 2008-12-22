@@ -22,14 +22,17 @@ Planning and recording activities (work items).
 $Id$
 """
 
+from zope import component
 from zope.component import adapts
 from zope.interface import implementer, implements
 
-from cybertools.organize.interfaces import IWorkItem
+from cybertools.organize.interfaces import IWorkItem, IWorkItems
 from cybertools.stateful.base import Stateful
 from cybertools.stateful.definition import StatesDefinition
 from cybertools.stateful.definition import State, Transition
 from cybertools.stateful.interfaces import IStatesDefinition
+from cybertools.tracking.btree import Track
+from cybertools.tracking.interfaces import ITrackingStorage
 
 
 @implementer(IStatesDefinition)
@@ -56,3 +59,50 @@ class WorkItem(Stateful):
 
     statesDefinition = 'organize.workItemStates'
 
+    def getStatesDefinition(self):
+        return component.getUtility(IStatesDefinition, name=self.statesDefinition)
+
+    # work item attributes (except state that is provided by stateful
+
+
+class WorkItemTrack(WorkItem, Track):
+    """ A work item that may be stored as a track in a tracking storage.
+    """
+
+    metadata_attributes = Track.metadata_attributes + ('state',)
+    index_attributes = metadata_attributes
+    typeName = 'WorkItem'
+
+    initAttributes = set(['description', 'predecessor',
+                          'planStart', 'planEnd', 'planDuration', 'planEffort'])
+
+    def __init__(self, taskId, runId, userName, data={}):
+        for k in data:
+            if k not in initAttributes:
+                raise ValueError("Illegal initial attribute: '%s'." % k)
+        super(WorkItemTrack, self).__init__(taskId, runId, userName, data)
+        self.state = self.getState()    # make initial state persistent
+
+    def __getattr__(self, attr):
+        value = self.data.get(attr, _not_found)
+        if value is _not_found:
+            raise AttributeError(attr)
+        return value
+
+
+class WorkItems(object):
+    """ A tracking storage adapter managing work items.
+    """
+
+    implements(IWorkItems)
+    adapts(ITrackingStorage)
+
+    def __init__(self, context):
+        self.context = context
+
+    def __getitem__(self, key):
+        return self.context[key]
+
+    def add(self, task, party, run=0, **kw):
+        trackId = self.context.saveUserTrack(task, run, party, kw)
+        return self[trackId]

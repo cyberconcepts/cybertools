@@ -425,19 +425,24 @@ class IWorkItem(Interface):
         done by exactly one party (usually a person).
     """
 
-    task = Attribute('The task this work item belongs to.')
-    runId = Attribute('Used for recurring tasks: identifies the run '
+    task = Attribute('The task this work item belongs to, identified by '
+                'its name or ID.')
+    run = Attribute('Used for recurring tasks: identifies the run '
                 '(execution instance) of the task the work item belongs to.')
-    party = Attribute('Whoever does the work, usually a person.')
+    party = Attribute('Whoever does the work, usually a person, identified '
+                'by its name or ID.')
     state = Attribute('The current state the work item is in.')
+    description = Attribute('A note about what has to be done, and why...')
     comment = Attribute('A note about what has been done, and why...')
     # optional plan fields; duration (and effort) may be derived from start and end
+    # all date/time fields are timeStamp values, all duration and effort
+    # fields are in seconds
     planStart = Attribute('When the work should start.')
     planEnd = Attribute('When the work should be finished.')
     planDuration = Attribute('How long it may take to finish the work.')
     planEffort = Attribute('How much effort (time units) it might take '
                 'to finish the work.')
-    # real stuff; duration (and effort) may be derived from start and end
+    # real stuff
     start = Attribute('When the work was started.')
     end = Attribute('When the work was finished.')
     duration = Attribute('How long it took to finish the work.')
@@ -450,3 +455,12 @@ class IWorkItem(Interface):
     newTask = Attribute('Optional: a new task that has been created based '
                 'on this work item.')
 
+
+class IWorkItems(Interface):
+    """ A collection (manager, container) of work items.
+    """
+
+    def add(task, party, run=0, **kw):
+        """ Create and register a work item; return it. Additional properties
+            may be specified via keyword arguments.
+        """

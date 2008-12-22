@@ -92,13 +92,12 @@ class TrackingStorage(BTreeContainer):
     implements(ITrackingStorage)
 
     trackFactory = Track
+    indexAttributes = trackFactory.index_attributes
 
     trackNum = runId = 0
     runs = None             # currently active runs
     finishedRuns = None     # finished runs
     currentRuns = None      # the currently active run for each task
-
-    indexAttributes = Track.index_attributes
 
     def __init__(self, *args, **kw):
         trackFactory = kw.pop('trackFactory', None)
