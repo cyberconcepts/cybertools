@@ -86,7 +86,7 @@ class GridFieldInstance(ListFieldInstance):
         return dict(headers=headers, rows=rows)
 
     def unmarshall(self, value):
-        value = value.strip()
+        value = toUnicode(value.strip())
         if not value:
             return []
         result = []
