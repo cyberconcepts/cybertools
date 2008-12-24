@@ -206,7 +206,7 @@ class MimeTypes(dict):
             line = line.strip()
             if line:
                 parts = line.split()
-                self[parts[0]] = parts[1:]
+                self[parts[0].strip()] = parts[1:]
         mtFile.close()
 
 mimeTypes = MimeTypes()
