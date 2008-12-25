@@ -25,7 +25,7 @@ $Id$
 from zope import component
 from zope.component import adapts
 from zope.interface import implementer, implements
-from zope.traversing.api import getParent
+from zope.traversing.api import getName, getParent
 
 from cybertools.organize.interfaces import IWorkItem, IWorkItems
 from cybertools.stateful.base import Stateful
@@ -169,6 +169,8 @@ class WorkItemTrack(WorkItem, Track):
             new = workItems.add(self.taskId, self.userName, self.runId, **newData)
             if transition == 'continue':
                 new.assign()
+            new.data['predecessor'] = self.__name__
+            self.data['continuation'] = new.__name__
             return new
 
     def reindex(self):

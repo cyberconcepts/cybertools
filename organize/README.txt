@@ -172,5 +172,6 @@ transition.
   ...                      planDuration=400, planEnd=None, planEffort=None)
   >>> wi02
   <WorkItem ['001', 1, 'jim', '2008-12-22 15:33', 'assigned']:
-   {'created': ..., 'planEnd': 1229960400, 'assigned': ..., 'planDuration': 400,
-    'planStart': 1229960000, 'creator': 'jim', 'planEffort': 400}>
+   {'predecessor': '0000001', 'created': ..., 'planEnd': 1229960400,
+    'assigned': ..., 'planDuration': 400, 'planStart': 1229960000,
+    'creator': 'jim', 'planEffort': 400}>
