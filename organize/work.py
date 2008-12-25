@@ -35,6 +35,8 @@ from cybertools.stateful.interfaces import IStatesDefinition
 from cybertools.tracking.btree import Track, getTimeStamp
 from cybertools.tracking.interfaces import ITrackingStorage
 
+_not_found = object()
+
 
 @implementer(IStatesDefinition)
 def workItemStates():
@@ -42,13 +44,16 @@ def workItemStates():
         State('created', 'created', ('assign', 'cancel',), color='red'),
         State('assigned', 'assigned', ('start', 'finish', 'cancel', 'transfer'),
               color='yellow'),
-        State('running', 'running', ('finish',), color='green'),
-        State('finished', 'finished', (), color='blue'),
-        State('transferred', 'transferred', (), color='grey'),
+        State('running', 'running', ('finish', 'continue', 'cancel', 'transfer'),
+              color='orange'),
+        State('finished', 'finished', (), color='green'),
+        State('continued', 'continued', (), color='blue'),
+        State('transferred', 'transferred', (), color='lightblue'),
         State('cancelled', 'cancelled', (), color='grey'),
         Transition('assign', 'assign', 'assigned'),
         Transition('start', 'start', 'running'),
         Transition('finish', 'finish', 'finished'),
+        Transition('continue', 'continue', 'continued'),
         Transition('transfer', 'transfer', 'transferred'),
         Transition('cancel', 'cancel', 'cancelled'),
         initialState='created')
@@ -75,12 +80,13 @@ class WorkItemTrack(WorkItem, Track):
     initAttributes = set(['party', 'description', 'predecessor',
                           'planStart', 'planEnd', 'planDuration', 'planEffort'])
 
-    def __init__(self, taskId, runId, userName, data={}):
-        super(WorkItemTrack, self).__init__(taskId, runId, userName)
+    closeAttributes = set(['end', 'duration', 'effort', 'comment'])
+
+    def __init__(self, taskId, runId, userName, data):
+        super(WorkItemTrack, self).__init__(taskId, runId, userName, data)
         self.state = self.getState()    # make initial state persistent
         self.data['creator'] = userName
         self.data['created'] = self.timeStamp
-        self.setInitData(**data)
 
     def __getattr__(self, attr):
         if attr not in IWorkItem:
@@ -98,7 +104,7 @@ class WorkItemTrack(WorkItem, Track):
         party = kw.pop('party', None)
         if party is not None:
             if self.state != 'created':
-                raise ValueError("Attribute 'party' may not be set in the state '%s'" %
+                raise ValueError("Attribute 'party' may not be set in state '%s'." %
                                  self.state)
             else:
                 self.userName = party
@@ -136,9 +142,31 @@ class WorkItemTrack(WorkItem, Track):
         self.reindex()
 
     def stopWork(self, transition='finish', **kw):
-        self.checkOverwrite(kw)
         self.doTransition(transition)
+        data = self.data
+        for k in self.closeAttributes:
+            v = kw.pop(k, None)
+            if v is not None:
+                data[k] = v
+        if self.start:
+            data['end'], data['duration'], data['effort'] = \
+                recalcTimes(self.start, self.end, self.duration, self.effort)
+        self.timeStamp = self.end or getTimeStamp()
         self.reindex()
+        if transition in ('continue', 'transfer'):
+            if transition == 'continue' and kw.get('party') is not None:
+                raise ValueError("Setting 'party' is not allowed when continuing.")
+            newData = {}
+            for k in self.initAttributes:
+                v = kw.pop(k, _not_found)
+                if v is _not_found:
+                    v = data.get(k)
+                if v is not None:
+                    newData[k] = v
+            if transition == 'transfer' and 'party' not in newData:
+                raise ValueError("Property 'party' must be set when transferring.")
+            workItems = IWorkItems(getParent(self))
+            return workItems.add(self.taskId, self.userName, self.runId, **newData)
 
     def reindex(self):
         getParent(self).updateTrack(self, {})   # force reindex
@@ -175,5 +203,7 @@ class WorkItems(object):
         return self.context[key]
 
     def add(self, task, party, run=0, **kw):
-        trackId = self.context.saveUserTrack(task, run, party, kw)
-        return self[trackId]
+        trackId = self.context.saveUserTrack(task, run, party, {})
+        track = self[trackId]
+        track.setInitData(**kw)
+        return track

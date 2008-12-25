@@ -96,7 +96,7 @@ so we do not have to set up real objects.
   <WorkItem ['001', 1, 'john', '...', 'created']:
    {'created': ..., 'creator': 'john'}>
 
-Properties that have not been set explicitly default to None; properties
+Properties that have not been set explicitly have a default of None; properties
 not specified in the IWorkItem interface will lead to an AttributeError.
 
   >>> wi01.description is None
@@ -108,18 +108,43 @@ not specified in the IWorkItem interface will lead to an AttributeError.
 
 Certain (not all) properties may be set after creation.
 
-  >>> wi01.setInitData(planStart=1229955772, planDuration=600, party='jim')
+  >>> wi01.setInitData(planStart=1229955772, planDuration=600, party='annie')
   >>> wi01
-  <WorkItem ['001', 1, 'jim', '2008-12-22 14:22', 'created']:
+  <WorkItem ['001', 1, 'annie', '2008-12-22 14:22', 'created']:
    {'created': ..., 'planEnd': 1229956372, 'planDuration': 600,
     'planStart': 1229955772, 'creator': 'john', 'planEffort': 600}>
+
+It's not possible to change a value after it has been set, even if it is
+set via an automatic calculation like for the ``planEffort`` field.
+
+  >>> wi01.setInitData(planEffort=400)
+  Traceback (most recent call last):
+  ...
+  ValueError: Attribute 'planEffort' already set to '600'.
+
+There is one exception to this rule: The party may be changed as long as
+the work item is not in the ``assigned`` state.
+
+  >>> wi01.setInitData(party='jim')
+  >>> wi01.userName
+  'jim'
 
 Change work item states
 -----------------------
 
+Now Jim accepts the work item, i.e. he wants to work on it. Now the party
+that the work item is assigned to may not be changed any more.
+
   >>> wi01.assign()
   >>> wi01.state
   'assigned'
+  >>> wi01.setInitData(party='annie')
+  Traceback (most recent call last):
+  ...
+  ValueError: Attribute 'party' may not be set in state 'assigned'.
+
+Jim now really starts to work. The start time is usually set automatically
+but may also be specified explicitly.
 
   >>> wi01.startWork(start=1229958000)
   >>> wi01
@@ -127,3 +152,18 @@ Change work item states
    {'created': ..., 'planEnd': 1229956372, 'start': 1229958000,
     'assigned': ..., 'planDuration': 600, 'planStart': 1229955772,
     'creator': 'john', 'planEffort': 600}>
+
+After five minutes of work Jim decides to stop working; but he will
+continue work later, so he executes a ``continue`` transition that will
+set up a copy of the work item.
+
+He also specifies a new plan start and duration for the new work item.
+Plan end and plan effort are given explicitly as None values so that they
+won't be taken from the old work item but recalculated.
+
+  >>> wi02 = wi01.stopWork('continue', end=1229958300, planStart=1229960000,
+  ...                      planDuration=400, planEnd=None, planEffort=None)
+  >>> wi02
+  <WorkItem ['001', 1, 'jim', '2008-12-22 15:33', 'created']:
+   {'created': ..., 'planEnd': 1229960400, 'planDuration': 400,
+    'planStart': 1229960000, 'creator': 'jim', 'planEffort': 400}>
