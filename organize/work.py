@@ -166,7 +166,10 @@ class WorkItemTrack(WorkItem, Track):
             if transition == 'transfer' and 'party' not in newData:
                 raise ValueError("Property 'party' must be set when transferring.")
             workItems = IWorkItems(getParent(self))
-            return workItems.add(self.taskId, self.userName, self.runId, **newData)
+            new = workItems.add(self.taskId, self.userName, self.runId, **newData)
+            if transition == 'continue':
+                new.assign()
+            return new
 
     def reindex(self):
         getParent(self).updateTrack(self, {})   # force reindex

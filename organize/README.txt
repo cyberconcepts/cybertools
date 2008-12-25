@@ -129,8 +129,8 @@ the work item is not in the ``assigned`` state.
   >>> wi01.userName
   'jim'
 
-Change work item states
------------------------
+Change work item state
+----------------------
 
 Now Jim accepts the work item, i.e. he wants to work on it. Now the party
 that the work item is assigned to may not be changed any more.
@@ -153,6 +153,9 @@ but may also be specified explicitly.
     'assigned': ..., 'planDuration': 600, 'planStart': 1229955772,
     'creator': 'john', 'planEffort': 600}>
 
+Stopping work
+-------------
+
 After five minutes of work Jim decides to stop working; but he will
 continue work later, so he executes a ``continue`` transition that will
 set up a copy of the work item.
@@ -161,9 +164,13 @@ He also specifies a new plan start and duration for the new work item.
 Plan end and plan effort are given explicitly as None values so that they
 won't be taken from the old work item but recalculated.
 
+Note that the work item has already been set to assigned as Jim has
+committed himself to continue working on it by selecting the ``continue``
+transition.
+
   >>> wi02 = wi01.stopWork('continue', end=1229958300, planStart=1229960000,
   ...                      planDuration=400, planEnd=None, planEffort=None)
   >>> wi02
-  <WorkItem ['001', 1, 'jim', '2008-12-22 15:33', 'created']:
-   {'created': ..., 'planEnd': 1229960400, 'planDuration': 400,
+  <WorkItem ['001', 1, 'jim', '2008-12-22 15:33', 'assigned']:
+   {'created': ..., 'planEnd': 1229960400, 'assigned': ..., 'planDuration': 400,
     'planStart': 1229960000, 'creator': 'jim', 'planEffort': 400}>
