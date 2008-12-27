@@ -433,7 +433,6 @@ class IWorkItem(Interface):
                 'by its name or ID.')
     state = Attribute('The current state the work item is in.')
     description = Attribute('A note about what has to be done, and why...')
-    comment = Attribute('A note about what has been done, and why...')
     # optional plan fields; duration (and effort) may be derived from start and end
     # all date/time fields are timeStamp values, all duration and effort
     # fields are in seconds
@@ -447,6 +446,7 @@ class IWorkItem(Interface):
     end = Attribute('When the work was finished.')
     duration = Attribute('How long it took to finish the work.')
     effort = Attribute('How much effort (time units) it took to finish the work.')
+    comment = Attribute('A note about what has been done, and why...')
     # work item handling
     creator = Attribute('The party that has set up the work item.')
     created = Attribute('The timeStamp of the initial creation of the work item.')
