@@ -23,14 +23,13 @@ $Id$
 """
 
 import time
-
-from zope.interface import implements
-from zope.app.container.btree import BTreeContainer
-from zope.index.field import FieldIndex
-
 from persistent import Persistent
 from BTrees import OOBTree, IOBTree
 from BTrees.IFBTree import intersection, union
+from zope.interface import implements
+from zope.app.container.btree import BTreeContainer
+from zope.index.field import FieldIndex
+from zope.traversing.interfaces import IPhysicallyLocatable
 
 from interfaces import IRun, ITrackingStorage, ITrack
 
@@ -54,7 +53,7 @@ class Run(object):
 
 class Track(Persistent):
 
-    implements(ITrack)
+    implements(ITrack, IPhysicallyLocatable)
 
     metadata_attributes = ('taskId', 'runId', 'userName', 'timeStamp')
     index_attributes = metadata_attributes
@@ -72,6 +71,9 @@ class Track(Persistent):
         self.userName = userName
         self.timeStamp = getTimeStamp()
         self.data = data
+
+    def getName(self):
+        return self.__name__
 
     def update(self, newData):
         if not newData:

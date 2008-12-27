@@ -47,8 +47,9 @@ def workItemStates():
         State('running', 'running', ('finish', 'continue', 'cancel', 'transfer'),
               color='orange'),
         State('finished', 'finished', (), color='green'),
-        State('continued', 'continued', (), color='blue'),
-        State('transferred', 'transferred', (), color='lightblue'),
+        State('continued', 'continued', ('finish', 'cancel'), color='blue'),
+        State('transferred', 'transferred', ('finish', 'cancel'),
+              color='lightblue'),
         State('cancelled', 'cancelled', (), color='grey'),
         Transition('assign', 'assign', 'assigned'),
         Transition('start', 'start', 'running'),
@@ -169,8 +170,8 @@ class WorkItemTrack(WorkItem, Track):
             new = workItems.add(self.taskId, self.userName, self.runId, **newData)
             if transition == 'continue':
                 new.assign()
-            new.data['predecessor'] = self.__name__
-            self.data['continuation'] = new.__name__
+            new.data['predecessor'] = getName(self)
+            self.data['successor'] = getName(new)
             return new
 
     def reindex(self):
@@ -178,7 +179,6 @@ class WorkItemTrack(WorkItem, Track):
 
     def checkOverwrite(self, kw):
         for k, v in kw.items():
-            #old = data.get(k)
             old = getattr(self, k, None)
             if old is not None and old != v:
                 raise ValueError("Attribute '%s' already set to '%s'." % (k, old))

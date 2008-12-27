@@ -452,7 +452,7 @@ class IWorkItem(Interface):
     created = Attribute('The timeStamp of the initial creation of the work item.')
     assigned = Attribute('The timeStamp of the assignment of the work item.')
     predecessor = Attribute('Optional: a work item this work item was created from.')
-    continuation = Attribute('Optional: a work item that was created from this one '
+    successor = Attribute('Optional: a work item that was created from this one '
                 'to continue the work.')
     newTask = Attribute('Optional: a new task that has been created based '
                 'on this work item.')
