@@ -60,19 +60,13 @@ def workItemStates():
         initialState='new')
 
 
-class WorkItem(Stateful):
+class WorkItem(Stateful, Track):
+    """ A work item that may be stored as a track in a tracking storage.
+    """
 
     implements(IWorkItem)
 
     statesDefinition = 'organize.workItemStates'
-
-    def getStatesDefinition(self):
-        return component.getUtility(IStatesDefinition, name=self.statesDefinition)
-
-
-class WorkItemTrack(WorkItem, Track):
-    """ A work item that may be stored as a track in a tracking storage.
-    """
 
     metadata_attributes = Track.metadata_attributes + ('state',)
     index_attributes = metadata_attributes
@@ -84,7 +78,7 @@ class WorkItemTrack(WorkItem, Track):
     closeAttributes = set(['end', 'duration', 'effort', 'comment'])
 
     def __init__(self, taskId, runId, userName, data):
-        super(WorkItemTrack, self).__init__(taskId, runId, userName, data)
+        super(WorkItem, self).__init__(taskId, runId, userName, data)
         self.state = self.getState()    # make initial state persistent
         self.data['creator'] = userName
         self.data['created'] = self.timeStamp
@@ -93,6 +87,9 @@ class WorkItemTrack(WorkItem, Track):
         if attr not in IWorkItem:
             raise AttributeError(attr)
         return self.data.get(attr, None)
+
+    def getStatesDefinition(self):
+        return component.getUtility(IStatesDefinition, name=self.statesDefinition)
 
     @property
     def party(self):

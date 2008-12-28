@@ -73,7 +73,7 @@ the work items we have to provide an adapter to the tracking storage.
 
   >>> from cybertools.tracking.btree import TrackingStorage
   >>> from cybertools.organize.interfaces import IWorkItems
-  >>> from cybertools.organize.work import WorkItemTrack, WorkItems
+  >>> from cybertools.organize.work import WorkItem, WorkItems
   >>> component.provideAdapter(WorkItems)
 
 The individual work item (a track) is carrying a state attribute that is
@@ -85,7 +85,7 @@ definition as a utility.
 
 We are now ready to set up the tracking storage.
 
-  >>> tracks = TrackingStorage(trackFactory=WorkItemTrack)
+  >>> tracks = TrackingStorage(trackFactory=WorkItem)
   >>> workItems = component.getAdapter(tracks, IWorkItems)
 
 The work management only deals with the IDs or names of tasks and persons,
