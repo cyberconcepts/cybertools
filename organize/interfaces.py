@@ -476,6 +476,17 @@ class IWorkItem(Interface):
             as keyword arguments.
         """
 
+    def doAction(action, **kw):
+        """ Execute an action.
+
+            Actions are usually a sequence of transitions together with
+            setting some properties depending on the action and
+            the starting state.
+
+            Available actions are: plan, delegate, accept, start, finish,
+            cancel, continue, transfer.
+        """
+
 
 class IWorkItems(Interface):
     """ A collection (manager, container) of work items.

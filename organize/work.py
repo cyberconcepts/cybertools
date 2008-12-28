@@ -41,7 +41,7 @@ _not_found = object()
 @implementer(IStatesDefinition)
 def workItemStates():
     return StatesDefinition('workItemStates',
-        State('created', 'created', ('assign', 'cancel',), color='red'),
+        State('new', 'new', ('assign', 'cancel',), color='red'),
         State('assigned', 'assigned', ('start', 'finish', 'cancel', 'transfer'),
               color='yellow'),
         State('running', 'running', ('finish', 'continue', 'cancel', 'transfer'),
@@ -57,7 +57,7 @@ def workItemStates():
         Transition('continue', 'continue', 'continued'),
         Transition('transfer', 'transfer', 'transferred'),
         Transition('cancel', 'cancel', 'cancelled'),
-        initialState='created')
+        initialState='new')
 
 
 class WorkItem(Stateful):
@@ -99,20 +99,16 @@ class WorkItemTrack(WorkItem, Track):
         return self.userName
 
     def setInitData(self, **kw):
+        indexChanged = False
+        updatePlanData = False
         for k in kw:
             if k not in self.initAttributes:
                 raise ValueError("Illegal initial attribute: '%s'." % k)
+        self.checkOverwrite(kw)
         party = kw.pop('party', None)
         if party is not None:
-            if self.state != 'created':
-                raise ValueError("Attribute 'party' may not be set in state '%s'." %
-                                 self.state)
-            else:
-                self.userName = party
-                indexChanged = True
-        self.checkOverwrite(kw)
-        updatePlanData = False
-        indexChanged = False
+            self.userName = party
+            indexChanged = True
         data = self.data
         for k, v in kw.items():
             data[k] = v
@@ -174,10 +170,36 @@ class WorkItemTrack(WorkItem, Track):
             self.data['successor'] = getName(new)
             return new
 
+    # actions
+
+    def doAction(self, action, **kw):
+        # TODO: check if action is allowed
+        m = getattr(self, 'action_' + action)
+        m(**kw)
+
+    def action_start(self, **kw):
+        if self.state == 'new':
+            self.assign(kw.pop('party', None))
+        self.startWork(**kw)
+
+    def action_finish(self, **kw):
+        if self.state == 'new':
+            self.assign(kw.pop('party', None))
+        self.stopWork(**kw)
+        #pred = self.predecessor    # better to finish predecessors manually?
+        #while pred is not None:
+        #    wi = getParent(self)[pred]
+        #    wi.doTransition('finish')
+        #    pred = wi.pred
+
+    # auxiliary methods
+
     def reindex(self):
         getParent(self).updateTrack(self, {})   # force reindex
 
     def checkOverwrite(self, kw):
+        if self.state == 'new':
+            return
         for k, v in kw.items():
             old = getattr(self, k, None)
             if old is not None and old != v:

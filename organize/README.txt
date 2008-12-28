@@ -93,7 +93,7 @@ so we do not have to set up real objects.
 
   >>> wi01 = workItems.add('001', 'john')
   >>> wi01
-  <WorkItem ['001', 1, 'john', '...', 'created']:
+  <WorkItem ['001', 1, 'john', '...', 'new']:
    {'created': ..., 'creator': 'john'}>
 
 Properties that have not been set explicitly have a default of None; properties
@@ -110,20 +110,16 @@ Certain (not all) properties may be set after creation.
 
   >>> wi01.setInitData(planStart=1229955772, planDuration=600, party='annie')
   >>> wi01
-  <WorkItem ['001', 1, 'annie', '2008-12-22 14:22', 'created']:
+  <WorkItem ['001', 1, 'annie', '2008-12-22 14:22', 'new']:
    {'created': ..., 'planEnd': 1229956372, 'planDuration': 600,
     'planStart': 1229955772, 'creator': 'john', 'planEffort': 600}>
 
-It's not possible to change a value after it has been set, even if it is
-set via an automatic calculation like for the ``planEffort`` field.
+It's possible to change a value after it has been set as long as the work
+item is in state 'new'.
 
-  >>> wi01.setInitData(planEffort=400)
-  Traceback (most recent call last):
-  ...
-  ValueError: Attribute 'planEffort' already set to '600'.
-
-There is one exception to this rule: The party may be changed as long as
-the work item is not in the ``assigned`` state.
+  >>> wi01.setInitData(planEffort=700)
+  >>> wi01.planEffort
+  700
 
   >>> wi01.setInitData(party='jim')
   >>> wi01.userName
@@ -141,7 +137,7 @@ that the work item is assigned to may not be changed any more.
   >>> wi01.setInitData(party='annie')
   Traceback (most recent call last):
   ...
-  ValueError: Attribute 'party' may not be set in state 'assigned'.
+  ValueError: Attribute 'party' already set to 'jim'.
 
 Jim now really starts to work. The start time is usually set automatically
 but may also be specified explicitly.
@@ -151,7 +147,7 @@ but may also be specified explicitly.
   <WorkItem ['001', 1, 'jim', '2008-12-22 15:00', 'running']:
    {'created': ..., 'planEnd': 1229956372, 'start': 1229958000,
     'assigned': ..., 'planDuration': 600, 'planStart': 1229955772,
-    'creator': 'john', 'planEffort': 600}>
+    'creator': 'john', 'planEffort': 700}>
 
 Stopping work
 -------------
