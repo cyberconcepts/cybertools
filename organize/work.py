@@ -228,6 +228,15 @@ class WorkItems(object):
     def __iter__(self):
         return iter(self.context.values())
 
+    def query(self, **criteria):
+        if 'task' in criteria:
+            criteria['taskId'] = criteria.pop('task')
+        if 'party' in criteria:
+            criteria['userName'] = criteria.pop('party')
+        if 'run' in criteria:
+            criteria['runId'] = criteria.pop('run')
+        return self.context.query(**criteria)
+
     def add(self, task, party, run=0, **kw):
         trackId = self.context.saveUserTrack(task, run, party, {})
         track = self[trackId]

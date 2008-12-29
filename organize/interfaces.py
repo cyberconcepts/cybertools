@@ -493,7 +493,21 @@ class IWorkItems(Interface):
     """ A collection (manager, container) of work items.
     """
 
+    def __getitem__(key):
+        """ Return the work item identified by the key given.
+        """
+
+    def __iter__():
+        """ Return an iterator of all work items.
+        """
+
+    def query(**criteria):
+        """ Search for tracks. Possible criteria are: task, party, run,
+            timeFrom, timeTo.
+        """
+
     def add(task, party, run=0, **kw):
         """ Create and register a work item; return it. Additional properties
             may be specified via keyword arguments.
         """
+
