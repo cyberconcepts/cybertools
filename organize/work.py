@@ -180,14 +180,13 @@ class WorkItem(Stateful, Track):
         self.startWork(**kw)
 
     def action_finish(self, **kw):
+        if 'description' in kw:
+            self.data['description'] = kw.pop('description')
         if self.state == 'new':
             self.assign(kw.pop('party', None))
+        if self.state == 'assigned':
+            self.startWork(start=kw.pop('start', None))
         self.stopWork(**kw)
-        #pred = self.predecessor    # better to finish predecessors manually?
-        #while pred is not None:
-        #    wi = getParent(self)[pred]
-        #    wi.doTransition('finish')
-        #    pred = wi.pred
 
     # auxiliary methods
 
@@ -225,6 +224,9 @@ class WorkItems(object):
 
     def __getitem__(self, key):
         return self.context[key]
+
+    def __iter__(self):
+        return iter(self.context.values())
 
     def add(self, task, party, run=0, **kw):
         trackId = self.context.saveUserTrack(task, run, party, {})

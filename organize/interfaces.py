@@ -28,6 +28,7 @@ from zope.interface import Interface, Attribute
 from zope.i18nmessageid import MessageFactory
 
 from cybertools.composer.schema.factory import Email
+from cybertools.tracking.interfaces import ITrack
 from cybertools.util.jeep import Jeep, Term
 
 _ = MessageFactory('cybertools.organize')
@@ -420,7 +421,7 @@ class IJobManager(Interface):
 
 # work
 
-class IWorkItem(Interface):
+class IWorkItem(ITrack):
     """ A single piece of work, started and finished at a certain time,
         done by exactly one party (usually a person).
     """

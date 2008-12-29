@@ -11,7 +11,7 @@
 
   <adapter factory="cybertools.organize.work.WorkItems" />
 
-  <utility component="cybertools.organize.work.workItemStates"
+  <utility factory="cybertools.organize.work.workItemStates"
            provides="cybertools.stateful.interfaces.IStatesDefinition"
            name="organize.workItemStates" />
 
