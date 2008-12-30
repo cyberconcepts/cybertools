@@ -433,6 +433,7 @@ class IWorkItem(ITrack):
     party = Attribute('Whoever does the work, usually a person, identified '
                 'by its name or ID.')
     state = Attribute('The current state the work item is in.')
+    title = Attribute('A short text characterizing the work item.')
     description = Attribute('A note about what has to be done, and why...')
     # optional plan fields; duration (and effort) may be derived from start and end
     # all date/time fields are timeStamp values, all duration and effort

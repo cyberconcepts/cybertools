@@ -46,7 +46,7 @@ def workItemStates():
               color='yellow'),
         State('running', 'running', ('finish', 'continue', 'cancel', 'transfer'),
               color='orange'),
-        State('finished', 'finished', (), color='green'),
+        State('finished', 'finished', ('cancel',), color='green'),
         State('continued', 'continued', ('finish', 'cancel'), color='blue'),
         State('transferred', 'transferred', ('finish', 'cancel'),
               color='lightblue'),
@@ -72,7 +72,7 @@ class WorkItem(Stateful, Track):
     index_attributes = metadata_attributes
     typeName = 'WorkItem'
 
-    initAttributes = set(['party', 'description', 'predecessor',
+    initAttributes = set(['party', 'title', 'description', 'predecessor',
                           'planStart', 'planEnd', 'planDuration', 'planEffort'])
 
     closeAttributes = set(['end', 'duration', 'effort', 'comment'])
@@ -86,7 +86,7 @@ class WorkItem(Stateful, Track):
     def __getattr__(self, attr):
         if attr not in IWorkItem:
             raise AttributeError(attr)
-        return self.data.get(attr, None)
+        return self.data.get(attr)
 
     def getStatesDefinition(self):
         return component.getUtility(IStatesDefinition, name=self.statesDefinition)
@@ -94,6 +94,10 @@ class WorkItem(Stateful, Track):
     @property
     def party(self):
         return self.userName
+
+    @property
+    def title(self):
+        return self.data.get('title') or self.description
 
     def setInitData(self, **kw):
         indexChanged = False
@@ -163,8 +167,10 @@ class WorkItem(Stateful, Track):
             new = workItems.add(self.taskId, self.userName, self.runId, **newData)
             if transition == 'continue':
                 new.assign()
-            new.data['predecessor'] = getName(self)
-            self.data['successor'] = getName(new)
+            #new.data['predecessor'] = getName(self)
+            new.data['predecessor'] = self.__name__
+            #self.data['successor'] = getName(new)
+            self.data['successor'] = new.__name__
             return new
 
     # actions
@@ -180,8 +186,9 @@ class WorkItem(Stateful, Track):
         self.startWork(**kw)
 
     def action_finish(self, **kw):
-        if 'description' in kw:
-            self.data['description'] = kw.pop('description')
+        for k in ('description', 'title'):
+            if k in kw:
+                self.data[k] = kw.pop(k)
         if self.state == 'new':
             self.assign(kw.pop('party', None))
         if self.state == 'assigned':
