@@ -46,6 +46,10 @@ class ITrack(Interface):
     metadata = Attribute('A mapping with the track\'s metadata')
     indexdata = Attribute('A mapping with the data to be used for indexing')
 
+    #def getName():
+    #    """ Return the internal name (ID) of the track.
+    #    """
+
 
 class ITrackingStorage(Interface):
     """ A utility for storing user tracks.

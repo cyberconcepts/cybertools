@@ -26,12 +26,15 @@ import time
 from persistent import Persistent
 from BTrees import OOBTree, IOBTree
 from BTrees.IFBTree import intersection, union
+from zope.component import adapter
 from zope.interface import implements
 from zope.app.container.btree import BTreeContainer
+from zope.app.container.interfaces import IObjectRemovedEvent
 from zope.index.field import FieldIndex
+from zope.traversing.api import getParent
 from zope.traversing.interfaces import IPhysicallyLocatable
 
-from interfaces import IRun, ITrackingStorage, ITrack
+from cybertools.tracking.interfaces import IRun, ITrackingStorage, ITrack
 
 
 class Run(object):
@@ -53,7 +56,8 @@ class Run(object):
 
 class Track(Persistent):
 
-    implements(ITrack, IPhysicallyLocatable)
+    #implements(ITrack, IPhysicallyLocatable)
+    implements(ITrack)
 
     metadata_attributes = ('taskId', 'runId', 'userName', 'timeStamp')
     index_attributes = metadata_attributes
@@ -72,8 +76,8 @@ class Track(Persistent):
         self.timeStamp = getTimeStamp()
         self.data = data
 
-    def getName(self):
-        return self.__name__
+    #def getName(self):
+    #    return self.__name__
 
     def update(self, newData):
         if not newData:
@@ -225,8 +229,13 @@ class TrackingStorage(BTreeContainer):
             self.taskUsers[taskId] = OOBTree.OOTreeSet()
         self.taskUsers[taskId].update([userName])
 
+    def unindexTrack(self, trackNum, track):
+        for attr in self.indexAttributes:
+            self.indexes[attr].unindex_doc(trackNum)
+
     def reindexTracks(self):
-        # TODO: clear indexes
+        for attr in self.trackFactory.index_attributes:
+            self.indexes[attr].clear()
         for trackId in self:
             trackNum = int(trackId)
             self.indexTrack(trackNum, self[trackId])
@@ -285,3 +294,8 @@ def timeStamp2ISO(ts):
 
 def getTimeStamp():
     return int(time.time())
+
+
+@adapter(ITrack, IObjectRemovedEvent)
+def unindexTrack(context, event):
+    getParent(context).unindexTrack(int(context.__name__), context)
