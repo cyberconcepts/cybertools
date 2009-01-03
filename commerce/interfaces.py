@@ -1,5 +1,6 @@
+#-*- coding: UTF-8 -*-
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -29,6 +30,7 @@ from zope.i18nmessageid import MessageFactory
 
 from cybertools.util.jeep import Jeep, Term
 from cybertools.organize.interfaces import IAddress as IBaseAddress
+from cybertools.organize.interfaces import IPerson as IBasePerson
 from loops import util
 
 _ = MessageFactory('cybertools.commerce')
@@ -41,12 +43,15 @@ class IManager(Interface):
         all components of a commerce site.
     """
 
-    shops = Attribute('All shops in this commerce manager.')
-    products = Attribute('All products in this commerce manager.')
-    categories = Attribute('All product categories in this commerce manager.')
-    manufacturers = Attribute('All manufacturers in this commerce manager.')
-    suppliers = Attribute('All suppliers in this commerce manager.')
-    customers = Attribute('All customers in this commerce manager.')
+    shops = Attribute(u'All shops in this commerce manager.')
+    products = Attribute(u'All products in this commerce manager.')
+    categories = Attribute(u'All product categories in this commerce manager.')
+    manufacturers = Attribute(u'All manufacturers in this commerce manager.')
+    suppliers = Attribute(u'All suppliers in this commerce manager.')
+    customers = Attribute(u'All customers in this commerce manager.')
+    orders = Attribute(u'All orders in this commerce manager.')
+    orderItems = Attribute(u'All order items; may also be cart items without '
+                u'relation to an existing order.')
 
 
 # shops
@@ -179,6 +184,11 @@ class ICategory(Interface):
     """ A product category.
     """
 
+    name = schema.ASCIILine(
+            title=_(u'Category Identifier'),
+            description=_(u'An internal name uniquely identifying the category.'),
+            default='',
+            required=True)
     title = schema.TextLine(
             title=_(u'Title'),
             description=_(u'Short title of the category.'),
@@ -203,6 +213,7 @@ class ICategory(Interface):
 
     products = Attribute(u'The products belonging to this category.')
     subcategories = Attribute(u'The sub-categories belonging to this category.')
+    parentCategories = Attribute(u'The parent categories belonging to this category.')
     shops = Attribute(u'The shops providing this category.')
     accessories = Attribute(u'Accessories for this category.')
 
@@ -210,8 +221,8 @@ class ICategory(Interface):
 # customers
 
 class ICustomer(Interface):
-    """ Typically a role of - for example - a person or institution (the ``client``)
-        representing a customer of one or more shops.
+    """ Typically a role instance of - for example - a person or institution
+        (the ``client``) representing a customer of one or more shops.
 
         The client may be None in which case the customer is an object on
         its own.
@@ -229,14 +240,21 @@ class ICustomer(Interface):
             required=True)
     description = schema.Text(
             title=_(u'Description'),
-            description=_(u'A medium-length description of the category.'),
+            description=_(u'A medium-length description of the customer.'),
             default=u'',
             missing_value=u'',
             required=False)
 
     shops = Attribute(u'The shops the client object is a customer of.')
+    paymentTypes = Attribute(u'A collection of payment types supported.')
+    orders = Attribute(u'A collection of the customer\'s orders.')
 
     client = Attribute(u'An optional (real) client object of the customer role.')
+
+
+class IPerson(IBasePerson):
+
+    customer = Attribute(u'The customer the person belongs to.')
 
 
 addressTypesVoc = util.KeywordVocabulary((
@@ -256,8 +274,41 @@ class IAddress(IBaseAddress):
             default='standard',
             required=False)
 
+    clients = Attribute(u'A collection of objects that this address belongs to.')
 
 # orders
+
+valueTypesVoc = util.KeywordVocabulary((
+        ('product', _(u'Product Prices')),
+        ('shipping', _(u'Shipping Cost')),
+))
+
+vatRatesVoc = util.KeywordVocabulary((
+        ('product', 0),
+        ('reduced', 7),
+        ('standard', 19),
+))
+
+
+currencyVoc = util.KeywordVocabulary((
+        ('EUR', u'€'),
+        ('USD', u'$'),
+))
+
+
+class IValue(Interface):
+    """ An order or item value with additional information about the type of
+        the value and e.g. the VAT rate.
+    """
+
+    type = Attribute(u'The type of the value; see valueTypesVoc.')
+    value = Attribute(u'The value in the standard currency (EUR), '
+                u'stored as a Decimal value.')
+    currency = Attribute(u'The currency of the value.')
+    currencyRate = Attribute(u'The rate for converting the value to the '
+                u'standard currency, default is 1.')
+    vat = Attribute(u'The id of the VAT rate; see vatRatesVoc.')
+
 
 class IOrder(Interface):
     """
@@ -266,10 +317,16 @@ class IOrder(Interface):
     orderId = Attribute(u'Order Identifier')
     shop = Attribute(u'The shop this order belongs to.')
     customer = Attribute(u'The customer issuing this order.')
+    invoiceAddress = Attribute(u'The address the invoice should be sent to.')
+    shippingAddress = Attribute(u'The address the products should be sent to.')
+    paymentType = Attribute(u'The payment type to be used for the order.')
+    netValues = Attribute(u'A collection of net total values (IValue objects)'
+                u'of the order.')
+    total = Attribute(u'The total gross value (Decimal) of the order.')
 
 
 class IOrderItem(Interface):
-    """
+    """ An individual order or cart item.
     """
 
     quantity = schema.Int(
@@ -278,7 +335,14 @@ class IOrderItem(Interface):
             default=1,
             required=True)
 
-    order = Attribute(u'Order this order item belongs to.')
+    order = Attribute(u'The order this order item belongs to.')
     product = Attribute(u'The product represented by this order item.')
     unitPrice = Attribute(u'The basic unit price for one of the product '
                     u'items ordered.')
+    fullPrice = Attribute(u'The full price for the quantity ordered.')
+
+
+class IOrderItems(Interface):
+    """ A collection of order items.
+    """
+

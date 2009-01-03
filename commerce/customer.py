@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -24,21 +24,20 @@ $Id$
 
 from zope.interface import implements, Interface
 
-from cybertools.commerce.common import RelationSet
+from cybertools.commerce.common import RelationSet, BaseObject
 from cybertools.commerce.interfaces import ICustomer, IAddress
 
 
-class Customer(object):
+class Customer(BaseObject):
 
     implements(ICustomer)
-
-    collection = RelationSet
 
     def __init__(self, customerId, title=None, client=None):
         self.name = self.customerId = customerId
         self.title = title or u'unknown'
         self.client = client
         self.shops = self.collection(self, 'customers')
+        self.orders = self.collection(self, 'customer')
 
 
 class Address(object):

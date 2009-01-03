@@ -51,22 +51,62 @@ class ContainerAttribute(object):
 
 class RelationSet(object):
 
-    def __init__(self, parent, attributeName):
+    def __init__(self, parent, attributeName=None):
         self.parent = parent
         self.attributeName = attributeName
         self.data = {}
 
     def add(self, related):
         self.data[related.name] = related
-        relatedData = getattr(related, self.attributeName).data
-        relatedData[self.parent.name] = self.parent
+        if self.attributeName:
+            value = getattr(related, self.attributeName)
+            if isinstance(value, RelationSet):
+                relatedData = value.data
+                relatedData[self.parent.name] = self.parent
+            else:
+                setattr(related, self.attributeName, self.parent)
 
     def remove(self, related):
         name = related.name
         del self.data[name]
-        relatedData = getattr(related, self.attributeName).data
-        del relatedData[self.parent.name]
+        if self.attributeName:
+            value = getattr(related, self.attributeName)
+            if isinstance(value, RelationSet):
+                relatedData = value.data
+                del relatedData[self.parent.name]
+            else:
+                setattr(related, self.attributeName, None)
 
     def __iter__(self):
         for obj in self.data.values():
             yield obj
+
+
+class Relation(object):
+
+    def __init__(self, name, otherName):
+        self.name = name
+        self.otherName = otherName
+
+    def __get__(self, inst, class_=None):
+        if inst is None:
+            return self
+        return getattr(inst, self.name)
+
+    def __set__(self, inst, value):
+        existing = getattr(inst, self.name, None)
+        if existing is not None:
+            other = getattr(existing, self.otherName).data
+            for k, v in other.items():
+                if v != inst:
+                    del other[k]
+        if value is not None:
+            other = getattr(value, self.otherName).data
+            other[inst.name] = inst
+        setattr(inst, self.name, value)
+
+
+class BaseObject(object):
+
+    collection = RelationSet
+

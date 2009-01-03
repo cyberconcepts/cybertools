@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -24,46 +24,53 @@ $Id$
 
 from zope.interface import implements, Interface
 
-from cybertools.commerce.common import RelationSet
+from cybertools.commerce.common import Relation, RelationSet, BaseObject
 from cybertools.commerce.interfaces import IProduct, ICategory
 from cybertools.commerce.interfaces import IManufacturer, ISupplier
 
 
-class Product(object):
+class Product(BaseObject):
 
     implements(IProduct)
 
-    collection = RelationSet
+    manufacturer = Relation('_manufacturer', 'products')
 
     def __init__(self, productId, title=None):
         self.name = self.productId = productId
         self.title = title or u'unknown'
         self.shops = self.collection(self, 'products')
+        self.categories = self.collection(self, 'products')
+        self.suppliers = self.collection(self, 'products')
 
 
-class Category(object):
+class Category(BaseObject):
 
     implements(ICategory)
 
-    collection = RelationSet
-
-    def __init__(self, title=None):
+    def __init__(self, name, title=None):
+        self.name = name
         self.title = title or u'unknown'
         self.shops = self.collection(self, 'categories')
+        self.products = self.collection(self, 'categories')
+        self.subcategories = self.collection(self, 'parentCategories')
+        self.parentCategories = self.collection(self, 'subCategories')
 
 
-class Manufacturer(object):
+class Manufacturer(BaseObject):
 
     implements(IManufacturer)
 
-    def __init__(self, title=None):
+    def __init__(self, name, title=None):
+        self.name = name
         self.title = title or u'unknown'
+        self.products = self.collection(self, 'manufacturer')
 
 
-class Supplier(object):
+class Supplier(BaseObject):
 
     implements(ISupplier)
 
-    def __init__(self, title=None):
+    def __init__(self, name, title=None):
+        self.name = name
         self.title = title or u'unknown'
 

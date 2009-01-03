@@ -4,6 +4,8 @@ Commerce: Shope, Products, Customers, Orders, ...
 
   ($Id$)
 
+  >>> from zope import component
+
   >>> from cybertools.commerce.manager import Manager
   >>> manager = Manager()
 
@@ -42,6 +44,13 @@ it belongs to.
   >>> sorted((s.name, s.title) for s in p003.shops)
   [(u'shop1', u'PC up Ltd'), (u'shop2', u'Video up Ltd')]
 
+We can also create a manufacturer and set it for a product.
+
+  >>> mf001 = manager.manufacturers.create(u'001', title=u'Global Electronics')
+  >>> p001.manufacturer = mf001
+  >>> [p.title for p in mf001.products]
+  [u'Silent Case']
+
 
 Customers
 =========
@@ -66,6 +75,18 @@ Customers
   [(u'shop1', u'PC up Ltd'), (u'shop2', u'Video up Ltd')]
 
 
-Orders
-======
+Carts and Orders
+================
 
+  >>> from cybertools.commerce.order import OrderItems
+  >>> component.provideAdapter(OrderItems)
+
+  >>> orderItems = manager.orderItems
+
+  >>> orderItems.add(p001, c001, quantity=3)
+  <Track [..., 1, ..., '... ...']: {'quantity': 3}>
+
+Orders
+------
+
+  >>> ord001 = manager.orders.create(u'001', shop=shop1, customer=c001)
