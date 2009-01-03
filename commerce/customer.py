@@ -40,7 +40,7 @@ class Customer(BaseObject):
         self.orders = self.collection(self, 'customer')
 
 
-class Address(object):
+class Address(BaseObject):
 
     implements(IAddress)
 

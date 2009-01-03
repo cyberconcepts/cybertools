@@ -24,11 +24,11 @@ $Id$
 
 from zope.interface import implements
 
-from cybertools.commerce.common import RelationSet
+from cybertools.commerce.common import RelationSet, BaseObject
 from cybertools.commerce.interfaces import IShop
 
 
-class Shop(object):
+class Shop(BaseObject):
 
     implements(IShop)
 

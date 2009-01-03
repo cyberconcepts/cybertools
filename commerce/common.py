@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,9 @@ Common functionality.
 $Id$
 """
 
+from zope.app.intid.interfaces import IIntIds
+from zope import component
+
 
 class ContainerAttribute(object):
 
@@ -37,9 +40,11 @@ class ContainerAttribute(object):
         for k, v in kw.items():
             setattr(obj, k, v)
         self.data[id] = obj
+        component.getUtility(IIntIds).register(obj)
         return obj
 
     def remove(self, id):
+        component.getUtility(IIntIds).unregister(self.data[id])
         del self.data[id]
 
     def get(self, id, default=None):
@@ -109,4 +114,17 @@ class Relation(object):
 class BaseObject(object):
 
     collection = RelationSet
+
+
+# utility functions
+
+def getUidForObject(obj, intIds=None):
+    if intIds is None:
+        intIds = component.getUtility(IIntIds)
+    return intIds.getId(obj)
+
+def getObjectForUid(uid, intIds=None):
+    if intIds is None:
+        intIds = component.getUtility(IIntIds)
+    return intIds.getObject(uid)
 

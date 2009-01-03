@@ -78,15 +78,31 @@ Customers
 Carts and Orders
 ================
 
-  >>> from cybertools.commerce.order import OrderItems
-  >>> component.provideAdapter(OrderItems)
+A cart is just a collection of order items belonging to a certain customer
+(or some other kind of party).
 
   >>> orderItems = manager.orderItems
 
-  >>> orderItems.add(p001, c001, quantity=3)
-  <Track [..., 1, ..., '... ...']: {'quantity': 3}>
+  >>> orderItems.add(p001, c001, shop=shop1, quantity=3)
+  <OrderItem [2, 1, 7, '... ...', '???']: {'shop': 0, 'quantity': 3}>
+
+  >>> orderItems.getCart(c001)
+  [<OrderItem [2, 1, 7, '... ...', '???']: {'shop': 0, 'quantity': 3}>]
 
 Orders
 ------
 
+The items in a shopping cart may be included in an order.
+
   >>> ord001 = manager.orders.create(u'001', shop=shop1, customer=c001)
+
+  >>> for item in orderItems.getCart(c001):
+  ...     item.setOrder(ord001)
+
+Now the default cart is empty; we now have to supply the order for
+retrieving the order items.
+
+  >>> orderItems.getCart(c001)
+  []
+  >>> orderItems.getCart(c001, ord001)
+  [<OrderItem [2, 1, 7, '... ...', 11]: {'shop': 0, 'quantity': 3}>]

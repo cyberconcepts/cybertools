@@ -335,14 +335,42 @@ class IOrderItem(Interface):
             default=1,
             required=True)
 
-    order = Attribute(u'The order this order item belongs to.')
     product = Attribute(u'The product represented by this order item.')
+    party = Attribute(u'The party (person, customer, session, ...) '
+                u'that is ordering the product.')
+    shop = Attribute(u'The shop from which the product is ordered.')
+    order = Attribute(u'The order this order item belongs to.')
     unitPrice = Attribute(u'The basic unit price for one of the product '
                     u'items ordered.')
     fullPrice = Attribute(u'The full price for the quantity ordered.')
+
+    def setOrder(order):
+        """ Assign the order given to the order item.
+        """
 
 
 class IOrderItems(Interface):
     """ A collection of order items.
     """
 
+    def __getitem__(key):
+        """ Return the order item identified by the key given.
+        """
+
+    def __iter__():
+        """ Return an iterator of all order items.
+        """
+
+    def query(**criteria):
+        """ Search for order items. Possible criteria are:
+            product, party, order, run, timeFrom, timeTo.
+        """
+
+    def add(product, party, shop, order='???', run=0, **kw):
+        """ Create and register an order item; return it. Additional properties
+            may be specified via keyword arguments.
+        """
+
+    def getCart(party, order='???', shop=None, run=0, **kw):
+        """ Return a collection of order items.
+        """
