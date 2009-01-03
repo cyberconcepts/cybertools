@@ -217,14 +217,22 @@ class TrackingStorage(BTreeContainer):
         if trackId in self:
             del self[trackId]
 
-    def indexTrack(self, trackNum, track):
-        ixd = track.indexdata
+    def indexTrack(self, trackNum, track, idx=None):
+        if not trackNum:
+            trackNum = int(track.__name__)
+        data = track.indexdata
+        if idx is not None:
+            if idx not in self.indexAttributes:
+                raise ValueError("Index '%s' not available." % (idx))
+            return self.indexes[idx].index_doc(trackNum, data[idx])
         for attr in self.indexAttributes:
-            value = ixd[attr]
-            if value is not None:
+            value = data[attr]
+            if value is None:
+                self.indexes[attr].unindex_doc(trackNum)
+            else:
                 self.indexes[attr].index_doc(trackNum, value)
-        taskId = ixd['taskId']
-        userName = ixd['userName']
+        taskId = data['taskId']
+        userName = data['userName']
         if taskId not in self.taskUsers:
             self.taskUsers[taskId] = OOBTree.OOTreeSet()
         self.taskUsers[taskId].update([userName])
