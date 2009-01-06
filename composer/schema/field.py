@@ -187,6 +187,7 @@ class NumberFieldInstance(FieldInstance):
         if not value:
             return None
         try:
+            #return int(str(value))
             return int(value)
         except (TypeError, ValueError):
             return float(value)
