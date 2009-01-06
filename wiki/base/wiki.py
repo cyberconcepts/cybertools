@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,14 +22,16 @@ A Wiki manager managing wikis and wiki-related objects, esp plugins.
 $Id$
 """
 
-from docutils.core import publish_doctree, publish_from_doctree
-from docutils.writers.html4css1 import HTMLTranslator, Writer
+from zope import component
 from zope.interface import implements
 
+from cybertools.wiki.interfaces import IWikiConfiguration
 from cybertools.wiki.interfaces import IWikiManager, IWiki, IWikiPage
+from cybertools.wiki.interfaces import IParser, IWriter
+from cybertools.wiki.base.config import BaseConfiguration
 
 
-class WikiManager(object):
+class WikiManager(BaseConfiguration):
 
     implements(IWikiManager)
 
@@ -44,10 +46,17 @@ class WikiManager(object):
         wiki.manager = self
         return wiki
 
+    # configuration
 
-class Wiki(object):
+    def getParent(self):
+        return component.getUtility(IWikiConfiguration)
+
+
+class Wiki(BaseConfiguration):
 
     implements(IWiki)
+
+    manager = None
 
     def __init__(self, name, title=None):
         self.name = name
@@ -61,11 +70,17 @@ class Wiki(object):
         page.wiki = self
         return page
 
+    # configuration
 
-class WikiPage(object):
+    def getParent(self):
+        return self.manager
+
+
+class WikiPage(BaseConfiguration):
 
     implements(IWikiPage)
 
+    wiki = None
     text = u''
 
     def __init__(self, name, title=None):
@@ -76,17 +91,17 @@ class WikiPage(object):
         return self.write(self.parse())
 
     def parse(self):
-        # TODO: delegate to parser plugin
-        return publish_doctree(self.text)
+        parserName = self.getConfig('parser')
+        parser = component.getUtility(IParser, name=parserName)
+        return parser.parse(self.text)
 
     def write(self, tree):
-        # TODO: delegate to writer plugin, use translator plugins
-        writer = Writer()
-        writer.translator_class = HTMLBodyTranslator
-        return publish_from_doctree(tree, writer=writer)
+        writerName = self.getConfig('writer')
+        writer = component.getUtility(IWriter, name=writerName)
+        return writer.write(tree)
 
+    # configuration
 
-class HTMLBodyTranslator(HTMLTranslator):
+    def getParent(self):
+        return self.wiki
 
-    def astext(self):
-        return u''.join(self.body_pre_docinfo + self.docinfo + self.body)

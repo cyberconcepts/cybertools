@@ -8,6 +8,11 @@ $Id$
 
 import unittest, doctest
 from zope.testing.doctestunit import DocFileSuite
+from zope import component
+
+from cybertools.wiki.base.config import WikiConfiguration
+from cybertools.wiki.dcu.html import Writer as DocutilsHTMLWriter
+from cybertools.wiki.dcu.rstx import Parser as DocutilsRstxParser
 
 
 class Test(unittest.TestCase):
@@ -17,11 +22,17 @@ class Test(unittest.TestCase):
         pass
 
 
+def setUp(testCase):
+    component.provideUtility(WikiConfiguration())
+    component.provideUtility(DocutilsHTMLWriter(), name='docutils.html')
+    component.provideUtility(DocutilsRstxParser(), name='docutils.rstx')
+
+
 def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
     return unittest.TestSuite((
         unittest.makeSuite(Test),
-        DocFileSuite('README.txt', optionflags=flags),
+        DocFileSuite('README.txt', optionflags=flags, setUp=setUp),
         ))
 
 if __name__ == '__main__':

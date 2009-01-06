@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -23,6 +23,27 @@ $Id$
 """
 
 from zope.interface import Interface, Attribute
+
+
+class IWikiConfiguration(Interface):
+    """ Provides information about the implementations to be used for
+        the various kinds of wiki plug-ins.
+    """
+
+    writer = Attribute('Plug-in component converting from internal tree '
+                'format to presentation format.')
+    parser = Attribute('Plug-in component converting from text input '
+                'format to internal tree format.')
+
+    def getConfig(functionality):
+        """ Return the name of the plugin that should used for the
+            functionality given.
+        """
+
+    def getParent():
+        """ Return the parent object in case this configuration does not
+            provide configuration information for a certain functionality.
+        """
 
 
 class IWikiManager(Interface):
@@ -83,6 +104,25 @@ class IWikiPage(Interface):
         """
 
 
+# wiki plugins
+
+class IParser(Interface):
+    """ Converts from (plain text) input format to internal format.
+    """
+
+    def parse(text):
+        """ Return internal tree structure.
+        """
+
+class IWriter(Interface):
+    """ Converts from internal tree format to presentation format.
+    """
+
+    def write(tree):
+        """ Returns presentation format for the tree given.
+        """
+
+
 # wiki elements
 
 class ILinkManager(Interface):
@@ -97,6 +137,9 @@ class ILinkManager(Interface):
         """Remove a link.
         """
 
+
+# TODO: convert the following stuff so that it fits in the parser/writer
+#       paradigm.
 
 class ILink(Interface):
     """A hyperlink between two local or foreign objects.
