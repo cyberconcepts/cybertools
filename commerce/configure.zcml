@@ -8,4 +8,6 @@
 
   <i18n:registerTranslations directory="locales" />
 
+  <zope:adapter factory="cybertools.commerce.order.OrderItems" />
+
 </configure>

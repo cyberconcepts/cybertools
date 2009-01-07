@@ -116,7 +116,7 @@ class OrderItems(object):
         self.context.indexTrack(0, track, 'order')
         return track
 
-    def getCart(self, party, order='???', shop=None, run=None, **kw):
+    def getCart(self, party=None, order='???', shop=None, run=None, **kw):
         if run:
             kw['run'] = run
         result = self.query(party=party, order=order, **kw)

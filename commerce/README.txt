@@ -99,7 +99,7 @@ The items in a shopping cart may be included in an order.
   >>> for item in orderItems.getCart(c001):
   ...     item.setOrder(ord001)
 
-Now the default cart is empty; we now have to supply the order for
+Now the default cart is empty; we have to supply the order for
 retrieving the order items.
 
   >>> orderItems.getCart(c001)

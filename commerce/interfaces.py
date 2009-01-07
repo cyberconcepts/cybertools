@@ -371,6 +371,6 @@ class IOrderItems(Interface):
             may be specified via keyword arguments.
         """
 
-    def getCart(party, order='???', shop=None, run=0, **kw):
+    def getCart(party=None, order='???', shop=None, run=0, **kw):
         """ Return a collection of order items.
         """
