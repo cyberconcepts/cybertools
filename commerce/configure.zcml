@@ -8,6 +8,13 @@
 
   <i18n:registerTranslations directory="locales" />
 
-  <zope:adapter factory="cybertools.commerce.order.OrderItems" />
+  <!--<zope:adapter factory="cybertools.commerce.order.OrderItems" />-->
+
+  <zope:class class="cybertools.commerce.order.OrderItem">
+    <require permission="zope.View"
+             interface="cybertools.commerce.interfaces.IOrderItem" />
+    <require permission="zope.ManageContent"
+             set_schema="cybertools.commerce.interfaces.IOrderItem" />
+  </zope:class>
 
 </configure>

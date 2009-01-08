@@ -31,6 +31,7 @@ from zope.i18nmessageid import MessageFactory
 from cybertools.util.jeep import Jeep, Term
 from cybertools.organize.interfaces import IAddress as IBaseAddress
 from cybertools.organize.interfaces import IPerson as IBasePerson
+from cybertools.tracking.interfaces import ITrack
 from loops import util
 
 _ = MessageFactory('cybertools.commerce')
@@ -325,7 +326,7 @@ class IOrder(Interface):
     total = Attribute(u'The total gross value (Decimal) of the order.')
 
 
-class IOrderItem(Interface):
+class IOrderItem(ITrack):
     """ An individual order or cart item.
     """
 
