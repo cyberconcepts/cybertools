@@ -1,0 +1,135 @@
+==========================================================
+Organizations: Persons, Institutions, Addresses, Work, ...
+==========================================================
+
+  ($Id$)
+
+  >>> from zope import component
+
+
+Basic Work Item Lifecycle
+=========================
+
+Work items are stored in a tracking storage; in order to conveniently access
+the work items we have to provide an adapter to the tracking storage.
+
+  >>> from cybertools.tracking.btree import TrackingStorage
+  >>> from cybertools.organize.interfaces import IWorkItems
+  >>> from cybertools.organize.work import WorkItem, WorkItems
+  >>> component.provideAdapter(WorkItems)
+
+The individual work item (a track) is carrying a state attribute that is
+governed by a special states definition. We have to register this states
+definition as a utility.
+
+  >>> from cybertools.organize.work import workItemStates
+  >>> component.provideUtility(workItemStates(), name='organize.workItemStates')
+
+We are now ready to set up the tracking storage.
+
+  >>> tracks = TrackingStorage(trackFactory=WorkItem)
+  >>> workItems = component.getAdapter(tracks, IWorkItems)
+
+The work management only deals with the IDs or names of tasks and persons,
+so we do not have to set up real objects.
+
+  >>> wi01 = workItems.add('001', 'john')
+  >>> wi01
+  <WorkItem ['001', 1, 'john', '...', 'new']:
+   {'created': ..., 'creator': 'john'}>
+
+Properties that have not been set explicitly have a default of None; properties
+not specified in the IWorkItem interface will lead to an AttributeError.
+
+  >>> wi01.description is None
+  True
+  >>> wi01.something
+  Traceback (most recent call last):
+  ...
+  AttributeError: something
+
+Properties may be set as long as the work item is in status "new".
+
+  >>> wi01.setData(start=1229955772, party='annie')
+  >>> wi01
+  <WorkItem ['001', 1, 'annie', '2008-12-22 14:22', 'new']:
+   {'start': 1229955772, 'created': ..., 'creator': 'john'}>
+
+The duration value is calculated automatically when start and end are set;
+the effort is taken from the duration if not set explicitly.
+
+  >>> (wi01.end, wi01.duration, wi01.effort)
+  (None, None, None)
+  >>> wi01.setData(end=1229956372)
+  >>> (wi01.end, wi01.duration, wi01.effort)
+  (1229956372, 600, 600)
+
+  >>> wi01.setData(duration=700)
+  >>> wi01.effort
+  700
+
+  >>> w = wi01.doAction('plan', party='jim')
+  >>> wi01.userName
+  'jim'
+
+Change work item state
+----------------------
+
+Now Jim accepts the work item, i.e. he wants to work on it.
+
+  >>> wi02 = wi01.doAction('accept')
+  >>> wi01.state
+  'planned'
+  >>> wi02
+  <WorkItem ['001', 1, 'jim', '2008-12-22 14:22', 'accepted']:
+   {'duration': 700, 'start': 1229955772, 'created': ...,
+    'end': 1229956372, 'creator': 'jim'}>
+
+It is not possible to change a value of a work item that is not in state "new".
+
+  >>> wi01.setData(party='annie')
+  Traceback (most recent call last):
+  ...
+  ValueError: Attributes may only be changed in state 'new'.
+
+Jim now really starts to work. The start time is usually set automatically
+but may also be specified explicitly.
+
+  >>> wi03 = wi02.doAction('start', start=1229958000)
+  >>> wi03
+  <WorkItem ['001', 1, 'jim', '2008-12-22 15:00', 'running']:
+   {'duration': 700, 'start': 1229958000, 'created': ...,
+    'end': 1229956372, 'creator': 'jim'}>
+
+Stopping and finishing work
+---------------------------
+
+After five minutes of work Jim decides to stop working; but he will
+continue work later, so he executes a ``stop`` action.
+
+  >>> wi04 = wi03.doAction('stop', end=1229958300)
+  >>> wi04
+  <WorkItem ['001', 1, 'jim', '2008-12-22 15:00', 'stopped']:
+   {'duration': 700, 'start': 1229958000, 'created': ...,
+    'end': 1229958300, 'creator': 'jim'}>
+
+Closing work
+------------
+
+Let's now check how many work items have been generated.
+
+  >>> len(list(workItems))
+  4
+
+
+Delegation of Work Items
+========================
+
+
+Modification of Work Items
+==========================
+
+
+Queries
+=======
+

@@ -24,6 +24,7 @@ def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(TestParty),
         DocFileSuite('README.txt', optionflags=flags),
+        DocFileSuite('work.txt', optionflags=flags),
         ))
 
 if __name__ == '__main__':

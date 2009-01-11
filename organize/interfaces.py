@@ -426,6 +426,7 @@ class IWorkItem(ITrack):
         done by exactly one party (usually a person).
     """
 
+    # index attributes
     task = Attribute('The task this work item belongs to, identified by '
                 'its name or ID.')
     run = Attribute('Used for recurring tasks: identifies the run '
@@ -433,17 +434,9 @@ class IWorkItem(ITrack):
     party = Attribute('Whoever does the work, usually a person, identified '
                 'by its name or ID.')
     state = Attribute('The current state the work item is in.')
+    # standard attributes
     title = Attribute('A short text characterizing the work item.')
     description = Attribute('A note about what has to be done, and why...')
-    # optional plan fields; duration (and effort) may be derived from start and end
-    # all date/time fields are timeStamp values, all duration and effort
-    # fields are in seconds
-    planStart = Attribute('When the work should start.')
-    planEnd = Attribute('When the work should be finished.')
-    planDuration = Attribute('How long it may take to finish the work.')
-    planEffort = Attribute('How much effort (time units) it might take '
-                'to finish the work.')
-    # real stuff
     start = Attribute('When the work was started.')
     end = Attribute('When the work was finished.')
     duration = Attribute('How long it took to finish the work.')
@@ -452,30 +445,12 @@ class IWorkItem(ITrack):
     # work item handling
     creator = Attribute('The party that has set up the work item.')
     created = Attribute('The timeStamp of the initial creation of the work item.')
-    assigned = Attribute('The timeStamp of the assignment of the work item.')
-    predecessor = Attribute('Optional: a work item this work item was created from.')
-    successor = Attribute('Optional: a work item that was created from this one '
-                'to continue the work.')
     newTask = Attribute('Optional: a new task that has been created based '
                 'on this work item.')
 
-    def setInitData(**kw):
+    def setData(**kw):
         """ Set initial work item data (if allowed by the current state);
             values not given will be derived if appropriate.
-        """
-
-    def assign(party):
-        """ Assign the work item to the party given.
-        """
-
-    def startWork(**kw):
-        """ Start working on the work item; properties may be given
-            as keyword arguments.
-        """
-
-    def stopWork(transition='finish', **kw):
-        """ Finish working on the work item; properties may be given
-            as keyword arguments.
         """
 
     def doAction(action, **kw):

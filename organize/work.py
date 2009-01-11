@@ -41,22 +41,37 @@ _not_found = object()
 @implementer(IStatesDefinition)
 def workItemStates():
     return StatesDefinition('workItemStates',
-        State('new', 'new', ('assign', 'cancel',), color='red'),
-        State('assigned', 'assigned', ('start', 'finish', 'cancel', 'transfer'),
+        State('new', 'new',
+              ('plan', 'accept', 'start', 'stop', 'finish', 'modify', 'delegate'),
+              color='red'),
+        State('planned', 'planned',
+              ('plan', 'accept', 'start', 'stop', 'finish', 'cancel', 'modify'),
+              color='red'),
+        State('accepted', 'accepted',
+              ('plan', 'accept', 'start', 'stop', 'finish', 'cancel', 'modify'),
               color='yellow'),
-        State('running', 'running', ('finish', 'continue', 'cancel', 'transfer'),
+        State('running', 'running',
+              ('stop', 'finish', 'cancel', 'modify'),
               color='orange'),
-        State('finished', 'finished', ('cancel',), color='green'),
-        State('continued', 'continued', ('finish', 'cancel'), color='blue'),
-        State('transferred', 'transferred', ('finish', 'cancel'),
-              color='lightblue'),
-        State('cancelled', 'cancelled', (), color='grey'),
-        Transition('assign', 'assign', 'assigned'),
+        State('stopped', 'stopped',
+              ('plan', 'accept', 'start', 'stop', 'finish', 'cancel', 'modify'),
+              color='orange'),
+        State('finished', 'finished',
+              ('plan', 'accept', 'start', 'stop', 'modify', 'close'),
+              color='green'),
+        State('cancelled', 'cancelled',
+              ('plan', 'accept', 'start', 'stop', 'modify', 'close'),
+              color='grey'),
+        State('closed', 'closed', (), color='lightblue'),
+        Transition('plan', 'plan', 'planned'),
+        Transition('accept', 'accept', 'accepted'),
         Transition('start', 'start', 'running'),
+        Transition('stop', 'stop', 'stopped'),
         Transition('finish', 'finish', 'finished'),
-        Transition('continue', 'continue', 'continued'),
-        Transition('transfer', 'transfer', 'transferred'),
         Transition('cancel', 'cancel', 'cancelled'),
+        Transition('modify', 'modify', 'new'),
+        Transition('delegate', 'delegate', 'planned'),
+        Transition('close', 'close', 'closed'),
         initialState='new')
 
 
@@ -72,21 +87,14 @@ class WorkItem(Stateful, Track):
     index_attributes = metadata_attributes
     typeName = 'WorkItem'
 
-    initAttributes = set(['party', 'title', 'description', 'predecessor',
-                          'planStart', 'planEnd', 'planDuration', 'planEffort'])
-
-    closeAttributes = set(['end', 'duration', 'effort', 'comment'])
+    initAttributes = set(['party', 'title', 'description', 'start', 'end',
+                          'duration', 'effort'])
 
     def __init__(self, taskId, runId, userName, data):
         super(WorkItem, self).__init__(taskId, runId, userName, data)
         self.state = self.getState()    # make initial state persistent
         self.data['creator'] = userName
         self.data['created'] = self.timeStamp
-
-    def __getattr__(self, attr):
-        if attr not in IWorkItem:
-            raise AttributeError(attr)
-        return self.data.get(attr)
 
     def getStatesDefinition(self):
         return component.getUtility(IStatesDefinition, name=self.statesDefinition)
@@ -99,124 +107,85 @@ class WorkItem(Stateful, Track):
     def title(self):
         return self.data.get('title') or self.description
 
-    def setInitData(self, **kw):
-        indexChanged = False
-        updatePlanData = False
-        for k in kw:
-            if k not in self.initAttributes:
-                raise ValueError("Illegal initial attribute: '%s'." % k)
-        self.checkOverwrite(kw)
+    @property
+    def duration(self):
+        value = self.data.get('duration')
+        if value is None:
+            start, end = (self.data.get('start'), self.data.get('end'))
+            if not None in (start, end):
+                value = end - start
+        return value
+
+    @property
+    def effort(self):
+        value = self.data.get('effort')
+        if value is None:
+            return self.duration
+
+    def __getattr__(self, attr):
+        if attr not in IWorkItem:
+            raise AttributeError(attr)
+        return self.data.get(attr)
+
+    def doAction(self, action, **kw):
+        if action in self.specialActions:
+            return self.specialActions[action](self, **kw)
+        if action not in [t.name for t in self.getAvailableTransitions()]:
+            raise ValueError("Action '%s' not allowed in state '%s'" %
+                             (action, self.state))
+        if self.state == 'new':
+            self.setData(**kw)
+            self.doTransition(action)
+            self.reindex('state')
+            return self
+        new = self.createNew(action, **kw)
+        new.doTransition(action)
+        new.reindex('state')
+        return new
+
+    def modify(self, **kw):
+        print '*** modifying'
+        if self.state == 'new':
+            self.setData(**kw)
+            return self
+
+    def delegate(self, **kw):
+        print '*** delegating'
+
+    def close(self, **kw):
+        print '*** closing'
+
+    specialActions = dict(modify=modify, delegate=delegate, close=close)
+
+    def setData(self, **kw):
+        if self.state != 'new':
+            raise ValueError("Attributes may only be changed in state 'new'.")
         party = kw.pop('party', None)
         if party is not None:
             self.userName = party
-            indexChanged = True
+            self.reindex('userName')
+        start = kw.get('start')
+        if start is not None:
+            self.timeStamp = start
+            self.reindex('timeStamp')
         data = self.data
         for k, v in kw.items():
             data[k] = v
-            if k.startswith('plan'):
-                updatePlanData = True
-        if self.planStart is not None and self.planStart != self.timeStamp:
-            self.timeStamp = self.planStart
-            indexChanged = True
-        if updatePlanData and self.planStart:
-            data['planEnd'], data['planDuration'], data['planEffort'] = \
-                recalcTimes(self.planStart, self.planEnd,
-                            self.planDuration, self.planEffort)
-        if indexChanged:
-            self.reindex()
 
-    def assign(self, party=None):
-        self.doTransition('assign')
-        self.data['assigned'] = getTimeStamp()
-        if party is not None:
-            self.userName = party
-        self.reindex()
-
-    def startWork(self, **kw):
-        self.checkOverwrite(kw)
-        self.doTransition('start')
-        start = self.data['start'] = kw.pop('start', None) or getTimeStamp()
-        self.timeStamp = start
-        self.reindex()
-
-    def stopWork(self, transition='finish', **kw):
-        self.doTransition(transition)
-        data = self.data
-        for k in self.closeAttributes:
-            v = kw.pop(k, None)
+    def createNew(self, action, **kw):
+        newData = {}
+        for k in self.initAttributes:
+            v = kw.get(k, _not_found)
+            if v is _not_found:
+                v = self.data.get(k)
             if v is not None:
-                data[k] = v
-        if self.start:
-            data['end'], data['duration'], data['effort'] = \
-                recalcTimes(self.start, self.end, self.duration, self.effort)
-        self.timeStamp = self.end or getTimeStamp()
-        self.reindex()
-        if transition in ('continue', 'transfer'):
-            if transition == 'continue' and kw.get('party') is not None:
-                raise ValueError("Setting 'party' is not allowed when continuing.")
-            newData = {}
-            for k in self.initAttributes:
-                v = kw.pop(k, _not_found)
-                if v is _not_found:
-                    v = data.get(k)
-                if v is not None:
-                    newData[k] = v
-            if transition == 'transfer' and 'party' not in newData:
-                raise ValueError("Property 'party' must be set when transferring.")
-            workItems = IWorkItems(getParent(self))
-            new = workItems.add(self.taskId, self.userName, self.runId, **newData)
-            if transition == 'continue':
-                new.assign()
-            #new.data['predecessor'] = getName(self)
-            new.data['predecessor'] = self.__name__
-            #self.data['successor'] = getName(new)
-            self.data['successor'] = new.__name__
-            return new
+                newData[k] = v
+        workItems = IWorkItems(getParent(self))
+        new = workItems.add(self.taskId, self.userName, self.runId, **newData)
+        return new
 
-    # actions
-
-    def doAction(self, action, **kw):
-        # TODO: check if action is allowed
-        m = getattr(self, 'action_' + action)
-        m(**kw)
-
-    def action_start(self, **kw):
-        if self.state == 'new':
-            self.assign(kw.pop('party', None))
-        self.startWork(**kw)
-
-    def action_finish(self, **kw):
-        for k in ('description', 'title'):
-            if k in kw:
-                self.data[k] = kw.pop(k)
-        if self.state == 'new':
-            self.assign(kw.pop('party', None))
-        if self.state == 'assigned':
-            self.startWork(start=kw.pop('start', None))
-        self.stopWork(**kw)
-
-    # auxiliary methods
-
-    def reindex(self):
-        getParent(self).updateTrack(self, {})   # force reindex
-
-    def checkOverwrite(self, kw):
-        if self.state == 'new':
-            return
-        for k, v in kw.items():
-            old = getattr(self, k, None)
-            if old is not None and old != v:
-                raise ValueError("Attribute '%s' already set to '%s'." % (k, old))
-
-
-def recalcTimes(start, end, duration, effort):
-    if duration is None and start and end:
-        duration = end - start
-    if end is None and start and duration:
-        end = start + duration
-    if effort is None and duration:
-        effort = duration
-    return end, duration, effort
+    def reindex(self, idx=None):
+        getParent(self).indexTrack(None, self, idx)
 
 
 class WorkItems(object):
@@ -245,7 +214,9 @@ class WorkItems(object):
         return self.context.query(**criteria)
 
     def add(self, task, party, run=0, **kw):
+        if not run:
+            run = self.context.startRun()
         trackId = self.context.saveUserTrack(task, run, party, {})
         track = self[trackId]
-        track.setInitData(**kw)
+        track.setData(**kw)
         return track
