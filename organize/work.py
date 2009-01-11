@@ -177,6 +177,10 @@ class WorkItem(Stateful, Track):
         for k in self.initAttributes:
             v = kw.get(k, _not_found)
             if v is _not_found:
+                if action == 'start' and k in ('end',):
+                    continue
+                if action in ('stop', 'finish') and k in ('duration', 'effort',):
+                    continue
                 v = self.data.get(k)
             if v is not None:
                 newData[k] = v

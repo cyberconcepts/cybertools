@@ -98,8 +98,7 @@ but may also be specified explicitly.
   >>> wi03 = wi02.doAction('start', start=1229958000)
   >>> wi03
   <WorkItem ['001', 1, 'jim', '2008-12-22 15:00', 'running']:
-   {'duration': 700, 'start': 1229958000, 'created': ...,
-    'end': 1229956372, 'creator': 'jim'}>
+   {'duration': 700, 'start': 1229958000, 'created': ..., 'creator': 'jim'}>
 
 Stopping and finishing work
 ---------------------------
@@ -110,8 +109,15 @@ continue work later, so he executes a ``stop`` action.
   >>> wi04 = wi03.doAction('stop', end=1229958300)
   >>> wi04
   <WorkItem ['001', 1, 'jim', '2008-12-22 15:00', 'stopped']:
-   {'duration': 700, 'start': 1229958000, 'created': ...,
-    'end': 1229958300, 'creator': 'jim'}>
+   {'start': 1229958000, 'created': ..., 'end': 1229958300, 'creator': 'jim'}>
+
+After another hour Jim works again on the task; he now finishes it within
+ten minutes and records this in one step.
+
+  >>> wi05 = wi04.doAction('finish', start=1229961600, end=1229967200)
+  >>> wi05
+  <WorkItem ['001', 1, 'jim', '2008-12-22 16:00', 'finished']:
+   {'start': 1229961600, 'created': ..., 'end': 1229967200, 'creator': 'jim'}>
 
 Closing work
 ------------
@@ -119,7 +125,7 @@ Closing work
 Let's now check how many work items have been generated.
 
   >>> len(list(workItems))
-  4
+  5
 
 
 Delegation of Work Items
