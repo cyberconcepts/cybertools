@@ -63,6 +63,7 @@ def workItemStates():
               ('plan', 'accept', 'start', 'stop', 'modify', 'close'),
               color='grey'),
         State('closed', 'closed', (), color='lightblue'),
+        State('replaced', 'replaced', (), color='grey'),
         Transition('plan', 'plan', 'planned'),
         Transition('accept', 'accept', 'accepted'),
         Transition('start', 'start', 'running'),
@@ -127,9 +128,12 @@ class WorkItem(Stateful, Track):
             raise AttributeError(attr)
         return self.data.get(attr)
 
-    def doAction(self, action, **kw):
+    def doAction(self, action, userName, **kw):
+        currentWorkItems = list(getParent(self).query(runId=self.runId))
+        if self != currentWorkItems[-1]:
+            raise ValueError("Actions are only allowed on the last item of a run.")
         if action in self.specialActions:
-            return self.specialActions[action](self, **kw)
+            return self.specialActions[action](self, userName, **kw)
         if action not in [t.name for t in self.getAvailableTransitions()]:
             raise ValueError("Action '%s' not allowed in state '%s'" %
                              (action, self.state))
@@ -138,22 +142,36 @@ class WorkItem(Stateful, Track):
             self.doTransition(action)
             self.reindex('state')
             return self
-        new = self.createNew(action, **kw)
+        new = self.createNew(action, userName, **kw)
+        if self.state == 'running':
+            new.replace(self)
         new.doTransition(action)
         new.reindex('state')
         return new
 
-    def modify(self, **kw):
-        print '*** modifying'
+    def modify(self, userName, **kw):
         if self.state == 'new':
             self.setData(**kw)
             return self
+        new = self.createNew('modify', userName, **kw)
+        new.replace(self, keepState=True)
+        return new
 
-    def delegate(self, **kw):
-        print '*** delegating'
+    def delegate(self, userName, **kw):
+        new = self.createNew('delegate', userName, **kw)
+        new.doTransition('plan')
+        new.reindex('state')
+        if self.state == 'new':
+            self.doTransition('plan')
+            self.reindex('state')
+        return new
 
-    def close(self, **kw):
-        print '*** closing'
+    def close(self, userName, **kw):
+        new = self.createNew('close', userName, copyData=False, **kw)
+        new.state = 'closed'
+        new.reindex('state')
+        getParent(self).stopRun(runId=self.runId, finish=True)
+        return new
 
     specialActions = dict(modify=modify, delegate=delegate, close=close)
 
@@ -172,21 +190,29 @@ class WorkItem(Stateful, Track):
         for k, v in kw.items():
             data[k] = v
 
-    def createNew(self, action, **kw):
+    def createNew(self, action, userName, copyData=True, **kw):
         newData = {}
-        for k in self.initAttributes:
-            v = kw.get(k, _not_found)
-            if v is _not_found:
-                if action == 'start' and k in ('end',):
-                    continue
-                if action in ('stop', 'finish') and k in ('duration', 'effort',):
-                    continue
-                v = self.data.get(k)
-            if v is not None:
-                newData[k] = v
+        if copyData:
+            for k in self.initAttributes:
+                v = kw.get(k, _not_found)
+                if v is _not_found:
+                    if action == 'start' and k in ('end',):
+                        continue
+                    if action in ('stop', 'finish') and k in ('duration', 'effort',):
+                        continue
+                    v = self.data.get(k)
+                if v is not None:
+                    newData[k] = v
         workItems = IWorkItems(getParent(self))
-        new = workItems.add(self.taskId, self.userName, self.runId, **newData)
+        new = workItems.add(self.taskId, userName, self.runId, **newData)
         return new
+
+    def replace(self, other, keepState=False):
+        if keepState:
+            self.state = other.state
+            self.reindex('state')
+        other.state = 'replaced'
+        other.reindex('state')
 
     def reindex(self, idx=None):
         getParent(self).indexTrack(None, self, idx)
@@ -217,10 +243,10 @@ class WorkItems(object):
             criteria['runId'] = criteria.pop('run')
         return self.context.query(**criteria)
 
-    def add(self, task, party, run=0, **kw):
+    def add(self, task, userName, run=0, **kw):
         if not run:
             run = self.context.startRun()
-        trackId = self.context.saveUserTrack(task, run, party, {})
+        trackId = self.context.saveUserTrack(task, run, userName, {})
         track = self[trackId]
         track.setData(**kw)
         return track

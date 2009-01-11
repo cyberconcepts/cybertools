@@ -28,7 +28,7 @@ definition as a utility.
 We are now ready to set up the tracking storage.
 
   >>> tracks = TrackingStorage(trackFactory=WorkItem)
-  >>> workItems = component.getAdapter(tracks, IWorkItems)
+  >>> workItems = IWorkItems(tracks)
 
 The work management only deals with the IDs or names of tasks and persons,
 so we do not have to set up real objects.
@@ -68,7 +68,7 @@ the effort is taken from the duration if not set explicitly.
   >>> wi01.effort
   700
 
-  >>> w = wi01.doAction('plan', party='jim')
+  >>> w = wi01.doAction('plan', 'john', party='jim')
   >>> wi01.userName
   'jim'
 
@@ -77,7 +77,7 @@ Change work item state
 
 Now Jim accepts the work item, i.e. he wants to work on it.
 
-  >>> wi02 = wi01.doAction('accept')
+  >>> wi02 = wi01.doAction('accept', 'jim')
   >>> wi01.state
   'planned'
   >>> wi02
@@ -95,7 +95,7 @@ It is not possible to change a value of a work item that is not in state "new".
 Jim now really starts to work. The start time is usually set automatically
 but may also be specified explicitly.
 
-  >>> wi03 = wi02.doAction('start', start=1229958000)
+  >>> wi03 = wi02.doAction('start', 'jim', start=1229958000)
   >>> wi03
   <WorkItem ['001', 1, 'jim', '2008-12-22 15:00', 'running']:
    {'duration': 700, 'start': 1229958000, 'created': ..., 'creator': 'jim'}>
@@ -104,9 +104,14 @@ Stopping and finishing work
 ---------------------------
 
 After five minutes of work Jim decides to stop working; but he will
-continue work later, so he executes a ``stop`` action.
+continue work later, so he executes a ``stop`` action. The work item marked
+as "running" will be replaced by a new one.
 
-  >>> wi04 = wi03.doAction('stop', end=1229958300)
+  >>> wi04 = wi03.doAction('stop', 'jim', end=1229958300)
+
+  >>> wi03
+  <WorkItem ['001', 1, 'jim', '2008-12-22 15:00', 'replaced']:
+   {'duration': 700, 'start': 1229958000, 'created': ..., 'creator': 'jim'}>
   >>> wi04
   <WorkItem ['001', 1, 'jim', '2008-12-22 15:00', 'stopped']:
    {'start': 1229958000, 'created': ..., 'end': 1229958300, 'creator': 'jim'}>
@@ -114,28 +119,78 @@ continue work later, so he executes a ``stop`` action.
 After another hour Jim works again on the task; he now finishes it within
 ten minutes and records this in one step.
 
-  >>> wi05 = wi04.doAction('finish', start=1229961600, end=1229967200)
+  >>> wi05 = wi04.doAction('finish', 'jim', start=1229961600, end=1229962200)
   >>> wi05
   <WorkItem ['001', 1, 'jim', '2008-12-22 16:00', 'finished']:
-   {'start': 1229961600, 'created': ..., 'end': 1229967200, 'creator': 'jim'}>
+   {'start': 1229961600, 'created': ..., 'end': 1229962200, 'creator': 'jim'}>
+  >>> wi05.duration, wi05.effort
+  (600, 600)
 
 Closing work
 ------------
 
+As the work is now finished, the work item may be closed; the corresponding
+"run" (a sequence of work items belonging together) will be finished.
+
+  >>> wi06 = wi05.doAction('close', 'john')
+  >>> wi06
+  <WorkItem ['001', 1, 'john', '... ...', 'closed']:
+   {'created': ..., 'creator': 'john'}>
+
 Let's now check how many work items have been generated.
 
   >>> len(list(workItems))
-  5
+  6
 
 
 Delegation of Work Items
 ========================
 
+A user may delegate a newly created work item to another party. This
+will create a new work item even if the initial one is still in state "new".
+Both work items are now in "planned" state.
+
+  >>> wi07 = workItems.add('001', 'john', start=1229970800)
+  >>> wi08 = wi07.doAction('delegate', 'john', party='annie')
+
+  >>> wi07
+  <WorkItem ['001', 2, 'john', '2008-12-22 18:33', 'planned']:
+   {'start': 1229970800, 'created': ..., 'creator': 'john'}>
+  >>> wi08
+  <WorkItem ['001', 2, 'annie', '2008-12-22 18:33', 'planned']:
+   {'start': 1229970800, 'created': ..., 'creator': 'john'}>
+  >>> len(list(workItems))
+  8
+
 
 Modification of Work Items
 ==========================
 
+Existing work items may never be modified except when still in "new" state.
+To allow for correcting errors that may be detected later there is a "modify"
+action that will in fact create a new work item. This makes sure that
+all changes will be tracked correctly.
+
+Note that nevertheless only the last work item of a run may be modified.
+
+  >>> wi09 = wi08.doAction('modify', 'annie', duration=3600)
+
+  >>> wi08
+  <WorkItem ['001', 2, 'annie', '2008-12-22 18:33', 'replaced']:
+   {'start': 1229970800, 'created': ..., 'creator': 'john'}>
+  >>> wi09
+  <WorkItem ['001', 2, 'annie', '2008-12-22 18:33', 'planned']:
+   {'duration': 3600, 'start': 1229970800, 'created': ..., 'creator': 'annie'}>
+
 
 Queries
 =======
+
+Runs
+----
+
+  >>> list(tracks.runs)
+  [2]
+  >>> list(tracks.finishedRuns)
+  [1]
 
