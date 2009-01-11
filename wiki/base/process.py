@@ -17,40 +17,38 @@
 #
 
 """
-Basic Configuration implementations.
+Tree processor implementation
 
 $Id$
 """
 
 from zope.interface import implements
+from zope.component import adapts
 
-from cybertools.wiki.interfaces import IWikiConfiguration
+from cybertools.wiki.interfaces import ITreeProcessor, IWikiPage
 
 
-class BaseConfiguration(object):
-    """ The base class for all wiki configuration implementations.
+class TreeProcessor(object):
+    """ The standard tree processor walking the tree and processing
+        the tree's nodes.
     """
 
-    implements(IWikiConfiguration)
+    implements(ITreeProcessor)
+    adapts(IWikiPage)
 
-    parent = None
+    tree = None
 
-    writer = parser = None
+    def __init__(self, context):
+        self.context = context
 
-    def getConfig(self, functionality):
-        c = getattr(self, functionality, None)
-        if c is None:
-            return self.getParent().getConfig(functionality)
-        return c
-
-    def getParent(self):
-        return self.parent
+    def process(self):
+        self.tree.walk(Visitor(self.tree))
 
 
-class WikiConfiguration(BaseConfiguration):
-    """ A global utility providing the default settings.
-    """
+class Visitor(object):
 
-    writer = 'docutils.html'
-    parser = 'docutils.rstx'
-    processor = 'standard'
+    def __init__(self, document):
+        self.document = document
+
+    def dispatch_visit(self, node):
+        print 'visiting', node.tagname

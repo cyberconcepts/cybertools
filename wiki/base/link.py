@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ Basic (sample) implementations for links and link management
 $Id$
 """
 
-import re
 from zope.interface import implements
 
 from cybertools.wiki.interfaces import ILink, ILinkManager

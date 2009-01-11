@@ -27,7 +27,7 @@ from zope.interface import implements
 
 from cybertools.wiki.interfaces import IWikiConfiguration
 from cybertools.wiki.interfaces import IWikiManager, IWiki, IWikiPage
-from cybertools.wiki.interfaces import IParser, IWriter
+from cybertools.wiki.interfaces import IParser, IWriter, ITreeProcessor
 from cybertools.wiki.base.config import BaseConfiguration
 
 
@@ -88,17 +88,33 @@ class WikiPage(BaseConfiguration):
         self.title = title or name
 
     def render(self):
-        return self.write(self.parse())
+        source = self.preprocess(self.text)
+        tree = self.parse(source)
+        self.process(tree)
+        result = self.write(tree)
+        return self.postprocess(result)
 
-    def parse(self):
+    def parse(self, source):
         parserName = self.getConfig('parser')
         parser = component.getUtility(IParser, name=parserName)
-        return parser.parse(self.text)
+        return parser.parse(source)
 
     def write(self, tree):
         writerName = self.getConfig('writer')
         writer = component.getUtility(IWriter, name=writerName)
         return writer.write(tree)
+
+    def preprocess(self, source):
+        return source
+
+    def process(self, tree):
+        processor = component.getAdapter(self, ITreeProcessor,
+                                         name=self.getConfig('processor'))
+        processor.tree = tree
+        processor.process()
+
+    def postprocess(self, result):
+        return result
 
     # configuration
 

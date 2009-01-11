@@ -92,15 +92,28 @@ class IWikiPage(Interface):
     text = Attribute('The page content in input text format.')
 
     def render():
-        """ Convert the text of the page to presentation format.
+        """ Convert the source text of the page to presentation format.
         """
 
-    def parse():
-        """ Convert the text of the page to a document tree.
+    def parse(source):
+        """ Convert the source text of the page to a document tree.
         """
 
     def write(tree):
         """ Convert the document tree given to presentation format.
+        """
+
+    def preprocess(source):
+        """ Modify the source text of the page before parsing it and return it.
+        """
+
+    def process(tree):
+        """ Scan the tree, changing it if necessary and collecting
+            interesting information about the nodes, e.g. about links.
+        """
+
+    def postprocess(result):
+        """ Modify the output of the write process and return it.
         """
 
 
@@ -120,6 +133,18 @@ class IWriter(Interface):
 
     def write(tree):
         """ Returns presentation format for the tree given.
+        """
+
+
+class ITreeProcessor(Interface):
+    """ Processes a document tree.
+    """
+
+    context = Attribute('The wiki page from which the tree was generated.')
+    tree = Attribute('The tree to be processed.')
+
+    def process():
+        """ Do what is necessary.
         """
 
 
@@ -152,36 +177,3 @@ class ILink(Interface):
     source = Attribute('Link source.')
     target = Attribute('Link target.')
 
-
-class IFormat(Interface):
-    """Identifies links in texts and transforms text correspondingly.
-    """
-
-    manager = Attribute('The Wiki manager this format is associated with.')
-
-
-class IFormatInstance(Interface):
-
-    def unmarshall(text):
-        """Analyse the text given extracting all links and registering them
-        with the link manager; return text with all links transformed to
-        an internal link naming format.
-
-        This is typically used for preprocessing the text after editing.
-        """
-
-    def marshall(text):
-        """Scan text for all links (i.e. substrings corresponding to the
-        internal link naming format) and replace them with their external
-        format.
-
-        This is typically used for preparing a text for editing.
-        """
-
-    def display(text):
-        """Scan text for all links (i.e. substrings corresponding to the
-        internal link naming format) and replace them with their display
-        format.
-
-        The result will then be used for rendering by the text format.
-        """
