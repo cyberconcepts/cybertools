@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -37,43 +37,6 @@ except ImportError:
 from cybertools.composer.instance import Instance
 from cybertools.composer.interfaces import IInstance
 from cybertools.util.jeep import Jeep
-
-
-class MessageInstance(Instance):
-
-    template = client = None
-
-    def __init__(self, client, template, manager):
-        self.client = client
-        self.template = template
-        self.manager = manager
-
-    def applyTemplate(self, data=None, **kw):
-        if data is None:
-            data = {}
-        request = data.get('request') or TestRequest()
-        if 'url' not in data:
-            data['url'] = self.getClientUrl(request)
-        dp = DataProvider(self, data)
-        text = MessageTemplate(self.template.text).safe_substitute(dp)
-        subject = self.template.subjectLine
-        data.update(dict(subjectLine=subject, text=text))
-        return data
-
-    def getClientUrl(self, request):
-        if self.client is None:
-            return ''
-        if zope29:
-            #path = aq_inner(self.client.manager).getPhysicalPath()
-            path = self.client.manager.getPhysicalPath()
-            if len(path) >= 3 and path[-3] == 'sm_clients':
-                print '*** path correction:', path
-                # evil hack for aqcuisition-wrapped manager object
-                path = path[:-3]
-            url = request.physicalPathToURL(path)
-        else:
-            url = absoluteURL(self.client.manager, request)
-        return '%s?id=%s' % (url, self.client.__name__)
 
 
 class DataProvider(object):
@@ -123,8 +86,48 @@ class DataProvider(object):
 
     def getView(self, name):
         request = self.data.get('request') or TestRequest()
-        return component.queryMultiAdapter(
+        view = component.queryMultiAdapter(
                     (self.context.client.manager, request), name=name)
+        return view
+
+
+class MessageInstance(Instance):
+
+    template = client = None
+
+    dataProvider = DataProvider
+
+    def __init__(self, client, template, manager):
+        self.client = client
+        self.template = template
+        self.manager = manager
+
+    def applyTemplate(self, data=None, **kw):
+        if data is None:
+            data = {}
+        request = data.get('request') or TestRequest()
+        if 'url' not in data:
+            data['url'] = self.getClientUrl(request)
+        dp = self.dataProvider(self, data)
+        text = MessageTemplate(self.template.text).safe_substitute(dp)
+        subject = self.template.subjectLine
+        data.update(dict(subjectLine=subject, text=text))
+        return data
+
+    def getClientUrl(self, request):
+        if self.client is None:
+            return ''
+        if zope29:
+            #path = aq_inner(self.client.manager).getPhysicalPath()
+            path = self.client.manager.getPhysicalPath()
+            if len(path) >= 3 and path[-3] == 'sm_clients':
+                print '*** path correction:', path
+                # evil hack for aqcuisition-wrapped manager object
+                path = path[:-3]
+            url = request.physicalPathToURL(path)
+        else:
+            url = absoluteURL(self.client.manager, request)
+        return '%s?id=%s' % (url, self.client.__name__)
 
 
 class MessageTemplate(Template):
