@@ -57,7 +57,7 @@ def workItemStates():
               ('plan', 'accept', 'start', 'stop', 'finish', 'cancel', 'modify'),
               color='orange'),
         State('finished', 'finished',
-              ('plan', 'accept', 'start', 'stop', 'modify', 'close'),
+              ('plan', 'accept', 'start', 'stop', 'finish', 'modify', 'close'),
               color='green'),
         State('cancelled', 'cancelled',
               ('plan', 'accept', 'start', 'stop', 'modify', 'close'),
@@ -66,8 +66,8 @@ def workItemStates():
         State('replaced', 'replaced', (), color='grey'),
         Transition('plan', 'plan', 'planned'),
         Transition('accept', 'accept', 'accepted'),
-        Transition('start', 'start', 'running'),
-        Transition('stop', 'stop', 'stopped'),
+        Transition('start', 'start working', 'running'),
+        Transition('stop', 'work/stop', 'stopped'),
         Transition('finish', 'finish', 'finished'),
         Transition('cancel', 'cancel', 'cancelled'),
         Transition('modify', 'modify', 'new'),
@@ -119,9 +119,7 @@ class WorkItem(Stateful, Track):
 
     @property
     def effort(self):
-        value = self.data.get('effort')
-        if value is None:
-            return self.duration
+        return self.data.get('effort') or self.duration
 
     def __getattr__(self, attr):
         if attr not in IWorkItem:
