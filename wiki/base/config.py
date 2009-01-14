@@ -38,10 +38,15 @@ class BaseConfiguration(object):
     writer = parser = None
 
     def getConfig(self, functionality):
-        c = getattr(self, functionality, None)
+        c = self.get(functionality)
         if c is None:
-            return self.getParent().getConfig(functionality)
+            parent = self.getParent()
+            if parent is not None:
+                return parent.getConfig(functionality)
         return c
+
+    def get(self, key, default=None):
+        return getattr(self, key, None)
 
     def getParent(self):
         return self.parent
@@ -54,3 +59,6 @@ class WikiConfiguration(BaseConfiguration):
     writer = 'docutils.html'
     parser = 'docutils.rstx'
     processor = 'standard'
+    linkManager = 'basic'
+
+    nodeProcessors = dict(reference=['default'])

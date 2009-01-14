@@ -35,18 +35,18 @@ class LinkManager(object):
 
     def __init__(self):
         self.links = {}
+        self.linksBySource = {}
 
-    def registerLink(self, link):
-        if link.identifier is None:
-            self.generateLinkIdentifier(link)
-        if link.identifier not in self.links:
-            self.links[link.identifier] = link
-            link.manager = self
+    def createLink(self, name, source, target, **kw):
+        link = Link(name, source, target, **kw)
+        link.manager = self
+        id = self.generateLinkIdentifier(link)
+        self.linksBySource[source] = self.links[id] = link
 
-    def unregisterLink(self, link):
+    def removeLink(self, link):
         if link.identifier in self.links:
-            del self.links[link.identifier]
             link.manager = None
+            del self.links[link.identifier]
 
     def generateLinkIdentifier(self, link):
         identifier = 'l%07i' % (max(self.links.keys() or [0]) + 1)
@@ -60,9 +60,21 @@ class Link(object):
 
     identifier = None
     manager = None
-    formatName = None
 
-    def __init__(self, source, target):
+    def __init__(self, name, source, target, **kw):
+        self.name = name
         self.source = source
         self.target = target
+        for k, v in kw.items():
+            if k not in ILink:
+                raise AttributeError(k)
+            setattr(self, k, v)
+
+    def getManager(self):
+        return self.manager
+
+    def __getattr__(self, attr):
+        if attr not in ILink:
+            raise AttributeError(attr)
+        return getattr(self, attr, None)
 

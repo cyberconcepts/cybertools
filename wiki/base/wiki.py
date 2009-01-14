@@ -46,6 +46,17 @@ class WikiManager(BaseConfiguration):
         wiki.manager = self
         return wiki
 
+    def removeWiki(self, wiki):
+        name = wiki.name
+        if name in self.wikis:
+            del self.wikis[name]
+
+    def listWikis(self):
+        return self.wikis.values()
+
+    def getPlugin(self, type, name):
+        return component.getUtility(type, name=name)
+
     # configuration
 
     def getParent(self):
@@ -63,6 +74,9 @@ class Wiki(BaseConfiguration):
         self.title = title or name
         self.pages = {}
 
+    def getManager(self):
+        return self.manager
+
     def createPage(self, name, title=None):
         if name in self.pages:
             raise ValueError("Name '%s' already present." % name)
@@ -70,10 +84,20 @@ class Wiki(BaseConfiguration):
         page.wiki = self
         return page
 
+    def removePage(self, name):
+        if name in self.pages:
+            del self.pages[name]
+
+    def getPage(self, name):
+        return self.pages.get(name)
+
+    def listPages(self):
+        return self.pages.values()
+
     # configuration
 
     def getParent(self):
-        return self.manager
+        return self.getManager()
 
 
 class WikiPage(BaseConfiguration):
@@ -86,6 +110,9 @@ class WikiPage(BaseConfiguration):
     def __init__(self, name, title=None):
         self.name = name
         self.title = title or name
+
+    def getWiki(self):
+        return self.wiki
 
     def render(self):
         source = self.preprocess(self.text)
@@ -119,5 +146,5 @@ class WikiPage(BaseConfiguration):
     # configuration
 
     def getParent(self):
-        return self.wiki
+        return self.getWiki()
 

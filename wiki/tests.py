@@ -12,8 +12,10 @@ from zope import component
 
 from cybertools.wiki.base.config import WikiConfiguration
 from cybertools.wiki.base.process import TreeProcessor
+from cybertools.wiki.base.link import LinkManager
 from cybertools.wiki.dcu.html import Writer as DocutilsHTMLWriter
 from cybertools.wiki.dcu.rstx import Parser as DocutilsRstxParser
+from cybertools.wiki.dcu import process
 
 
 class Test(unittest.TestCase):
@@ -28,6 +30,8 @@ def setUp(testCase):
     component.provideUtility(DocutilsHTMLWriter(), name='docutils.html')
     component.provideUtility(DocutilsRstxParser(), name='docutils.rstx')
     component.provideAdapter(TreeProcessor, name='standard')
+    component.provideAdapter(process.Reference, name='default')
+    component.provideUtility(LinkManager(), name='basic')
 
 
 def test_suite():

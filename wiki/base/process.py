@@ -24,8 +24,10 @@ $Id$
 
 from zope.interface import implements
 from zope.component import adapts
+from zope import component
 
-from cybertools.wiki.interfaces import ITreeProcessor, IWikiPage
+from cybertools.wiki.interfaces import ITreeProcessor, INodeProcessor
+from cybertools.wiki.interfaces import IWikiPage
 
 
 class TreeProcessor(object):
@@ -37,18 +39,35 @@ class TreeProcessor(object):
     adapts(IWikiPage)
 
     tree = None
+    visitor = None
 
     def __init__(self, context):
         self.context = context
 
     def process(self):
-        self.tree.walk(Visitor(self.tree))
+        self.visitor = visitor = Visitor(self)
+        self.tree.walk(visitor)
 
 
 class Visitor(object):
 
-    def __init__(self, document):
-        self.document = document
+    def __init__(self, context):
+        self.context = context          # the tree processor
+        self.document = context.tree    # needed internally
+        self.processors = {}            # cache
+        self.processorNames = self.context.context.getConfig('nodeProcessors')
 
     def dispatch_visit(self, node):
-        print 'visiting', node.tagname
+        #print 'visiting', node.tagname
+        tag = node.tagname
+        procs = self.processors.get(tag)
+        if procs is None:
+            procs = self.processors[tag] = []
+            procNames = self.processorNames.get(tag, [])
+            for n in procNames:
+                proc = component.queryAdapter(node, INodeProcessor, name=n)
+                if proc is not None:
+                    proc.parent = self.context
+                    procs.append(proc)
+        for p in procs:
+            p.process()

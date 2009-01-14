@@ -35,22 +35,20 @@ class IWikiConfiguration(Interface):
     parser = Attribute('Plug-in component converting from text input '
                 'format to internal tree format.')
 
-    def getConfig(functionality):
-        """ Return the name of the plugin that should used for the
-            functionality given.
-        """
-
     def getParent():
         """ Return the parent object in case this configuration does not
             provide configuration information for a certain functionality.
+        """
+
+    def getConfig(functionality):
+        """ Return the name of the plugin that should used for the
+            functionality given.
         """
 
 
 class IWikiManager(Interface):
     """ Manages wikis and wiki-related objects, like plugins.
     """
-
-    wikis = Attribute('A collection of wikis managed by this object.')
 
     def addWiki(wiki):
         """ Register the wiki given.
@@ -60,15 +58,26 @@ class IWikiManager(Interface):
         """ Remove the wiki given from the list of wikis.
         """
 
+    def listWikis():
+        """ Return a collection of wikis managed by this object.
+        """
+
+    def getPlugin(type, name):
+        """ Return the plugin of the type given with the name given.
+        """
+
 
 class IWiki(Interface):
     """ A collection of wiki pages, or - more generally - wiki components.
     """
 
-    manager = Attribute('The wiki manager this wiki is managed by.')
     name = Attribute('The name or address of the wiki unique within the '
                 'scope of the wiki manager.')
-    pages = Attribute('A collection of the pages belonging to this wiki.')
+    pages = Attribute('')
+
+    def getManager():
+        """ Return the wiki manager this wiki is managed by.
+        """
 
     def createPage(name, title=None):
         """ Create a new wiki page identified by the name (address -
@@ -80,16 +89,27 @@ class IWiki(Interface):
             all information related to the page.
         """
 
+    def getPage(name):
+        """ Return the page with the name given or None if not present.
+        """
+
+    def listPages():
+        """ Return a collection of the pages belonging to this wiki.
+        """
+
 
 class IWikiPage(Interface):
     """ An object representing a page of a wiki.
     """
 
-    wiki = Attribute('The wiki this page belongs to.')
     name = Attribute('A page name or address unique within the wiki.')
     title = Attribute('A short string describing the wiki page the may be '
                 'use as a page title.')
     text = Attribute('The page content in input text format.')
+
+    def getWiki():
+        """ The wiki this page belongs to.'
+        """
 
     def render():
         """ Convert the source text of the page to presentation format.
@@ -148,32 +168,73 @@ class ITreeProcessor(Interface):
         """
 
 
+class INodeProcessor(Interface):
+    """ Processes a document tree.
+    """
+
+    context = Attribute('The node to be processed.')
+    parent = Attribute('The parent (=tree) processor.')
+
+    def process():
+        """ Do what is necessary.
+        """
+
+
 # wiki elements
 
 class ILinkManager(Interface):
-    """Manages (and possibly contains) all kinds of wiki-related links.
+    """ Manages (and possibly contains) all kinds of wiki-related links.
     """
 
-    def registerLink(link):
-        """Register (store) a link.
+    def createLink(name, source, target, **kw):
+        """ Create and register a link record.
+
+            Optional attributes are given as keyword arguments.
         """
 
-    def unregisterLink(link):
-        """Remove a link.
+    def removeLink(link):
+        """ Remove a link.
         """
 
+    def getLink(identifier):
+        """ Return the link record identfied by the identifier given or None if
+            not present.
+        """
 
-# TODO: convert the following stuff so that it fits in the parser/writer
-#       paradigm.
+    def query(source=None, target=None, name=None, **kw):
+        """ Search for link records matching the criteria given. One of
+            source or target must be given, the other one and name are optional.
+
+            Additional (optional) criteria may be supported by the implementation.
+        """
+
 
 class ILink(Interface):
-    """A hyperlink between two local or foreign objects.
+    """ A hyperlink between two local or foreign objects.
+
+        There may be more than one link records with the same name
+        that represent the real link at different times or under
+        different conditions.
     """
 
-    identifier = Attribute('Identifier of the link, unique within its link manager.')
-    manager = Attribute('The manager that this link is managed by.')
-    formatName = Attribute('Name of the link format that identified the link.')
+    identifier = Attribute('An internal identifier of the link record, '
+                'unique within the link manager.')
+    name = Attribute('The external identifier for the link, i.e. the '
+                'string used in the source text to address the link.')
+    title = Attribute('A short text, may be used as the default text for '
+                'the link or for the alt tag of an image. Could also serve '
+                'for identifying a new link.')
+    description = Attribute('Optional: some text, may be used as a title attribute.')
+    state = Attribute('A short string denoting the state of the link entry.')
+    source = Attribute('Identifier of the link\'s source object.')
+    target = Attribute('Identifier of the link\'s target object or - '
+        'for external links - the target URI.')
+    targetFragment = Attribute('Optional: an address part leading to a '
+                'text anchor or the part of an image.')
+    user = Attribute('Optional: a string denoting the creator of the record.')
+    run = Attribute('Optional: May be used to group the links from a certain '
+                'source at different times.')
 
-    source = Attribute('Link source.')
-    target = Attribute('Link target.')
-
+    def getManager():
+        """ Return the link manager this link is managed by.
+        """

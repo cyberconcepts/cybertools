@@ -17,20 +17,35 @@
 #
 
 """
-A parser implementation based on the docutils restructured text parser.
+Node processor implementations for docutils nodes.
 
 $Id$
 """
 
-from docutils.core import publish_doctree
+from docutils.nodes import reference
 from zope.interface import implements
+from zope.component import adapts
 
-from cybertools.wiki.interfaces import IParser
+from cybertools.wiki.interfaces import INodeProcessor, ILinkManager
 
 
-class Parser(object):
+class Reference(object):
 
-    implements(IParser)
+    implements(INodeProcessor)
+    adapts(reference)
 
-    def parse(self, text):
-        return publish_doctree(text)
+    parent = None                   # parent (tree) processor
+
+    def __init__(self, context):
+        self.node = self.context = context
+
+    def process(self):
+        print 'processing reference:', self.node
+        source = self.parent.context
+        wiki = source.getWiki()
+        sourceName = ':'.join((wiki.name, source.name))
+        targetName = self.node['refuri']
+        lmName = source.getConfig('linkManager')
+        lm = wiki.getManager().getPlugin(ILinkManager, lmName)
+        target = wiki.getPage(targetName)
+
