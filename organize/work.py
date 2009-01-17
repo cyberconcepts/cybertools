@@ -42,32 +42,32 @@ _not_found = object()
 def workItemStates():
     return StatesDefinition('workItemStates',
         State('new', 'new',
-              ('plan', 'accept', 'start', 'stop', 'finish', 'modify', 'delegate'),
+              ('plan', 'accept', 'start', 'work', 'finish', 'modify', 'delegate'),
               color='red'),
         State('planned', 'planned',
-              ('plan', 'accept', 'start', 'stop', 'finish', 'cancel', 'modify'),
+              ('plan', 'accept', 'start', 'work', 'finish', 'cancel', 'modify'),
               color='red'),
         State('accepted', 'accepted',
-              ('plan', 'accept', 'start', 'stop', 'finish', 'cancel', 'modify'),
+              ('plan', 'accept', 'start', 'work', 'finish', 'cancel', 'modify'),
               color='yellow'),
         State('running', 'running',
-              ('stop', 'finish', 'cancel', 'modify'),
+              ('work', 'finish', 'cancel', 'modify'),
               color='orange'),
-        State('stopped', 'stopped',
-              ('plan', 'accept', 'start', 'stop', 'finish', 'cancel', 'modify'),
+        State('done', 'done',
+              ('plan', 'accept', 'start', 'work', 'finish', 'cancel', 'modify'),
               color='orange'),
         State('finished', 'finished',
-              ('plan', 'accept', 'start', 'stop', 'finish', 'modify', 'close'),
+              ('plan', 'accept', 'start', 'work', 'finish', 'modify', 'close'),
               color='green'),
         State('cancelled', 'cancelled',
-              ('plan', 'accept', 'start', 'stop', 'modify', 'close'),
+              ('plan', 'accept', 'start', 'work', 'modify', 'close'),
               color='grey'),
         State('closed', 'closed', (), color='lightblue'),
         State('replaced', 'replaced', (), color='grey'),
         Transition('plan', 'plan', 'planned'),
         Transition('accept', 'accept', 'accepted'),
         Transition('start', 'start working', 'running'),
-        Transition('stop', 'work/stop', 'stopped'),
+        Transition('work', 'work', 'done'),
         Transition('finish', 'finish', 'finished'),
         Transition('cancel', 'cancel', 'cancelled'),
         Transition('modify', 'modify', 'new'),
@@ -196,7 +196,7 @@ class WorkItem(Stateful, Track):
                 if v is _not_found:
                     if action == 'start' and k in ('end',):
                         continue
-                    if action in ('stop', 'finish') and k in ('duration', 'effort',):
+                    if action in ('work', 'finish') and k in ('duration', 'effort',):
                         continue
                     v = self.data.get(k)
                 if v is not None:

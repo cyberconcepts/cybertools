@@ -107,13 +107,13 @@ After five minutes of work Jim decides to stop working; but he will
 continue work later, so he executes a ``stop`` action. The work item marked
 as "running" will be replaced by a new one.
 
-  >>> wi04 = wi03.doAction('stop', 'jim', end=1229958300)
+  >>> wi04 = wi03.doAction('work', 'jim', end=1229958300)
 
   >>> wi03
   <WorkItem ['001', 1, 'jim', '2008-12-22 15:00', 'replaced']:
    {'duration': 700, 'start': 1229958000, 'created': ..., 'creator': 'jim'}>
   >>> wi04
-  <WorkItem ['001', 1, 'jim', '2008-12-22 15:00', 'stopped']:
+  <WorkItem ['001', 1, 'jim', '2008-12-22 15:00', 'done']:
    {'start': 1229958000, 'created': ..., 'end': 1229958300, 'creator': 'jim'}>
 
 After another hour Jim works again on the task; he now finishes it within
