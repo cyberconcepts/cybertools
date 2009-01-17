@@ -26,26 +26,15 @@ from docutils.nodes import reference
 from zope.interface import implements
 from zope.component import adapts
 
-from cybertools.wiki.interfaces import INodeProcessor, ILinkManager
+from cybertools.wiki.base.link import LinkProcessor
 
 
-class Reference(object):
+class Reference(LinkProcessor):
 
-    implements(INodeProcessor)
     adapts(reference)
 
-    parent = None                   # parent (tree) processor
+    def getProperties(self):
+        return dict(targetName=self.node['refuri'])
 
-    def __init__(self, context):
-        self.node = self.context = context
-
-    def process(self):
-        print 'processing reference:', self.node
-        source = self.parent.context
-        wiki = source.getWiki()
-        sourceName = ':'.join((wiki.name, source.name))
-        targetName = self.node['refuri']
-        lmName = source.getConfig('linkManager')
-        lm = wiki.getManager().getPlugin(ILinkManager, lmName)
-        target = wiki.getPage(targetName)
-
+    def setProperty(self, name, value):
+        self.node[name] = value

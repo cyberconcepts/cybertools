@@ -38,7 +38,7 @@ class TreeProcessor(object):
     implements(ITreeProcessor)
     adapts(IWikiPage)
 
-    tree = None
+    tree = request = None
     visitor = None
 
     def __init__(self, context):
@@ -54,20 +54,17 @@ class Visitor(object):
     def __init__(self, context):
         self.context = context          # the tree processor
         self.document = context.tree    # needed internally
-        self.processors = {}            # cache
         self.processorNames = self.context.context.getConfig('nodeProcessors')
 
     def dispatch_visit(self, node):
         #print 'visiting', node.tagname
         tag = node.tagname
-        procs = self.processors.get(tag)
-        if procs is None:
-            procs = self.processors[tag] = []
-            procNames = self.processorNames.get(tag, [])
-            for n in procNames:
-                proc = component.queryAdapter(node, INodeProcessor, name=n)
-                if proc is not None:
-                    proc.parent = self.context
-                    procs.append(proc)
+        procs = []
+        procNames = self.processorNames.get(tag, [])
+        for n in procNames:
+            proc = component.queryAdapter(node, INodeProcessor, name=n)
+            if proc is not None:
+                proc.parent = self.context
+                procs.append(proc)
         for p in procs:
             p.process()

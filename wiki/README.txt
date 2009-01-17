@@ -4,6 +4,9 @@ Yet Another WikiWiki Framework
 
   ($Id$)
 
+  >>> from zope import component
+  >>> from zope.publisher.browser import TestRequest
+
 
 An Example for an Elementary Wiki Structure
 ===========================================
@@ -26,8 +29,11 @@ We format the content of the start page using the restructured text format.
 The parser for restructured text and a corresponding HTML writer are the
 default plugins used, so we can already render the page as HTML.
 
-  >>> print startPage.render()
+  >>> print startPage.render(TestRequest())
   <p><strong>Welcome to the Demo Wiki</strong></p>
+
+Links to existing pages
+-----------------------
 
 We now create another page that contains a link to the start page.
 
@@ -40,11 +46,36 @@ We now create another page that contains a link to the start page.
   ... `Back to the Start Page <start_page>`_
   ... '''
 
-  >>> print aboutPage.render()
-  processing reference:
-    <reference name="Back to the Start Page"
-               refuri="start_page">Back to the Start Page</reference>
+  >>> print aboutPage.render(TestRequest())
   <p><strong>Information about the Demo Wiki</strong></p>
   <p>This is the cybertools demo wiki.</p>
-  <p><a class="reference" href="start_page">Back to the Start Page</a></p>
+  <p><a class="reference"
+        href="http://127.0.0.1/demo_wiki/start_page">Back to the Start Page</a></p>
+
+Let's now have a look at the link manager - it should have recorded the link
+from the page content.
+
+  >>> from cybertools.wiki.interfaces import ILinkManager
+  >>> linkManager = manager.getPlugin(ILinkManager, 'basic')
+  >>> links = linkManager.links
+  >>> len(links)
+  1
+  >>> link = links.values()[0]
+  >>> link.source, link.target, link.name, link.refuri
+  (0, 1, u'start_page', 'http://127.0.0.1/demo_wiki/start_page')
+
+Links to not yet existing pages
+-------------------------------
+
+  >>> aboutPage.text += '''
+  ... `More... <more>`_
+  ... '''
+  >>> print aboutPage.render(TestRequest())
+  <p><strong>Information about the Demo Wiki</strong></p>
+  <p>This is the cybertools demo wiki.</p>
+  <p><a class="reference"
+        href="http://127.0.0.1/demo_wiki/start_page">Back to the Start Page</a></p>
+  <p><a class="reference"
+        href="http://127.0.0.1/demo_wiki/create.html?linkid=0000002">?More...</a></p>
+
 

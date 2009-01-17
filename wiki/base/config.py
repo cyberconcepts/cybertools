@@ -40,7 +40,7 @@ class BaseConfiguration(object):
     def getConfig(self, functionality):
         c = self.get(functionality)
         if c is None:
-            parent = self.getParent()
+            parent = self.getConfigParent()
             if parent is not None:
                 return parent.getConfig(functionality)
         return c
@@ -48,7 +48,7 @@ class BaseConfiguration(object):
     def get(self, key, default=None):
         return getattr(self, key, None)
 
-    def getParent(self):
+    def getConfigParent(self):
         return self.parent
 
 

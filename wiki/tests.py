@@ -9,13 +9,38 @@ $Id$
 import unittest, doctest
 from zope.testing.doctestunit import DocFileSuite
 from zope import component
+from zope.interface import implements
+from zope.app.intid.interfaces import IIntIds
+from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.traversing.browser.interfaces import IAbsoluteURL
 
+from cybertools.relation.tests import IntIdsStub
 from cybertools.wiki.base.config import WikiConfiguration
 from cybertools.wiki.base.process import TreeProcessor
 from cybertools.wiki.base.link import LinkManager
 from cybertools.wiki.dcu.html import Writer as DocutilsHTMLWriter
 from cybertools.wiki.dcu.rstx import Parser as DocutilsRstxParser
 from cybertools.wiki.dcu import process
+from cybertools.wiki.interfaces import IWiki, IWikiPage
+
+
+class WikiURL(object):
+
+    implements(IAbsoluteURL)
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        return '%s/%s' % (self.request.URL, self.context.name)
+
+
+class PageURL(WikiURL):
+
+    def __call__(self):
+        return '%s/%s' % (WikiURL(self.context.getWiki(), self.request)(),
+                          self.context.name)
 
 
 class Test(unittest.TestCase):
@@ -26,6 +51,9 @@ class Test(unittest.TestCase):
 
 
 def setUp(testCase):
+    component.provideAdapter(WikiURL, (IWiki, IBrowserRequest), IAbsoluteURL)
+    component.provideAdapter(PageURL, (IWikiPage, IBrowserRequest), IAbsoluteURL)
+    component.provideUtility(IntIdsStub())
     component.provideUtility(WikiConfiguration())
     component.provideUtility(DocutilsHTMLWriter(), name='docutils.html')
     component.provideUtility(DocutilsRstxParser(), name='docutils.rstx')

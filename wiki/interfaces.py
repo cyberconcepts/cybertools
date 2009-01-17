@@ -35,7 +35,7 @@ class IWikiConfiguration(Interface):
     parser = Attribute('Plug-in component converting from text input '
                 'format to internal tree format.')
 
-    def getParent():
+    def getConfigParent():
         """ Return the parent object in case this configuration does not
             provide configuration information for a certain functionality.
         """
@@ -66,6 +66,13 @@ class IWikiManager(Interface):
         """ Return the plugin of the type given with the name given.
         """
 
+    def getUid(obj):
+        """ Return the unique id of the object given.
+        """
+
+    def getObject(uid):
+        """ Return the object referenced by the unique id given.
+        """
 
 class IWiki(Interface):
     """ A collection of wiki pages, or - more generally - wiki components.
@@ -111,7 +118,7 @@ class IWikiPage(Interface):
         """ The wiki this page belongs to.'
         """
 
-    def render():
+    def render(request=None):
         """ Convert the source text of the page to presentation format.
         """
 
@@ -127,7 +134,7 @@ class IWikiPage(Interface):
         """ Modify the source text of the page before parsing it and return it.
         """
 
-    def process(tree):
+    def process(tree, request=None):
         """ Scan the tree, changing it if necessary and collecting
             interesting information about the nodes, e.g. about links.
         """
@@ -162,6 +169,8 @@ class ITreeProcessor(Interface):
 
     context = Attribute('The wiki page from which the tree was generated.')
     tree = Attribute('The tree to be processed.')
+    request = Attribute('An optional request object, needed e.g. for '
+                'rendering absolute URLs.')
 
     def process():
         """ Do what is necessary.
@@ -179,6 +188,11 @@ class INodeProcessor(Interface):
         """ Do what is necessary.
         """
 
+    def getProperties():
+        """ Return a dictionary of properties provided by the context
+            node that may be needed for processing.
+        """
+
 
 # wiki elements
 
@@ -187,7 +201,7 @@ class ILinkManager(Interface):
     """
 
     def createLink(name, source, target, **kw):
-        """ Create and register a link record.
+        """ Create, register, and return a link record.
 
             Optional attributes are given as keyword arguments.
         """
@@ -231,6 +245,7 @@ class ILink(Interface):
         'for external links - the target URI.')
     targetFragment = Attribute('Optional: an address part leading to a '
                 'text anchor or the part of an image.')
+    refuri = Attribute('The URI linking to the target object.')
     user = Attribute('Optional: a string denoting the creator of the record.')
     run = Attribute('Optional: May be used to group the links from a certain '
                 'source at different times.')
@@ -238,3 +253,9 @@ class ILink(Interface):
     def getManager():
         """ Return the link manager this link is managed by.
         """
+
+
+class ILinkProcessor(INodeProcessor):
+    """ A node processor specialized on links (references).
+    """
+

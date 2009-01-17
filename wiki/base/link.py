@@ -22,9 +22,11 @@ Basic (sample) implementations for links and link management
 $Id$
 """
 
+from docutils.nodes import Text
 from zope.interface import implements
+from zope.traversing.browser import absoluteURL
 
-from cybertools.wiki.interfaces import ILink, ILinkManager
+from cybertools.wiki.interfaces import ILink, ILinkManager, ILinkProcessor
 
 
 class LinkManager(object):
@@ -41,15 +43,31 @@ class LinkManager(object):
         link = Link(name, source, target, **kw)
         link.manager = self
         id = self.generateLinkIdentifier(link)
-        self.linksBySource[source] = self.links[id] = link
+        self.links[id] = link
+        self.linksBySource.setdefault(source, []).append(link)
+        return link
 
     def removeLink(self, link):
         if link.identifier in self.links:
             link.manager = None
             del self.links[link.identifier]
 
+    def query(self, source=None, target=None, name=None, **kw):
+        if source is None:
+            result = self.links.values()
+        else:
+            result = self.linksBySource.get(source, [])
+        kw.update(dict(target=target, name=name))
+        for k, v in kw.items():
+            if v is None:
+                continue
+            if not isinstance(v, (list, tuple)):
+                v = [v]
+            result = [r for r in result if getattr(r, k) in v]
+        return result
+
     def generateLinkIdentifier(self, link):
-        identifier = 'l%07i' % (max(self.links.keys() or [0]) + 1)
+        identifier = '%07i' % (max([int(k) for k in self.links.keys()] or [0]) + 1)
         link.identifier = identifier
         return identifier
 
@@ -76,5 +94,51 @@ class Link(object):
     def __getattr__(self, attr):
         if attr not in ILink:
             raise AttributeError(attr)
-        return getattr(self, attr, None)
+        return self.__dict__.get(attr)
+
+
+class LinkProcessor(object):
+
+    implements(ILinkProcessor)
+
+    parent = None   # parent (tree) processor
+
+    def __init__(self, context):
+        self.node = self.context = context
+
+    def getProperties(self):
+        raise ValueError("Method 'getProperties()' must be implemented by subclass.")
+
+    def process(self):
+        #print 'processing reference:', self.node
+        props = self.getProperties()
+        source = self.parent.context
+        wiki = source.getWiki()
+        manager = wiki.getManager()
+        sourceUid = manager.getUid(source)
+        name = props['targetName']
+        lmName = source.getConfig('linkManager')
+        lm = wiki.getManager().getPlugin(ILinkManager, lmName)
+        existing = lm.query(source=sourceUid, name=name)
+        if existing:
+            link = existing[0]
+            target = manager.getObject(link.target)
+        else:
+            target = wiki.getPage(name)
+            targetUid = manager.getUid(target)
+            link = lm.createLink(name, sourceUid, targetUid)
+        if link.refuri is None:
+            request = self.parent.request
+            if request is not None:
+                if target is None:
+                    link.refuri = '%s/create.html?linkid=%s' % (
+                                    absoluteURL(wiki, request), link.identifier)
+                else:
+                    link.refuri = absoluteURL(target, request)
+        self.setProperty('refuri', link.refuri)
+        if target is None:
+            # change CSS class, link text
+            # needs overriding of HTMLTranslator.visit_reference()
+            self.setProperty('class', 'create') # no direct effect
+            self.node.insert(0, Text('?'))
 

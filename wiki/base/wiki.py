@@ -24,6 +24,7 @@ $Id$
 
 from zope import component
 from zope.interface import implements
+from zope.app.intid.interfaces import IIntIds
 
 from cybertools.wiki.interfaces import IWikiConfiguration
 from cybertools.wiki.interfaces import IWikiManager, IWiki, IWikiPage
@@ -57,9 +58,15 @@ class WikiManager(BaseConfiguration):
     def getPlugin(self, type, name):
         return component.getUtility(type, name=name)
 
+    def getUid(self, obj):
+        return component.getUtility(IIntIds).getId(obj)
+
+    def getObject(self, uid):
+        return component.getUtility(IIntIds).getObject(uid)
+
     # configuration
 
-    def getParent(self):
+    def getConfigParent(self):
         return component.getUtility(IWikiConfiguration)
 
 
@@ -96,7 +103,7 @@ class Wiki(BaseConfiguration):
 
     # configuration
 
-    def getParent(self):
+    def getConfigParent(self):
         return self.getManager()
 
 
@@ -114,10 +121,10 @@ class WikiPage(BaseConfiguration):
     def getWiki(self):
         return self.wiki
 
-    def render(self):
+    def render(self, request=None):
         source = self.preprocess(self.text)
         tree = self.parse(source)
-        self.process(tree)
+        self.process(tree, request)
         result = self.write(tree)
         return self.postprocess(result)
 
@@ -134,10 +141,11 @@ class WikiPage(BaseConfiguration):
     def preprocess(self, source):
         return source
 
-    def process(self, tree):
+    def process(self, tree, request=None):
         processor = component.getAdapter(self, ITreeProcessor,
                                          name=self.getConfig('processor'))
         processor.tree = tree
+        processor.request = request
         processor.process()
 
     def postprocess(self, result):
@@ -145,6 +153,6 @@ class WikiPage(BaseConfiguration):
 
     # configuration
 
-    def getParent(self):
+    def getConfigParent(self):
         return self.getWiki()
 
