@@ -55,7 +55,7 @@ def workItemStates():
               color='orange'),
         State('done', 'done',
               ('plan', 'accept', 'start', 'work', 'finish', 'cancel', 'modify'),
-              color='orange'),
+              color='lightgreen'),
         State('finished', 'finished',
               ('plan', 'accept', 'start', 'work', 'finish', 'modify', 'close'),
               color='green'),
@@ -74,6 +74,31 @@ def workItemStates():
         Transition('delegate', 'delegate', 'planned'),
         Transition('close', 'close', 'closed'),
         initialState='new')
+
+
+fieldNames = ['title', 'description', 'start', 'end', 'duration', 'effort',
+              'comment', 'party']
+
+# meaning:  - not editable, value=default
+#           / not editable, value=None
+#           + copy
+#           . default (may be empty)
+
+editingRules = dict(
+    plan    = {'*':         '++.....+'},
+    accept  = {'*':         '++.....-',
+               'planned':   '++++++.-',
+               'accepted':  '++++++.-'},
+    start   = {'*':         '++./...-'},
+    work    = {'*':         '++.....-',
+               'running':   '+++....-'},
+    finish  = {'*':         '++.....-',
+               'running':   '+++....-'},
+    cancel  = {'*':         '++////./'},
+    modify  = {'*':         '++++++++'},
+    delegate= {'*':         '++......'},
+    close   = {'*':         '++////./'},
+)
 
 
 class WorkItem(Stateful, Track):
