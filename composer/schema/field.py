@@ -54,6 +54,7 @@ class Field(Component):
     value_type = None
 
     fieldTypeInfo = None
+    baseField = None
     instance_name = None
     display_renderer = None
     display_format = None
@@ -69,6 +70,11 @@ class Field(Component):
         self.title = title
         for k, v in kw.items():
             setattr(self, k, v)
+
+    def __getattr__(self, attr):
+        if self.baseField is not None:
+            return getattr(self.baseField, attr)
+        raise AttributeError(attr)
 
     @property
     def name(self):
