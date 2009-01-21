@@ -88,9 +88,11 @@ class ItemView(BaseView):
         baseUrl = urlInfo.baseUrl
         while 'bscw.cgi' in baseUrl and not baseUrl.endswith('bscw.cgi'):
             baseUrl, ignore = baseUrl.rsplit('/', 1)
-        extension = '.' + (mimeTypes.get(self.context.contentType) or ['bin'])[0]
-        if self.title.endswith(extension):
-            extension = ''
+        extensions = '.' + (mimeTypes.get(self.context.contentType) or ['bin'])
+        extension = extensions[0]
+        for ext in extensions:
+            if self.title.endswith('.' + ext):
+                extension = ''
         return '%s/d%s/%s%s' % (baseUrl, urlInfo.path, self.title, extension)
 
     @property
