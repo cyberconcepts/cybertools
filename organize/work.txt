@@ -75,11 +75,13 @@ the effort is taken from the duration if not set explicitly.
 Change work item state
 ----------------------
 
-Now Jim accepts the work item, i.e. he wants to work on it.
+Now Jim accepts the work item, i.e. he wants to work on it. The previous
+record keeps its state but it is marked by a "_x" suffix so that it may
+be excluded from queries.
 
   >>> wi02 = wi01.doAction('accept', 'jim')
   >>> wi01.state
-  'planned'
+  'planned_x'
   >>> wi02
   <WorkItem ['001', 1, 'jim', '2008-12-22 14:22', 'accepted']:
    {'duration': 700, 'start': 1229955772, 'created': ...,
@@ -148,13 +150,14 @@ Delegation of Work Items
 
 A user may delegate a newly created work item to another party. This
 will create a new work item even if the initial one is still in state "new".
-Both work items are now in "planned" state.
+The new work item is now in "planned" state, its predecessor is market as
+delegated so that it may be selected by queries.
 
   >>> wi07 = workItems.add('001', 'john', start=1229970800)
   >>> wi08 = wi07.doAction('delegate', 'john', party='annie')
 
   >>> wi07
-  <WorkItem ['001', 2, 'john', '2008-12-22 18:33', 'planned']:
+  <WorkItem ['001', 2, 'john', '2008-12-22 18:33', 'delegated']:
    {'start': 1229970800, 'created': ..., 'creator': 'john'}>
   >>> wi08
   <WorkItem ['001', 2, 'annie', '2008-12-22 18:33', 'planned']:
@@ -194,3 +197,14 @@ Runs
   >>> list(tracks.finishedRuns)
   [1]
 
+
+Some Special Cases
+==================
+
+Close a run with some delegated items.
+
+  >>> wi10 = wi09.doAction('finish', 'annie')
+  >>> wi11 = wi10.doAction('close', 'john')
+
+  >>> wi07.state
+  'delegated_x'

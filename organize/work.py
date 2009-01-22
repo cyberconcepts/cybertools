@@ -42,7 +42,7 @@ _not_found = object()
 def workItemStates():
     return StatesDefinition('workItemStates',
         State('new', 'new',
-              ('plan', 'accept', 'start', 'work', 'finish', 'modify', 'delegate'),
+              ('plan', 'accept', 'start', 'work', 'finish', 'delegate'),
               color='red'),
         State('planned', 'planned',
               ('plan', 'accept', 'start', 'work', 'finish', 'cancel', 'modify'),
@@ -63,7 +63,14 @@ def workItemStates():
               ('plan', 'accept', 'start', 'work', 'modify', 'close'),
               color='grey'),
         State('closed', 'closed', (), color='lightblue'),
+        # not directly reachable states:
+        State('delegated', 'delegated', (), color='purple'),
+        State('delegated_x', 'delegated', (), color='purple'),
         State('replaced', 'replaced', (), color='grey'),
+        State('planned_x', 'planned', (), color='red'),
+        State('accepted_x', 'accepted', (), color='yellow'),
+        State('done_x', 'done', (), color='lightgreen'),
+        # transitions:
         Transition('plan', 'plan', 'planned'),
         Transition('accept', 'accept', 'accepted'),
         Transition('start', 'start working', 'running'),
@@ -151,15 +158,18 @@ class WorkItem(Stateful, Track):
             raise AttributeError(attr)
         return self.data.get(attr)
 
+    @property
+    def currentWorkItems(self):
+        return list(getParent(self).query(runId=self.runId))
+
     def doAction(self, action, userName, **kw):
-        currentWorkItems = list(getParent(self).query(runId=self.runId))
-        if self != currentWorkItems[-1]:
+        if self != self.currentWorkItems[-1]:
             raise ValueError("Actions are only allowed on the last item of a run.")
-        if action in self.specialActions:
-            return self.specialActions[action](self, userName, **kw)
         if action not in [t.name for t in self.getAvailableTransitions()]:
             raise ValueError("Action '%s' not allowed in state '%s'" %
                              (action, self.state))
+        if action in self.specialActions:
+            return self.specialActions[action](self, userName, **kw)
         if self.state == 'new':
             self.setData(**kw)
             self.doTransition(action)
@@ -168,6 +178,9 @@ class WorkItem(Stateful, Track):
         new = self.createNew(action, userName, **kw)
         if self.state == 'running':
             new.replace(self)
+        elif self.state in ('planned', 'accepted', 'done'):
+            self.state = self.state + '_x'
+            self.reindex('state')
         new.doTransition(action)
         new.reindex('state')
         return new
@@ -181,12 +194,15 @@ class WorkItem(Stateful, Track):
         return new
 
     def delegate(self, userName, **kw):
-        new = self.createNew('delegate', userName, **kw)
+        if self.state == 'new':
+            delegated = self
+        else:
+            delegated = self.createNew('delegate', self.userName, **kw)
+        delegated.state = 'delegated'
+        delegated.reindex('state')
+        new = delegated.createNew('plan', userName, **kw)
         new.doTransition('plan')
         new.reindex('state')
-        if self.state == 'new':
-            self.doTransition('plan')
-            self.reindex('state')
         return new
 
     def close(self, userName, **kw):
@@ -194,6 +210,10 @@ class WorkItem(Stateful, Track):
         new.state = 'closed'
         new.reindex('state')
         getParent(self).stopRun(runId=self.runId, finish=True)
+        for item in self.currentWorkItems:
+            if item.state in ('planned', 'accepted', 'done',  'delegated'):
+                item.state = item.state + '_x'
+                item.reindex('state')
         return new
 
     specialActions = dict(modify=modify, delegate=delegate, close=close)
