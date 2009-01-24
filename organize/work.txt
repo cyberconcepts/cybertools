@@ -137,7 +137,7 @@ As the work is now finished, the work item may be closed; the corresponding
   >>> wi06 = wi05.doAction('close', 'john')
   >>> wi06
   <WorkItem ['001', 1, 'john', '... ...', 'closed']:
-   {'created': ..., 'creator': 'john'}>
+   {'start': ..., 'created': ..., 'end': ..., 'creator': 'john'}>
 
 Let's now check how many work items have been generated.
 

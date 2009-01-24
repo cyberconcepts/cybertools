@@ -206,7 +206,9 @@ class WorkItem(Stateful, Track):
         return new
 
     def close(self, userName, **kw):
-        new = self.createNew('close', userName, copyData=False, **kw)
+        kw['start'] = kw['end'] = getTimeStamp()
+        kw['duration'] = kw['effort'] = None
+        new = self.createNew('close', userName, copyData=('title',), **kw)
         new.state = 'closed'
         new.reindex('state')
         getParent(self).stopRun(runId=self.runId, finish=True)
@@ -233,19 +235,20 @@ class WorkItem(Stateful, Track):
         for k, v in kw.items():
             data[k] = v
 
-    def createNew(self, action, userName, copyData=True, **kw):
+    def createNew(self, action, userName, copyData=None, **kw):
+        if copyData is None:
+            copyData = self.initAttributes
         newData = {}
-        if copyData:
-            for k in self.initAttributes:
-                v = kw.get(k, _not_found)
-                if v is _not_found:
-                    if action == 'start' and k in ('end',):
-                        continue
-                    if action in ('work', 'finish') and k in ('duration', 'effort',):
-                        continue
-                    v = self.data.get(k)
-                if v is not None:
-                    newData[k] = v
+        for k in self.initAttributes:
+            v = kw.get(k, _not_found)
+            if v is _not_found and k in copyData:
+                if action == 'start' and k in ('end',):
+                    continue
+                if action in ('work', 'finish') and k in ('duration', 'effort',):
+                    continue
+                v = self.data.get(k)
+            if v not in (None, _not_found):
+                newData[k] = v
         workItems = IWorkItems(getParent(self))
         new = workItems.add(self.taskId, userName, self.runId, **newData)
         return new
