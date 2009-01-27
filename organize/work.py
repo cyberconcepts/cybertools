@@ -243,7 +243,7 @@ class WorkItem(Stateful, Track):
         if copyData is None:
             copyData = self.initAttributes
         newData = {}
-        for k in self.initAttributes:
+        for k in self.initAttributes.union(set(['comment'])):
             v = kw.get(k, _not_found)
             if v is _not_found and k in copyData:
                 if action == 'start' and k in ('end',):
