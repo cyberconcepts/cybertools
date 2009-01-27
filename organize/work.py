@@ -233,7 +233,11 @@ class WorkItem(Stateful, Track):
             self.reindex('timeStamp')
         data = self.data
         for k, v in kw.items():
-            data[k] = v
+            if v is not None:
+                data[k] = v
+        start, end = data.get('start'), data.get('end')
+        if start and end and end < start:
+            data['end'] = start
 
     def createNew(self, action, userName, copyData=None, **kw):
         if copyData is None:
