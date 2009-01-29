@@ -38,6 +38,7 @@ class Product(BaseObject):
     def __init__(self, productId, title=None):
         self.name = self.productId = productId
         self.title = title or u'unknown'
+        self.description = u''
         self.shops = self.collection(self, 'products')
         self.categories = self.collection(self, 'products')
         self.suppliers = self.collection(self, 'products')
@@ -50,6 +51,7 @@ class Category(BaseObject):
     def __init__(self, name, title=None):
         self.name = name
         self.title = title or u'unknown'
+        self.description = u''
         self.shops = self.collection(self, 'categories')
         self.products = self.collection(self, 'categories')
         self.subcategories = self.collection(self, 'parentCategories')
