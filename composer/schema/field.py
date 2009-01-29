@@ -306,6 +306,8 @@ class ListFieldInstance(FieldInstance):
         #return [self.valueFieldInstance.marshall(v) for v in value]
 
     def display(self, value):
+        if not value:
+            return u''
         if isinstance(value, basestring):
             return value
         return u' | '.join(self.valueFieldInstance.display(v) for v in value)
