@@ -65,10 +65,16 @@ class FileSystemStorage(object):
     def getData(self, address, params={}):
         subDir = params.get('subdirectory')
         fn = self.getDir(address, subDir)
-        f = open(fn, 'rb')
-        data = f.read()
-        f.close()
-        return data
+        try:
+            f = open(fn, 'rb')
+            data = f.read()
+            f.close()
+            return data
+        except IOError, e:
+            from logging import getLogger
+            getLogger('cybertools.storage.filesystem.FileSystemStorage').warn(e)
+                        #'File %r cannot be read.' % fn)
+            return ''
 
     def getUniqueAddress(self, address, params={}):
         subDir = params.get('subdirectory')
