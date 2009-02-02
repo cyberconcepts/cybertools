@@ -42,7 +42,7 @@ _not_found = object()
 def workItemStates():
     return StatesDefinition('workItemStates',
         State('new', 'new',
-              ('plan', 'accept', 'start', 'work', 'finish', 'delegate'),
+              ('plan', 'accept', 'start', 'work', 'finish', 'delegate', 'cancel'),
               color='red'),
         State('planned', 'planned',
               ('plan', 'accept', 'start', 'work', 'finish', 'cancel', 'modify'),
