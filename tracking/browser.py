@@ -78,6 +78,11 @@ class TrackView(object):
         return self.context.metadata
 
     @Lazy
+    def additionalMetadataFields(self):
+        return [k for k in self.context.metadata.keys()
+                  if k not in ('taskId', 'runId', 'userName', 'timeStamp')]
+
+    @Lazy
     def task(self):
         return self.metadata['taskId']
 

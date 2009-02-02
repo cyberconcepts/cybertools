@@ -10,22 +10,21 @@
       <td>Task:</td>
       <td><a tal:omit-tag="not:view/taskUrl"
              tal:attributes="href view/taskUrl"
-             tal:content="view/taskTitle" /></td>
-    </tr>
+             tal:content="view/taskTitle" /></td></tr>
     <tr>
       <td>Run:</td>
-      <td tal:content="view/run"></td>
-    </tr>
+      <td tal:content="view/run"></td></tr>
     <tr>
       <td>User:</td>
       <td><a tal:omit-tag="not:view/userUrl"
              tal:attributes="href view/userUrl"
-             tal:content="view/userTitle" /></td>
-    </tr>
+             tal:content="view/userTitle" /></td></tr>
     <tr>
       <td>Timestamp:</td>
-      <td tal:content="view/timeStamp"></td>
-    </tr>
+      <td tal:content="view/timeStamp"></td></tr>
+    <tr tal:repeat="key view/additionalMetadataFields">
+      <td><span tal:replace="key" />:</td>
+      <td tal:content="view/metadata/?key"></td></tr>
   </table>
   <h2>Data</h2>
   <div tal:content="context/data" />
