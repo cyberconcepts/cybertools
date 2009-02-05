@@ -44,7 +44,9 @@ class FileSystemStorage(object):
     def getDir(self, address, subDir=None):
         subDir = subDir or self.subDir
         if self.rootDir is None:
-            return os.path.join(subDir, address)
+            if subDir:
+                return os.path.join(subDir, address)
+            return address
         return os.path.join(self.rootDir, subDir, address)
 
     def setData(self, address, data, params={}):
@@ -65,6 +67,7 @@ class FileSystemStorage(object):
     def getData(self, address, params={}):
         subDir = params.get('subdirectory')
         fn = self.getDir(address, subDir)
+        #print '***', [self.rootDir, subDir, address], fn
         try:
             f = open(fn, 'rb')
             data = f.read()
@@ -75,6 +78,16 @@ class FileSystemStorage(object):
             getLogger('cybertools.storage.filesystem.FileSystemStorage').warn(e)
                         #'File %r cannot be read.' % fn)
             return ''
+
+    def getSize(self, address, params={}):
+        subDir = params.get('subdirectory')
+        fn = self.getDir(address, subDir)
+        try:
+            return os.path.getsize(fn)
+        except IOError, e:
+            from logging import getLogger
+            getLogger('cybertools.storage.filesystem.FileSystemStorage').warn(e)
+            return 0
 
     def getUniqueAddress(self, address, params={}):
         subDir = params.get('subdirectory')

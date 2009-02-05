@@ -80,7 +80,7 @@ class MediaAssetFile(object):
 
     def getContentType(self, variant=None):
         contentType = self.getMimeType()
-        if variant == None:
+        if variant is None:
             return contentType
         outputFormat = None
         # Scan all statements for a defintion of an output format
@@ -94,7 +94,7 @@ class MediaAssetFile(object):
         # Return default type if no defintion was found
         if not outputFormat:
             baseType = getMimeBasetype(contentType)
-            return DEFAULT_FORMATS.get(baseType)
+            return DEFAULT_FORMATS.get(baseType) or contentType
         return outputFormat
 
     def transform(self, rules=None):

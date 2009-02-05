@@ -48,12 +48,21 @@ class PILTransform(object):
     implements(IFileTransform)
 
     def open(self, path):
-        self.im = Image.open(path)
+        try:
+            self.im = Image.open(path)
+        except IOError, e:
+            from logging import getLogger
+            getLogger('cybertools.media.piltransform.PILTransform').warn(e)
+            self.im = None
 
     def rotate(self, angle, resize):
+        if self.im is None:
+            return
         self.im = self.im.rotate(angle,Image.BICUBIC)
 
     def color(self, mode):
+        if self.im is None:
+            return
         if not mode:
             return
         mode = mode.upper()
@@ -64,6 +73,8 @@ class PILTransform(object):
         self.im = self.im.convert(mode)
 
     def crop(self, relWidth, relHeight, alignX=0.5, alignY=0.5):
+        if self.im is None:
+            return
         alignX = min(max(alignX, 0.0), 1.0)
         alignY = min(max(alignY, 0.0), 1.0)
         w, h = self.im.size
@@ -83,9 +94,13 @@ class PILTransform(object):
         self.im = self.im.crop(box)
 
     def resize(self, width, height):
+        if self.im is None:
+            return
         dims = (width, height)
         self.im.thumbnail(dims, Image.ANTIALIAS)
 
     def save(self, path, mimetype):
+        if self.im is None:
+            return
         format = mimetypeToPIL(mimetype)
         self.im.save(path)
