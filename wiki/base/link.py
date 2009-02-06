@@ -105,11 +105,12 @@ class LinkProcessor(object):
 
     def __init__(self, context):
         self.node = self.context = context
+        self.parent = context.document
 
     def getProperties(self):
         raise ValueError("Method 'getProperties()' must be implemented by subclass.")
 
-    def process(self):
+    def process(self, atts):
         #print 'processing reference:', self.node
         props = self.getProperties()
         source = self.parent.context
@@ -135,10 +136,12 @@ class LinkProcessor(object):
                                     absoluteURL(wiki, request), link.identifier)
                 else:
                     link.refuri = absoluteURL(target, request)
-        self.setProperty('refuri', link.refuri)
+        #self.setProperty('href', link.refuri)
+        atts['href'] = link.refuri
         if target is None:
             # change CSS class, link text
             # needs overriding of HTMLTranslator.visit_reference()
-            self.setProperty('class', 'create') # no direct effect
+            #self.setProperty('class', 'create') # no direct effect
+            atts['class'] += ' create'
             self.node.insert(0, Text('?'))
 

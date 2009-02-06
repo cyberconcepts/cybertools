@@ -75,7 +75,7 @@ Links to not yet existing pages
   <p>This is the cybertools demo wiki.</p>
   <p><a class="reference"
         href="http://127.0.0.1/demo_wiki/start_page">Back to the Start Page</a></p>
-  <p><a class="reference"
+  <p><a class="reference create"
         href="http://127.0.0.1/demo_wiki/create.html?linkid=0000002">?More...</a></p>
 
 

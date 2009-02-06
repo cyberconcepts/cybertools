@@ -28,7 +28,7 @@ from zope.app.intid.interfaces import IIntIds
 
 from cybertools.wiki.interfaces import IWikiConfiguration
 from cybertools.wiki.interfaces import IWikiManager, IWiki, IWikiPage
-from cybertools.wiki.interfaces import IParser, IWriter, ITreeProcessor
+from cybertools.wiki.interfaces import IParser, IWriter
 from cybertools.wiki.base.config import BaseConfiguration
 
 
@@ -124,7 +124,8 @@ class WikiPage(BaseConfiguration):
     def render(self, request=None):
         source = self.preprocess(self.text)
         tree = self.parse(source)
-        self.process(tree, request)
+        tree.context = self
+        tree.request = request
         result = self.write(tree)
         return self.postprocess(result)
 
@@ -140,13 +141,6 @@ class WikiPage(BaseConfiguration):
 
     def preprocess(self, source):
         return source
-
-    def process(self, tree, request=None):
-        processor = component.getAdapter(self, ITreeProcessor,
-                                         name=self.getConfig('processor'))
-        processor.tree = tree
-        processor.request = request
-        processor.process()
 
     def postprocess(self, result):
         return result

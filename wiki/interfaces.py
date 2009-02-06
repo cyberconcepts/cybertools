@@ -134,11 +134,6 @@ class IWikiPage(Interface):
         """ Modify the source text of the page before parsing it and return it.
         """
 
-    def process(tree, request=None):
-        """ Scan the tree, changing it if necessary and collecting
-            interesting information about the nodes, e.g. about links.
-        """
-
     def postprocess(result):
         """ Modify the output of the write process and return it.
         """
@@ -147,7 +142,7 @@ class IWikiPage(Interface):
 # wiki plugins
 
 class IParser(Interface):
-    """ Converts from (plain text) input format to internal format.
+    """ Converts from (plain text) input format to internal tree format.
     """
 
     def parse(text):
@@ -160,20 +155,6 @@ class IWriter(Interface):
 
     def write(tree):
         """ Returns presentation format for the tree given.
-        """
-
-
-class ITreeProcessor(Interface):
-    """ Processes a document tree.
-    """
-
-    context = Attribute('The wiki page from which the tree was generated.')
-    tree = Attribute('The tree to be processed.')
-    request = Attribute('An optional request object, needed e.g. for '
-                'rendering absolute URLs.')
-
-    def process():
-        """ Do what is necessary.
         """
 
 

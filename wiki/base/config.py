@@ -56,9 +56,8 @@ class WikiConfiguration(BaseConfiguration):
     """ A global utility providing the default settings.
     """
 
-    writer = 'docutils.html'
     parser = 'docutils.rstx'
-    processor = 'standard'
+    writer = 'docutils.html'
     linkManager = 'basic'
 
     nodeProcessors = dict(reference=['default'])

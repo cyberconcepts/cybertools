@@ -23,10 +23,12 @@ $Id$
 """
 
 from docutils.core import publish_from_doctree
+from docutils import nodes
 from docutils.writers.html4css1 import HTMLTranslator, Writer as HTMLWriter
+from zope import component
 from zope.interface import implements
 
-from cybertools.wiki.interfaces import IWriter
+from cybertools.wiki.interfaces import INodeProcessor, IWriter
 
 
 class Writer(object):
@@ -45,3 +47,35 @@ class HTMLBodyTranslator(HTMLTranslator):
 
     def astext(self):
         return u''.join(self.body_pre_docinfo + self.docinfo + self.body)
+
+    def visit_reference(self, node):
+        # copied from docutils.writers.html4css1
+        if node.has_key('refuri'):
+            href = node['refuri']
+            if (self.settings.cloak_email_addresses
+                 and href.startswith('mailto:')):
+                href = self.cloak_mailto(href)
+                self.in_mailto = 1
+        else:
+            assert node.has_key('refid'), \
+                   'References must have "refuri" or "refid" attribute.'
+            href = '#' + node['refid']
+        atts = {'href': href, 'class': 'reference'}
+        if not isinstance(node.parent, nodes.TextElement):
+            assert len(node) == 1 and isinstance(node[0], nodes.image)
+            atts['class'] += ' image-reference'
+        # wiki processing:
+        node.document = self.document
+        self.processNode(node, atts)
+        self.body.append(self.starttag(node, 'a', '', **atts))
+
+    def processNode(self, node, atts):
+        procs = []
+        processorNames = self.document.context.getConfig('nodeProcessors')
+        procNames = processorNames.get(node.tagname, [])
+        for n in procNames:
+            proc = component.queryAdapter(node, INodeProcessor, name=n)
+            if proc is not None:
+                procs.append(proc)
+        for p in procs:
+            p.process(atts)
