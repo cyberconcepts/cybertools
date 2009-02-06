@@ -14,9 +14,13 @@ An Example for an Elementary Wiki Structure
   >>> from cybertools.wiki.base.wiki import WikiManager, Wiki
 
 We create a wiki manager with one wiki that in turn contains a simple
-start page.
+start page. We also set the ``linkManager`` configuration option explicitly
+to make sure the btree-based tracking link manager will be used.
 
   >>> manager = WikiManager()
+
+  >>> linkManagerName = 'tracking'
+  >>> manager.linkManager = linkManagerName
   >>> wiki = manager.addWiki(Wiki('demo_wiki'))
   >>> startPage = wiki.createPage('start_page')
 
@@ -56,7 +60,7 @@ Let's now have a look at the link manager - it should have recorded the link
 from the page content.
 
   >>> from cybertools.wiki.interfaces import ILinkManager
-  >>> linkManager = manager.getPlugin(ILinkManager, 'basic')
+  >>> linkManager = manager.getPlugin(ILinkManager, linkManagerName)
   >>> links = linkManager.links
   >>> len(links)
   1

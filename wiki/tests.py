@@ -21,6 +21,7 @@ from cybertools.wiki.dcu.html import Writer as DocutilsHTMLWriter
 from cybertools.wiki.dcu.rstx import Parser as DocutilsRstxParser
 from cybertools.wiki.dcu import process
 from cybertools.wiki.interfaces import IWiki, IWikiPage
+from cybertools.wiki.tracking import link
 
 
 class WikiURL(object):
@@ -58,6 +59,9 @@ def setUp(testCase):
     component.provideUtility(DocutilsRstxParser(), name='docutils.rstx')
     component.provideAdapter(process.Reference, name='default')
     component.provideUtility(LinkManager(), name='basic')
+    component.provideAdapter(link.LinkManager)
+    links = link.setupLinkManager(None)
+    component.provideUtility(links, name='tracking')
 
 
 def test_suite():

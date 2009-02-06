@@ -203,6 +203,10 @@ class ILinkManager(Interface):
             Additional (optional) criteria may be supported by the implementation.
         """
 
+    def __iter__():
+        """ Return an iterator of all links.
+        """
+
 
 class ILink(Interface):
     """ A hyperlink between two local or foreign objects.

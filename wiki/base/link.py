@@ -116,7 +116,7 @@ class LinkProcessor(object):
         lm = wiki.getManager().getPlugin(ILinkManager, lmName)
         existing = lm.query(source=sourceUid, name=self.targetName)
         if existing:
-            link = existing[0]
+            link = list(existing)[0]
             target = manager.getObject(link.target)
         else:
             target = wiki.getPage(self.targetName)
