@@ -32,5 +32,8 @@ class Parser(object):
 
     implements(IParser)
 
-    def parse(self, text):
-        return publish_doctree(text)
+    def parse(self, text, context, request=None):
+        tree = publish_doctree(text)
+        tree.context = context
+        tree.request = request
+        return tree
