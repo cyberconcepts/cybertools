@@ -32,7 +32,7 @@ class Parser(object):
 
     implements(IParser)
 
-    def parse(self, text, context, request=None):
+    def parse(self, text, context=None, request=None):
         tree = publish_doctree(text)
         tree.context = context
         tree.request = request

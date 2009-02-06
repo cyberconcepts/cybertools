@@ -37,13 +37,13 @@ class Writer(object):
 
     def __init__(self):
         self.writer = HTMLWriter()
-        self.writer.translator_class = HTMLBodyTranslator
+        self.writer.translator_class = BodyTranslator
 
     def write(self, tree):
         return publish_from_doctree(tree, writer=self.writer)
 
 
-class HTMLBodyTranslator(HTMLTranslator):
+class BodyTranslator(HTMLTranslator):
 
     def astext(self):
         return u''.join(self.body_pre_docinfo + self.docinfo + self.body)
@@ -64,18 +64,28 @@ class HTMLBodyTranslator(HTMLTranslator):
         if not isinstance(node.parent, nodes.TextElement):
             assert len(node) == 1 and isinstance(node[0], nodes.image)
             atts['class'] += ' image-reference'
-        # wiki processing:
-        node.document = self.document
-        self.processNode(node, atts)
+        # wiki processing
+        htmlNode = HTMLReferenceNode(self.document, node, atts)
+        self.processNode(htmlNode)
         self.body.append(self.starttag(node, 'a', '', **atts))
 
-    def processNode(self, node, atts):
-        procs = []
+    def processNode(self, htmlNode):
         processorNames = self.document.context.getConfig('nodeProcessors')
-        procNames = processorNames.get(node.tagname, [])
+        procNames = processorNames.get(htmlNode.node.tagname, [])
         for n in procNames:
-            proc = component.queryAdapter(node, INodeProcessor, name=n)
+            proc = component.queryAdapter(htmlNode, INodeProcessor, name=n)
             if proc is not None:
-                procs.append(proc)
-        for p in procs:
-            p.process(atts)
+                proc.process()
+
+
+class HTMLNode(object):
+
+    def __init__(self, document, node, atts):
+        self.document = document
+        self.node = node
+        self.atts = atts
+
+
+class HTMLReferenceNode(HTMLNode):
+
+    pass

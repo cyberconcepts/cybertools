@@ -145,7 +145,7 @@ class IParser(Interface):
     """ Converts from (plain text) input format to internal tree format.
     """
 
-    def parse(text):
+    def parse(text, context=None, request=None):
         """ Return internal tree structure.
         """
 
@@ -240,3 +240,22 @@ class ILinkProcessor(INodeProcessor):
     """ A node processor specialized on links (references).
     """
 
+    source = Attribute('The object from which the link originates, '
+                'typically a wiki page.')
+    request = Attribute('Optional request or environment object, necessary '
+                'e.g. for rendering an URI.')
+    targetName = Attribute('The name used for addressing the link target object.')
+
+    def setUri(uri):
+        """ Record the real reference URI to be used for the link on the
+            rendered page.
+        """
+
+    def markPresentation(feature):
+        """ Record a presentation feature for the link on the rendered page,
+            for HTML rendering this would be a class name.
+        """
+
+    def addText(text):
+        """ Add additional text to the link on the rendered page.
+        """

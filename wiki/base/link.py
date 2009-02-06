@@ -98,50 +98,47 @@ class Link(object):
 
 
 class LinkProcessor(object):
+    """ Abstract base class. """
 
     implements(ILinkProcessor)
 
-    parent = None   # parent (tree) processor
+    source = request = None
+    targetName = ''
 
     def __init__(self, context):
-        self.node = self.context = context
-        self.parent = context.document
+        self.context = context
 
-    def getProperties(self):
-        raise ValueError("Method 'getProperties()' must be implemented by subclass.")
-
-    def process(self, atts):
-        #print 'processing reference:', self.node
-        props = self.getProperties()
-        source = self.parent.context
-        wiki = source.getWiki()
+    def process(self):
+        wiki = self.source.getWiki()
         manager = wiki.getManager()
-        sourceUid = manager.getUid(source)
-        name = props['targetName']
-        lmName = source.getConfig('linkManager')
+        sourceUid = manager.getUid(self.source)
+        lmName = self.source.getConfig('linkManager')
         lm = wiki.getManager().getPlugin(ILinkManager, lmName)
-        existing = lm.query(source=sourceUid, name=name)
+        existing = lm.query(source=sourceUid, name=self.targetName)
         if existing:
             link = existing[0]
             target = manager.getObject(link.target)
         else:
-            target = wiki.getPage(name)
+            target = wiki.getPage(self.targetName)
             targetUid = manager.getUid(target)
-            link = lm.createLink(name, sourceUid, targetUid)
+            link = lm.createLink(self.targetName, sourceUid, targetUid)
         if link.refuri is None:
-            request = self.parent.request
-            if request is not None:
+            if self.request is not None:
                 if target is None:
                     link.refuri = '%s/create.html?linkid=%s' % (
-                                    absoluteURL(wiki, request), link.identifier)
+                                    absoluteURL(wiki, self.request), link.identifier)
                 else:
-                    link.refuri = absoluteURL(target, request)
-        #self.setProperty('href', link.refuri)
-        atts['href'] = link.refuri
+                    link.refuri = absoluteURL(target, self.request)
+        self.setURI(link.refuri)
         if target is None:
-            # change CSS class, link text
-            # needs overriding of HTMLTranslator.visit_reference()
-            #self.setProperty('class', 'create') # no direct effect
-            atts['class'] += ' create'
-            self.node.insert(0, Text('?'))
+            self.markPresentation('create')
+            self.addText('?')
 
+    def setURI(self, uri):
+        raise ValueError('To be implemented by subclass.')
+
+    def markPresentation(self, feature):
+        raise ValueError('To be implemented by subclass.')
+
+    def addText(self, text):
+        raise ValueError('To be implemented by subclass.')

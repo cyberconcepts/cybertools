@@ -19,22 +19,39 @@
 """
 Node processor implementations for docutils nodes.
 
-$Id$
+$Id: process.py 3153 2009-01-17 16:51:09Z helmutm $
 """
 
-from docutils.nodes import reference
-from zope.interface import implements
+from docutils.nodes import Text
+from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
+from zope.interface import implements
 
 from cybertools.wiki.base.link import LinkProcessor
+from cybertools.wiki.dcu.html import HTMLReferenceNode
 
 
 class Reference(LinkProcessor):
 
-    adapts(reference)
+    adapts(HTMLReferenceNode)
 
-    def getProperties(self):
-        return dict(targetName=self.node['refuri'])
+    @Lazy
+    def source(self):
+        return self.context.document.context
 
-    def setProperty(self, name, value):
-        self.node[name] = value
+    @Lazy
+    def request(self):
+        return self.context.document.request
+
+    @Lazy
+    def targetName(self):
+        return self.context.node['refuri']
+
+    def setURI(self, uri):
+        self.context.atts['href'] = uri
+
+    def markPresentation(self, feature):
+        self.context.atts['class'] += (' ' + feature)
+
+    def addText(self, text):
+        self.context.node.insert(0, Text(text))
