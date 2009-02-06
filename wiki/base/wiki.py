@@ -123,16 +123,14 @@ class WikiPage(BaseConfiguration):
 
     def render(self, request=None):
         source = self.preprocess(self.text)
-        tree = self.parse(source)
-        tree.context = self
-        tree.request = request
+        tree = self.parse(source, request)
         result = self.write(tree)
         return self.postprocess(result)
 
-    def parse(self, source):
+    def parse(self, source, request=None):
         parserName = self.getConfig('parser')
         parser = component.getUtility(IParser, name=parserName)
-        return parser.parse(source)
+        return parser.parse(source, self, request)
 
     def write(self, tree):
         writerName = self.getConfig('writer')
