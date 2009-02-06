@@ -99,7 +99,8 @@ class ItemView(BaseView):
                     break
             else:
                 extension = '.' + extensions[0]
-        return '%s/d%s/%s%s' % (baseUrl, urlInfo.path, self.title, extension)
+        title = self.title.encode('UTF-8')
+        return '%s/d%s/%s%s' % (baseUrl, urlInfo.path, title, extension)
 
     @property
     def breadCrumbs(self):
