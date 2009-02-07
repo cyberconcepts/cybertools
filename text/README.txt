@@ -22,7 +22,7 @@ HTML
 
   >>> from cybertools.text.html import htmlToText
   >>> html = open(os.path.join(testdir, 'selfhtml.html')).read()
-  >>> text = htmlToText(html)
+  >>> text = htmlToText(html.decode('ISO8859-15'))
   >>> '<p>' in html
   True
   >>> '<p>' in text

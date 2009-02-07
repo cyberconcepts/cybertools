@@ -26,13 +26,22 @@ import os, sys
 from cStringIO import StringIO
 
 from cybertools.text import base
-from cybertools.text.lib.BeautifulSoup import BeautifulSoup, NavigableString
+from cybertools.text.lib.BeautifulSoup import BeautifulSoup
+from cybertools.text.lib.BeautifulSoup import Declaration, NavigableString
 
 
-def htmlToText(html):
+class HtmlTransform(base.BaseTransform):
+
+    def __call__(self, fr):
+        input = fr.read().decode('UTF-8')
+        return htmlToText(input)
+
+
+def htmlToText(input):
     data = []
-    soup = BeautifulSoup(html).html
-    collectText([soup], data)
+    input = input.replace(u'<!--', u'')
+    soup = BeautifulSoup(input)
+    collectText(soup.contents, data)
     text = u' '.join(data).replace(u'\n', u'').replace(u'&nbsp;', u'')
     return text
 
@@ -40,5 +49,5 @@ def collectText(tags, data):
     for tag in tags:
         if type(tag) is NavigableString:
             data.append(tag)
-        else:
+        elif tag is not None and type(tag) is not Declaration:
             collectText(tag.contents, data)
