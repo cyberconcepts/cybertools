@@ -10,7 +10,7 @@
            tal:attributes="href string:${request/URL/1}"><img class="logo"
                src="logo.gif" border="0" alt="Home"
                tal:attributes="src string:${resourceBase}logo.gif" /></a>
-        <div class="top-actions" metal:define-slot="top-actions">
+        <div metal:define-slot="top-actions">
           <tal:action repeat="macro controller/macros/top_actions">
             <metal:action use-macro="macro" />
           </tal:action>
