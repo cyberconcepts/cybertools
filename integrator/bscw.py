@@ -166,7 +166,8 @@ class BSCWProxyBase(object):
             return
         parentId = self.properties['location']['__id__'].lstrip('bs_')
         p = self.connection.getProxy(address=parentId, nested=False)
-        while parentId != self.connection.rootId:
+        while p is not None and parentId != self.connection.rootId:
+        #while parentId != self.connection.rootId:
             yield p
             parentId = p.properties['location']['__id__'].lstrip('bs_')
             p = self.connection.getProxy(address=parentId)
