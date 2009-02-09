@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -61,7 +61,6 @@ class GridFieldInstance(ListFieldInstance):
             return value
         v = value or []
         for row in v:
-            #for k, vr in row.items():
             for fi in self.columnFieldInstances:
                 vr = fi.marshall(row[fi.name])
                 if isinstance(vr, basestring):
@@ -100,6 +99,37 @@ class GridFieldInstance(ListFieldInstance):
                 item[fi.name] = value
                 if fi.default is not None:
                     if value != fi.default:
+                        empty = False
+                elif value:
+                    empty = False
+            if not empty:
+                result.append(item)
+        return result
+
+
+class RecordsFieldInstance(GridFieldInstance):
+
+    def marshall(self, value):
+        result = []
+        for row in value or []:
+            item = {}
+            for fi in self.columnFieldInstances:
+                item[fi.name] = fi.marshall(row[fi.name])
+            result.append(item)
+        return result
+
+    def unmarshall(self, value):
+        if not value:
+            value = []
+        result = []
+        for row in value:
+            item = {}
+            empty = True
+            for fi in self.columnFieldInstances:
+                value = fi.unmarshall(row[fi.name].strip())
+                item[fi.name] = value
+                if fi.default is not None:
+                    if value and value != fi.default:
                         empty = False
                 elif value:
                     empty = False

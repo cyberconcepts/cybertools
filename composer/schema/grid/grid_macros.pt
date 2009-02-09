@@ -38,5 +38,33 @@
 </metal:input>
 
 
+<metal:input define-macro="input_records"
+             tal:define="fieldInstance python: field.getFieldInstance(view.instance);
+                         columns fieldInstance/columnTypes">
+    <table>
+        <tr>
+          <tal:header repeat="column columns">
+            <th width="auto" editable="true"
+                tal:attributes="field column/name"
+                tal:content="column/title">Column Title</th>
+          </tal:header>
+        </tr>
+        <tr tal:repeat="row data/?name">
+          <td tal:repeat="column columns">
+            <input type="text" size="14"
+                   tal:define="cname column/name"
+                   tal:attributes="value row/?cname;
+                                   name string:$name.$cname:records" /></td>
+        </tr>
+        <tr tal:attributes="id string:$name.empty">
+          <td tal:repeat="column columns">
+            <input type="text" size="14"
+                   tal:define="cname column/name"
+                   tal:attributes="name string:$name.$cname:records" /></td>
+        </tr>
+    </table><br />
+</metal:input>
+
+
 </body>
 </html>

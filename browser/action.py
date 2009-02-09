@@ -86,6 +86,11 @@ class ActionRegistry(object):
         catItem = self.actionsByCategory.setdefault(category, [])
         catItem.append(action)
 
+    def getAction(self, name, category):
+        for a in self.actionsByName[name]:
+            if a.category == category:
+                return a
+
     def get(self, category=None, names=[], view=None, **kw):
         if view is None:
             raise ValueError("The 'view' argument is missing.")

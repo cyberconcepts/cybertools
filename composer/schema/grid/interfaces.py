@@ -40,3 +40,12 @@ class Grid(schema.List):
                               instanceName='grid'))
 
     column_types = []
+
+
+class Records(Grid):
+
+    __typeInfo__ = ('records',
+                    FieldType('records', 'records',
+                              u'A series of records or rows.',
+                              instanceName='records',))
+
