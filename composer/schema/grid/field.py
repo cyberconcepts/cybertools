@@ -44,7 +44,7 @@ class GridFieldInstance(ListFieldInstance):
 
     @Lazy
     def columnTypes(self):
-        return [createField(t) for t in self.context.baseField.column_types]
+        return [createField(t) for t in self.context.column_types]
 
     @Lazy
     def columnFieldInstances(self):

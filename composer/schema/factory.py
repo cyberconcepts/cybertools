@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -81,24 +81,7 @@ class SchemaFactory(object):
                 continue
             field = interface[fname]
             info = fieldMapping.get(field.__class__)
-            if info is None:
-                info = getattr(field, '__typeInfo__', ('textline',))
-            voc = (getattr(field, 'vocabulary', ()) or
-                   getattr(field, 'vocabularyName', None))
-            f = Field(field.getName(),
-                    fieldType=info[0],
-                    fieldTypeInfo=len(info) > 1 and info[1] or None,
-                    required=field.required,
-                    default=field.default,
-                    default_method=getattr(field, 'default_method', None),
-                    vocabulary=voc,
-                    title=field.title,
-                    description=field.description,
-                    readonly=field.readonly,
-                    #value_type=getattr(field, 'value_type', None),
-                    nostore=getattr(field, 'nostore', False),
-                    multiple=getattr(field, 'multiple', False),
-                    baseField=field,)
+            f = createField(field, info)
             fields.append(f)
         return Schema(name=interface.__name__, *fields, **kw)
 
