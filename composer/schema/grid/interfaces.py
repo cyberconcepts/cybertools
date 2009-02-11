@@ -40,6 +40,7 @@ class Grid(schema.List):
                               instanceName='grid'))
 
     column_types = []
+    cardinality = None
 
 
 class Records(Grid):
