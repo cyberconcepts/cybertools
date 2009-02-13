@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ $Id$
 
 from datetime import datetime
 from time import strptime
+from urllib import quote, quote_plus
 from zope.app.pagetemplate import ViewPageTemplateFile
 from zope import component
 from zope.cachedescriptors.property import Lazy
@@ -77,17 +78,21 @@ class ItemView(BaseView):
 
     @Lazy
     def url(self):
-        if isinstance(self.context, File):
-            return self.downloadUrl
+        #if isinstance(self.context, File):
+        #    return self.bscwDownloadUrl
         url = self.parentView.url
         return '%s?id=%s' % (url, self.context.internalPath)
 
-    @Lazy
-    def downloadUrl(self):
-        urlInfo = self.context.externalURLInfo
-        baseUrl = urlInfo.baseUrl
-        while 'bscw.cgi' in baseUrl and not baseUrl.endswith('bscw.cgi'):
-            baseUrl, ignore = baseUrl.rsplit('/', 1)
+    def download(self):
+        fn = self.getFileName()
+        data = self.context.getData()
+        response = self.request.response
+        response.setHeader('Content-Type', self.context.contentType)
+        response.setHeader('Content-Length', len(data))
+        response.setHeader('Content-Disposition', 'filename="%s"' % fn)
+        return data
+
+    def getFileName(self):
         if (self.context.contentType == 'application/octet-stream' and
                 len(self.title) > 3 and self.title[-4] == '.'):
             extension = ''
@@ -99,8 +104,18 @@ class ItemView(BaseView):
                     break
             else:
                 extension = '.' + extensions[0]
-        title = self.title.encode('UTF-8').replace('/', '|')
-        return '%s/d%s/%s%s' % (baseUrl, urlInfo.path, title, extension)
+        title = self.title.encode('UTF-8')
+        title = title.replace('/', '|')
+        return title + extension
+
+    @Lazy
+    def bscwDownloadUrl(self):
+        urlInfo = self.context.externalURLInfo
+        baseUrl = urlInfo.baseUrl
+        while 'bscw.cgi' in baseUrl and not baseUrl.endswith('bscw.cgi'):
+            baseUrl, ignore = baseUrl.rsplit('/', 1)
+        fn = self.getFileName()
+        return '%s/d%s/%s' % (baseUrl, urlInfo.path, fn)
 
     @property
     def breadCrumbs(self):
@@ -116,6 +131,13 @@ class BSCWView(BaseView):
 
     viewTemplate = view_macros
     itemView = ItemView
+
+    def __call__(self):
+        if isinstance(self.remoteProxy, File):
+            view = self.itemView(self.remoteProxy, self.request, self)
+            return view.download()
+        else:
+            return self.index()
 
     @Lazy
     def dataMacro(self):

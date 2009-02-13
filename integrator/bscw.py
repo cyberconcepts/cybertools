@@ -234,13 +234,13 @@ class File(BSCWProxyBase, File):
 
     def getData(self, num=None):
         try:
-            data = self.server.get_document()
+            data = self.connection.server.get_document(self.address).data
         except Fault, excp:
             logging.getLogger('cybertools.integrator.bscw').warn(str(excp))
-            item = None
+            data = ''
         except Exception, excp:
             logging.getLogger('cybertools.integrator.bscw').error(str(excp))
-            item = None
+            data = ''
         return data
     data = property(getData)
 
