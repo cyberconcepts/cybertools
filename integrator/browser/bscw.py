@@ -99,7 +99,7 @@ class ItemView(BaseView):
                     break
             else:
                 extension = '.' + extensions[0]
-        title = self.title.encode('UTF-8')
+        title = self.title.encode('UTF-8').replace('/', '|')
         return '%s/d%s/%s%s' % (baseUrl, urlInfo.path, title, extension)
 
     @property
