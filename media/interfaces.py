@@ -23,11 +23,18 @@ $Id$
 """
 
 from zope.interface import Interface, Attribute
+from zope.i18nmessageid import MessageFactory
+from zope import schema
 
-from loops.interfaces import IExternalFile
+_ = MessageFactory('cybertools.media')
 
 
 class IMediaAsset(Interface):
+
+    modified = schema.Date(
+                title=_(u'Date'),
+                description=_(u'The date/time the picture was taken.'),
+                required=False,)
 
     def getData(variant=None):
         """ Return the binary data of the media asset or one of its variants.
