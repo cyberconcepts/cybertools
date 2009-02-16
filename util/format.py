@@ -27,11 +27,20 @@ from datetime import datetime
 
 
 def nl2br(text):
-    if not text: return text
+    if not text:
+        return text
     if '\n' in text: # Unix or DOS line endings
         return '<br />\n'.join(x.replace('\r', '') for x in text.split('\n'))
     else: # gracefully handle Mac line endigns
         return '<br />\n'.join(text.split('\r'))
+
+def nl2pipe(text):
+    if not text:
+        return text
+    if '\n' in text: # Unix or DOS line endings
+        return ' | '.join(x.replace('\r', '') for x in text.split('\n'))
+    else:
+        return ' | '.join(text.split('\r'))
 
 
 def formatDate(dt=None, type='date', variant='medium', lang='de'):
