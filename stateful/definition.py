@@ -25,7 +25,7 @@ $Id$
 from zope.interface import implements
 from cybertools.util.jeep import Jeep
 
-from cybertools.stateful.interfaces import IState, ITransition
+from cybertools.stateful.interfaces import IState, IAction, ITransition
 from cybertools.stateful.interfaces import IStatesDefinition
 
 
@@ -33,7 +33,7 @@ class State(object):
 
     implements(IState)
 
-    security = lambda context: None
+    setSecurity = lambda self, context: None
     icon = None
     color = 'blue'
 
@@ -41,20 +41,37 @@ class State(object):
         self.name = self.__name__ = name
         self.title = title
         self.transitions = transitions
+        self.actions = Jeep(kw.pop('actions', []))
         for k, v in kw.items():
             setattr(self, k, v)
 
 
-class Transition(object):
+class Action(object):
+
+    implements(IAction)
+
+    allowed = True
+    permission = None
+    roles = []
+
+    def __init__(self, name, title=None, **kw):
+        self.name = self.__name__ = name
+        self.title = title
+        for k, v in kw.items():
+            setattr(self, k, v)
+
+    @staticmethod
+    def doBefore(context):
+        return None
+
+
+class Transition(Action):
 
     implements(ITransition)
 
     def __init__(self, name, title, targetState, **kw):
-        self.name = self.__name__ = name
-        self.title = title
+        super(Transition, self).__init__(name, title, **kw)
         self.targetState = targetState
-        for k, v in kw.items():
-            setattr(self, k, v)
 
 
 class StatesDefinition(object):
@@ -81,14 +98,36 @@ class StatesDefinition(object):
     def doTransitionFor(self, obj, transition):
         if transition not in self.transitions:
             raise ValueError('Transition %s is not available.' % transition)
-        if transition not in [t.name for t in self.getAvailableTransitionsFor(obj)]:
+        trans = self.transitions[transition]
+        if not self.isAllowed(trans, obj):
+            raise ValueError('Transition %s is not allowed.' % transition)
+        if trans not in self.getAvailableTransitionsFor(obj):
             raise ValueError("Transition '%s' is not reachable from state '%s'."
                                     % (transition, obj.getState()))
-        obj.state = self.transitions[transition].targetState
+        trans.doBefore(obj)
+        obj.state = trans.targetState
+        obj.getStateObject().setSecurity(obj)
 
     def getAvailableTransitionsFor(self, obj):
         state = obj.getState()
-        return [self.transitions[t] for t in self.states[state].transitions]
+        return [self.transitions[t]
+                    for t in self.states[state].transitions
+                    if self.isAllowed(self.transitions[t], obj)]
+
+    def isAllowed(self, action, obj):
+        if not action.allowed:
+            return False
+        if not self.checkRoles(action.roles, obj):
+            return False
+        if not self.checkPermission(action.permission, obj):
+            return False
+        return True
+
+    def checkRoles(self, roles, obj):
+        return True
+
+    def checkPermission(self, permission, obj):
+        return True
 
 
 # dummy default states definition
@@ -101,6 +140,7 @@ defaultSD = StatesDefinition('default',
 
 
 # states definitions registry
+# TODO: use a utility!!!
 
 statesDefinitions = dict()
 

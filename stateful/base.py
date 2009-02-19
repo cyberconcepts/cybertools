@@ -142,5 +142,3 @@ class TransitionEvent(ObjectEvent):
         self.transition = transition
         self.previousState = previousState
         self.request = request
-
-

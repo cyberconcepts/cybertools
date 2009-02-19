@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -33,18 +33,31 @@ class IState(Interface):
 
     name = Attribute('The name or identifier of the state')
     title = Attribute('A user-readable name or title of the state')
-    transitions = Attribute('A sequence of strings naming the transitions '
-                    'that can be executed from this state')
-    security = Attribute('A callable setting the security settings for '
-                    'an object in this state when executed.')
+    transitions = Attribute('A collection of strings naming the transitions '
+                    'that can be executed from this state.')
+    actions = Attribute('A mapping with actions that may be executed in '
+                    'this state.')
+    setSecurity = Attribute('A callable (argument: stateful object) '
+                    'for setting the security settings on the object.')
 
 
-class ITransition(Interface):
+class IAction(Interface):
 
-    name = Attribute('The name or identifier of the transition')
-    title = Attribute('A user-readable name or title of the transition')
+    name = Attribute('The name or identifier of the action.')
+    title = Attribute('A user-readable name or title of the action.')
+    allowed = Attribute('A boolean; if False the action may not be executed.')
+    doBefore = Attribute('A callable (argument: stateful object) to be executed '
+                    'before this action.')
+    roles = Attribute('A collection of names of the roles that are allowed '
+                    'to execute this action; no check when empty.')
+    permission = Attribute('The name of a permission that is needed for '
+                    'executing this action; no check when empty.')
+
+
+class ITransition(IAction):
+
     targetState = Attribute('A string naming the state that will be the '
-                    'result of executing this transition')
+                    'result of executing this transition.')
 
 
 class IStateful(Interface):
@@ -119,9 +132,24 @@ class IStatesDefinition(Interface):
         """ Return the transitions available for this object in its current state.
         """
 
+    def isAllowed(action, object):
+        """ Return True if the action (an IAction provider) is allowed on
+            the object given for the current user.
+        """
+
+    def checkRoles(roles, object):
+        """ Return True if the current user provides one of the roles given
+            on the object given.
+        """
+
+    def checkRoles(permission, object):
+        """ Return True if the current user has the permission given
+            on the object given.
+        """
+
 
 class IStatefulIndexInfo(Interface):
-    """ Provide a list of tokens to be used for index the states
+    """ Provide a list of tokens to be used for indexing the states
         of an object in the catalog.
     """
 
@@ -133,7 +161,7 @@ class IStatefulIndexInfo(Interface):
 
 
 class ITransitionEvent(IObjectEvent):
-    """ Fires when the state of an object is changed.
+    """ Fires when the state of an object has been changed.
     """
 
     transition = Attribute('The transition.')
