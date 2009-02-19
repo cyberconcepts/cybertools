@@ -114,7 +114,7 @@ class RecordsFieldInstance(GridFieldInstance):
         for row in value or []:
             item = {}
             for fi in self.columnFieldInstances:
-                item[fi.name] = fi.marshall(row[fi.name])
+                item[fi.name] = fi.marshall(row.get(fi.name))
             result.append(item)
         return result
 
