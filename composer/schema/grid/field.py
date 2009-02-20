@@ -81,7 +81,7 @@ class GridFieldInstance(ListFieldInstance):
         for item in value or []:
             row = []
             for fi in self.columnFieldInstances:
-                row.append(fi.display(item[fi.name]))
+                row.append(fi.display(item.get(fi.name)))
             rows.append(row)
         return dict(headers=headers, rows=rows)
 
