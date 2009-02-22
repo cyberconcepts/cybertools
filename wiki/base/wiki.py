@@ -62,7 +62,9 @@ class WikiManager(BaseConfiguration):
         return component.getUtility(IIntIds).getId(obj)
 
     def getObject(self, uid):
-        return component.getUtility(IIntIds).getObject(uid)
+        if uid is None:
+            return None
+        return component.getUtility(IIntIds).getObject(int(uid))
 
     # configuration
 
@@ -88,6 +90,11 @@ class Wiki(BaseConfiguration):
         if name in self.pages:
             raise ValueError("Name '%s' already present." % name)
         page = self.pages[name] = WikiPage(name, title)
+        page.wiki = self
+        return page
+
+    def addPage(self, page):
+        self.pages[page.name] = page
         page.wiki = self
         return page
 
@@ -122,6 +129,7 @@ class WikiPage(BaseConfiguration):
         return self.wiki
 
     def render(self, request=None):
+        # TODO: move render() method to a view class
         source = self.preprocess(self.text)
         tree = self.parse(source, request)
         result = self.write(tree)
@@ -142,6 +150,9 @@ class WikiPage(BaseConfiguration):
 
     def postprocess(self, result):
         return result
+
+    def getUid(self):
+        return self.getWiki().getManager().getUid(self)
 
     # configuration
 
