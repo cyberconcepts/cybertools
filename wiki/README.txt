@@ -82,4 +82,43 @@ Links to not yet existing pages
   <p><a class="reference create"
         href="http://127.0.0.1/demo_wiki/create.html?linkid=0000002">?More...</a></p>
 
+  >>> len(links)
+  2
 
+External links
+--------------
+
+  >>> linksPage = wiki.createPage('links')
+  >>> linksPage.text = '''
+  ... **A collection of interesting links**
+  ...
+  ... - http://python.org
+  ... - `Zope <http://zope.org>`_
+  ... '''
+
+An absolute URL given as link target will not be changed in the process.
+
+  >>> print linksPage.render(TestRequest())
+  <p><strong>A collection of interesting links</strong></p>
+  <ul class="simple">
+  <li><a class="reference" href="http://python.org">http://python.org</a></li>
+  <li><a class="reference" href="http://zope.org">Zope</a></li>
+  </ul>
+
+Nevertheless the links are registered in the link manager.
+
+  >>> len(links)
+  4
+
+When we render external links repeatedly no new link objects will be
+created.
+
+  >>> print linksPage.render(TestRequest())
+  <p><strong>A collection of interesting links</strong></p>
+  <ul class="simple">
+  <li><a class="reference" href="http://python.org">http://python.org</a></li>
+  <li><a class="reference" href="http://zope.org">Zope</a></li>
+  </ul>
+
+  >>> len(links)
+  4

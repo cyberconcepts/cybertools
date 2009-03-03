@@ -22,10 +22,12 @@ A Wiki manager managing wikis and wiki-related objects, esp plugins.
 $Id$
 """
 
+from zope.app.intid.interfaces import IIntIds
 from zope import component
 from zope.interface import implements
-from zope.app.intid.interfaces import IIntIds
+from zope.traversing.browser import absoluteURL
 
+from cybertools.wiki.common import protocols, ExternalPage
 from cybertools.wiki.interfaces import IWikiConfiguration
 from cybertools.wiki.interfaces import IWikiManager, IWiki, IWikiPage
 from cybertools.wiki.interfaces import IParser, IWriter
@@ -62,9 +64,17 @@ class WikiManager(BaseConfiguration):
         return component.getUtility(IIntIds).getId(obj)
 
     def getObject(self, uid):
-        if uid is None:
-            return None
-        return component.getUtility(IIntIds).getObject(int(uid))
+        obj = self.resolveUid(uid)
+        if obj is None:
+            return component.getUtility(IIntIds).getObject(int(uid))
+        return obj
+
+    def resolveUid(self, uid):
+        if isinstance(uid, basestring) and ':' in uid:
+            protocol, address = uid.split(':', 1)
+            if protocol.lower() in protocols:
+                return ExternalPage(uid)
+        return None
 
     # configuration
 
@@ -103,6 +113,10 @@ class Wiki(BaseConfiguration):
             del self.pages[name]
 
     def getPage(self, name):
+        if ':' in name:
+            protocol, address = name.split(':', 1)
+            if protocol in protocols:
+                return ExternalPage(name)
         return self.pages.get(name)
 
     def listPages(self):
@@ -151,8 +165,14 @@ class WikiPage(BaseConfiguration):
     def postprocess(self, result):
         return result
 
-    def getUid(self):
+    # IWebResource
+
+    @property
+    def uid(self):
         return self.getWiki().getManager().getUid(self)
+
+    def getURI(self, request):
+        return absoluteURL(self, request)
 
     # configuration
 

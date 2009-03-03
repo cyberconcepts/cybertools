@@ -17,7 +17,7 @@
 #
 
 """
-Basic (sample) implementations for links and link management
+Basic (sample) implementations for links and link management.
 
 $Id$
 """
@@ -111,16 +111,18 @@ class LinkProcessor(object):
     def process(self):
         wiki = self.source.getWiki()
         manager = wiki.getManager()
-        sourceUid = self.source.getUid()
+        sourceUid = self.source.uid
         lmName = self.source.getConfig('linkManager')
-        lm = wiki.getManager().getPlugin(ILinkManager, lmName)
+        lm = manager.getPlugin(ILinkManager, lmName)
         existing = lm.query(source=sourceUid, name=self.targetName)
         if existing:
-            link = list(existing)[0]
+            link = existing.next()
+            #print '*** #1', self.targetName, link
             target = manager.getObject(link.target)
         else:
             target = wiki.getPage(self.targetName)
-            targetUid = target is not None and target.getUid() or None
+            #print '*** #2', self.targetName, target
+            targetUid = target is not None and target.uid or None
             link = lm.createLink(self.targetName, sourceUid, targetUid)
         if link.refuri is None:
             if self.request is not None:
@@ -128,14 +130,11 @@ class LinkProcessor(object):
                     link.refuri = '%s/create.html?linkid=%s' % (
                                     absoluteURL(wiki, self.request), link.identifier)
                 else:
-                    link.refuri = self.getTargetURI(target)
+                    link.refuri = target.getURI(self.request)
         self.setURI(link.refuri)
         if target is None:
             self.markPresentation('create')
             self.addText('?')
-
-    def getTargetURI(self, obj):
-        return absoluteURL(obj, self.request)
 
     def setURI(self, uri):
         raise ValueError('To be implemented by subclass.')
@@ -145,3 +144,4 @@ class LinkProcessor(object):
 
     def addText(self, text):
         raise ValueError('To be implemented by subclass.')
+

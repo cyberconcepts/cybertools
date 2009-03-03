@@ -105,7 +105,20 @@ class IWiki(Interface):
         """
 
 
-class IWikiPage(Interface):
+class IWebResource(Interface):
+    """ An object (may be a proxy or some other kind of representation) that
+        may be addressed by a Unique (Resource) Identifier (UID or URI).
+    """
+
+    uid = Attribute('A string uniquely addressing the object within a '
+                'certain context (local pages) or globally.')
+
+    def getURI(self, request):
+        """ Return a unique resource identifier based on the request given.
+        """
+
+
+class IWikiPage(IWebResource):
     """ An object representing a page of a wiki.
     """
 
@@ -230,6 +243,8 @@ class ILink(Interface):
         'for external links - the target URI.')
     targetFragment = Attribute('Optional: an address part leading to a '
                 'text anchor or the part of an image.')
+    targetParameters = Attribute('Optional: a dictionary of URI parameters '
+                'that will have to be appended to the link to the target object.')
     refuri = Attribute('The URI linking to the target object.')
     user = Attribute('Optional: a string denoting the creator of the record.')
     run = Attribute('Optional: May be used to group the links from a certain '
