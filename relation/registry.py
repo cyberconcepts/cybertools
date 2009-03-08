@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2005 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@ Implementation of the utilities needed for the relations package.
 $Id$
 """
 
+from logging import getLogger
+from BTrees.IOBTree import IOBTree
 from persistent import Persistent
 from persistent.interfaces import IPersistent
 from zope import component
@@ -115,6 +117,12 @@ class RelationRegistry(Catalog):
 
     implements(IRelationRegistry)
 
+    relations = None
+
+    def __init__(self, *args, **kw):
+        super(RelationRegistry, self).__init__(*args, **kw)
+        self.relations = IOBTree()
+
     def setupIndexes(self):
         for idx in ('relationship', 'first', 'second', 'third'):
             if idx not in self:
@@ -124,11 +132,34 @@ class RelationRegistry(Catalog):
         if getattr(relation, '__parent__', None) is None:
             # Allow the IntIds utility to get a DB connection:
             relation.__parent__ = self
-        self.index_doc(component.getUtility(IIntIds).register(relation), relation)
+        uid = component.getUtility(IIntIds).register(relation)
+        self.index_doc(uid, relation)
+        if self.relations is not None:
+            self.relations[uid] = relation
+            logger = getLogger('cybertools.relation.registry')
+            logger.info('added relation with uid %i.' % uid)
 
     def unregister(self, relation):
-        self.unindex_doc(component.getUtility(IIntIds).getId(relation))
+        uid = component.getUtility(IIntIds).getId(relation)
+        self.unindex_doc(uid)
+        if self.relations is not None and uid in self.relations:
+            del self.relations[uid]
+            logger = getLogger('cybertools.relation.registry')
+            logger.info('removed relation with uid %i.' % uid)
         notify(RelationInvalidatedEvent(relation))
+
+    def cleanupRelations(self):
+        logger = getLogger('cybertools.relation.registry.cleanup')
+        intids = component.getUtility(IIntIds)
+        if self.relations is not None:
+            logger.info('%i relations currently stored.' % len(self.relations))
+        self.relations = IOBTree()
+        result = self.apply(dict(relationship='*'))
+        logger.info('%i relations found.' % len(result))
+        for idx, uid in enumerate(result):
+            relation = intids.getObject(uid)
+            self.relations[uid] = relation
+        pass
 
     def getUniqueIdForObject(self, obj):
         if obj == '*': # wild card
