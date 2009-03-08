@@ -35,6 +35,7 @@ from zope.traversing.api import getParent
 from zope.traversing.interfaces import IPhysicallyLocatable
 
 from cybertools.tracking.interfaces import IRun, ITrackingStorage, ITrack
+from cybertools.util.date import getTimeStamp, timeStamp2ISO
 
 
 class Run(object):
@@ -297,11 +298,11 @@ class TrackingStorage(BTreeContainer):
         return self.taskUsers.keys()
 
 
-def timeStamp2ISO(ts):
-    return time.strftime('%Y-%m-%d %H:%M', time.gmtime(ts))
+#def timeStamp2ISO(ts):
+#    return time.strftime('%Y-%m-%d %H:%M', time.gmtime(ts))
 
-def getTimeStamp():
-    return int(time.time())
+#def getTimeStamp():
+#    return int(time.time())
 
 
 @adapter(ITrack, IObjectRemovedEvent)
