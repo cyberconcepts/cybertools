@@ -114,27 +114,51 @@ class LinkProcessor(object):
         sourceUid = self.source.uid
         lmName = self.source.getConfig('linkManager')
         lm = manager.getPlugin(ILinkManager, lmName)
+        targetPageName = self.targetName
+        params = fragment = ''
+        if '?' in targetPageName:
+            targetPageName, params = targetPageName.split('?', 1)
+        if '#' in targetPageName:
+            targetPageName, fragment = targetPageName.split('#', 1)
         existing = lm.query(source=sourceUid, name=self.targetName)
         if existing:
             link = existing.next()
-            #print '*** #1', self.targetName, link
-            target = manager.getObject(link.target)
+            if link.target is not None:
+                target = manager.getObject(link.target)
+            else:
+                target = None
         else:
-            target = wiki.getPage(self.targetName)
-            #print '*** #2', self.targetName, target
+            target = wiki.getPage(targetPageName)
             targetUid = target is not None and target.uid or None
             link = lm.createLink(self.targetName, sourceUid, targetUid)
         if link.refuri is None:
+            if fragment:
+                link.targetFragment = fragment
+            if params:
+                link.targetParameters = params
             if self.request is not None:
                 if target is None:
-                    link.refuri = '%s/create.html?linkid=%s' % (
-                                    absoluteURL(wiki, self.request), link.identifier)
+                    uri = link.refuri = '%s/create.html?name=%s' % (
+                                    absoluteURL(wiki, self.request), link.name)
                 else:
-                    link.refuri = target.getURI(self.request)
-        self.setURI(link.refuri)
+                    uri = link.refuri = target.getURI(self.request)
+                    uri += self.fragmentAndParams(fragment, params)
+        else:
+            uri = link.refuri + self.fragmentAndParams(
+                                            link.targetFragment,
+                                            link.targetParameters)
+        self.setURI(uri)
         if target is None:
             self.markPresentation('create')
             self.addText('?')
+
+    def fragmentAndParams(self, fragment, params):
+        f = p = ''
+        if fragment:
+            f = '#' + fragment
+        if params:
+            p = '?' + params
+        return f + p
 
     def setURI(self, uri):
         raise ValueError('To be implemented by subclass.')

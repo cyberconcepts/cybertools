@@ -71,6 +71,9 @@ from the page content.
 Links to not yet existing pages
 -------------------------------
 
+When a referenced page does not exist yet a special link is created that
+should lead to a view that will create the page.
+
   >>> aboutPage.text += '''
   ... `More... <more>`_
   ... '''
@@ -80,10 +83,41 @@ Links to not yet existing pages
   <p><a class="reference"
         href="http://127.0.0.1/demo_wiki/start_page">Back to the Start Page</a></p>
   <p><a class="reference create"
-        href="http://127.0.0.1/demo_wiki/create.html?linkid=0000002">?More...</a></p>
+        href="http://127.0.0.1/demo_wiki/create.html?name=more">?More...</a></p>
+
+Again a link object has been created that will be reused for subsequent
+rendering operations.
 
   >>> len(links)
   2
+
+  >>> print aboutPage.render(TestRequest())
+  <p>...
+  <p><a class="reference create"
+        href="http://127.0.0.1/demo_wiki/create.html?name=more">?More...</a></p>
+  >>> len(links)
+  2
+
+Links with fragments (anchor references) and parameters
+-------------------------------------------------------
+
+  >>> referencePage = wiki.createPage('reference')
+  >>> referencePage.text = '''
+  ... References
+  ... ==========
+  ...
+  ... - `About content <about#content?language=en>`_
+  ... - `More content <more#content?language=en>`_
+  ... '''
+
+  >>> print referencePage.render(TestRequest())
+  <h1 class="title">References</h1>
+  <ul class="simple">
+  <li><a class="reference"
+         href="http://127.0.0.1/demo_wiki/about#content?language=en">About content</a></li>
+  <li><a class="reference create"
+         href="http://127.0.0.1/demo_wiki/create.html?name=more#content?language=en">?More content</a></li>
+  </ul>
 
 External links
 --------------
@@ -92,8 +126,8 @@ External links
   >>> linksPage.text = '''
   ... **A collection of interesting links**
   ...
-  ... - http://python.org
-  ... - `Zope <http://zope.org>`_
+  ... - http://python.org#library
+  ... - `Zope <http://zope.org?lang=de>`_
   ... '''
 
 An absolute URL given as link target will not be changed in the process.
@@ -101,14 +135,15 @@ An absolute URL given as link target will not be changed in the process.
   >>> print linksPage.render(TestRequest())
   <p><strong>A collection of interesting links</strong></p>
   <ul class="simple">
-  <li><a class="reference" href="http://python.org">http://python.org</a></li>
-  <li><a class="reference" href="http://zope.org">Zope</a></li>
+  <li><a class="reference"
+         href="http://python.org#library">http://python.org#library</a></li>
+  <li><a class="reference" href="http://zope.org?lang=de">Zope</a></li>
   </ul>
 
 Nevertheless the links are registered in the link manager.
 
   >>> len(links)
-  4
+  6
 
 When we render external links repeatedly no new link objects will be
 created.
@@ -116,9 +151,10 @@ created.
   >>> print linksPage.render(TestRequest())
   <p><strong>A collection of interesting links</strong></p>
   <ul class="simple">
-  <li><a class="reference" href="http://python.org">http://python.org</a></li>
-  <li><a class="reference" href="http://zope.org">Zope</a></li>
+  <li><a class="reference"
+         href="http://python.org#library">http://python.org#library</a></li>
+  <li><a class="reference" href="http://zope.org?lang=de">Zope</a></li>
   </ul>
 
   >>> len(links)
-  4
+  6
