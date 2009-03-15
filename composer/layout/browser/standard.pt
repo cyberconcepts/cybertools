@@ -45,7 +45,7 @@
 <metal:js define-macro="js"
           tal:define="layout view/context/template">
   <script type="text/javascript"
-          tal:attributes="src string:${view/page/resourceBase}${layout/resource});">
+          tal:attributes="src string:${view/page/resourceBase}${layout/resource};">
   </script>
 </metal:js>
 

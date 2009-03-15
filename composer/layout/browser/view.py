@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ from zope import component
 from zope.interface import Interface, implements
 from zope.cachedescriptors.property import Lazy
 from zope.app.pagetemplate import ViewPageTemplateFile
+from zope.app.security.interfaces import IUnauthenticatedPrincipal
 
 from cybertools.composer.layout.base import Layout
 from cybertools.composer.layout.interfaces import ILayoutManager
@@ -48,6 +49,10 @@ class BaseView(object):
 
     def __call__(self):
         return self.template(self)
+
+    @Lazy
+    def authenticated(self):
+        return not IUnauthenticatedPrincipal.providedBy(self.request.principal)
 
 
 class Page(BaseView):
