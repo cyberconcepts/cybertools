@@ -213,10 +213,9 @@ class TrackingStorage(BTreeContainer):
     def removeTrack(self, track):
         trackId = str(track.__name__)
         trackNum = int(trackId)
-        for attr in self.indexAttributes:
-            self.indexes[attr].unindex_doc(trackNum)
         if trackId in self:
             del self[trackId]
+        self.unindexTrack(trackNum, track)
 
     def indexTrack(self, trackNum, track, idx=None):
         if not trackNum:
