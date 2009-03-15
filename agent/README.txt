@@ -2,7 +2,7 @@
 Agents for Job Execution and Communication Tasks
 ================================================
 
-Agents do some work specified by a jobs, the main task being to collect
+Agents do some work specified by jobs, the main task being to collect
 information objects from the local machine or some external source and
 transfer them e.g. to a loops server on the same machine or another.
 

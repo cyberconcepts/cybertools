@@ -33,7 +33,13 @@ class Session(object):
 
     def __init__(self, manager):
         self.manager = manager
+        self.state = 'logon'
+        self.id = None
+        self.queue = []
         self.interactions = {}
+
+    def receive(self, data):
+        print ('Session receiving, data=%s' % data)
 
 
 class Interaction(object):

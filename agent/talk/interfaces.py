@@ -61,8 +61,8 @@ class IClient(Interface):
 
             The subscriber will receive messages via its ``onMesssage`` callback.
 
-            Return a Deferred that will provide an ISession implementation;
-            this may then be used sending data to the server.
+            Return a an ISession implementation that may be used for sending
+            data to the server.
         """
 
     def disconnect(session):

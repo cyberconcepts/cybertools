@@ -21,6 +21,9 @@ class Tester(object):
             delay = delays.get(i, 0)
             reactor.iterate(delay)
 
+    def stopThreads(self):
+        reactor.threadpool.stop()
+
 tester = Tester()
 
 
@@ -42,11 +45,11 @@ def test_suite():
     testSuite = unittest.TestSuite((
             unittest.makeSuite(Test),
             DocFileSuite('README.txt', optionflags=flags),
-            DocFileSuite('talk/README.txt', optionflags=flags),
             DocFileSuite('crawl/README.txt', optionflags=flags),
             DocFileSuite('crawl/filesystem.txt', optionflags=flags),
             DocFileSuite('crawl/outlook.txt', optionflags=flags),
             DocFileSuite('transport/transporter.txt', optionflags=flags),
+            DocFileSuite('talk/README.txt', optionflags=flags),
     ))
     return testSuite
 

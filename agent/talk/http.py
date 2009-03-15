@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ $Id$
 """
 
 from twisted.internet import defer
+from twisted.web.client import getPage
 from twisted.web.resource import Resource
 from twisted.web.server import Site
 from zope.interface import implements
@@ -77,7 +78,7 @@ class CommandHandler(Resource):
         self.command = path
 
     def render(self, request):
-        #
+        #print request
         return '{"message": "OK"}'
 
 
@@ -90,9 +91,13 @@ class HttpClient(object):
 
     def __init__(self, agent):
         self.agent = agent
+        self.sessions = {}
 
     def connect(self, subscriber, url, credentials=None):
-        return defer.Deferred() # Session
+        s = Session(self)
+        d = getPage(url)
+        d.addCallback(s.receive)
+        return s
 
     def disconnect(self, session):
         pass
