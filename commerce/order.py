@@ -74,6 +74,13 @@ class OrderItem(Track):
                 return (tp, id)
         return ref
 
+    def remove(self):
+        self.getParent().context.removeTrack(self)
+
+    def modify(self, quantity, **kw):
+        self.data['quantity'] = quantity
+        return self
+
     def setOrder(self, order):
         parent = self.getParent()
         self.order = parent.getUid(order)
@@ -109,11 +116,16 @@ class OrderItems(object):
 
     def add(self, product, party, shop, order='???', run=0, **kw):
         kw['shop'] = self.getUid(shop)
-        trackId = self.context.saveUserTrack(self.getUid(product), run,
-                            self.getUid(party), kw)
-        track = self[trackId]
-        track.order = self.getUid(order)
-        self.context.indexTrack(0, track, 'order')
+        existing = self.getCart(party, order, shop, run, product=product)
+        if existing:
+            track = existing[-1]
+            track.modify(track.quantity + kw.get('quantity', 1))
+        else:
+            trackId = self.context.saveUserTrack(self.getUid(product), run,
+                                self.getUid(party), kw)
+            track = self[trackId]
+            track.order = self.getUid(order)
+            self.context.indexTrack(0, track, 'order')
         return track
 
     def getCart(self, party=None, order='???', shop=None, run=None, **kw):
@@ -122,6 +134,7 @@ class OrderItems(object):
         result = self.query(party=party, order=order, **kw)
         if shop is None:
             return list(result)
+        shop = self.getUid(shop)
         return [item for item in result if item.shop == shop]
 
     # utility methods

@@ -88,6 +88,27 @@ A cart is just a collection of order items belonging to a certain customer
 
   >>> orderItems.getCart(c001)
   [<OrderItem [2, 1, 7, '... ...', '???']: {'shop': 0, 'quantity': 3}>]
+  >>> item1 = orderItems.getCart(c001, shop=shop1, product=p001)[0]
+  >>> item1
+  <OrderItem [2, 1, 7, '... ...', '???']: {'shop': 0, 'quantity': 3}>
+
+  >>> orderItems.add(p003, c001, shop=shop1, quantity=1)
+  <OrderItem [4, 2, 7, '... ...', '???']: {'shop': 0, 'quantity': 1}>
+
+  >>> len(orderItems.getCart(c001))
+  2
+
+If we add the same product again to the cart no new item is created but
+the quantity is added to the existing item.
+
+  >>> orderItems.add(p003, c001, shop=shop1, quantity=1)
+  <OrderItem [4, 2, 7, '... ...', '???']: {'shop': 0, 'quantity': 2}>
+  >>> len(orderItems.getCart(c001))
+  2
+
+  >>> item1.remove()
+  >>> len(orderItems.getCart(c001))
+  1
 
 Orders
 ------
@@ -105,4 +126,4 @@ retrieving the order items.
   >>> orderItems.getCart(c001)
   []
   >>> orderItems.getCart(c001, ord001)
-  [<OrderItem [2, 1, 7, '... ...', 11]: {'shop': 0, 'quantity': 3}>]
+  [<OrderItem [4, 2, 7, '... ...', 11]: {'shop': 0, 'quantity': 2}>]

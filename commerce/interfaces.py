@@ -345,6 +345,15 @@ class IOrderItem(ITrack):
                     u'items ordered.')
     fullPrice = Attribute(u'The full price for the quantity ordered.')
 
+    def remove():
+        """ Remove the order item from the order or cart.
+        """
+
+    def modify(quantity, **kw):
+        """ Change the quantity of the order item (and optionally other
+            attributes).
+        """
+
     def setOrder(order):
         """ Assign the order given to the order item.
         """
@@ -367,9 +376,12 @@ class IOrderItems(Interface):
             product, party, order, run, timeFrom, timeTo.
         """
 
-    def add(product, party, shop, order='???', run=0, **kw):
+    def add(product, party, shop, order='???', run=0, quantity=1, **kw):
         """ Create and register an order item; return it. Additional properties
             may be specified via keyword arguments.
+
+            If the order item is already present do not create a new one
+            but add the quantity.
         """
 
     def getCart(party=None, order='???', shop=None, run=0, **kw):
