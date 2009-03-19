@@ -41,6 +41,9 @@ from zope.traversing.api import getName, getParent
 from interfaces import IRelationRegistry, IRelationInvalidatedEvent, IRelation
 
 
+logger = getLogger('cybertools.relation.registry')
+
+
 class DummyRelationRegistry(object):
     """ Dummy implementation for demonstration and test purposes.
     """
@@ -136,16 +139,14 @@ class RelationRegistry(Catalog):
         self.index_doc(uid, relation)
         if self.relations is not None:
             self.relations[uid] = relation
-            logger = getLogger('cybertools.relation.registry')
-            logger.info('added relation with uid %i.' % uid)
+            #logger.info('added relation with uid %i.' % uid)
 
     def unregister(self, relation):
         uid = component.getUtility(IIntIds).getId(relation)
         self.unindex_doc(uid)
         if self.relations is not None and uid in self.relations:
             del self.relations[uid]
-            logger = getLogger('cybertools.relation.registry')
-            logger.info('removed relation with uid %i.' % uid)
+            #logger.info('removed relation with uid %i.' % uid)
         notify(RelationInvalidatedEvent(relation))
 
     def cleanupRelations(self):
