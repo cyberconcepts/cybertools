@@ -39,6 +39,7 @@ class Session(object):
         self.subscriber = subscriber
         self.url = url
         self.state = 'logon'
+        self.sending = False
         self.queue = []
         self.interactions = {}
 
@@ -46,22 +47,24 @@ class Session(object):
         data = json.loads(data)
         self.state = 'open'
         self.subscriber.onMessage(None, data)
+        self.sending = False
         self._processQueue()
         # self._poll()
 
     def received(self, data):
         data = json.loads(data)
         # TODO: check data
+        self.sending = False
         self._processQueue()
 
     def pollReceived(self, data):
         data = json.loads(data)
         if data.get('action') != 'idle':
-            self.subscriber.onMessage(None, data)
+            self.subscriber.onMessage(interaction, data)
         # self._poll()
 
     def _send(self, data, interaction):
-        if self.queue:
+        if self.sending or self.queue:
             self.queue.append(data)
         else:
             self._sendData(data)
@@ -69,9 +72,11 @@ class Session(object):
     def _processQueue(self):
         if not self.queue:
             return
+        self._sendData(self.queue.pop(0))
 
-    def _sendData(self, data):
-        content = dict(id=self.id, command='send', data=data)
+    def _sendData(self, data, command='send'):
+        self.sending = True
+        content = dict(id=self.id, command=command, data=data)
         d = getPage(self.url, postdata=json.dumps(content))
         d.addCallback(s.received)
 

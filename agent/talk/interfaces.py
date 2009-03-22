@@ -105,7 +105,7 @@ class ISession(Interface):
     manager = Attribute("""The server or client object, respectively, that
                 created the session.""")
     subscriber = Attribute("The subscriber that initiated the session.")
-    url = Attribute("The URL of the server the session connects to.")
+    url = Attribute("The URL of the server (or client) the session connects to.")
     state = Attribute("""A string specifying the current state of the session:
                 'logon': The remote client is trying to connect/log in,
                          data may contain credential information;
