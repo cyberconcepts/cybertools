@@ -46,7 +46,7 @@ class Session(object):
 
     def received(self, data):
         data = json.loads(data)
-        # TODO: check data
+        # TODO: check data; notify sender?
         self.sending = False
         self._processQueue()
 
