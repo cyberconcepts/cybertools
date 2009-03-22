@@ -22,24 +22,63 @@ Handling asynchronous communication tasks - common and base classes.
 $Id$
 """
 
+from twisted.web.client import getPage
 from zope.interface import implements
 
 from cybertools.agent.talk.interfaces import ISession, IInteraction
+from cybertools.util import json
 
 
 class Session(object):
 
     implements(ISession)
 
-    def __init__(self, manager):
+    def __init__(self, id, manager, subscriber, url):
+        self.id = id
         self.manager = manager
+        self.subscriber = subscriber
+        self.url = url
         self.state = 'logon'
-        self.id = None
         self.queue = []
         self.interactions = {}
 
-    def receive(self, data):
-        print ('Session receiving, data=%s' % data)
+    def connected(self, data):
+        data = json.loads(data)
+        self.state = 'open'
+        self.subscriber.onMessage(None, data)
+        self._processQueue()
+        # self._poll()
+
+    def received(self, data):
+        data = json.loads(data)
+        # TODO: check data
+        self._processQueue()
+
+    def pollReceived(self, data):
+        data = json.loads(data)
+        if data.get('action') != 'idle':
+            self.subscriber.onMessage(None, data)
+        # self._poll()
+
+    def _send(self, data, interaction):
+        if self.queue:
+            self.queue.append(data)
+        else:
+            self._sendData(data)
+
+    def _processQueue(self):
+        if not self.queue:
+            return
+
+    def _sendData(self, data):
+        content = dict(id=self.id, command='send', data=data)
+        d = getPage(self.url, postdata=json.dumps(content))
+        d.addCallback(s.received)
+
+    def _poll(self):
+        content = dict(id=self.id, command='poll')
+        d = getPage(self.url, postdata=json.dumps(content))
+        d.addCallback(s.pollReceived)
 
 
 class Interaction(object):

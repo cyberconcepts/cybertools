@@ -22,7 +22,6 @@ Handling asynchronous and possibly asymmetric communication tasks via HTTP.
 $Id$
 """
 
-from twisted.internet import defer
 from twisted.web.client import getPage
 from twisted.web.resource import Resource
 from twisted.web.server import Site
@@ -33,6 +32,7 @@ from cybertools.agent.components import servers, clients
 from cybertools.agent.system.http import listener
 from cybertools.agent.talk.base import Session, Interaction
 from cybertools.agent.talk.interfaces import IServer, IClient
+from cybertools.util import json
 
 
 # server implementation
@@ -47,14 +47,16 @@ class HttpServer(object):
         self.port = agent.config.talk.server.http.port
         self.subscribers = {}
         self.sessions = {}
-        self.site = Site(RootResource())
+        self.site = Site(RootResource(self))
 
     def setup(self):
         print 'Setting up HTTP handler for port %i.' % self.port
         listener.listenTCP(self.port, self.site)
 
     def subscribe(self, subscriber, aspect):
-        pass
+        subs = self.subscribers.setdefault(aspect, [])
+        if subscriber not in subs:
+            subs.append(subscriber)
 
     def unsubscribe(self, subscriber, aspect):
         pass
@@ -63,23 +65,54 @@ class HttpServer(object):
         # respond to open poll request or put in queue
         return defer.Deferred() # Interaction
 
+    def _process(self, client, data):
+        command = data.get('command')
+        if not command:
+            return self._error('missing command')
+        cmethod = self.commands.get(command)
+        if cmethod is None:
+            return self._error('illegal command %r' % command)
+        id = data.get('id')
+        if not id:
+            return self._error('missing id')
+        sessionId = ':'.join((client, data['id']))
+        message = cmethod(self, sessionId, client, data)
+        if message:
+            return self._error(message)
+        return '{"status": "OK"}'
+
+    def _connect(self, sessionId, client, data):
+        if sessionId in self.sessions:
+            return 'duplicate session id %r' % sessionId
+        self.sessions[sessionId] = Session(sessionId, self, None, client)
+        # TODO: notify subscribers
+
+    def _poll(self, sessionId, client, data):
+        pass
+
+    def _send(self, sessionId, client, data):
+        for sub in self.subscribers.values():
+            sub.onMessage(data)
+
+    def _error(self, message):
+        return json.dumps(dict(status='error', message=message))
+
+    commands = dict(connect=_connect, poll=_poll, send=_send)
+
 servers.register(HttpServer, Master, name='http')
 
 
 class RootResource(Resource):
 
-    def getChild(self, path, request):
-        return CommandHandler(path)
+    isLeaf = True
 
-
-class CommandHandler(Resource):
-
-    def __init__(self, path):
-        self.command = path
+    def __init__(self, server):
+        self.server = server
 
     def render(self, request):
-        #print request
-        return '{"message": "OK"}'
+        client = request.getClient()
+        data = json.loads(request.content.read())
+        return self.server._process(client, data)
 
 
 # client implementation
@@ -92,17 +125,31 @@ class HttpClient(object):
     def __init__(self, agent):
         self.agent = agent
         self.sessions = {}
+        self.count = 0
 
     def connect(self, subscriber, url, credentials=None):
-        s = Session(self)
-        d = getPage(url)
-        d.addCallback(s.receive)
+        id = self.generateSessionId()
+        s = Session(self, id, subscriber, url)
+        self.sessions[id] = s
+        data = dict(command='connect', id=id)
+        if credentials is not None:
+            data.update(credentials)
+        # s._send(data, None)
+        d = getPage(url, postdata=json.dumps(data))
+        d.addCallback(s.connected)
         return s
 
     def disconnect(self, session):
         pass
 
     def send(self, session, data, interaction=None):
-        return defer.Deferred() # Interaction
+        if interaction is None:
+            interaction = Interaction(session)
+        session._send(data, interaction)
+        return interaction # Interaction
+
+    def generateSessionId(self):
+        self.count += 1
+        return '%07i' % self.count
 
 clients.register(HttpClient, Master, name='http')

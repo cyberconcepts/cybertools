@@ -16,13 +16,29 @@ class Tester(object):
     """ Used for controlled execution of reactor iteration cycles.
     """
 
-    def iterate(self, n=10, delays={}):
+    stopped = False
+
+    def iterate(self, n=10, delay=0):
+        self.stopped = False
         for i in range(n):
-            delay = delays.get(i, 0)
+            if self.stopped:
+                return
             reactor.iterate(delay)
+
+    def run(self, maxduration=1.0, delay=0):
+        self.stopped = False
+        end = time.time() + maxduration
+        while not self.stopped:
+            reactor.iterate(delay)
+            if time.time() >= end:
+                return
+
+    def stop(self):
+        self.stopped = True
 
     def stopThreads(self):
         reactor.threadpool.stop()
+        reactor.threadpool = None
 
 tester = Tester()
 

@@ -4,6 +4,8 @@ Agents for Job Execution and Communication Tasks
 
   ($Id$)
 
+  >>> from cybertools.agent.tests import tester
+
 
 Communication Handling
 ======================
@@ -40,9 +42,9 @@ that receive messages.
   ...     def onMessage(self, interaction, data):
   ...         print ('%s receiving: interaction=%s, data=%s' %
   ...                       (self.name, interaction, data))
+  ...         tester.stop()
 
   >>> serverSub = Subscriber('server')
-
   >>> master.servers[0].subscribe(serverSub, 'testing')
 
 Set up a client
@@ -61,9 +63,8 @@ work with the client but handle the client directly.
 Run the communication dialog
 ----------------------------
 
-  >>> from cybertools.agent.tests import tester
-  >>> tester.iterate(400)
-  Session receiving, data={"message": "OK"}
+  >>> tester.run()
+  client receiving: interaction=None, data={u'status': u'OK'}
 
 
 Fin de Partie

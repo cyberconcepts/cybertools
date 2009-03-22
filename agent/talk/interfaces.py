@@ -44,9 +44,11 @@ class IServer(Interface):
 
     def send(session, data, interaction=None):
         """ Send data to the remote client specified via the session given.
+            The session has to be created previously by a connect attempt
+            from the client.
 
             If interaction is None, create a new one.
-            Return a deferred providing the interaction with its current state.
+            Return the interaction.
         """
 
 
@@ -73,8 +75,9 @@ class IClient(Interface):
         """ Send data to the server specified via the session given.
 
             If interaction is None, create a new one.
-            Return a deferred providing the interaction with its current state;
-            sending an interaction with ``finished`` set to True signifies
+            Return the interaction.
+
+            Sending an interaction with ``finished`` set to True signifies
             the last message of an interaction.
         """
 
@@ -85,8 +88,12 @@ class ISubscriber(Interface):
     """ May receive message notifications.
     """
 
-    def onMesssage(interaction, data):
+    def onMessage(interaction, data):
         """ Callback method for message notifications.
+        """
+
+    def onError(interaction, data):
+        """ Callback method for error notifications.
         """
 
 
@@ -97,7 +104,8 @@ class ISession(Interface):
 
     manager = Attribute("""The server or client object, respectively, that
                 created the session.""")
-
+    subscriber = Attribute("The subscriber that initiated the session.")
+    url = Attribute("The URL of the server the session connects to.")
     state = Attribute("""A string specifying the current state of the session:
                 'logon': The remote client is trying to connect/log in,
                          data may contain credential information;
