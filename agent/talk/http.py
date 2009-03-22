@@ -158,7 +158,7 @@ class HttpClient(object):
         return interaction
 
     def generateSessionId(self):
-        return str(time())
+        return '%.7f' % time()
 
 clients.register(HttpClient, Master, name='http')
 
