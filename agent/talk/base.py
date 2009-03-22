@@ -42,14 +42,7 @@ class Session(object):
         self.sending = False
         self.queue = []
         self.interactions = {}
-
-    def connected(self, data):
-        data = json.loads(data)
-        self.state = 'open'
-        self.subscriber.onMessage(None, data)
-        self.sending = False
-        self._processQueue()
-        # self._poll()
+        self.interactionCount = 0
 
     def received(self, data):
         data = json.loads(data)
@@ -57,33 +50,34 @@ class Session(object):
         self.sending = False
         self._processQueue()
 
-    def pollReceived(self, data):
-        data = json.loads(data)
-        if data.get('action') != 'idle':
-            self.subscriber.onMessage(interaction, data)
-        # self._poll()
-
-    def _send(self, data, interaction):
+    def send(self, data, interaction):
+        data['interaction'] = interaction.id
         if self.sending or self.queue:
             self.queue.append(data)
         else:
             self._sendData(data)
 
-    def _processQueue(self):
+    def processQueue(self):
         if not self.queue:
             return
         self._sendData(self.queue.pop(0))
 
-    def _sendData(self, data, command='send'):
+    def sendData(self, data, command='send'):
         self.sending = True
         content = dict(id=self.id, command=command, data=data)
         d = getPage(self.url, postdata=json.dumps(content))
         d.addCallback(s.received)
 
-    def _poll(self):
-        content = dict(id=self.id, command='poll')
-        d = getPage(self.url, postdata=json.dumps(content))
-        d.addCallback(s.pollReceived)
+    def connected(self, data):
+        data = json.loads(data)
+        self.state = 'open'
+        self.subscriber.onMessage(None, data)
+        self.sending = False
+        self.processQueue()
+
+    def generateInteractionId(self):
+        self.interactionCount += 1
+        return '%07i' % self.interactionCount
 
 
 class Interaction(object):
@@ -94,4 +88,6 @@ class Interaction(object):
 
     def __init__(self, session):
         self.session = session
+        self.id = self.session.generateInteractionId()
+        self.session.interactions[self.id] = self
 
