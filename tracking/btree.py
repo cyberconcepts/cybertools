@@ -86,7 +86,7 @@ class Track(Persistent):
         self.timeStamp = getTimeStamp()
         data = self.data
         data.update(newData)
-        self.data = data
+        self.data = data    # record change
 
     def __repr__(self):
         md = self.metadata

@@ -78,7 +78,7 @@ class OrderItem(Track):
         self.getParent().context.removeTrack(self)
 
     def modify(self, quantity, **kw):
-        self.data['quantity'] = quantity
+        self.update(dict(quantity=quantity))
         return self
 
     def setOrder(self, order):
