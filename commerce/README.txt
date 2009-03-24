@@ -115,7 +115,8 @@ Orders
 
 The items in a shopping cart may be included in an order.
 
-  >>> ord001 = manager.orders.create(u'001', shop=shop1, customer=c001)
+  >>> orderId = shop1.getNewOrderId()
+  >>> ord001 = manager.orders.create(orderId, shop=shop1, customer=c001)
 
   >>> for item in orderItems.getCart(c001):
   ...     item.setOrder(ord001)

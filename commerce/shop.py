@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -39,3 +39,10 @@ class Shop(BaseObject):
         self.title = title or u'Shop'
         self.products = self.collection(self, 'shops')
         self.customers = self.collection(self, 'shops')
+        self.orderNumber = 0
+
+    def getNewOrderId(self):
+        last = self.orderNumber or 0
+        num = last + 1
+        self.orderNumber = num
+        return '%05i' % num

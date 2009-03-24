@@ -76,6 +76,13 @@ class IShop(Interface):
             description=_(u'A medium-length description.'),
             default=u'',
             required=False)
+    orderNumber = schema.Int(
+            title=_(u'Order Number'),
+            description=_(u'The number used for the order identifier of '
+                          u'last order created. This will in turn be used '
+                          u'for creating the next order identifier.'),
+            default=0,
+            required=False)
 
     products = Attribute(u'The products available in this shop.')
     categories = Attribute(u'The product categories provided by this shop.')
@@ -84,6 +91,10 @@ class IShop(Interface):
     suppliers = Attribute(u'The suppliers providing products for '
                     u'this shop.')
     customers = Attribute(u'The customers registered for this shop.')
+
+    def getNewOrderId():
+        """ Create a new order identifier.
+        """
 
 
 # manufacturers and suppliers
