@@ -116,6 +116,16 @@ class BaseObject(object):
     collection = RelationSet
 
 
+class FloatValue(float):
+
+    def __init__(self, value, decimals=2):
+        self.decimals = decimals
+
+    def __str__(self):
+        format = '%%.%if' % self.decimals
+        return (format % self).replace('.', ',')
+
+
 # utility functions
 
 def getUidForObject(obj, intIds=None):
