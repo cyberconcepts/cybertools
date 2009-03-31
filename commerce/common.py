@@ -1,3 +1,4 @@
+#-*- coding: UTF-8 -*-
 #
 #  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
@@ -118,12 +119,16 @@ class BaseObject(object):
 
 class FloatValue(float):
 
-    def __init__(self, value, decimals=2):
+    def __init__(self, value, decimals=2, currency=u'€'):
         self.decimals = decimals
+        self.currency = currency
 
     def __str__(self):
         format = '%%.%if' % self.decimals
-        return (format % self).replace('.', ',')
+        value = (format % self).replace('.', ',')
+        if self.currency:
+            value = value + ' ' + self.currency
+        return value
 
 
 # utility functions
