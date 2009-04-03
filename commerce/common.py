@@ -118,6 +118,10 @@ class BaseObject(object):
 
 
 class FloatValue(float):
+    # TODO: rename to CurrencyValue
+
+    def __nonzero__(self):
+        return True  # even when value is 0.0
 
     def __init__(self, value, decimals=2, currency=u'€'):
         self.decimals = decimals
