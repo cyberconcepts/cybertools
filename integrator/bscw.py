@@ -81,16 +81,23 @@ class BSCWConnection(object):
     def setURLs(self):
         url = self.getRepositoryURL()
         if url:
-            self.baseURL, self.rootId = url.rsplit('/', 1)
+            baseURL, self.rootId = url.rsplit('/', 1)
+            self.baseURL = baseURL.split('/bscw.cgi', 1)[0] + '/bscw.cgi'
 
     def getItem(self, address, nested=True):
         try:
             item = self.server.get_attributes(address, standardAttributes, 1, nested)
         except Fault, excp:
-            logging.getLogger('cybertools.integrator.bscw').warn(str(excp))
             item = None
+            excpInfo = str(excp)
+            if "No permission: (403, 'No_Access')" in excpInfo:
+                pass
+            else:
+                info = '%s - server: %s, address: %s.' % (excpInfo, self.server, address)
+                logging.getLogger('cybertools.integrator.bscw').warn(info)
         except Exception, excp:
-            logging.getLogger('cybertools.integrator.bscw').error(str(excp))
+            info = '%s - server: %s, address: %s.' % (excpInfo, self.server, address)
+            logging.getLogger('cybertools.integrator.bscw').error(info)
             item = None
         return item
 
@@ -236,10 +243,14 @@ class File(BSCWProxyBase, File):
         try:
             data = self.connection.server.get_document(self.address).data
         except Fault, excp:
-            logging.getLogger('cybertools.integrator.bscw').warn(str(excp))
+            info = '%s - server: %s, address: %s.' % (
+                        str(excp), self.connection.server, self.address)
+            logging.getLogger('cybertools.integrator.bscw').warn(info)
             data = ''
         except Exception, excp:
-            logging.getLogger('cybertools.integrator.bscw').error(str(excp))
+            info = '%s - server: %s, address: %s.' % (
+                        str(excp), self.connection.server, self.address)
+            logging.getLogger('cybertools.integrator.bscw').error(info)
             data = ''
         return data
     data = property(getData)
