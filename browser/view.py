@@ -27,6 +27,7 @@ from zope.interface import Interface, implements
 from zope.cachedescriptors.property import Lazy
 from zope.publisher.interfaces.browser import IBrowserSkinType
 from zope.app.pagetemplate import ViewPageTemplateFile
+from zope.app.security.interfaces import IUnauthenticatedPrincipal
 
 
 mainTemplate = ViewPageTemplateFile('main.pt')
@@ -83,6 +84,10 @@ class GenericView(object):
     def __call__(self, *args, **kw):
         # this is useful for a top-level page only
         return self.index(*args, **kw)
+
+    @Lazy
+    def isAuthenticated(self):
+        return not IUnauthenticatedPrincipal.providedBy(self.request.principal)
 
     def setupSubviews(self):
         pass

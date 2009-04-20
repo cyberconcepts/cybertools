@@ -37,7 +37,8 @@
       </metal:content>
     </div>
 
-    <div id="sub-section" metal:define-macro="sub-section">
+    <div id="sub-section"
+         tal:condition="view/isAuthenticated">
       <tal:portlet repeat="macro controller/macros/portlet_right">
         <metal:portlet use-macro="macro" />
       </tal:portlet>

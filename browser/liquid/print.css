@@ -3,7 +3,7 @@
 
 */
 
-.top, #header, #menu, #sub-section, #footer, .object-actions {
+.top, #header, #menu, #sub-section, #footer, .object-actions, .button {
     display: none;
 }
 
@@ -11,4 +11,3 @@
     width: 100%;
     color: Black;
 }
-

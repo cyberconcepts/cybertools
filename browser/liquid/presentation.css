@@ -7,7 +7,7 @@
     margin: 4em;
 }
 
-.top, #header, #menu, #sub-section, #footer, .object-actions {
+.top, #header, #menu, #sub-section, #footer, .object-actions, .button {
     display: none;
 }
 
