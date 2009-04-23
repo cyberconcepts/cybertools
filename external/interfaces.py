@@ -24,9 +24,52 @@ $Id$
 from zope.interface import Attribute, Interface
 
 
-class IImporter(Interface):
-    """ Parses an input file or string and creates one or more corresponding
-        objects or sets the attributes of one or more existing objects.
+
+class IElement(Interface):
+    """ A dicionary-like information element that is able to represent an
+        object, a relation between objects or a special attribute.
+        The attributes of the object are represented by items of
+        the dictionary; the attribute values may be strings, unicode strings,
+        or IElement objects.
+    """
+
+    elementType = Attribute('A string denoting the element type.')
+    object = Attribute('The object that has been created from this '
+                'element during import.')
+    parent = Attribute('An optional parent element that this element is part of.')
+    subElements = Attribute('An optional list of sub-elements; initially None.')
+
+    def processExport(extractor):
+        """ Will be called by the extractor during export to allow for
+            special handling e.g. of certain attributes.
+        """
+
+    def add(element):
+        """ Add a sub-element, may be called by the extractor during export.
+        """
+
+    def execute(loader):
+        """ Create the object that is specified by the element in the
+            context of the loader and return it.
+        """
+
+
+# import functionality
+
+class IReader(Interface):
+    """ Provides objects in an intermediate format from an external source.
+        Will typically be implemented by an utility or an adapter.
+    """
+
+    def read(input):
+        """ Retrieve content from the external source returning a sequence
+            of IElement objects.
+        """
+
+
+class ILoader(Interface):
+    """ Inserts data provided by an IReader object into the
+        object space of the context object. Will typically be used as an adapter.
     """
 
     transcript = Attribute('A string describing the result of the '
@@ -41,7 +84,35 @@ class IImporter(Interface):
                     'of newly created and changed objects and the '
                     'number of errors.')
 
-    def load(file):
-        """ Load (import) data from the file given; create objects if
-            necessary.
+    def load(elements):
+        """ Create the objects and relations specified by the ``elements``
+            argument given.
         """
+
+
+# export functionality
+
+class IWriter(Interface):
+    """ Transforms object information to an external storage.
+    """
+
+    def write(elements):
+        """ Write the sequence of elements given in an external format.
+        """
+
+
+class IExtractor(Interface):
+    """ Extracts information from objects and provides them as
+        IElement objects. Will typically be used as an adapter on a
+        top-level or root object.
+    """
+
+    def extract():
+        """ Creates and returns a sequence of IElement objects by scanning
+            the content of the context object.
+        """
+
+class ISubExtractor(IExtractor):
+    """ Used for extracting special informations from individual objects
+        that will be represented by sub-elements.
+    """

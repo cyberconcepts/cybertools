@@ -27,15 +27,31 @@ from zope import component
 from zope.interface import implements
 from zope.cachedescriptors.property import Lazy
 
-from cybertools.external.interfaces import IImporter
+from cybertools.external.interfaces import IReader, ILoader
 
 
-class BaseImporter(object):
+class BaseReader(object):
 
-    implements(IImporter)
+    implements(IReader)
+
+    def __init__(self, context):
+        self.context = context
+
+    def read(self, input):
+        return []
+
+
+class BaseLoader(object):
+
+    implements(ILoader)
 
     transcript = u''
 
     def __init__(self, context):
         self.context = context
         self.changes = []
+        self.errors = []
+        self.summary = dict(count=0, new=0, changed=0, errors=0, warnings=0)
+
+    def load(self, elements):
+        pass
