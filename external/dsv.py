@@ -22,6 +22,8 @@ $Id$
 """
 
 import csv
+from datetime import date, timedelta
+from time import strptime
 
 from zope import component
 from zope.interface import implements
@@ -64,3 +66,16 @@ class CsvReader(BaseReader):
                     result.append(element)
                     lastIdentifiers[element.type] = id
         return result
+
+    def getDate(self, value, correctBug=False):
+        if not value:
+            return value
+        try:
+            v = strptime(value, '%Y-%m-%d')
+        except ValueError:
+            return value
+        else:
+            d = date(*v[:3])
+            if correctBug:
+                d -= timedelta(4 * 365 + 2)
+            return d
