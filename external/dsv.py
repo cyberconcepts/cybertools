@@ -33,6 +33,9 @@ from cybertools.external.base import BaseReader
 from cybertools.external.element import Element
 
 
+xls2csv = '%(cpath)s -f %%Y-%%m-%%d %(fpath)s.xls >%s(fpath)s.csv'
+
+
 class CsvReader(BaseReader):
 
     elementFactories = {None: Element}
