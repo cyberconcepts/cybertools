@@ -96,6 +96,7 @@ class BSCWConnection(object):
                 info = '%s - server: %s, address: %s.' % (excpInfo, self.server, address)
                 logging.getLogger('cybertools.integrator.bscw').warn(info)
         except Exception, excp:
+            excpInfo = str(excp)
             info = '%s - server: %s, address: %s.' % (excpInfo, self.server, address)
             logging.getLogger('cybertools.integrator.bscw').error(info)
             item = None
