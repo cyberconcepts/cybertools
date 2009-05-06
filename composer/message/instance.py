@@ -41,11 +41,15 @@ from cybertools.util.jeep import Jeep
 
 class DataProvider(object):
 
+    extensions = {}
+
     def __init__(self, context, data):
         self.context = context
         self.data = data
 
     def __getitem__(self, key):
+        if key in self.extensions:
+            return self.extensions[key](self)
         client = self.context.client
         messageManager = self.context.manager
         if key.startswith('@@'):
@@ -71,14 +75,7 @@ class DataProvider(object):
                                  messageManager)
             return mi.applyTemplate(self.data)['text']
         elif '.' in key:
-            if client is None:
-                return '$' + key
-            schemaName, fieldName = key.split('.', 1)
-            schema = client.manager.getClientSchemas()[schemaName]
-            instance = IInstance(client)
-            instance.template = schema
-            data = instance.applyTemplate()
-            return data[fieldName]
+            return self.getSubfieldValue(key)
         elif key in self.data:
             return self.data[key]
         else:
@@ -89,6 +86,25 @@ class DataProvider(object):
         view = component.queryMultiAdapter(
                     (self.context.client.manager, request), name=name)
         return view
+
+    def getSubfieldValue(self, key):
+        client = self.context.client
+        if client is None:
+            return '$' + key
+        schemaName, fieldName = key.split('.', 1)
+        schema = self.getClientSchemas().get(schemaName)
+        if schema is None:
+            return '$' + key
+        instance = IInstance(self.getSubclient(schemaName))
+        instance.template = schema
+        data = instance.applyTemplate()
+        return data.get(fieldName) or '$' + key
+
+    def getSubclient(self, name):
+        return self.context.client
+
+    def getClientSchemas(self):
+        return self.context.client.manager.getClientSchemas()
 
 
 class MessageInstance(Instance):
