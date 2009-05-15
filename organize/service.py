@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -127,6 +127,7 @@ class Service(object):
     location = u''
     allowRegWithNumber = False
     allowDirectRegistration = True
+    waitingList = False
 
     def __init__(self, name=None, title=u'', capacity=-1, **kw):
         self.name = self.__name__ = name
@@ -328,13 +329,13 @@ registrationStates = 'organize.service.registration'
 
 registerStatesDefinition(
     StatesDefinition(registrationStates,
-        State('temporary', 'temporary', ('submit', 'cancel',)),
+        State('temporary', 'temporary', ('submit', 'setwaiting', 'cancel',)),
         State('submitted', 'submitted',
                     ('change', 'retract', 'setwaiting', 'confirm', 'reject',)),
-        State('cancelled', 'cancelled', ('submit',)),
-        State('retracted', 'retracted', ('submit',)),
+        State('cancelled', 'cancelled', ('activate',)),
+        State('retracted', 'retracted', ('activate', 'cancel',)),
         State('waiting', 'waiting',
-                    ('change', 'retract', 'confirm', 'reject',)),
+                    ('activate', 'change', 'retract', 'confirm', 'reject',)),
         State('confirmed', 'confirmed',
                     ('change', 'retract', 'reject',)),
         State('rejected', 'rejected',
@@ -344,6 +345,8 @@ registerStatesDefinition(
         Transition('change', 'Change registration', 'submitted'),
         Transition('retract', 'Retract registration', 'retracted'),
         Transition('setwaiting', 'Set on waiting list', 'waiting'),
+        Transition('activate', 'Activate waiting or cancelled registration',
+                    'temporary'),
         Transition('confirm', 'Confirm registration', 'confirmed'),
         Transition('reject', 'Reject registration', 'rejected'),
         initialState='temporary',
