@@ -59,7 +59,7 @@ class Element(object):
         for c in children:
             if isinstance(c, Element):
                 base.append(c.baseElement)
-            elif not base: # no children yet, so it's the first text node
+            elif len(base) == 0: # no children yet, so it's the first text node
                 base.text = base.text and ' '.join((base.text, c)) or c
             else:  # if there are children, append text to the last child's tail
                 lastChild = base.getchildren()[-1]
