@@ -335,6 +335,8 @@ class IOrder(Interface):
     netValues = Attribute(u'A collection of net total values (IValue objects)'
                 u'of the order.')
     total = Attribute(u'The total gross value (Decimal) of the order.')
+    orderDate = Attribute(u'The day the order was issued.')
+    orderType = Attribute(u'Some string used for identifying the type of the order.')
 
 
 class IOrderItem(ITrack):
@@ -348,6 +350,8 @@ class IOrderItem(ITrack):
             required=True)
 
     product = Attribute(u'The product represented by this order item.')
+    productTitle = Attribute(u'Optional short description, especially '
+                u'useful for pseudo products.')
     party = Attribute(u'The party (person, customer, session, ...) '
                 u'that is ordering the product.')
     shop = Attribute(u'The shop from which the product is ordered.')
@@ -355,6 +359,10 @@ class IOrderItem(ITrack):
     unitPrice = Attribute(u'The basic unit price for one of the product '
                     u'items ordered.')
     fullPrice = Attribute(u'The full price for the quantity ordered.')
+    quantityShipped = Attribute(u'The total quantity that has been shipped '
+                    u'already.')
+    shippingInfo = Attribute(u'A list of mappings, with fields like: '
+                    u'shippingId, shippingDate, quantity, packageId')
 
     def remove():
         """ Remove the order item from the order or cart.
