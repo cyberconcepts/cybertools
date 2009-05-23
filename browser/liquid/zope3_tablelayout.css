@@ -9,7 +9,7 @@
 /* Basic Elements */
 
 body {
-    font: 85% Helvetica, Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     background: White;
     color: Black;
     margin: 0;
@@ -187,13 +187,11 @@ q {
 }*/
 
 code {
-    font-size: 120%;
     color: Black;
     background-color: #CCCCCC;
 }
 
 pre {
-    font-size: 120%;
     padding: 1em;
     border: 1px solid #A0A0A0;
     color: Black;

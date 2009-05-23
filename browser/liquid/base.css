@@ -9,7 +9,7 @@ body {
     min-width:640px;
     margin: 0;
     padding: 0;
-    font: 9pt Verdana, Tahoma, Arial, Helvetica, sans-serif;
+    font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;
     background-color: white;
     color: #000040;
 }
