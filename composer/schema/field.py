@@ -56,6 +56,7 @@ class Field(Component):
     fieldTypeInfo = None
     baseField = None
     instance_name = None
+    input_renderer = None
     display_renderer = None
     display_format = None
 
@@ -94,7 +95,7 @@ class Field(Component):
 
     @property
     def inputRenderer(self):
-        return self.getFieldTypeInfo().inputRenderer
+        return self.input_renderer or self.getFieldTypeInfo().inputRenderer
 
     @property
     def displayRenderer(self):
