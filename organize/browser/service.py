@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -303,7 +303,7 @@ class ServiceView(BaseView):
         context = self.context
         if not context.allowDirectRegistration:
             return False
-        return (self.capacityAvailable()
+        return (self.capacityAvailable() or self.context.waitingList
                 or self.getClientName() in context.registrations)
 
     def capacityAvailable(self):
@@ -331,8 +331,9 @@ class ServiceView(BaseView):
     def getRegistrationInfo(self, reg):
         registration = self.getRegistrations()[reg]
         state = IStateful(registration).getStateObject()
-        number=registration.number
-        return dict(number=number, state=state.name, stateTitle=state.title)
+        return dict(number=registration.number,
+                    numberWaiting=registration.numberWaiting,
+                    state=state.name, stateTitle=state.title)
 
     @Lazy
     def registeredTotalSubmitted(self):
@@ -344,6 +345,18 @@ class ServiceView(BaseView):
             if state.name != 'temporary':
                 total += reg.number
         return total
+
+    @Lazy
+    def registeredTotalsSubmitted(self):
+        # TODO: clean-up temporary registrations
+        # return self.context.getNumberRegistered()
+        total = totalWaiting = 0
+        for reg in self.getRegistrations().values():
+            state = IStateful(reg).getStateObject()
+            if state.name != 'temporary':
+                total += reg.number
+                totalWaiting += reg.numberWaiting
+        return dict(number=total, numberWaiting=totalWaiting)
 
     def update(self):
         newClient = False
@@ -424,7 +437,7 @@ class RegistrationTemplateView(BaseView):
         return (svc.category, svc.getClassification(), svc.start)
 
     def allowRegistration(self, service):
-        return (self.capacityAvailable(service)
+        return (self.capacityAvailable(service) or service.waitingList
                 or service in self.getRegisteredServices())
 
     def capacityAvailable(self, service):

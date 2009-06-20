@@ -102,12 +102,14 @@ class Registration(object):
     implements(IRegistration)
 
     number = 1
+    numberWaiting = 0
 
-    def __init__(self, client, service, number=1):
+    def __init__(self, client, service, number=1, numberWaiting=0):
         self.client = client
         self.service = service
         self.timeStamp = int(time())
         self.number = number
+        self.numberWaiting = numberWaiting
 
 
 class PersistentRegistration(Registration, Persistent):
@@ -167,13 +169,20 @@ class Service(object):
 
     def register(self, client, number=1):
         clientName = client.__name__
+        numberWaiting = 0
+        if (self.waitingList and self.availableCapacity >= 0
+                    and number > self.availableCapacity):
+            numberWaiting = number - self.availableCapacity
+            number = self.availableCapacity
         if clientName in self.registrations:
             reg = self.registrations[clientName]
             if number != reg.number:
                 reg.number = number
                 # TODO: set timeStamp
+            if numberWaiting != reg.numberWaiting:
+                reg.numberWaiting = numberWaiting
             return reg
-        reg = self.registrationFactory(client, self, number)
+        reg = self.registrationFactory(client, self, number, numberWaiting)
         self.registrations[clientName] = reg
         return reg
 
@@ -289,7 +298,8 @@ class ClientRegistrations(object):
                     oldN = oldReg.number or 0
             else:
                 oldN = 0
-            if svc.capacity and svc.capacity > 0 and svc.availableCapacity < n - oldN:
+            if (not svc.waitingList and svc.capacity and svc.capacity > 0
+                    and svc.availableCapacity < n - oldN):
                 error = registrationErrors['capacity_exceeded']
                 entry = self.errors.setdefault(svc.token, [])
                 entry.append(error)
@@ -396,14 +406,13 @@ def getCheckoutRule(sender):
     """
     checkoutRule = Rule('checkout')
     checkoutRule.events.append(eventTypes['service.checkout'])
-    #checkoutRule.actions.append(Action('message',
-    #                  parameters=dict(messageName='feedback_text')))
     checkoutRule.actions.append(Action('sendmail',
                       parameters=dict(sender=sender,
                                       messageName='feedback_text')))
     checkoutRule.actions.append(Action('redirect',
                       parameters=dict(viewName='message_view.html',
-                                      messageName='feedback_html')))
+                                      messageName='feedback_html',
+                                      clearClient=True)))
     return checkoutRule
 
 

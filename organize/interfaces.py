@@ -350,6 +350,8 @@ class IRegistration(Interface):
     timeStamp = Attribute('An integer denoting the time of registration.')
     number = Attribute('The number of objects (e.g. persons) registered '
                 '- usually == 1.')
+    numberWaiting = Attribute('The number of objects registered that are '
+                'on the waiting list.')
 
 
 class IRegistrationTemplate(Interface):
