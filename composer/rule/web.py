@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ class RedirectActionHandler(ActionHandler):
             url = request.URL1
         else:
             url = request.URL[-1]
-        request.response.redirect('%s/%s?message=%s'
+        request.response.redirect('%s/%s?message=%s&ccln=yes'
                     % (url, targetView, messageName))
         return data
 
@@ -67,5 +67,7 @@ class MessageView(BaseView):
         data = dict(request=self.request)
         mh = component.getAdapter(ri, IActionHandler, name='message')
         data = mh(data, dict(messageName=messageName))
+        if self.request.get('ccln'):
+            self.setClientName('')
         return data['text']
 
