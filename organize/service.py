@@ -169,13 +169,17 @@ class Service(object):
 
     def register(self, client, number=1):
         clientName = client.__name__
-        numberWaiting = 0
-        if (self.waitingList and self.availableCapacity >= 0
-                    and number > self.availableCapacity):
-            numberWaiting = number - self.availableCapacity
-            number = self.availableCapacity
+        numberWaiting = current = 0
+        reg = None
         if clientName in self.registrations:
             reg = self.registrations[clientName]
+            current = reg.number
+        if (self.waitingList and self.availableCapacity >= 0
+                    and number > (self.availableCapacity + current)):
+            numberWaiting = number - current - self.availableCapacity
+            #number = self.availableCapacity + current
+            number = number - numberWaiting
+        if reg is not None:
             if number != reg.number:
                 reg.number = number
                 # TODO: set timeStamp

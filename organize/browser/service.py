@@ -211,16 +211,37 @@ class CheckoutView(ServiceManagerView):
         for reg in regs:
             service = reg.service
             result.append(dict(service=service.title or '???',
+                               waitingList=service.waitingList,
                                fromTo=self.getFromTo(service),
                                location=service.location or '',
                                locationUrl=service.locationUrl or '',
                                number=reg.number,
+                               numberWaiting=reg.numberWaiting,
                                serviceObject=service))
         return result
 
+    @Lazy
+    def registrationsInfo(self):
+        return self.getRegistrationsInfo()
+
+    @Lazy
+    def hasWaiting(self):
+        for reg in self.registrationsInfo:
+            if reg['numberWaiting'] > 0:
+                return True
+        return False
+
+    def getLocationInfo(self, info):
+        location, locationUrl = info['location'], info['locationUrl']
+        if locationUrl and locationUrl.startswith('/'):
+            locationUrl = self.request.get('SERVER_URL') + locationUrl
+        locationInfo = (locationUrl and '%s (%s)' % (location, locationUrl)
+                                    or location)
+        return locationInfo
+
     def listRegistrationsTextTable(self):
         result = []
-        for info in self.getRegistrationsInfo():
+        for info in self.registrationsInfo:
             line = '%-30s %27s' % (info['service'], info['fromTo'])
             if info['serviceObject'].allowRegWithNumber:
                 line += ' %4i' % info['number']
@@ -229,22 +250,37 @@ class CheckoutView(ServiceManagerView):
 
     def listRegistrationsText(self):
         result = []
-        for info in self.getRegistrationsInfo():
-            location, locationUrl = info['location'], info['locationUrl']
-            if locationUrl and locationUrl.startswith('/'):
-                locationUrl = self.request.get('SERVER_URL') + locationUrl
-            locationInfo = (locationUrl and '%s (%s)' % (location, locationUrl)
-                                        or location)
+        for info in self.registrationsInfo:
+            if not info['number'] and not info['numberWaiting']:
+                continue
+            locationInfo = self.getLocationInfo(info)
+            line = '\n'.join((info['service'], info['fromTo'], locationInfo))
+            if info['serviceObject'].allowRegWithNumber and info['number']:
+                line += '\nTeilnehmer: %s\n' % info['number']
+            if info['numberWaiting']:
+                line += 'Teilnehmer auf Warteliste'
+                if info['serviceObject'].allowRegWithNumber:
+                    line += ': %s' % info['numberWaiting']
+                line += '\n'
+            result.append(line)
+        return '\n'.join(result)
+
+    def listRegistrationsWaitingText(self):
+        result = []
+        for info in self.registrationsInfo:
+            if not info['numberWaiting']:
+                continue
+            locationInfo = self.getLocationInfo(info)
             line = '\n'.join((info['service'], info['fromTo'], locationInfo))
             if info['serviceObject'].allowRegWithNumber:
-                line += '\nTeilnehmer: %s\n' % info['number']
+                line += '\nTeilnehmer: %s\n' % info['numberWaiting']
             result.append(line)
         return '\n'.join(result)
 
     html = '''
         <table class="listing" style="width: 100%%">
           <tr>
-            <th width="5%%">Teilnehmer</th>
+            <th width="5%%">Teilnehmer</th>%s
             <th>Angebot</th>
             <th>Datum/Uhrzeit</th>
             <th>Ort</th>
@@ -254,7 +290,7 @@ class CheckoutView(ServiceManagerView):
     '''
     row = '''
           <tr>
-            <td width="5%%">%i</td>
+            <td width="5%%">%i</td>%s
             <td>%s</td>
             <td style="white-space: nowrap">%s</td>
             <td>%s</td>
@@ -262,16 +298,23 @@ class CheckoutView(ServiceManagerView):
     '''
     def listRegistrationsHtml(self):
         result = []
+        waitingHeader = ''
+        waitingRow = '<td width="5%%">%i</td>'
+        if self.hasWaiting:
+            waitingHeader = '<th width="5%%">Warteliste</th>'
         for info in self.getRegistrationsInfo():
             location, locationUrl = info['location'], info['locationUrl']
             locationInfo = (locationUrl
                         and ('<a href="%s">%s</a>'  % (locationUrl, location))
                         or location)
-            line = self.row % (info['number'], info['service'],
+            line = self.row % (info['number'],
+                               self.hasWaiting and
+                                    waitingRow % info['numberWaiting'] or '',
+                               info['service'],
                                info['fromTo'].replace(' ', '&nbsp;&nbsp;'),
                                locationInfo)
             result.append(line)
-        return self.html % '\n'.join(result)
+        return self.html % (waitingHeader, '\n'.join(result))
 
 
 class ServiceView(BaseView):
@@ -356,6 +399,8 @@ class ServiceView(BaseView):
             if state.name != 'temporary':
                 total += reg.number
                 totalWaiting += reg.numberWaiting
+        if not self.context.waitingList:
+            totalWaiting = ''
         return dict(number=total, numberWaiting=totalWaiting)
 
     def update(self):
