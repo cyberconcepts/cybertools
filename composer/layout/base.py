@@ -63,6 +63,7 @@ class Layout(Template):
     instanceName = ''
     order = 50
     sublayouts = None
+    defaultSublayout = None
 
     def __init__(self, name, regionName, **kw):
         self.name = name
