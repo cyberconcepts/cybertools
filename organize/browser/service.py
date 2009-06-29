@@ -256,12 +256,12 @@ class CheckoutView(ServiceManagerView):
             locationInfo = self.getLocationInfo(info)
             line = '\n'.join((info['service'], info['fromTo'], locationInfo))
             if info['serviceObject'].allowRegWithNumber and info['number']:
-                line += '\nTeilnehmer: %s\n' % info['number']
+                line += '\nTeilnehmer: %s' % info['number']
             if info['numberWaiting']:
-                line += 'Teilnehmer auf Warteliste'
+                line += '\nTeilnehmer auf Warteliste'
                 if info['serviceObject'].allowRegWithNumber:
                     line += ': %s' % info['numberWaiting']
-                line += '\n'
+            line += '\n'
             result.append(line)
         return '\n'.join(result)
 
