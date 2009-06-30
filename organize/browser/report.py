@@ -129,5 +129,12 @@ class RegistrationsExportCsv(object):
 
     def encode(self, text):
         if type(text) is unicode:
-            text = text.encode(self.encoding)
+            result = []
+            for c in text:
+                try:
+                    c = c.encode(self.encoding)
+                except UnicodeEncodeError:
+                    c = '?'
+                result.append(c)
+            text = ''.join(result)
         return text
