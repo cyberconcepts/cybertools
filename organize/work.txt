@@ -52,7 +52,7 @@ Properties may be set as long as the work item is in status "new".
 
   >>> wi01.setData(start=1229955772, party='annie')
   >>> wi01
-  <WorkItem ['001', 1, 'annie', '2008-12-22 14:22', 'new']:
+  <WorkItem ['001', 1, 'annie', '2008-12-22 15:22', 'new']:
    {'start': 1229955772, 'created': ..., 'creator': 'john'}>
 
 The duration value is calculated automatically when start and end are set;
@@ -83,7 +83,7 @@ be excluded from queries.
   >>> wi01.state
   'planned_x'
   >>> wi02
-  <WorkItem ['001', 1, 'jim', '2008-12-22 14:22', 'accepted']:
+  <WorkItem ['001', 1, 'jim', '2008-12-22 15:22', 'accepted']:
    {'duration': 700, 'start': 1229955772, 'created': ...,
     'end': 1229956372, 'creator': 'jim'}>
 
@@ -99,7 +99,7 @@ but may also be specified explicitly.
 
   >>> wi03 = wi02.doAction('start', 'jim', start=1229958000)
   >>> wi03
-  <WorkItem ['001', 1, 'jim', '2008-12-22 15:00', 'running']:
+  <WorkItem ['001', 1, 'jim', '2008-12-22 16:00', 'running']:
    {'duration': 700, 'start': 1229958000, 'created': ..., 'creator': 'jim'}>
 
 Stopping and finishing work
@@ -112,10 +112,10 @@ as "running" will be replaced by a new one.
   >>> wi04 = wi03.doAction('work', 'jim', end=1229958300)
 
   >>> wi03
-  <WorkItem ['001', 1, 'jim', '2008-12-22 15:00', 'replaced']:
+  <WorkItem ['001', 1, 'jim', '2008-12-22 16:00', 'replaced']:
    {'duration': 700, 'start': 1229958000, 'created': ..., 'creator': 'jim'}>
   >>> wi04
-  <WorkItem ['001', 1, 'jim', '2008-12-22 15:00', 'done']:
+  <WorkItem ['001', 1, 'jim', '2008-12-22 16:00', 'done']:
    {'start': 1229958000, 'created': ..., 'end': 1229958300, 'creator': 'jim'}>
 
 After another hour Jim works again on the task; he now finishes it within
@@ -123,7 +123,7 @@ ten minutes and records this in one step.
 
   >>> wi05 = wi04.doAction('finish', 'jim', start=1229961600, end=1229962200)
   >>> wi05
-  <WorkItem ['001', 1, 'jim', '2008-12-22 16:00', 'finished']:
+  <WorkItem ['001', 1, 'jim', '2008-12-22 17:00', 'finished']:
    {'start': 1229961600, 'created': ..., 'end': 1229962200, 'creator': 'jim'}>
   >>> wi05.duration, wi05.effort
   (600, 600)
@@ -157,10 +157,10 @@ delegated so that it may be selected by queries.
   >>> wi08 = wi07.doAction('delegate', 'john', party='annie')
 
   >>> wi07
-  <WorkItem ['001', 2, 'john', '2008-12-22 18:33', 'delegated']:
+  <WorkItem ['001', 2, 'john', '2008-12-22 19:33', 'delegated']:
    {'start': 1229970800, 'created': ..., 'creator': 'john'}>
   >>> wi08
-  <WorkItem ['001', 2, 'annie', '2008-12-22 18:33', 'planned']:
+  <WorkItem ['001', 2, 'annie', '2008-12-22 19:33', 'planned']:
    {'start': 1229970800, 'created': ..., 'creator': 'john'}>
   >>> len(list(workItems))
   8
@@ -179,10 +179,10 @@ Note that nevertheless only the last work item of a run may be modified.
   >>> wi09 = wi08.doAction('modify', 'annie', duration=3600)
 
   >>> wi08
-  <WorkItem ['001', 2, 'annie', '2008-12-22 18:33', 'replaced']:
+  <WorkItem ['001', 2, 'annie', '2008-12-22 19:33', 'replaced']:
    {'start': 1229970800, 'created': ..., 'creator': 'john'}>
   >>> wi09
-  <WorkItem ['001', 2, 'annie', '2008-12-22 18:33', 'planned']:
+  <WorkItem ['001', 2, 'annie', '2008-12-22 19:33', 'planned']:
    {'duration': 3600, 'start': 1229970800, 'created': ..., 'creator': 'annie'}>
 
 
