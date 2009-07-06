@@ -303,6 +303,8 @@ class ListFieldInstance(FieldInstance):
     def marshall(self, value):
         if isinstance(value, basestring):
             return value
+        if value is None:
+            return u''
         return u'\n'.join(self.valueFieldInstance.marshall(v) for v in value)
         #return [self.valueFieldInstance.marshall(v) for v in value]
 
