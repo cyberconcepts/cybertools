@@ -109,7 +109,9 @@ class OrderItems(object):
         if 'party' in criteria:
             criteria['userName'] = self.getUid(criteria.pop('party'))
         if 'order' in criteria:
-            criteria['order'] = self.getUid(criteria.pop('order'))
+            order = criteria.pop('order')
+            if order:
+                criteria['order'] = self.getUid(order)
         if 'run' in criteria:
             criteria['runId'] = criteria.pop('run')
         return self.context.query(**criteria)
