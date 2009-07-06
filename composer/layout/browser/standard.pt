@@ -3,33 +3,35 @@
   <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
         tal:define="body view/body;
                     layout view/context/template">
-
     <head metal:define-macro="head">
       <title metal:define-macro="title"
            tal:content="options/title|view/page/headTitle|view/title|default">
         Powered by Zope 3
       </title>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
+      <tal:meta repeat="view view/layouts/meta">
+        <metal:meta use-macro="view/renderer" />
+      </tal:meta>
       <tal:css repeat="view view/layouts/css">
         <metal:css use-macro="view/renderer" />
       </tal:css>
-
       <tal:js repeat="view view/layouts/js">
         <metal:js use-macro="view/renderer" />
       </tal:js>
-
       <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"
             tal:attributes="href string:${view/page/resourceBase}${layout/favicon}" />
-
       <base href="." tal:attributes="href request/URL">
     </head>
-
     <body tal:replace="structure body" />
-
   </html>
-
 </metal:page>
+
+
+<metal:meta define-macro="metatag"
+          tal:define="layout view/context/template">
+  <meta tal:attributes="name layout/meta_name;
+                        content layout/meta_content" />
+</metal:meta>
 
 
 <metal:css define-macro="css"
