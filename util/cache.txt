@@ -1,0 +1,41 @@
+============
+Data Caching
+============
+
+$Id$
+
+  >>> from cybertools.util.cache import cache
+
+  >>> @cache(lambda *args: 'calc')
+  ... def calculate():
+  ...     print 'calculating'
+  ...     return 42
+
+  >>> calculate()
+  calculating
+  42
+  >>> calculate()
+  42
+
+  >>> class Demo(object):
+  ...     id = '4711'
+  ...     def getId(self, *args):
+  ...         return self.id
+  ...     @cache(getId)
+  ...     def calculate(self):
+  ...         print 'calculating'
+  ...         return 42
+
+  >>> demo = Demo()
+  >>> demo.calculate()
+  calculating
+  42
+  >>> demo.calculate()
+  42
+
+  >>> demo.id = '4712'
+  >>> demo.calculate()
+  calculating
+  42
+  >>> demo.calculate()
+  42
