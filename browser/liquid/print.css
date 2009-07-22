@@ -3,6 +3,10 @@
 
 */
 
+body {
+    font-size: 11px;
+}
+
 .top, #header, #menu, #sub-section, #footer, .object-actions, .button {
     display: none;
 }
