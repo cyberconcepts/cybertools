@@ -84,7 +84,7 @@ class FileSystemStorage(object):
         fn = self.getDir(address, subDir)
         try:
             return os.path.getsize(fn)
-        except IOError, e:
+        except OSError, e:
             from logging import getLogger
             getLogger('cybertools.storage.filesystem.FileSystemStorage').warn(e)
             return 0
