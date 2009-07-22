@@ -70,8 +70,8 @@ class MediaAssetFile(object):
             return self.getOriginalData()
         path = self.getPath(variant)
         if not os.path.exists(path):
-            getLogger('Asset Manager').warn(
-                'Media asset directory for transformation %r not found.' % variant)
+            getLogger('cybertools.media.asset.MediaAssetFile').warn(
+                'Media asset directory %r not found.' % path)
             return self.getOriginalData()
         f = open(path, 'rb')
         data =f.read()
@@ -150,8 +150,12 @@ class MediaAssetFile(object):
         dirOrig, fileOrig = os.path.split(pathOrig)
         pathTx = os.path.join(dirOrig, variant, self.getName())
         outputFormat = self.getContentType(variant)
-        outputExt = getMimetypeExt(outputFormat)
-        pathTx = os.path.splitext(pathTx)[0] + outputExt
+        #outputExt = getMimetypeExt(outputFormat)
+        basePath = os.path.splitext(pathTx)[0]
+        for ext in mimetypes.guess_all_extensions(outputFormat):
+            pathTx = basePath + ext
+            if os.path.exists(pathTx):
+                return pathTx
         return pathTx
 
     def getMimeType(self):
