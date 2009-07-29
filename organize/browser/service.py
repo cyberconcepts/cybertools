@@ -68,7 +68,7 @@ class BaseView(SchemaBaseView):
         if service.start and service.end:
             typeEnd = 'time'
             separator = '-'
-            if time.localtime(service.start)[2] != time.localtime(service.end)[2]:
+            if self.isMultiDay(service):
                 typeEnd = 'dateTime'
                 separator = ' - '
             return ('%s%s%s' %
@@ -78,6 +78,33 @@ class BaseView(SchemaBaseView):
                  self.getFormattedDate(service.end, type=typeEnd, variant='short')))
         else:
             return '-'
+
+    def getFromToDate(self, service=None):
+        if service is None:
+            service = self.context
+        end = ''
+        if service.start and service.end:
+            start = self.getFormattedDate(service.start, type='date', variant='short')
+            end = ''
+            if self.isMultiDay(service):
+                end = ' - ' + self.getFormattedDate(service.end, type='date',
+                                                    variant='short')
+            return start + end
+        else:
+            return '-'
+
+    def getFromToTime(self, service=None):
+        if service is None:
+            service = self.context
+        if service.start and service.end:
+            start = self.getFormattedDate(service.start, type='time', variant='short')
+            end = self.getFormattedDate(service.end, type='time', variant='short')
+            return '%s - %s' % (start, end)
+        else:
+            return '-'
+
+    def isMultiDay(self, service):
+        return time.localtime(service.start)[2] != time.localtime(service.end)[2]
 
 
 class ServiceManagerView(BaseView):
@@ -213,10 +240,15 @@ class CheckoutView(ServiceManagerView):
             result.append(dict(service=service.title or '???',
                                waitingList=service.waitingList,
                                fromTo=self.getFromTo(service),
+                               fromToDate=self.getFromToDate(service),
+                               fromToTime=self.getFromToTime(service),
+                               isMultiDay=self.isMultiDay(service),
                                location=service.location or '',
                                locationUrl=service.locationUrl or '',
                                number=reg.number,
                                numberWaiting=reg.numberWaiting,
+                               externalId=service.externalId or '',
+                               cost=service.cost or '',
                                serviceObject=service))
         return result
 
@@ -228,6 +260,20 @@ class CheckoutView(ServiceManagerView):
     def hasWaiting(self):
         for reg in self.registrationsInfo:
             if reg['numberWaiting'] > 0:
+                return True
+        return False
+
+    @Lazy
+    def hasCost(self):
+        for reg in self.registrationsInfo:
+            if reg['cost']:
+                return True
+        return False
+
+    @Lazy
+    def hasExternalId(self):
+        for reg in self.registrationsInfo:
+            if reg['externalId']:
                 return True
         return False
 
@@ -251,17 +297,27 @@ class CheckoutView(ServiceManagerView):
     def listRegistrationsText(self):
         result = []
         for info in self.registrationsInfo:
+            lineData = []
             if not info['number'] and not info['numberWaiting']:
                 continue
             locationInfo = self.getLocationInfo(info)
-            line = '\n'.join((info['service'], info['fromTo'], locationInfo))
+            lineData = [info['service'],
+                        'Datum: ' + info['fromToDate'],
+                        'Uhrzeit: ' + info['fromToTime'],
+                        locationInfo]
+            if info['cost']:
+                lineData.append('Kostenbeitrag: %s,00 Euro' % info['cost'])
+            if info['externalId']:
+                lineData.append('Code: %s' % info['externalId'])
             if info['serviceObject'].allowRegWithNumber and info['number']:
-                line += '\nTeilnehmer: %s' % info['number']
+                lineData.append('Teilnehmer: %s' % info['number'])
             if info['numberWaiting']:
-                line += '\nTeilnehmer auf Warteliste'
+                waitingInfo = 'Teilnehmer auf Warteliste'
                 if info['serviceObject'].allowRegWithNumber:
-                    line += ': %s' % info['numberWaiting']
-            line += '\n'
+                    waitingInfo += ': %s' % info['numberWaiting']
+                lineData.append(waitingInfo)
+            lineData.append('')
+            line = '\n'.join(lineData)
             result.append(line)
         return '\n'.join(result)
 
@@ -284,6 +340,7 @@ class CheckoutView(ServiceManagerView):
             <th>Angebot</th>
             <th>Datum/Uhrzeit</th>
             <th>Ort</th>
+            %s %s
           </tr>
           %s
         </table>
@@ -294,27 +351,40 @@ class CheckoutView(ServiceManagerView):
             <td>%s</td>
             <td style="white-space: nowrap">%s</td>
             <td>%s</td>
+            %s %s
           </tr>
     '''
     def listRegistrationsHtml(self):
         result = []
-        waitingHeader = ''
+        waitingHeader = costHeader = externalIdHeader = ''
         waitingRow = '<td width="5%%">%i</td>'
+        costRow = '<td>%s,00 Euro</td>'
+        externalIdRow = '<td>%s</td>'
         if self.hasWaiting:
             waitingHeader = '<th width="5%%">Warteliste</th>'
+        if self.hasCost:
+            costHeader = '<th>Kostenbeitrag</th>'
+        if self.hasExternalId:
+            externalIdHeader = '<th style="white-space: nowrap">Code</th>'
         for info in self.getRegistrationsInfo():
             location, locationUrl = info['location'], info['locationUrl']
             locationInfo = (locationUrl
                         and ('<a href="%s">%s</a>'  % (locationUrl, location))
                         or location)
             line = self.row % (info['number'],
-                               self.hasWaiting and
+                            self.hasWaiting and
                                     waitingRow % info['numberWaiting'] or '',
-                               info['service'],
-                               info['fromTo'].replace(' ', '&nbsp;&nbsp;'),
-                               locationInfo)
+                            info['service'],
+                            info['fromToDate'] + '<br />' + info['fromToTime'],
+                            locationInfo,
+                            self.hasCost and
+                                    costRow % info['cost'] or '',
+                            self.hasExternalId and
+                                    externalIdRow % info['externalId'] or '',
+                            )
             result.append(line)
-        return self.html % (waitingHeader, '\n'.join(result))
+        return self.html % (waitingHeader, costHeader, externalIdHeader,
+                            '\n'.join(result))
 
 
 class ServiceView(BaseView):

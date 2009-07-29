@@ -126,7 +126,8 @@ class Service(object):
 
     manager = None
     category = None
-    location = u''
+    location = locationUrl = externalId = u''
+    cost = 0.0
     allowRegWithNumber = False
     allowDirectRegistration = True
     waitingList = False
