@@ -57,7 +57,7 @@ class CacheItem(object):
 def cache(getIdentifier, lifetime=3600):
     def _cache(fct):
         def __cache(*args, **kw):
-            id = getIdentifier(*args)
+            id = getIdentifier(*args, **kw)
             item = manager.setdefault(id, CacheItem(id, lifetime=lifetime))
             value = item.get()
             if value is INVALID:
