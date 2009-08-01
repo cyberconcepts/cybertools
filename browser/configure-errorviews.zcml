@@ -8,14 +8,12 @@
         name="index.html"
         template="systemerror.pt"
         class="zope.app.exception.systemerror.SystemErrorView"
-        permission="zope.Public"
-        layer="cybertools.browser.loops.Loops" />
+        permission="zope.Public" />
 
   <page for="zope.publisher.interfaces.INotFound"
         name="index.html"
         permission="zope.Public"
         template="notfound.pt"
-        class="zope.app.exception.browser.notfound.NotFound"
-        layer="cybertools.browser.loops.Loops" />
+        class="zope.app.exception.browser.notfound.NotFound" />
 
 </configure>
