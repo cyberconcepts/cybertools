@@ -1,0 +1,6 @@
+<html i18n:domain="zope">
+<body>
+  <h3 i18n:translate="">
+    The page that you are trying to access is not available</h3>
+</body>
+</html>

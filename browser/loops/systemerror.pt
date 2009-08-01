@@ -1,0 +1,6 @@
+<html i18n:domain="zope">
+<body>
+  <h3 i18n:translate="">
+    A system error occurred</h3>
+</body>
+</html>
