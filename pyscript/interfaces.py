@@ -26,7 +26,9 @@ from zope.interface import Interface
 from zope import schema
 from zope.app.container.constraints import contains
 from zope.app.container.interfaces import IContainer
-from zope.app.i18n import ZopeMessageFactory as _
+from zope.i18nmessageid import MessageFactory
+
+_ = MessageFactory('cybertools.pyscript')
 
 
 class IPythonScript(Interface):

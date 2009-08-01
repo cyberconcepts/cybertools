@@ -7,7 +7,6 @@
    >
 
   <resourceDirectory name="cybertools.icons" directory="icons" />
-  <resourceDirectory name="cybertools.jocy" directory="jocy" />
 
   <menuItem
         for="*"
