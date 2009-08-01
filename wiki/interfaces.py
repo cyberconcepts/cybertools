@@ -74,6 +74,7 @@ class IWikiManager(Interface):
         """ Return the object referenced by the unique id given.
         """
 
+
 class IWiki(Interface):
     """ A collection of wiki pages, or - more generally - wiki components.
     """
