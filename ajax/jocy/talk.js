@@ -24,7 +24,9 @@
 
 dojo.provide('jocy.talk');
 
+
 dojo.declare('jocy.talk.Connection', null, {
+
     info: 'jocy.talk Connection',
     constructor: function(url, client, user, password){
         this.url = url.replace(/\/$/, '');
@@ -45,6 +47,8 @@ dojo.declare('jocy.talk.Connection', null, {
             this._cometdInitialized = false;
         }
     },
+
+    // ReST methods
     get: function(resourcePath, data, cbName, user, password) {
         return dojo.xhrGet({
             url: this._setupUrl(resourcePath),
@@ -102,20 +106,25 @@ dojo.declare('jocy.talk.Connection', null, {
             },
         });
     },
+
+    // cometd methods
     publish: function(channel, data) {
-        this.initComed();
+        this.initCometd();
         dojox.cometd.publish(channel, data);
     },
-    subscribe: function(channel, callback){
-        this.initComed();
-        dojox.cometd.subscribe(channel, this, callback);
+    subscribe: function(channel, cbName){
+        this.initCometd();
+        dojox.cometd.subscribe(channel, this.client, cbName);
     },
+
+    // private methods
     _setupObjectPath: function(path) {
         slash = (path.charAt(0) == '/' ? '' : '/');
         return this.url + slash + path;
     },
-    _callback: function(data, cbName) {
-        this.client[cbName](data);
+    _callback: function(response, ioArgs, cbName) {
+        this.client[cbName](response);
+        return response;
     },
 
     /* dojox.cometd example */
