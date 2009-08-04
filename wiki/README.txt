@@ -20,7 +20,7 @@ to make sure the btree-based tracking link manager will be used.
   >>> manager = WikiManager()
 
   >>> linkManagerName = 'tracking'
-  >>> manager.linkManager = linkManagerName
+  >>> manager.setConfig('linkManager', linkManagerName)
   >>> wiki = manager.addWiki(Wiki('demo_wiki'))
   >>> startPage = wiki.createPage('start_page')
 

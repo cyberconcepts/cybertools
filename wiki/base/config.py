@@ -24,7 +24,18 @@ $Id$
 
 from zope.interface import implements
 
-from cybertools.wiki.interfaces import IWikiConfiguration
+from cybertools.wiki.interfaces import IWikiConfigInfo, IWikiConfiguration
+
+
+class WikiConfigInfo(dict):
+
+    implements(IWikiConfigInfo)
+
+    def set(self, functionality, value):
+        self[functionality] = value
+
+    def __getattr__(self, attr):
+        return self.get(attr, None)
 
 
 class BaseConfiguration(object):
@@ -33,31 +44,35 @@ class BaseConfiguration(object):
 
     implements(IWikiConfiguration)
 
-    parent = None
-
-    writer = parser = None
+    _configInfo = None
 
     def getConfig(self, functionality):
-        c = self.get(functionality)
+        c = None
+        ci = self._configInfo
+        if ci is not None:
+            c = ci.get(functionality)
         if c is None:
             parent = self.getConfigParent()
             if parent is not None:
                 return parent.getConfig(functionality)
         return c
 
-    def get(self, key, default=None):
-        return getattr(self, key, None)
+    def setConfig(self, functionality, value):
+        if self._configInfo is None:
+            self._configInfo = WikiConfigInfo()
+        self._configInfo.set(functionality, value)
 
     def getConfigParent(self):
-        return self.parent
+        return None
 
 
 class WikiConfiguration(BaseConfiguration):
     """ A global utility providing the default settings.
     """
 
-    parser = 'docutils.rstx'
-    writer = 'docutils.html'
-    linkManager = 'basic'
-
-    nodeProcessors = dict(reference=['default'])
+    _configInfo = WikiConfigInfo(
+                    parser='docutils.rstx',
+                    writer='docutils.html',
+                    linkManager='basic',
+                    nodeProcessors=dict(reference=['default']),
+    )

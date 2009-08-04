@@ -25,9 +25,8 @@ $Id$
 from zope.interface import Interface, Attribute
 
 
-class IWikiConfiguration(Interface):
-    """ Provides information about the implementations to be used for
-        the various kinds of wiki plug-ins.
+class IWikiConfigInfo(Interface):
+    """ A collection of configuration settings.
     """
 
     writer = Attribute('Plug-in component converting from internal tree '
@@ -35,14 +34,32 @@ class IWikiConfiguration(Interface):
     parser = Attribute('Plug-in component converting from text input '
                 'format to internal tree format.')
 
+    def get(functionality):
+        """ Return the setting for the functionality given or None if not set.
+        """
+
+    def set(functionality, value):
+        """ Register the value given for the functionality given.
+        """
+
+
+class IWikiConfiguration(Interface):
+    """ Provides information about the implementations to be used for
+        the various kinds of wiki plug-ins.
+    """
+
+    def getConfig(functionality):
+        """ Return the name of the component that should used for the
+            functionality given.
+        """
+
+    def setConfig(functionality, value):
+        """ Register the value given for the functionality given.
+        """
+
     def getConfigParent():
         """ Return the parent object in case this configuration does not
             provide configuration information for a certain functionality.
-        """
-
-    def getConfig(functionality):
-        """ Return the name of the plugin that should used for the
-            functionality given.
         """
 
 
