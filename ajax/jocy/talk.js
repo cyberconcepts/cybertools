@@ -37,7 +37,7 @@ dojo.declare('jocy.talk.Connection', null, {
     },
     initCometd: function() {
         if (!this._cometdInitialized) {
-            dojox.cometd.init(this.url);
+            dojox.cometd.init(this.url + '/cometd');
             this._cometdInitialized = true;
         }
     },
@@ -50,6 +50,8 @@ dojo.declare('jocy.talk.Connection', null, {
 
     // ReST methods
     get: function(resourcePath, data, cbName, user, password) {
+        //return dojo.io.script.get({
+        //    callbackParamName: 'jsonp',
         return dojo.xhrGet({
             url: this._setupUrl(resourcePath),
             load: function(response, ioArgs) {
@@ -63,7 +65,9 @@ dojo.declare('jocy.talk.Connection', null, {
     },
     getSynchronous: function(resourcePath, data, cbName) {
         var result = {};
-        d = dojo.xhrGet({
+        //dojo.io.script.get({
+        //    callbackParamName: 'jsonp',
+        dojo.xhrGet({
             url: this._setupUrl(resourcePath),
             load: function(response, ioArgs) {
                 result = response;
@@ -88,7 +92,7 @@ dojo.declare('jocy.talk.Connection', null, {
     },
     post: function(resourcePath, data, cbName) {
         return dojo.xhrGet({
-            url: this._setupU(resourcePath),
+            url: this._setupUrl(resourcePath),
             load: function(response, ioArgs) {
                 return this._callback(response, ioArgs, cbName);
             },
@@ -116,9 +120,13 @@ dojo.declare('jocy.talk.Connection', null, {
         this.initCometd();
         dojox.cometd.subscribe(channel, this.client, cbName);
     },
+    unsubscribe: function(channel){
+        this.initCometd();
+        dojox.cometd.unsubscribe(channel, this.client);
+    },
 
     // private methods
-    _setupObjectPath: function(path) {
+    _setupUrl: function(path) {
         slash = (path.charAt(0) == '/' ? '' : '/');
         return this.url + slash + path;
     },
