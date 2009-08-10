@@ -27,6 +27,7 @@ extensions = {
     'application/pdf': 'pdf',
     'application/vnd.ms-excel': 'xls',
     'application/vnd.ms-powerpoint': 'ppt',
+    'application/vnd.oasis.opendocument.graphics': 'odg',
     'application/vnd.oasis.opendocument.presentation': 'odp',
     'application/vnd.oasis.opendocument.spreadsheet': 'ods',
     'application/vnd.oasis.opendocument.text': 'odt',
