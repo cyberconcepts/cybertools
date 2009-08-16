@@ -1,0 +1,11 @@
+<!-- $Id$ -->
+
+<configure
+   xmlns:zope="http://namespaces.zope.org/zope"
+   xmlns:browser="http://namespaces.zope.org/browser">
+
+  <zope:subscriber
+      for="zope.app.appsetup.interfaces.IDatabaseOpenedWithRootEvent"
+      handler="cybertools.twisted.z2.startup.startup" />
+
+</configure>
