@@ -50,23 +50,19 @@ dojo.declare('jocy.talk.Connection', null, {
 
     // ReST methods
     get: function(resourcePath, data, cbName, user, password) {
-        //return dojo.io.script.get({
-        //    callbackParamName: 'jsonp',
         return dojo.xhrGet({
             url: this._setupUrl(resourcePath),
-            load: function(response, ioArgs) {
+            load: dojo.hitch(this, function(response, ioArgs) {
                 return this._callback(response, ioArgs, cbName);
-            },
+            }),
             content: data,
             handleAs: 'json',
             user: user,
             password: password
         });
     },
-    getSynchronous: function(resourcePath, data, cbName) {
+    getSynchronous: function(resourcePath, data) {
         var result = {};
-        //dojo.io.script.get({
-        //    callbackParamName: 'jsonp',
         dojo.xhrGet({
             url: this._setupUrl(resourcePath),
             load: function(response, ioArgs) {
@@ -84,18 +80,18 @@ dojo.declare('jocy.talk.Connection', null, {
     put: function(resourcePath, data, cbName) {
         return dojo.xhrPut({
             url: this._setupU(cbName),
-            load: function(response, ioArgs) {
+            load: dojo.hitch(this, function(response, ioArgs) {
                 return this._callback(response, ioArgs, cbName);
-            },
+            }),
             putData: dojo.toJson(data),
         });
     },
     post: function(resourcePath, data, cbName) {
         return dojo.xhrGet({
             url: this._setupUrl(resourcePath),
-            load: function(response, ioArgs) {
+            load: dojo.hitch(this, function(response, ioArgs) {
                 return this._callback(response, ioArgs, cbName);
-            },
+            }),
             postData: dojo.toJson(data)
         });
     },
@@ -105,24 +101,24 @@ dojo.declare('jocy.talk.Connection', null, {
     remove: function(resourcePath, cbName) {
         return dojo.xhrDelete({
             url: this._setupU(resourcePath),
-            load: function(response, ioArgs) {
+            load: dojo.hitch(this, function(response, ioArgs) {
                 return this._callback(response, ioArgs, cbName);
-            },
+            }),
         });
     },
 
     // cometd methods
     publish: function(channel, data) {
         this.initCometd();
-        dojox.cometd.publish(channel, data);
+        return dojox.cometd.publish(channel, data);
     },
     subscribe: function(channel, cbName){
         this.initCometd();
-        dojox.cometd.subscribe(channel, this.client, cbName);
+        return dojox.cometd.subscribe(channel, this.client, cbName);
     },
     unsubscribe: function(channel){
         this.initCometd();
-        dojox.cometd.unsubscribe(channel, this.client);
+        return dojox.cometd.unsubscribe(channel, this.client);
     },
 
     // private methods
