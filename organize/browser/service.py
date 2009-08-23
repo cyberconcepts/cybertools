@@ -637,5 +637,3 @@ class RegistrationTemplateView(BaseView):
         regs.unregister(toDelete)
         self.request.response.redirect(self.getNextUrl())
         return False
-
-

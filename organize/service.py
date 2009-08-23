@@ -161,21 +161,30 @@ class Service(object):
     def getToken(self):
         return self.name
 
-    @property
-    def availableCapacity(self):
+    def getAvailableCapacity(self, ignoreWaiting=False):
+        if not ignoreWaiting and self.getNumberWaiting() > 0:
+            return 0
         number = self.getNumberRegistered()
         if self.capacity >= 0 and number >= self.capacity:
             return 0
         return self.capacity - number
 
+    @property
+    def availableCapacity(self):
+        return self.getAvailableCapacity()
+
     def register(self, client, number=1):
         clientName = client.__name__
-        numberWaiting = current = 0
+        numberWaiting = current = currentWaiting = 0
         reg = None
         if clientName in self.registrations:
             reg = self.registrations[clientName]
             current = reg.number
-        if (self.waitingList and self.availableCapacity >= 0
+            currentWaiting = reg.numberWaiting
+        if currentWaiting and self.waitingList:
+            numberWaiting = number - current - self.getAvailableCapacity(True)
+            number = number - numberWaiting
+        elif (self.waitingList and self.availableCapacity >= 0
                     and number > (self.availableCapacity + current)):
             numberWaiting = number - current - self.availableCapacity
             #number = self.availableCapacity + current
@@ -202,6 +211,16 @@ class Service(object):
             if ignoreTemporary and IStateful(r).state == 'temporary':
                 continue
             result += r.number
+        return result
+
+    def getNumberWaiting(self, ignoreTemporary=True):
+        if not self.waitingList:
+            return 0
+        result = 0
+        for r in self.registrations.values():
+            if ignoreTemporary and IStateful(r).state == 'temporary':
+                continue
+            result += r.numberWaiting
         return result
 
     # default methods
