@@ -12,7 +12,6 @@ from cybertools.relation.interfaces import IDyadicRelation, ITriadicRelation
 from cybertools.relation.interfaces import IRelation, IPredicate
 from cybertools.relation import Relation, DyadicRelation, TriadicRelation
 from cybertools.relation.interfaces import IRelationRegistry
-from cybertools.relation.registry import RelationRegistry
 
 
 class IntIdsStub(object):
@@ -53,6 +52,8 @@ class TestRelation(unittest.TestCase):
         self.assert_(ITriadicRelation.providedBy(TriadicRelation(None, None, None)),
              'Interface ITriadicRelation is not implemented by class TriadicRelation.')
         verifyClass(ITriadicRelation, TriadicRelation)
+        # avoid dependency on import:
+        from cybertools.relation.registry import RelationRegistry
         self.assert_(IRelationRegistry.providedBy(RelationRegistry()),
             'Interface IRelationRegistry is not implemented by class RelationRegistry.')
         verifyClass(IRelationRegistry, RelationRegistry)
