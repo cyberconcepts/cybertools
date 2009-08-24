@@ -120,7 +120,7 @@ class LinkProcessor(object):
             targetPageName, params = targetPageName.split('?', 1)
         if '#' in targetPageName:
             targetPageName, fragment = targetPageName.split('#', 1)
-        existing = lm.query(source=sourceUid, name=self.targetName)
+        existing = iter(lm.query(source=sourceUid, name=self.targetName))
         if existing:
             link = existing.next()
             if link.target is not None:
