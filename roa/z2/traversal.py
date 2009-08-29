@@ -28,5 +28,8 @@ from cybertools.roa.traversal import CheckJSONTraverser as BaseTraverser
 class CheckJSONTraverser(BaseTraverser, DefaultPublishTraverse):
 
     defaultTraverse = DefaultPublishTraverse.publishTraverse
-    browserDefault = DefaultPublishTraverse.browserDefault
 
+    def browserDefault(self, request):
+        if self.isJSONRequest(request):
+            return self.context, ('@@json',)
+        return DefaultPublishTraverse.browserDefault(self, request)

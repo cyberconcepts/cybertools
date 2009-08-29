@@ -32,9 +32,9 @@ class JSONView(object):
         self.request = request
 
     def __call__(self):
-        return json.dumps(self.context.__dict__)
+        return json.dumps(self.context.__dict__.keys())
 
     def traverse(self, name):
         # To be implemented by subclass
         print '*** traversing', self.context, name
-        return None
+        return self.context
