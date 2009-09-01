@@ -22,6 +22,7 @@ $Id$
 """
 
 from cStringIO import StringIO
+from logging import getLogger
 
 from zope import component
 from zope.interface import implements
@@ -45,13 +46,36 @@ class BaseLoader(object):
 
     implements(ILoader)
 
-    transcript = u''
-
     def __init__(self, context):
         self.context = context
         self.changes = []
         self.errors = []
         self.summary = dict(count=0, new=0, changed=0, errors=0, warnings=0)
+        self.transcript = StringIO()
+        self.logger = getLogger('Loader')
+        self.groups = {}
 
     def load(self, elements):
-        pass
+        self.loadRecursive(elements)
+        self.transcript.write('Rows loaded: %(count)i; changed: %(changed)i; '
+                              'errors: %(errors)i\n' % self.summary)
+
+    def loadRecursive(self, elements):
+        for element in elements:
+            element.execute(self)
+            if element.subElements is not None:
+                self.loadRecursive(element.subElements)
+            self.summary['count'] += 1
+
+    def error(self, message):
+        self.transcript.write(message + '\n')
+        self.errors.append(message)
+        self.summary['errors'] += 1
+        self.logger.error(message)
+
+    def change(self, message=None):
+        if message is not None:
+            self.transcript.write(message + '\n')
+            self.changes.append(message)
+            self.logger.info(message)
+        self.summary['changed'] += 1
