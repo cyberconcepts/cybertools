@@ -85,7 +85,8 @@ class FieldType(SimpleTerm):
 # TODO: register this object as a utility providing IFieldTypes
 fieldTypes = SimpleVocabulary((
     FieldType('textline', 'textline', u'Textline'),
-    FieldType('password', 'password', u'Password'),
+    FieldType('password', 'password', u'Password',
+              displayRenderer='display_password'),
     FieldType('textarea', 'textarea', u'Textarea'),
     FieldType('html', 'html', u'HTML Text'),
     FieldType('number', 'number', u'Number',

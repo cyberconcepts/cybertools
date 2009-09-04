@@ -39,6 +39,7 @@ class Email(schema.TextLine):
 
 # put field type name and other info in standard field classes.
 schema.Field.__typeInfo__ = ('textline',)
+schema.Password.__typeInfo__ = ('password',)
 schema.Int.__typeInfo__ = ('number',)
 schema.Float.__typeInfo__ = ('number',)
 schema.Choice.__typeInfo__ = ('dropdown',)
