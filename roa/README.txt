@@ -19,5 +19,3 @@ Providing object data in JSON format
 
   >>> obj = Demo('test')
   >>> jsv = JSONView(obj, TestRequest())
-  >>> jsv()
-  '["name"]'
