@@ -29,25 +29,37 @@ from zope import component
 jsonMimeTypes = ('application/json',)
 
 
+def isJSONRequest(request):
+    return request.get('CONTENT_TYPE') in jsonMimeTypes
+
+
 class CheckJSONTraverser(ItemTraverser):
 
     def publishTraverse(self, request, name):
-        if self.isJSONRequest(request):
+        if isJSONRequest(request):
             return self.jsonTraverse(request, name)
         return self.defaultTraverse(request, name)
 
-    def isJSONRequest(self, request):
-        return request.get('CONTENT_TYPE') in jsonMimeTypes
-
     def jsonTraverse(self, request, name):
+        print '*** jsonTraverse', self.context, name
+        if request['TraversalRequestNameStack']:
+            return self.defaultTraverse(request, name)
+        method = self.request['REQUEST_METHOD']
+        print '*** traversing', self.context, name, method
         item = self.context.get(name)
-        if item is not None:
-            return item
-        # TODO: specify provides=IJSONView
-        view = component.getMultiAdapter((self.context, request), name='json')
+        if item is None:
+            view = component.getMultiAdapter((self.context, request), name='json')
+            if view is None:
+                return self.defaultTraverse(request, name)
+            if method == 'PUT':
+                return view.create(name)
+            return self.defaultTraverse(request, name)
+        view = component.getMultiAdapter((item, request), name='json')
         if view is None:
             return self.defaultTraverse(request, name)
-        return view.traverse(name)
+        if method == 'PUT':
+            return view.put()
+        return view.get()
 
     def defaultTraverse(self, request, name):
         return super(CheckJSONTraverser, self).publishTraverse(request, name)

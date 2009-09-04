@@ -22,7 +22,10 @@ $Id$
 """
 
 from ZPublisher.BaseRequest import DefaultPublishTraverse
+from ZPublisher.HTTPRequest import HTTPRequest
+
 from cybertools.roa.traversal import CheckJSONTraverser as BaseTraverser
+from cybertools.roa.traversal import isJSONRequest
 
 
 class CheckJSONTraverser(BaseTraverser, DefaultPublishTraverse):
@@ -30,6 +33,18 @@ class CheckJSONTraverser(BaseTraverser, DefaultPublishTraverse):
     defaultTraverse = DefaultPublishTraverse.publishTraverse
 
     def browserDefault(self, request):
-        if self.isJSONRequest(request):
+        if isJSONRequest(request):
             return self.context, ('@@json',)
         return DefaultPublishTraverse.browserDefault(self, request)
+
+
+old_traverse = HTTPRequest.traverse
+
+def traverse(self, *args, **kw):
+    if isJSONRequest(self):
+        self.maybe_webdav_client = 0
+    old_traverse(self, *args, **kw)
+
+HTTPRequest.traverse = traverse
+
+print '***** HTTPRequest.traverse monkey patch installed.'
