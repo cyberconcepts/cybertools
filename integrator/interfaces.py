@@ -48,7 +48,7 @@ class IProxy(Interface):
     description = Attribute('A somewhat longer descriptive information.')
     url = Attribute('An explicit target URL (optional).')
     authors = Attribute('A list of names of persons who worked on this object.')
-    create = Attribute('A datetime object denoting the data/time of object '
+    created = Attribute('A datetime object denoting the data/time of object '
                 'creation.')
     modified = Attribute('A datetime object denoting the data/time of last '
                 'modification of the object.')
