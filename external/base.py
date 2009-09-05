@@ -57,7 +57,7 @@ class BaseLoader(object):
 
     def load(self, elements):
         self.loadRecursive(elements)
-        self.transcript.write('Rows loaded: %(count)i; changed: %(changed)i; '
+        self.transcript.write('Rows loaded: %(count)i; changes: %(changed)i; '
                               'errors: %(errors)i\n' % self.summary)
 
     def loadRecursive(self, elements):
