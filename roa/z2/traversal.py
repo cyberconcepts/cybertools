@@ -38,13 +38,16 @@ class CheckJSONTraverser(BaseTraverser, DefaultPublishTraverse):
         return DefaultPublishTraverse.browserDefault(self, request)
 
 
-old_traverse = HTTPRequest.traverse
+def install_traverse_patch():
 
-def traverse(self, *args, **kw):
-    if isJSONRequest(self):
-        self.maybe_webdav_client = 0
-    old_traverse(self, *args, **kw)
+    base_traverse = HTTPRequest.traverse
 
-HTTPRequest.traverse = traverse
+    def traverse(self, *args, **kw):
+        if isJSONRequest(self):
+            self.maybe_webdav_client = 0
+        return base_traverse(self, *args, **kw)
 
-print '***** HTTPRequest.traverse monkey patch installed.'
+    HTTPRequest.traverse = traverse
+    print '***** HTTPRequest.traverse monkey patch installed.'
+
+install_traverse_patch()

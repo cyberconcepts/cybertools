@@ -30,10 +30,15 @@ jsonMimeTypes = ('application/json',)
 
 
 def isJSONRequest(request):
-    return request.get('CONTENT_TYPE') in jsonMimeTypes
+    return request.get('HTTP_ACCEPT').split(';', 1)[0] in jsonMimeTypes
+    #return request.get('CONTENT_TYPE') in jsonMimeTypes
 
 
 class CheckJSONTraverser(ItemTraverser):
+
+    def getChild(self, name):
+        # may be overwritten by subclass
+        return self.context.get(name)
 
     def publishTraverse(self, request, name):
         if isJSONRequest(request):
@@ -41,22 +46,19 @@ class CheckJSONTraverser(ItemTraverser):
         return self.defaultTraverse(request, name)
 
     def jsonTraverse(self, request, name):
-        print '*** jsonTraverse', self.context, name
-        if request['TraversalRequestNameStack']:
-            return self.defaultTraverse(request, name)
         method = self.request['REQUEST_METHOD']
-        print '*** traversing', self.context, name, method
-        item = self.context.get(name)
-        if item is None:
-            view = component.getMultiAdapter((self.context, request), name='json')
-            if view is None:
-                return self.defaultTraverse(request, name)
+        child = self.getChild(name)
+        print '*** traversing', method, self.context, name, child
+        if self.getTraversalStack():
+            if child is None:
+                raise AttributeError(name)
+            return child
+        if child is None:
             if method == 'PUT':
+                view = component.getMultiAdapter((self.context, request), name='json')
                 return view.create(name)
-            return self.defaultTraverse(request, name)
-        view = component.getMultiAdapter((item, request), name='json')
-        if view is None:
-            return self.defaultTraverse(request, name)
+            raise AttributeError(name)
+        view = component.getMultiAdapter((child, request), name='json')
         if method == 'PUT':
             return view.put()
         return view.get()
@@ -68,3 +70,6 @@ class CheckJSONTraverser(ItemTraverser):
         if self.isJSONRequest(request):
             return self.context, ('@@json',)
         return super(CheckJSONTraverser, self).browserDefault(request)
+
+    def getTraversalStack(self):
+        return self.request['TraversalRequestNameStack']
