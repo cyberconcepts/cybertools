@@ -52,6 +52,11 @@ class LinkManager(object):
             link.manager = None
             del self.links[link.identifier]
 
+    def getLink(self, name):
+        result = self.query(name=name)
+        if result:
+            return result[0]
+
     def query(self, source=None, target=None, name=None, **kw):
         if source is None:
             result = self.links.values()
