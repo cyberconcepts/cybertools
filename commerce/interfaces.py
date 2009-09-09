@@ -83,6 +83,14 @@ class IShop(Interface):
                           u'for creating the next order identifier.'),
             default=0,
             required=False)
+    defaultPriceScale = schema.ASCIILine(
+            title=_(u'Default Price Scale'),
+            description=_(u'A string specifying the price '
+                    u'scale that should be used if the user is not '
+                    u'related to a customer or the customer does not have '
+                    u'a price group.'),
+            default='',
+            required=False)
 
     products = Attribute(u'The products available in this shop.')
     categories = Attribute(u'The product categories provided by this shop.')
