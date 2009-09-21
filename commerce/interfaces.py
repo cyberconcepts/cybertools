@@ -91,6 +91,16 @@ class IShop(Interface):
                     u'a price group.'),
             default='',
             required=False)
+    priceMarkup = schema.Float(
+            title=_(u'Price Markup'),
+            description=_(u'Price Markup (percent).'),
+            default=0.0,
+            required=False)
+    isConsumerShop = schema.Bool(
+            title=_(u'Is Consumer Shop'),
+            description=_(u'Check if shop is primarily for consumers.'),
+            default=False,
+            required=False)
 
     products = Attribute(u'The products available in this shop.')
     categories = Attribute(u'The product categories provided by this shop.')
