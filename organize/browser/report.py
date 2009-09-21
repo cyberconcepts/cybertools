@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 20098 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -29,10 +29,11 @@ from zope import component
 from zope.cachedescriptors.property import Lazy
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.interfaces import ISchema
+from cybertools.organize.browser.service import BaseView
 from cybertools.stateful.interfaces import IStateful
 
 
-class RegistrationsExportCsv(object):
+class RegistrationsExportCsv(BaseView):
 
     encoding = 'ISO8859-15'
 
@@ -76,46 +77,72 @@ class RegistrationsExportCsv(object):
         withTemporary = self.request.get('with_temporary')
         context = self.context
         services = context.getServices()
+        withWaitingList = False
+        for service in services:
+            if service.waitingList:
+                withWaitingList = True
+                break
         schemas = [s for s in context.getClientSchemas() if ISchema.providedBy(s)]
-        yield (['Client ID']
+        headline = (['Client ID', 'Time Stamp']
              + list(itertools.chain(*[[self.encode(f.title)
                                             for f in s.fields]
                                                     for s in schemas]))
              + [self.encode(s.title) for s in services])
+        if withWaitingList:
+            headline += ['WL ' + self.encode(s.title) for s in services]
+        #yield line
+        lines = []
         clients = context.getClients()
         for name, client in clients.items():
             hasRegs = False
             regs = []
+            waiting = []
+            timeStamp = ''
             for service in services:
                 reg = service.registrations.get(name)
                 if reg is None:
                     regs.append(0)
+                    waiting.append(0)
                 else:
                     state = IStateful(reg).getStateObject()
                     if state.name == 'temporary' and not withTemporary:
                         regs.append(0)
+                        waiting.append(0)
                     else:
-                        number = reg.number
                         regs.append(reg.number)
-                        if number:
+                        waiting.append(reg.numberWaiting)
+                        if reg.number or reg.numberWaiting:
                             hasRegs = True
+                        if reg.timeStamp < timeStamp:
+                            timeStamp = reg.timeStamp
             if not hasRegs:
                 continue
-            result = [name]
+            line = [name, timeStamp]
             for schema in schemas:
                 instance = IInstance(client)
                 instance.template = schema
                 data = instance.applyTemplate()
                 for f in schema.fields:
-                    result.append(self.encode(data.get(f.name, '')))
-            result += regs
-            yield result
+                    line.append(self.encode(data.get(f.name, '')))
+            line += regs
+            if withWaitingList:
+                line += waiting
+            #yield line
+            lines.append(line)
+        lines.sort(key=lambda x: x[1])
+        for l in lines:
+            l[1] = self.getFormattedDate(l[1], type='dateTime', variant='short')
+        return [headline] + lines
 
     def render(self):
         methodName = self.request.get('get_data_method', 'getAllDataInColumns')
         method = getattr(self, methodName, self.getData)
         output = StringIO()
-        csv.writer(output, dialect='excel', delimiter=';').writerows(method())
+        try:
+            csv.writer(output, dialect='excel', delimiter=';').writerows(method())
+        except:
+            import traceback; traceback.print_exc()
+            raise
         result = output.getvalue()
         self.setHeaders(len(result))
         return result

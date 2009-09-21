@@ -57,8 +57,12 @@ class BaseView(SchemaBaseView):
 
     # output formatting
 
-    def getFormattedDate(self, date=None, type='date', variant='medium'):
-        date = time.localtime(date)[:6]
+    def getFormattedDate(self, date=None, type='date', variant='medium',
+                         adjustTz=False):
+        if adjustTz:
+            date = time.gmtime(date)[:6]
+        else:
+            date = time.localtime(date)[:6]
         date = datetime(*date)
         return formatDate(date, type=type, variant=variant, lang=self.getLanguage())
 
