@@ -91,9 +91,10 @@ class IShop(Interface):
                     u'a price group.'),
             default='',
             required=False)
-    priceMarkup = schema.Float(
-            title=_(u'Price Markup'),
-            description=_(u'Price Markup (percent).'),
+    priceMarkup= schema.Float(
+            title=_(u'Price Markup (%)'),
+            description=_(u'Markup in percent to apply to the standard price of the product '
+                    u'if the product has not got a price for the price scale given.'),
             default=0.0,
             required=False)
     isConsumerShop = schema.Bool(
