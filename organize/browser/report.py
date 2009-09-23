@@ -86,31 +86,40 @@ class RegistrationsExportCsv(BaseView):
         headline = (['Client ID', 'Time Stamp']
              + list(itertools.chain(*[[self.encode(f.title)
                                             for f in s.fields]
-                                                    for s in schemas]))
-             + [self.encode(s.title) for s in services])
-        if withWaitingList:
-            headline += ['WL ' + self.encode(s.title) for s in services]
-        #yield line
+                                                    for s in schemas])))
+        for s in services:
+            headline.append(self.encode(s.title))
+            if withWaitingList:
+                headline.append('WL ' + self.encode(s.title))
+        #     + [self.encode(s.title) for s in services])
+        #if withWaitingList:
+        #    headline += ['WL ' + self.encode(s.title) for s in services]
         lines = []
         clients = context.getClients()
         for name, client in clients.items():
             hasRegs = False
             regs = []
-            waiting = []
+            #waiting = []
             timeStamp = ''
             for service in services:
                 reg = service.registrations.get(name)
                 if reg is None:
                     regs.append(0)
-                    waiting.append(0)
+                    if withWaitingList:
+                        regs.append(0)
+                    #waiting.append(0)
                 else:
                     state = IStateful(reg).getStateObject()
                     if state.name == 'temporary' and not withTemporary:
                         regs.append(0)
-                        waiting.append(0)
+                        if withWaitingList:
+                            regs.append(0)
+                        #waiting.append(0)
                     else:
                         regs.append(reg.number)
-                        waiting.append(reg.numberWaiting)
+                        if withWaitingList:
+                            regs.append(reg.numberWaiting)
+                        #waiting.append(reg.numberWaiting)
                         if reg.number or reg.numberWaiting:
                             hasRegs = True
                         if reg.timeStamp < timeStamp:
@@ -125,9 +134,8 @@ class RegistrationsExportCsv(BaseView):
                 for f in schema.fields:
                     line.append(self.encode(data.get(f.name, '')))
             line += regs
-            if withWaitingList:
-                line += waiting
-            #yield line
+            #if withWaitingList:
+            #    line += waiting
             lines.append(line)
         lines.sort(key=lambda x: x[1])
         for l in lines:
