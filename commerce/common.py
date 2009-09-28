@@ -134,6 +134,13 @@ class FloatValue(float):
             value = value + ' ' + self.currency
         return value
 
+    def rawValue(self):
+        return float(self)
+
+    def rawFormatted(self):
+        format = '%%.%if' % self.decimals
+        return (format % self)
+
 
 # utility functions
 
