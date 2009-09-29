@@ -102,6 +102,11 @@ class IShop(Interface):
             description=_(u'Check if shop is primarily for consumers.'),
             default=False,
             required=False)
+    email = schema.TextLine(
+            title=_(u'E-Mail Address'),
+            description=_(u'Email address of the shop.'),
+            default=u'',
+            required=False)
 
     products = Attribute(u'The products available in this shop.')
     categories = Attribute(u'The product categories provided by this shop.')
