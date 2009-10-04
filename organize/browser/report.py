@@ -147,7 +147,8 @@ class RegistrationsExportCsv(BaseView):
         method = getattr(self, methodName, self.getData)
         output = StringIO()
         try:
-            csv.writer(output, dialect='excel', delimiter=';').writerows(method())
+            csv.writer(output, dialect='excel', delimiter=';',
+                       quoting=csv.QUOTE_NONNUMERIC).writerows(method())
         except:
             import traceback; traceback.print_exc()
             raise
