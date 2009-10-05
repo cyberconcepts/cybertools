@@ -36,6 +36,8 @@ from cybertools.stateful.interfaces import IStateful
 class RegistrationsExportCsv(BaseView):
 
     encoding = 'ISO8859-15'
+    #delimiter = ';'
+    delimiter = ','
 
     def __init__(self, context, request):
         self.context = context
@@ -51,8 +53,8 @@ class RegistrationsExportCsv(BaseView):
 
     def getData(self):
         withTemporary = self.request.get('with_temporary')
-        yield ['Service', 'Client ID', 'Organization', 'First Name', 'Last Name', 'E-Mail',
-               'Number', 'State']
+        yield ['Service', 'Client ID', 'Organization', 'First Name', 'Last Name',
+               'E-Mail', 'Number', 'State']
         for service in self.context.getServices():
             for clientName, reg in service.registrations.items():
                 client = reg.client
@@ -143,11 +145,15 @@ class RegistrationsExportCsv(BaseView):
         return [headline] + lines
 
     def render(self):
+        delimiter = self.delimiter
+        xlsv = self.request.form.get('xlsv')
+        if xlsv == '2007':
+            delimiter = ';'
         methodName = self.request.get('get_data_method', 'getAllDataInColumns')
         method = getattr(self, methodName, self.getData)
         output = StringIO()
         try:
-            csv.writer(output, dialect='excel', delimiter=';',
+            csv.writer(output, dialect='excel', delimiter=delimiter,
                        quoting=csv.QUOTE_NONNUMERIC).writerows(method())
         except:
             import traceback; traceback.print_exc()
