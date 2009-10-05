@@ -1,0 +1,20 @@
+==================
+Tweaking HTML text
+==================
+
+$Id$
+
+  >>> from cybertools.util.html import sanitize
+
+  >>> input = """<html>
+  ... <p class="standard" style="font-size: 200%; font-weight: bold">
+  ...   <a href="blubb"><b>Text</b></a>
+  ... </p>
+  ... </html>"""
+
+  >>> sanitize(input, validAttrs=['style'])
+  u'\n<p style="font-weight: bold">\n<b>Text</b>\n</p>\n'
+
+  >>> sanitize(input, ['p', 'b'], ['class'])
+  u'\n<p class="standard">\n<b>Text</b>\n</p>\n'
+
