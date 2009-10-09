@@ -24,13 +24,13 @@ $Id$
 
 from cybertools.text.lib.BeautifulSoup import BeautifulSoup, Comment
 
-#validTags = 'p i strong b u a h1 h2 h3 img pre br'.split()
-validTags = 'b br div em font h1 h2 h3 i p pre span strong table td tr u'.split()
+validTags = ('b br div em font h1 h2 h3 i li ol p pre span strong '
+             'table td tr u ul').split()
 
-#validAttrs = 'href src'.split()
 validAttrs = 'class style'.split()
 
 validStyles = 'font-style font-weight'.split()
+validStyleParts = 'border padding'.split()
 
 
 def sanitize(value, validTags=validTags, validAttrs=validAttrs,
@@ -43,6 +43,7 @@ def sanitize(value, validTags=validTags, validAttrs=validAttrs,
             tag.hidden = True
         attrs = []
         for attr, val in tag.attrs:
+            attr = attr.lower()
             if attr not in validAttrs:
                 continue
             if attr == 'style':
@@ -58,6 +59,15 @@ def sanitizeStyle(value, validStyles=validStyles):
     for item in value.split(';'):
         if ':' in item:
             k, v = item.split(':')
-            if k.strip() in validStyles:
+            if checkStyle(k):
                 result.append(item.strip())
     return '; '.join(result)
+
+def checkStyle(k):
+    k = k.strip().lower()
+    if k in validStyles:
+        return True
+    for name in validStyleParts:
+        if k.startswith(name):
+            return True
+    return False
