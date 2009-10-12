@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ class Options(AutoNamespace):
     def __call__(self, key, default=None):
         value = self
         for part in key.split('.'):
-            value = getattr(value, part)
+            value = getattr(value, part, None)
         if isinstance(value, Element):
             value = default
         return value
