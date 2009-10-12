@@ -232,6 +232,8 @@ class DateFieldInstance(NumberFieldInstance):
     def unmarshall(self, value):
         if not value:
             return None
+        if len(value) > 1 and value[0] and not value[1]:
+            value[1] = 'T00:00:00'
         value = ''.join(value)
         if value:
             return datetime(*(strptime(value, '%Y-%m-%dT%H:%M:%S')[:6]))
