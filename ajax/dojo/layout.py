@@ -47,6 +47,10 @@ dojoCssTundra = Layout('css.dojo.tundra', 'page.css', renderer=standardRenderers
              media='all', resource='ajax.dojo/dijit/themes/tundra/tundra.css',
              order=11)
 
+dojoCssLightbox = Layout('css.dojo.lightbox', 'page.css', renderer=standardRenderers.css,
+             media='all', resource='ajax.dojo/dojox/image/resources/Lightbox.css',
+             order=12)
+
 
 class DojoLayoutInstance(LayoutInstance):
 
