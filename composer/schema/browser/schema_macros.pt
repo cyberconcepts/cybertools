@@ -84,12 +84,12 @@
 
 
 <metal:textline define-macro="input_textline">
-    <input type="text" name="field" style="width: 450px; height: 1.5em"
+    <input type="text" name="field"
            xxdojoType="dijit.form.ValidationTextBox"
            tal:define="width field/width|nothing"
            tal:attributes="name name; id name;
                            style python:
-                                ('width: %s;;' % (width and str(width)+'px' or '450px')) +
+                                ('width: %s;;' % (width and str(width)+'px' or '550px')) +
                                 'height: 1.5em;;';
                            value data/?name|string:;
                            required field/required_js;" />
@@ -113,23 +113,23 @@
 
 
 <metal:password define-macro="input_password">
-    <input type="password" name="field" style="width: 450px"
+    <input type="password" name="field"
            tal:define="width field/width|nothing"
            tal:attributes="name name;
                            style python:
-                                'width: %s' % (width and str(width)+'px' or '450px');
+                                'width: %s' % (width and str(width)+'px' or '550px');
                            value data/?name|string:" />
 </metal:password>
 
 
 <metal:textarea define-macro="input_textarea">
-    <textarea name="field" rows="3" style="width: 450px"
+    <textarea name="field" rows="3"
            tal:define="width field/width|nothing;
                        height field/height|python:3"
            tal:attributes="name name;
                            rows python: height or 3;
                            style python:
-                                'width: %s' % (width and str(width)+'px' or '450px');"
+                                'width: %s' % (width and str(width)+'px' or '550px');"
            tal:content="data/?name|string:">
     </textarea>
 </metal:textarea>
@@ -169,13 +169,13 @@
 
 
 <metal:list define-macro="input_list">
-    <textarea name="field" rows="3" style="width: 450px"
+    <textarea name="field" rows="3"
             tal:define="width field/width|nothing;
                         height field/height|python:3"
             tal:attributes="name name;
                          rows python: height or 3;
                          style python:
-                               'width: %s' % (width and str(width)+'px' or '450px');"
+                               'width: %s' % (width and str(width)+'px' or '550px');"
             tal:content="data/?name|string:" />
 </metal:list>
 
