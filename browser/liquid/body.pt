@@ -38,7 +38,7 @@
     </div>
 
     <div id="sub-section"
-         tal:condition="view/isAuthenticated">
+         xtal:condition="view/isAuthenticated">
       <tal:portlet repeat="macro controller/macros/portlet_right">
         <metal:portlet use-macro="macro" />
       </tal:portlet>
