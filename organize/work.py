@@ -45,8 +45,8 @@ def workItemStates():
               ('plan', 'accept', 'start', 'work', 'finish', 'delegate', 'cancel'),
               color='red'),
         State('planned', 'planned',
-              ('plan', 'accept', 'start', 'work', 'finish', 'cancel', 'modify'),
-              color='red'),
+              ('plan', 'accept', 'start', 'work', 'finish', 'delegate',
+               'cancel', 'modify'), color='red'),
         State('accepted', 'accepted',
               ('plan', 'accept', 'start', 'work', 'finish', 'cancel', 'modify'),
               color='yellow'),
@@ -54,8 +54,8 @@ def workItemStates():
               ('work', 'finish', 'cancel', 'modify'),
               color='orange'),
         State('done', 'done',
-              ('plan', 'accept', 'start', 'work', 'finish', 'cancel', 'modify'),
-              color='lightgreen'),
+              ('plan', 'accept', 'start', 'work', 'finish', 'delegate',
+               'cancel', 'modify'), color='lightgreen'),
         State('finished', 'finished',
               ('plan', 'accept', 'start', 'work', 'finish', 'modify', 'close'),
               color='green'),
@@ -196,8 +196,12 @@ class WorkItem(Stateful, Track):
     def delegate(self, userName, **kw):
         if self.state == 'new':
             delegated = self
+            self.setData(ignoreParty=True, **kw)
         else:
-            delegated = self.createNew('delegate', self.userName, **kw)
+            if self.state in ('planned', 'accepted', 'done'):
+                self.state = self.state + '_x'
+                self.reindex('state')
+            delegated = self.createNew('delegate', userName, ignoreParty=True, **kw)
         delegated.state = 'delegated'
         delegated.reindex('state')
         new = delegated.createNew('plan', userName, **kw)
@@ -220,13 +224,14 @@ class WorkItem(Stateful, Track):
 
     specialActions = dict(modify=modify, delegate=delegate, close=close)
 
-    def setData(self, **kw):
+    def setData(self, ignoreParty=False, **kw):
         if self.state != 'new':
             raise ValueError("Attributes may only be changed in state 'new'.")
         party = kw.pop('party', None)
-        if party is not None:
-            self.userName = party
-            self.reindex('userName')
+        if not ignoreParty:
+            if party is not None:
+                self.userName = party
+                self.reindex('userName')
         start = kw.get('start')
         if start is not None:
             self.timeStamp = start
