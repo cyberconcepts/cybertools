@@ -222,7 +222,7 @@ class IService(Interface):
                 title=_(u'External ID'),
                 description=_(u'Identifier in external system or code number.'),
                 required=False,)
-    cost = schema.Int(
+    cost = schema.Float(
                 title=_(u'Cost'),
                 description=_(u'Cost or prizing information.'),
                 required=False,)
