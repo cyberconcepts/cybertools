@@ -1,11 +1,15 @@
-=======================
-Dynamic Plug-in Modules
-=======================
+==================================
+Dynamically Loaded Plug-in Modules
+==================================
 
   ($Id$)
 
   >>> import os
   >>> basePath = os.path.join(os.path.dirname(__file__), 'testing')
+
+
+Create, Modify, and Reload Plug-in Modules
+==========================================
 
 Let's first create a module with a function we'll call later.
 
@@ -21,9 +25,9 @@ Let's first create a module with a function we'll call later.
   >>> f.write(src)
   >>> f.close()
 
-We could import this module now but in order to be able to automatically
-reload it later (and be able to look it up in the plug-in module registry)
-we use a loader module.
+We could import this module now immediately but in order to be able to
+automatically reload it later (and to be able to look it up in the plug-in
+module registry) we include it in a loader module.
 
   >>> loadPath = os.path.join(basePath, 'load.py')
   >>> src = '''
@@ -46,15 +50,7 @@ the function in it.
   >>> mod1.show()
   mod1.show() executed
 
-We now append additional code to mod1 and see if it is reloaded automatically;
-in order to create a sufficient time difference we change the stored setting.
-We also have to remove the .pyc file, otherwise Python will refuse to
-recompile the source file because the modification time is not changed
-during the run of the test script.
-
-  >>> from cybertools.plugin.manage import modules
-  >>> modules['cybertools.plugin.testing.mod1'].timeStamp -= 2
-  >>> os.remove(os.path.join(basePath, 'mod1.pyc'))
+We now append additional code to mod1 and see if it is reloaded automatically.
 
   >>> src = '''    print 'now changed...'
   ...
@@ -63,11 +59,20 @@ during the run of the test script.
   >>> f.write(src)
   >>> f.close()
 
+(In order to create a sufficient time difference during testing we patch the
+stored setting. We also have to remove the .pyc file, otherwise Python will
+refuse to recompile the source file because the modification time is not changed
+significantly during the run of the test script.)
+
+  >>> from cybertools.plugin.manage import modules
+  >>> modules['cybertools.plugin.testing.mod1'].timeStamp -= 2
+  >>> os.remove(os.path.join(basePath, 'mod1.pyc'))
+
   >>> mod1.show()
   mod1.show() executed
   now changed...
 
-We now append another function to the source file.
+Let's append another function to the source file.
 
   >>> src = '''
   ... @register()
@@ -82,7 +87,7 @@ We now append another function to the source file.
   >>> modules['cybertools.plugin.testing.mod1'].timeStamp -= 2
   >>> os.remove(os.path.join(basePath, 'mod1.pyc'))
 
-When we now try to call the new function, the module will not be reloaded
+When we try to call the new function, the module will not be reloaded
 automatically.
 
   >>> mod1.another()
@@ -96,6 +101,7 @@ But just reloading the load module will also update the mod1 application module.
   <module 'cybertools.plugin.testing.load' ...>
   >>> mod1.another()
   executing another function.
+
 
 Fin de partie
 =============
