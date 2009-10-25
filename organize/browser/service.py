@@ -110,6 +110,14 @@ class BaseView(SchemaBaseView):
     def isMultiDay(self, service):
         return time.localtime(service.start)[2] != time.localtime(service.end)[2]
 
+    def getCost(self, service=None):
+        if service is None:
+            service = self.context
+        value = service.getCost()
+        if value:
+            return ('%.2f Euro' % float(value)).replace('.', ',')
+        return u''
+
 
 class ServiceManagerView(BaseView):
 
@@ -252,7 +260,7 @@ class CheckoutView(ServiceManagerView):
                                number=reg.number,
                                numberWaiting=reg.numberWaiting,
                                externalId=service.externalId or '',
-                               cost=service.cost or '',
+                               cost=self.getCost(service),
                                serviceObject=service))
         return result
 
@@ -310,7 +318,7 @@ class CheckoutView(ServiceManagerView):
                         'Uhrzeit: ' + info['fromToTime'],
                         locationInfo]
             if info['cost']:
-                lineData.append('Kostenbeitrag: %s,00 Euro' % info['cost'])
+                lineData.append('Kostenbeitrag: %s' % info['cost'])
             if info['externalId']:
                 lineData.append('Code: %s' % info['externalId'])
             if info['serviceObject'].allowRegWithNumber and info['number']:
@@ -362,7 +370,7 @@ class CheckoutView(ServiceManagerView):
         result = []
         waitingHeader = costHeader = externalIdHeader = ''
         waitingRow = '<td width="5%%">%i</td>'
-        costRow = '<td>%s,00 Euro</td>'
+        costRow = '<td>%s</td>'
         externalIdRow = '<td>%s</td>'
         if self.hasWaiting:
             waitingHeader = '<th width="5%%">Warteliste</th>'
