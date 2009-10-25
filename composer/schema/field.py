@@ -236,7 +236,13 @@ class DateFieldInstance(NumberFieldInstance):
             value[1] = 'T00:00:00'
         value = ''.join(value)
         if value:
-            return datetime(*(strptime(value, '%Y-%m-%dT%H:%M:%S')[:6]))
+            try:
+                return datetime(*(strptime(value, '%Y-%m-%dT%H:%M:%S')[:6]))
+            except ValueError:
+                try:
+                    return datetime(*(strptime(value, '%Y-%m-%dT%H:%M')[:6]))
+                except ValueError:
+                    return datetime(*(strptime(value, '%Y-%m-%d')[:6]))
         return None
 
     def validate(self, value, data=None):
