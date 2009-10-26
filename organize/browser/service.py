@@ -113,7 +113,8 @@ class BaseView(SchemaBaseView):
     def getCost(self, service=None):
         if service is None:
             service = self.context
-        value = service.getCost()
+        #value = service.getCost()
+        value = service.cost
         if value:
             return ('%.2f Euro' % float(value)).replace('.', ',')
         return u''
