@@ -169,6 +169,10 @@ textarea {
     padding: 0.1em;
 }
 
+textarea.pretty {
+    font: normal 100% Verdana, Helvetica, Arial, sans-serif;
+}
+
 input {
     font: normal 100% Verdana, Lucida, Helvetica, Arial, sans-serif;
     color: #242424;
