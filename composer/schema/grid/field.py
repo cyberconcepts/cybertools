@@ -126,7 +126,10 @@ class RecordsFieldInstance(GridFieldInstance):
             item = {}
             empty = True
             for fi in self.columnFieldInstances:
-                value = fi.unmarshall(row[fi.name].strip())
+                value = row[fi.name]
+                if isinstance(value, basestring):
+                    value = value.strip()
+                value = fi.unmarshall(value)
                 item[fi.name] = value
                 if fi.default is not None:
                     if value and value != fi.default:
