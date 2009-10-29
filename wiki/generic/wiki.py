@@ -166,7 +166,7 @@ class WikiPage(BaseWikiPage):
         if self.context.getProperty('text') is None:
             self.context.manage_addProperty('text', text, 'text')
         else:
-            self.context.manage_changeProperties(id='text', value=text)
+            self.context.manage_changeProperties(text=text)
     text = property(getText, setText)
 
     def getWiki(self):

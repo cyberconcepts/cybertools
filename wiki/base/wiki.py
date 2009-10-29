@@ -80,9 +80,12 @@ class WikiManager(BaseConfiguration):
         return obj
 
     def resolveUid(self, uid):
-        if isinstance(uid, basestring) and ':' in uid:
-            protocol, address = uid.split(':', 1)
-            if protocol.lower() in protocols:
+        if isinstance(uid, basestring):
+            if ':' in uid:
+                protocol, address = uid.split(':', 1)
+                if protocol.lower() in protocols:
+                    return ExternalPage(uid)
+            if uid.startswith('/') or '..' in uid:
                 return ExternalPage(uid)
         return None
 
