@@ -38,15 +38,16 @@ class WikiManager(BaseConfiguration):
 
     implements(IWikiManager)
 
-    def __init__(self):
+    def setup(self):
         self.wikis = {}
+        self.plugins = {}
 
     def addWiki(self, wiki):
         name = wiki.name
         if name in self.wikis:
             raise ValueError("Wiki '%s' already registered." % name)
         self.wikis[name] = wiki
-        wiki.manager = self
+        wiki.setManager(self)
         return wiki
 
     def removeWiki(self, wiki):
@@ -57,16 +58,25 @@ class WikiManager(BaseConfiguration):
     def listWikis(self):
         return self.wikis.values()
 
-    def getPlugin(self, type, name):
+    def getPlugin(self, type, name=None):
+        plugins = self.getPlugins()
+        if (type, name) in plugins:
+            plugin = plugins[(type, name)]
+            if type is None:
+                return plugin
+            return type(plugin)
         return component.getUtility(type, name=name)
 
+    def getPlugins(self):
+        return self.plugins
+
     def getUid(self, obj):
-        return component.getUtility(IIntIds).getId(obj)
+        return self.getPlugin(IIntIds).register(obj)
 
     def getObject(self, uid):
         obj = self.resolveUid(uid)
         if obj is None:
-            return component.getUtility(IIntIds).getObject(int(uid))
+            return self.getPlugin(IIntIds).getObject(int(uid))
         return obj
 
     def resolveUid(self, uid):
@@ -92,9 +102,18 @@ class Wiki(BaseConfiguration):
         self.name = name
         self.title = title or name
         self.pages = {}
+        self.setup()
+
+    def setup(self):
+        self.getManager().addWiki(self)
+        self.createPage('StartPage', u'Start Page',
+                        u'The text of the **Start Page**')
 
     def getManager(self):
         return self.manager
+
+    def setManager(self, manager):
+        self.manager = manager
 
     def createPage(self, name, title=None):
         if name in self.pages:
@@ -138,6 +157,10 @@ class WikiPage(BaseConfiguration):
     def __init__(self, name, title=None):
         self.name = name
         self.title = title or name
+        self.setup()
+
+    def setup(self):
+        pass
 
     def getWiki(self):
         return self.wiki

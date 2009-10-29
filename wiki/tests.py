@@ -53,7 +53,7 @@ class Test(unittest.TestCase):
 def setUp(testCase):
     component.provideAdapter(WikiURL, (IWiki, IBrowserRequest), IAbsoluteURL)
     component.provideAdapter(PageURL, (IWikiPage, IBrowserRequest), IAbsoluteURL)
-    component.provideUtility(IntIdsStub())
+    #component.provideUtility(IntIdsStub())
     component.provideUtility(WikiConfiguration())
     component.provideUtility(DocutilsHTMLWriter(), name='docutils.html')
     component.provideUtility(DocutilsRstxParser(), name='docutils.rstx')
@@ -62,6 +62,8 @@ def setUp(testCase):
     component.provideAdapter(link.LinkManager)
     links = link.setupLinkManager(None)
     component.provideUtility(links, name='tracking')
+    from cybertools.wiki.generic import wiki
+    wiki.IntIds = IntIdsStub
 
 
 def test_suite():

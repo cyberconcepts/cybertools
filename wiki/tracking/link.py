@@ -135,6 +135,7 @@ class LinkManager(BaseLinkManager):
         return self.context
 
 
+# for testing only:
 def setupLinkManager(manager):
     ts = TrackingStorage(trackFactory=Link)
     return ILinkManager(ts)

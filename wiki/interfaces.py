@@ -23,6 +23,7 @@ $Id$
 """
 
 from zope.interface import Interface, Attribute
+from zope import schema
 
 
 class IWikiConfigInfo(Interface):
@@ -95,6 +96,8 @@ class IWikiManager(Interface):
 class IWiki(Interface):
     """ A collection of wiki pages, or - more generally - wiki components.
     """
+
+    title = schema.TextLine(title=u'Title')
 
     name = Attribute('The name or address of the wiki unique within the '
                 'scope of the wiki manager.')

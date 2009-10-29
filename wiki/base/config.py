@@ -38,17 +38,36 @@ class WikiConfigInfo(dict):
         return self.get(attr, None)
 
 
+class BaseConfigurator(object):
+
+    def __init__(self, context):
+        self.context = context
+
+    def initialize(self):
+        ci = WikiConfigInfo()
+        self.context._configInfo = ci
+        return ci
+
+    def getConfigInfo(self):
+        return self.context._configInfo
+
+
 class BaseConfiguration(object):
     """ The base class for all wiki configuration implementations.
     """
 
     implements(IWikiConfiguration)
 
+    configurator = BaseConfigurator
+
     _configInfo = None
+
+    def getConfigInfo(self):
+        return self.configurator(self).getConfigInfo()
 
     def getConfig(self, functionality):
         c = None
-        ci = self._configInfo
+        ci = self.getConfigInfo()
         if ci is not None:
             c = ci.get(functionality)
         if c is None:
@@ -58,9 +77,10 @@ class BaseConfiguration(object):
         return c
 
     def setConfig(self, functionality, value):
-        if self._configInfo is None:
-            self._configInfo = WikiConfigInfo()
-        self._configInfo.set(functionality, value)
+        ci = self.getConfigInfo()
+        if ci is None:
+            ci = self.configurator(self).initialize()
+        ci.set(functionality, value)
 
     def getConfigParent(self):
         return None
