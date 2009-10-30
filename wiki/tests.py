@@ -53,7 +53,7 @@ class Test(unittest.TestCase):
 def setUp(testCase):
     component.provideAdapter(WikiURL, (IWiki, IBrowserRequest), IAbsoluteURL)
     component.provideAdapter(PageURL, (IWikiPage, IBrowserRequest), IAbsoluteURL)
-    #component.provideUtility(IntIdsStub())
+    component.provideUtility(IntIdsStub())
     component.provideUtility(WikiConfiguration())
     component.provideUtility(DocutilsHTMLWriter(), name='docutils.html')
     component.provideUtility(DocutilsRstxParser(), name='docutils.rstx')

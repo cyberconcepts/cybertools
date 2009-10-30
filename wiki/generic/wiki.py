@@ -22,7 +22,10 @@ Wiki implementation = adapters for Zope2 content objects.
 $Id$
 """
 
-from Acquisition import aq_inner, aq_parent
+try:
+    from Acquisition import aq_inner, aq_parent
+except ImportError:
+    pass
 from BTrees.IOBTree import IOTreeSet
 from BTrees.OOBTree import OOBTree
 from persistent.mapping import PersistentMapping

@@ -38,6 +38,9 @@ class WikiManager(BaseConfiguration):
 
     implements(IWikiManager)
 
+    def __init__(self):
+        self.setup()
+
     def setup(self):
         self.wikis = {}
         self.plugins = {}
@@ -58,7 +61,7 @@ class WikiManager(BaseConfiguration):
     def listWikis(self):
         return self.wikis.values()
 
-    def getPlugin(self, type, name=None):
+    def getPlugin(self, type, name=''):
         plugins = self.getPlugins()
         if (type, name) in plugins:
             plugin = plugins[(type, name)]
@@ -105,7 +108,7 @@ class Wiki(BaseConfiguration):
         self.name = name
         self.title = title or name
         self.pages = {}
-        self.setup()
+        #self.setup()
 
     def setup(self):
         self.getManager().addWiki(self)
