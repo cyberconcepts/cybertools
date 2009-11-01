@@ -430,6 +430,15 @@ div.box h4 {
     margin: 0;
 }
 
+.row-normal {
+    background-color: #ffffff;
+    border: none;
+}
+
+.row-hilite {
+    background-color: #efefef;
+    border: none;
+}
 
 #content {
     padding-right: 10px;
