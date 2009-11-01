@@ -27,7 +27,7 @@ from cybertools.text.lib.BeautifulSoup import BeautifulSoup, Comment
 validTags = ('b br div em font h1 h2 h3 i li ol p pre span strong '
              'table td tr u ul').split()
 
-validAttrs = 'class style'.split()
+validAttrs = 'class style border cellspacing cellpadding align'.split()
 
 validStyles = 'font-style font-weight'.split()
 validStyleParts = 'border padding'.split()
