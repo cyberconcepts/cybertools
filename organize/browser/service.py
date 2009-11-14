@@ -210,17 +210,23 @@ class CheckoutView(ServiceManagerView):
         client = self.getClient()
         if client is None:
             return {}
-        regs = IClientRegistrations(client)
+        #clientRegs = IClientRegistrations(client)
+        #regs = sorted(clientRegs.getRegistrations(), key=self.sortKey)
+        regs = self.registrationsInfo
         instance = IInstance(client)
         data = instance.applyTemplate()
-        data['service_registrations'] = sorted(regs.getRegistrations(),
-                                               key=self.sortKey)
+        data['service_registrations'] = regs
+        data['info_messages'] = [item['info'] for item in regs if item['info']]
+        data['errors'] = [item['error'] for item in regs if item['error']]
         return data
 
     def sortKey(self, reg):
         return reg.service.start
 
     def update(self):
+        data = self.getClientData()
+        if data['errors']:
+            return True
         form = self.request.form
         clientName = self.getClientName()
         if not form.get('action'):
@@ -246,10 +252,17 @@ class CheckoutView(ServiceManagerView):
         if client is None:
             return []
         result = []
-        regs = IClientRegistrations(client)
-        regs = sorted(regs.getRegistrations(), key=self.sortKey)
+        clientRegs = IClientRegistrations(client)
+        regs = sorted(clientRegs.getRegistrations(), key=self.sortKey)
         for reg in regs:
+            info = error = u''
             service = reg.service
+            if (service.capacity >= 0 and
+                    IStateful(reg).state == 'temporary' and
+                    service.getNumberRegistered() + reg.number > service.capacity):
+                service.unregister(client)
+                clientRegs.unregister([service])
+                info = error = u'capacity_exceeded'
             result.append(dict(service=service.title or '???',
                                waitingList=service.waitingList,
                                fromTo=self.getFromTo(service),
@@ -262,6 +275,8 @@ class CheckoutView(ServiceManagerView):
                                numberWaiting=reg.numberWaiting,
                                externalId=service.externalId or '',
                                cost=self.getCost(service),
+                               info=info,
+                               error=error,
                                serviceObject=service))
         return result
 

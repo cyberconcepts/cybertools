@@ -203,6 +203,8 @@ class Service(object):
     def unregister(self, client):
         clientName = client.__name__
         if clientName in self.registrations:
+            reg = self.registrations[clientName]
+            reg.number = reg.numberWaiting = 0
             del self.registrations[clientName]
 
     def getNumberRegistered(self, ignoreTemporary=True):
