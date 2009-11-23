@@ -22,6 +22,15 @@ A simple caching mechanism.
 $Id$
 """
 
+from zope import component
+try:
+    from lovely.memcached.interfaces import IMemcachedClient
+except ImportError:
+    IMemcachedClient = None
+
+
+# internal implementation
+
 from cybertools.util.date import getTimeStamp
 
 INVALID = object()
@@ -66,3 +75,22 @@ def cache(getIdentifier, lifetime=3600):
             return value
         return __cache
     return _cache
+
+
+# memcached implementation
+
+def mcCache(getIdentifier, lifetime=3600):
+    def _cache(fct):
+        def __cache(*args, **kw):
+            id = getIdentifier(*args, **kw)
+            client = component.getUtility(IMemcachedClient)
+            value = client.query(id)
+            if value is None:
+                value = fct(*args, **kw)
+                client.set(value, id, lifetime=lifetime)
+            return value
+        return __cache
+    return _cache
+
+if IMemcachedClient is not None:
+    cache = mcCache

@@ -34,13 +34,27 @@ class RendererFactory(object):
         return self.template.macros.get(key, default)
 
     def __getitem__(self, key):
-        return self.template.macros[key]
+        #return self.template.macros[key]
+        return Renderer(key, self)
 
     def __getattr__(self, key):
-        """ Convenience method for retrieving callable renderer for layout.
+        """ Convenience method.
         """
-        return lambda key=key: self[key]
+        #return lambda key=key: self[key]
+        return self[key]
 
     def __repr__(self):
         return ('<RendererFactory, template=%r, macros=%r>' %
                     (self.template, self.template.macros.keys()))
+
+
+class Renderer(object):
+
+    def __init__(self, name, factory):
+        self.name = name
+        self.factory = factory
+        self.template = factory.template
+
+    def __call__(self):
+        return self.template.macros[self.name]
+

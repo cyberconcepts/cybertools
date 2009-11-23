@@ -31,11 +31,16 @@ from zope.app.security.interfaces import IUnauthenticatedPrincipal
 from cybertools.composer.layout.base import Layout
 from cybertools.composer.layout.interfaces import ILayoutManager
 from cybertools.composer.layout.interfaces import ILayout, ILayoutInstance
+from cybertools.util.cache import cache
+
+
+rendererTemplate = ViewPageTemplateFile('renderer.pt')
 
 
 class BaseView(object):
 
     template = ViewPageTemplateFile('base.pt')
+    rendererTemplate = rendererTemplate
 
     page = None
     parent = None
@@ -53,6 +58,25 @@ class BaseView(object):
     @Lazy
     def authenticated(self):
         return not IUnauthenticatedPrincipal.providedBy(self.request.principal)
+
+    def cachedRenderer(self, name, *args):
+        baseRenderer = self.renderer.template.macros[name]
+        cr = CachableRenderer(self, baseRenderer)
+        return cr.renderMacro(*args)
+
+
+class CachableRenderer(object):
+
+    def __init__(self, view, renderer):
+        self.view = view
+        self.renderer = renderer
+
+    def getRenderMacroId(self, *args):
+        return 'renderer.' + '.'.join(args)
+
+    @cache(getRenderMacroId, lifetime=3600)
+    def renderMacro(self, *args):
+        return rendererTemplate(self.view, view=self.view, macro=self.renderer)
 
 
 class Page(BaseView):
