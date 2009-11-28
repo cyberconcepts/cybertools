@@ -62,8 +62,8 @@ def setUp(testCase):
     component.provideAdapter(link.LinkManager)
     links = link.setupLinkManager(None)
     component.provideUtility(links, name='tracking')
-    from cybertools.wiki.generic import wiki
-    wiki.IntIds = IntIdsStub
+    from cybertools.wiki.generic import adapter
+    adapter.IntIds = IntIdsStub
 
 
 def test_suite():
