@@ -114,9 +114,11 @@ class LinkProcessor(object):
         self.context = context
 
     def process(self):
+        if '..' in self.targetName:
+            return
         wiki = self.source.getWiki()
         manager = wiki.getManager()
-        sourceUid = self.source.uid
+        sourceUid = self.source.getUid()
         lmName = self.source.getConfig('linkManager')
         lm = manager.getPlugin(ILinkManager, lmName)
         targetPageName = self.targetName
@@ -134,24 +136,26 @@ class LinkProcessor(object):
                 target = None
         else:
             target = wiki.getPage(targetPageName)
-            targetUid = target is not None and target.uid or None
+            targetUid = target is not None and target.getUid() or None
             link = lm.createLink(self.targetName, sourceUid, targetUid)
-        if link.refuri is None:
-            if fragment:
-                link.targetFragment = fragment
-            if params:
-                link.targetParameters = params
-            if self.request is not None:
-                if target is None:
-                    uri = link.refuri = '%s/create.html?name=%s' % (
-                                    absoluteURL(wiki, self.request), link.name)
-                else:
-                    uri = link.refuri = target.getURI(self.request)
-                    uri += self.fragmentAndParams(fragment, params)
-        else:
-            uri = link.refuri + self.fragmentAndParams(
-                                            link.targetFragment,
-                                            link.targetParameters)
+        #if link.refuri is None:
+        if fragment:
+            link.targetFragment = fragment
+        if params:
+            link.targetParameters = params
+        if self.request is not None:
+            if target is None:
+                #uri = link.refuri = '%s/create.html?name=%s' % (
+                uri = '%s/create.html?name=%s' % (
+                                absoluteURL(wiki, self.request), link.name)
+            else:
+                #uri = link.refuri = target.getURI(self.request)
+                uri = target.getURI(self.request)
+                uri += self.fragmentAndParams(fragment, params)
+        #else:
+        #    uri = link.refuri + self.fragmentAndParams(
+        #                                    link.targetFragment,
+        #                                    link.targetParameters)
         self.setURI(uri)
         if target is None:
             self.markPresentation('create')

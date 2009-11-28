@@ -38,6 +38,9 @@ class ExternalPage(object):
     def __init__(self, uid):
         self.uid = uid
 
+    def getUid(self):
+        return self.uid
+
     def getURI(self, request):
         return self.uid
 

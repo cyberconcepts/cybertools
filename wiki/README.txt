@@ -65,8 +65,8 @@ from the page content.
   >>> len(links)
   1
   >>> link = links.values()[0]
-  >>> link.source, link.target, link.name, link.refuri
-  (0, 1, u'start_page', 'http://127.0.0.1/demo_wiki/start_page')
+  >>> link.source, link.target, link.name
+  (0, 1, u'start_page')
 
 Links to not yet existing pages
 -------------------------------

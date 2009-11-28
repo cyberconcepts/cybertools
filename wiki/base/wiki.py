@@ -124,8 +124,9 @@ class Wiki(BaseConfiguration):
     def createPage(self, name, title=None):
         if name in self.pages:
             raise ValueError("Name '%s' already present." % name)
-        page = self.pages[name] = WikiPage(name, title)
+        page = self.pages[name] = WikiPage(name)
         page.wiki = self
+        page.title = title or name
         return page
 
     def addPage(self, page):
@@ -142,10 +143,13 @@ class Wiki(BaseConfiguration):
             protocol, address = name.split(':', 1)
             if protocol in protocols:
                 return ExternalPage(name)
-        return self.pages.get(name)
+        return self.getPages().get(name)
 
     def listPages(self):
-        return self.pages.values()
+        return self.getPages().values()
+
+    def getPages(self):
+        return self.pages
 
     # configuration
 
@@ -198,6 +202,9 @@ class WikiPage(BaseConfiguration):
 
     @property
     def uid(self):
+        return self.getUid()
+
+    def getUid(self):
         return self.getWiki().getManager().getUid(self)
 
     def getURI(self, request):
