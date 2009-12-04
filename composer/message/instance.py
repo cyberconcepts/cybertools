@@ -38,6 +38,8 @@ from cybertools.composer.instance import Instance
 from cybertools.composer.interfaces import IInstance
 from cybertools.util.jeep import Jeep
 
+_not_found = object()
+
 
 class DataProvider(object):
 
@@ -98,7 +100,10 @@ class DataProvider(object):
         instance = IInstance(self.getSubclient(schemaName))
         instance.template = schema
         data = instance.applyTemplate()
-        return data.get(fieldName) or '$' + key
+        value = data.get(fieldName, _not_found)
+        if value is _not_found:
+            return '$' + key
+        return value
 
     def getSubclient(self, name):
         return self.context.client
