@@ -77,8 +77,11 @@ class SchemaFactory(object):
         fieldMapping = self.fieldMapping
         fields = []
         omit = kw.pop('omit', [])
+        include = kw.pop('include', [])
         for fname in schema.getFieldNamesInOrder(interface):
             if fname in omit:
+                continue
+            if include and fname not in include:
                 continue
             field = interface[fname]
             info = fieldMapping.get(field.__class__)
