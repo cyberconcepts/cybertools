@@ -107,6 +107,8 @@ class IExtractor(Interface):
         top-level or root object.
     """
 
+    count = Attribute('Number of elements extracted.')
+
     def extract():
         """ Creates and returns a sequence of IElement objects by scanning
             the content of the context object.
