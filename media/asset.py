@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -72,7 +72,8 @@ class MediaAssetFile(object):
         if not os.path.exists(path):
             getLogger('cybertools.media.asset.MediaAssetFile').warn(
                 'Media asset directory %r not found.' % path)
-            return self.getOriginalData()
+            self.transform()
+            #return self.getOriginalData()
         f = open(path, 'rb')
         data =f.read()
         f.close()
