@@ -174,6 +174,11 @@ class IServiceManager(Interface):
 
     services = Attribute('A collection of services managed by this object.')
 
+    def isActive():
+        """ Return True if object is active, e.g. based on effective/expiration
+            dates or workflow state.
+        """
+
 
 class IServiceGroup(Interface):
     """ A group of related services or a general service definition,
@@ -182,6 +187,10 @@ class IServiceGroup(Interface):
 
     services = Attribute('A collection of services belonging to this object.')
 
+    def isActive():
+        """ Return True if object is active, e.g. based on effective/expiration
+            dates or workflow state.
+        """
 
 serviceCategories = SimpleVocabulary((
     SimpleTerm('event', 'event', u'Event'),
@@ -291,6 +300,11 @@ class IService(Interface):
     serviceProviders = Attribute('A collection of one or more service providers.')
     resources = Attribute('A collection of one or more resources.')
     registrations = Attribute('A collection of client registrations.')
+
+    def isActive():
+        """ Return True if object is active, e.g. based on effective/expiration
+            dates or workflow state.
+        """
 
     def register(client):
         """ Register a client with this service. Return an IRegistration

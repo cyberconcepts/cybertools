@@ -161,7 +161,7 @@ class ServiceManagerView(BaseView):
         self.request.response.redirect(self.registrationUrl())
         return 'redirect'  # let template skip rendering
 
-    def overview(self, includeCategories=None):
+    def overview(self, includeCategories=None, skipInactive=False):
         result = []
         classific = []
         category = None
@@ -169,6 +169,8 @@ class ServiceManagerView(BaseView):
                 for idx, svc in enumerate(self.context.getServices()))
         for cat, idx, svc in svcs:
             if includeCategories and cat not in includeCategories:
+                continue
+            if skipInactive and not svc.isActive():
                 continue
             level = 0
             if cat != category:
@@ -442,6 +444,8 @@ class ServiceView(BaseView):
 
     def allowRegistration(self):
         context = self.context
+        if not context.isActive():
+            return False
         if not context.allowDirectRegistration:
             return False
         return (self.capacityAvailable() or self.context.waitingList
@@ -580,6 +584,8 @@ class RegistrationTemplateView(BaseView):
         return (svc.category, svc.getClassification(), svc.start)
 
     def allowRegistration(self, service):
+        if not service.isActive():
+            return False
         return (self.capacityAvailable(service) or service.waitingList
                 or service in self.getRegisteredServices())
 

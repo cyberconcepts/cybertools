@@ -71,6 +71,9 @@ class ServiceManager(object):
         if self.clientSchemasFactory is not None:
             self.clientSchemas = self.clientSchemasFactory()
 
+    def isActive(self):
+        return True
+
     def getServices(self, categories=[]):
         return self.services
 
@@ -160,6 +163,9 @@ class Service(object):
 
     def getToken(self):
         return self.name
+
+    def isActive(self):
+        return True
 
     def getAvailableCapacity(self, ignoreWaiting=False):
         if not ignoreWaiting and self.getNumberWaiting() > 0:
