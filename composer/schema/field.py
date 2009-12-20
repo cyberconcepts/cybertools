@@ -329,3 +329,11 @@ class ListFieldInstance(FieldInstance):
         return [self.valueFieldInstance.unmarshall(v.strip())
                         for v in value if v.strip()]
 
+
+class CheckBoxesFieldInstance(ListFieldInstance):
+
+    def marshal(self, value):
+        return value
+
+    def ummarshal(self, value):
+        return value
