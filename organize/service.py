@@ -35,6 +35,7 @@ from cybertools.composer.message.base import MessageManager
 from cybertools.composer.rule.base import RuleManager, EventType
 from cybertools.composer.rule.base import Rule, Action
 from cybertools.composer.schema.interfaces import IClientManager, IClient
+from cybertools.composer.schema.client import ClientManager
 from cybertools.stateful.base import StatefulAdapter
 from cybertools.stateful.definition import registerStatesDefinition
 from cybertools.stateful.definition import StatesDefinition
@@ -48,56 +49,23 @@ from cybertools.organize.interfaces import IRegistration, IRegistrationTemplate
 from cybertools.organize.interfaces import IClientRegistrations
 
 
-class ServiceManager(object):
+class ServiceManager(ClientManager):
 
-    implements(IServiceManager, IClientManager)
+    implements(IServiceManager)
 
     servicesFactory = Jeep
-    clientSchemasFactory = Jeep
-    clientsFactory = OOBTree
-
     services = None
-    clients = None
-
-    messages = None
 
     allowRegWithNumber = False
     allowDirectRegistration = True
-    senderEmail = 'unknown@sender.com'
 
     def __init__(self):
         if self.servicesFactory is not None:
             self.services = self.servicesFactory()
-        if self.clientSchemasFactory is not None:
-            self.clientSchemas = self.clientSchemasFactory()
-
-    def isActive(self):
-        return True
+        super(ServiceManager, self).__init__()
 
     def getServices(self, categories=[]):
         return self.services
-
-    def getClientSchemas(self):
-        return self.clientSchemas
-
-    @Lazy
-    def clients(self):
-        return self.clientsFactory()
-
-    def getClients(self):
-        return self.clients
-
-    def addClient(self, client):
-        name = self.generateClientName(client)
-        self.clients[name] = client
-        client.__name__ = name
-        return name
-
-    def generateClientName(self, client):
-        return generateName(self.checkClientName)
-
-    def checkClientName(self, name):
-        return name not in self.getClients()
 
 
 class Registration(object):
@@ -313,7 +281,7 @@ class ClientRegistrations(object):
         regs = getattr(self.context, self.registrationsAttributeName, [])
         if self.template is not None:
             svcs = self.template.getServices().values()
-            regs = (r for r in regs if r.service in svcs)
+            regs = [r for r in regs if r.service in svcs]
         return regs
 
     def validate(self, clientName, services, numbers=None):
@@ -460,7 +428,7 @@ def clientRemoved(obj, event):
 def serviceRemoved(obj, event):
     """ Handle removal of a service.
     """
-    for r in obj.registrations.values():
+    for r in list(obj.registrations.values()):
         regs = IClientRegistrations(r.client)
         regs.unregister([obj])
 

@@ -306,6 +306,12 @@ class IClientManager(Interface):
     """ Cares for a client typically providing schemas.
     """
 
+    senderEmail = schema.TextLine(
+                title=_(u'Sender email'),
+                description=_(u'Email address that will be used as sender '
+                        'address of confirmation and feedback messages.'),
+                required=False,)
+
     clients = Attribute('A collection of client objects (e.g. persons) '
                 'associated with this client manager.')
     clientSchemas = Attribute('A collection of schema objects '

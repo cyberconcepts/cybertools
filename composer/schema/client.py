@@ -22,12 +22,60 @@ Client implementations.
 $Id$
 """
 
+from BTrees.OOBTree import OOBTree
 from persistent import Persistent
+from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 from zope.interface import implements
 
+from cybertools.composer.message.base import MessageManager
 from cybertools.composer.schema.interfaces import IClient
 from cybertools.composer.schema.interfaces import IClientManager, IClientFactory
+from cybertools.util.jeep import Jeep
+from cybertools.util.randomname import generateName
+
+
+class ClientManager(object):
+
+    implements(IClientManager)
+
+    clientSchemasFactory = Jeep
+    clientsFactory = OOBTree
+
+    clients = None
+
+    messages = None
+
+    senderEmail = 'unknown@sender.com'
+
+    def __init__(self):
+        if self.clientSchemasFactory is not None:
+            self.clientSchemas = self.clientSchemasFactory()
+
+    def isActive(self):
+        return True
+
+    def getClientSchemas(self):
+        return self.clientSchemas
+
+    @Lazy
+    def clients(self):
+        return self.clientsFactory()
+
+    def getClients(self):
+        return self.clients
+
+    def addClient(self, client):
+        name = self.generateClientName(client)
+        self.clients[name] = client
+        client.__name__ = name
+        return name
+
+    def generateClientName(self, client):
+        return generateName(self.checkClientName)
+
+    def checkClientName(self, name):
+        return name not in self.getClients()
 
 
 class Client(Persistent):
@@ -49,4 +97,19 @@ class ClientFactory(object):
     def __call__(self):
         return Client(self.context)
 
+
+class MessageManagerAdapter(MessageManager):
+
+    adapts(IClientManager)
+
+    def __init__(self, context):
+        self.context = context
+
+    def addMessage(self, messageName, text, **kw):
+        super(MessageManagerAdapter, self).addMessage(messageName, text, **kw)
+        self.context.messages = self.messages
+
+    @Lazy
+    def messages(self):
+        return self.context.messages
 
