@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -247,29 +247,38 @@ class ILink(Interface):
 
         There may be more than one link records with the same name
         that represent the real link at different times or under
-        different conditions.
+        different conditions (really?).
     """
 
     identifier = Attribute('An internal identifier of the link record, '
                 'unique within the link manager.')
     name = Attribute('The external identifier for the link, i.e. the '
                 'string used in the source text to address the link.')
-    title = Attribute('A short text, may be used as the default text for '
-                'the link or for the alt tag of an image. Could also serve '
-                'for identifying a new link.')
-    description = Attribute('Optional: some text, may be used as a title attribute.')
-    state = Attribute('A short string denoting the state of the link entry.')
     source = Attribute('Identifier of the link\'s source object.')
     target = Attribute('Identifier of the link\'s target object or - '
         'for external links - the target URI.')
+    linkType = Attribute('Optional: A short string specifying the type of the '
+                'link, a sort of predicate; default: "link".')
+    title = Attribute('Optional: A short text, may be used as the default text for '
+                'the link or for the alt tag of an image.')
+    description = Attribute('Optional: some text, may be used as a title attribute.')
+    state = Attribute('Optional: A short string denoting the state of the link '
+                'entry; default: "valid"')
+    relevance = Attribute('Optional: A float number between 0.0 and 1.0 denoting '
+                'the relevance of the connection between source and target; '
+                'default: 1.0.')
+    order = Attribute('Optional: An integer that may be used when providing an '
+                'ordered listing of links; default: 0.')
     targetFragment = Attribute('Optional: an address part leading to a '
                 'text anchor or the part of an image.')
     targetParameters = Attribute('Optional: a dictionary of URI parameters '
                 'that will have to be appended to the link to the target object.')
-    refuri = Attribute('The URI linking to the target object.')
-    user = Attribute('Optional: a string denoting the creator of the record.')
+    refuri = Attribute('The URI linking to the target object. '
+                '(Obsolete: has to be generated dynamically.)')
+    user = Attribute('Optional: a string denoting the creator of the record. '
+                '(Should be renamed to "creator".)')
     run = Attribute('Optional: May be used to group the links from a certain '
-                'source at different times.')
+                'source at different times. (Probably obsolete)')
 
     def getManager():
         """ Return the link manager this link is managed by.
