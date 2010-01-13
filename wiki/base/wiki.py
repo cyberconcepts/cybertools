@@ -74,6 +74,8 @@ class WikiManager(BaseConfiguration):
         return self.plugins
 
     def getUid(self, obj):
+        if isinstance(obj, ExternalPage):
+            return obj.uid
         return self.getPlugin(IIntIds).register(obj)
 
     def getObject(self, uid):
