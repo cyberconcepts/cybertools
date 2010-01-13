@@ -155,7 +155,8 @@ class Link(Persistent):
     def update(self, **kw):
         manager = self.getManager()
         for k in ('source', 'target'):
-            kw[k] = manager.getUniqueId(kw[k])
+            if k in kw:
+                kw[k] = manager.getUniqueId(kw[k])
         for k, v in kw.items():
             setattr(self, k, v)
         for k in manager.indexes:

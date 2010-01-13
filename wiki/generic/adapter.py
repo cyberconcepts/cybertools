@@ -36,13 +36,13 @@ from zope import component
 from zope.component import adapts
 from zope.interface import implements
 
+from cybertools.link.base import Link, LinkManager
 from cybertools.util.generic.interfaces import IGenericObject, IGenericFolder
 from cybertools.wiki.base.config import WikiConfigInfo, BaseConfigurator
 from cybertools.wiki.base.wiki import WikiManager as BaseWikiManager
 from cybertools.wiki.base.wiki import Wiki as BaseWiki
 from cybertools.wiki.base.wiki import WikiPage as BaseWikiPage
 from cybertools.wiki.interfaces import ILinkManager, IWikiConfigInfo
-from cybertools.wiki.tracking.link import Link, TrackingStorage
 
 
 class PersistentConfigInfo(PersistentMapping):
@@ -80,9 +80,9 @@ class WikiManager(BaseWikiManager):
         self.context.setGenericAttribute('wikis', IOTreeSet())
         plugins = self.context.setGenericAttribute('plugins', PersistentMapping())
         plugins[(IIntIds, None)] = IntIds()
-        linkStorage = TrackingStorage(trackFactory=Link)
-        plugins[(ILinkManager, 'tracking')] = linkStorage
-        self.setConfig('linkManager', 'tracking')
+        #linkStorage = TrackingStorage(trackFactory=Link)
+        plugins[(ILinkManager, 'cybertools.link')] = LinkManager()
+        self.setConfig('linkManager', 'cybertools.link')
 
     def addWiki(self, wiki):
         uid = self.getUid(wiki)

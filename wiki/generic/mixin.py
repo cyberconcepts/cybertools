@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 #
 
 """
-Wiki implementation = adapters for Zope2 content objects.
+Wiki implementation = mixin classes for Zope2 content objects.
 
 $Id$
 """
@@ -36,13 +36,14 @@ from zope import component
 from zope.component import adapts
 from zope.interface import implements
 
+from cybertools.link.base import Link, LinkManager as BaseLinkManager
+from cybertools.link.interfaces import ILinkManager
 from cybertools.util.generic.interfaces import IGenericObject, IGenericFolder
 from cybertools.wiki.base.config import WikiConfigInfo, BaseConfigurator
 from cybertools.wiki.base.wiki import WikiManager as BaseWikiManager
 from cybertools.wiki.base.wiki import Wiki as BaseWiki
 from cybertools.wiki.base.wiki import WikiPage as BaseWikiPage
-from cybertools.wiki.interfaces import ILinkManager, IWikiConfigInfo
-from cybertools.wiki.tracking.link import Link, TrackingStorage
+from cybertools.wiki.interfaces import IWikiConfigInfo
 
 
 class PersistentConfigInfo(PersistentMapping):
@@ -68,6 +69,8 @@ class GenericConfigurator(BaseConfigurator):
 
 
 class WikiManager(BaseWikiManager):
+    """
+    """
 
     configurator = GenericConfigurator
 
@@ -75,9 +78,8 @@ class WikiManager(BaseWikiManager):
         self.setGenericAttribute('wikis', IOTreeSet())
         plugins = self.setGenericAttribute('plugins', PersistentMapping())
         plugins[(IIntIds, '')] = IntIds()
-        linkStorage = TrackingStorage(trackFactory=Link)
-        plugins[(ILinkManager, 'tracking')] = linkStorage
-        self.setConfig('linkManager', 'tracking')
+        plugins[(ILinkManager, 'internal')] = LinkManager(self)
+        self.setConfig('linkManager', 'internal')
 
     def addWiki(self, wiki):
         uid = self.getUid(wiki)
@@ -143,3 +145,20 @@ class WikiPage(BaseWikiPage):
     def getWiki(self):
         # TODO: fetch wiki in a generic way
         return aq_parent(aq_inner(self))
+
+
+class LinkManager(BaseLinkManager):
+
+    def __init__(self, manager):
+        super(LinkManager, self).__init__()
+        self.manager = manager
+
+    def getUniqueId(self, obj):
+        if obj is None:
+            return None
+        if isinstance(obj, self.uid):
+            return obj
+        return self.manager.getUid(obj)
+
+    def getObject(self, uid):
+        return self.manager.getObject(uid)

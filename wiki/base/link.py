@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -26,80 +26,8 @@ from docutils.nodes import Text
 from zope.interface import implements
 from zope.traversing.browser import absoluteURL
 
-from cybertools.wiki.interfaces import ILink, ILinkManager, ILinkProcessor
-
-
-class LinkManager(object):
-    """ A very basic link manager implementation.
-    """
-
-    implements(ILinkManager)
-
-    def __init__(self):
-        self.links = {}
-        self.linksBySource = {}
-
-    def createLink(self, name, source, target, **kw):
-        link = Link(name, source, target, **kw)
-        link.manager = self
-        id = self.generateLinkIdentifier(link)
-        self.links[id] = link
-        self.linksBySource.setdefault(source, []).append(link)
-        return link
-
-    def removeLink(self, link):
-        if link.identifier in self.links:
-            link.manager = None
-            del self.links[link.identifier]
-
-    def getLink(self, name):
-        result = self.query(name=name)
-        if result:
-            return result[0]
-
-    def query(self, source=None, target=None, name=None, **kw):
-        if source is None:
-            result = self.links.values()
-        else:
-            result = self.linksBySource.get(source, [])
-        kw.update(dict(target=target, name=name))
-        for k, v in kw.items():
-            if v is None:
-                continue
-            if not isinstance(v, (list, tuple)):
-                v = [v]
-            result = [r for r in result if getattr(r, k) in v]
-        return result
-
-    def generateLinkIdentifier(self, link):
-        identifier = '%07i' % (max([int(k) for k in self.links.keys()] or [0]) + 1)
-        link.identifier = identifier
-        return identifier
-
-
-class Link(object):
-
-    implements(ILink)
-
-    identifier = None
-    manager = None
-
-    def __init__(self, name, source, target, **kw):
-        self.name = name
-        self.source = source
-        self.target = target
-        for k, v in kw.items():
-            if k not in ILink:
-                raise AttributeError(k)
-            setattr(self, k, v)
-
-    def getManager(self):
-        return self.manager
-
-    def __getattr__(self, attr):
-        if attr not in ILink:
-            raise AttributeError(attr)
-        return self.__dict__.get(attr)
+from cybertools.link.interfaces import ILink, ILinkManager
+from cybertools.wiki.interfaces import ILinkProcessor
 
 
 class LinkProcessor(object):
@@ -118,7 +46,6 @@ class LinkProcessor(object):
             return
         wiki = self.source.getWiki()
         manager = wiki.getManager()
-        sourceUid = self.source.getUid()
         lmName = self.source.getConfig('linkManager')
         lm = manager.getPlugin(ILinkManager, lmName)
         targetPageName = self.targetName
@@ -127,7 +54,7 @@ class LinkProcessor(object):
             targetPageName, params = targetPageName.split('?', 1)
         if '#' in targetPageName:
             targetPageName, fragment = targetPageName.split('#', 1)
-        existing = iter(lm.query(source=sourceUid, name=self.targetName))
+        existing = iter(lm.query(source=self.source, name=self.targetName))
         if existing:
             link = existing.next()
             if link.target is not None:
@@ -136,9 +63,8 @@ class LinkProcessor(object):
                 target = None
         else:
             target = wiki.getPage(targetPageName)
-            targetUid = target is not None and target.getUid() or None
-            link = lm.createLink(self.targetName, sourceUid, targetUid)
-        #if link.refuri is None:
+            link = lm.createLink(name=self.targetName,
+                                 source=self.source, target=target)
         if fragment:
             link.targetFragment = fragment
         if params:
@@ -149,13 +75,8 @@ class LinkProcessor(object):
                 uri = '%s/create.html?name=%s' % (
                                 absoluteURL(wiki, self.request), link.name)
             else:
-                #uri = link.refuri = target.getURI(self.request)
                 uri = target.getURI(self.request)
                 uri += self.fragmentAndParams(fragment, params)
-        #else:
-        #    uri = link.refuri + self.fragmentAndParams(
-        #                                    link.targetFragment,
-        #                                    link.targetParameters)
         self.setURI(uri)
         if target is None:
             self.markPresentation('create')

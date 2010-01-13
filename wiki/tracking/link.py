@@ -33,8 +33,8 @@ from cybertools.stateful.definition import State, Transition
 from cybertools.stateful.interfaces import IStatesDefinition
 from cybertools.tracking.btree import TrackingStorage, Track
 from cybertools.tracking.interfaces import ITrackingStorage
-from cybertools.wiki.base.link import Link as BaseLink
-from cybertools.wiki.base.link import LinkManager as BaseLinkManager
+from cybertools.link.base import Link as BaseLink
+from cybertools.link.base import LinkManager as BaseLinkManager
 from cybertools.wiki.interfaces import ILink, ILinkManager
 
 
@@ -91,7 +91,7 @@ class Link(BaseLink, Stateful, Track):
         return component.getUtility(IStatesDefinition, name=self.statesDefinition)
 
 
-class LinkManager(BaseLinkManager):
+class xx_LinkManager(BaseLinkManager):
     """ A tracking storage adapter managing wiki links.
     """
 
