@@ -1,0 +1,15 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:five="http://namespaces.zope.org/five"
+           xmlns:zcml="http://namespaces.zope.org/zcml">
+
+  <!-- All Core Configuration -->
+  <include file="base.zcml" package="cybertools.z2.intid" />
+
+  <!-- Event Subscribers -->
+  <include file="subscriber.zcml" package="cybertools.z2.intid" />
+
+  <!-- CMFCore directoryview exceptions -->
+  <!--<include file="cmfdirectoryview.zcml" />-->
+
+</configure>
