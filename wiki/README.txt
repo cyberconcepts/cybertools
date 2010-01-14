@@ -83,7 +83,7 @@ should lead to a view that will create the page.
   <p><a class="reference"
         href="http://127.0.0.1/demo_wiki/start_page">Back to the Start Page</a></p>
   <p><a class="reference create"
-        href="http://127.0.0.1/demo_wiki/create.html?name=more">?More...</a></p>
+        href="http://127.0.0.1/demo_wiki/&#64;&#64;create.html?name=more">?More...</a></p>
 
 Again a link object has been created that will be reused for subsequent
 rendering operations.
@@ -94,7 +94,7 @@ rendering operations.
   >>> print aboutPage.render(TestRequest())
   <p>...
   <p><a class="reference create"
-        href="http://127.0.0.1/demo_wiki/create.html?name=more">?More...</a></p>
+        href="http://127.0.0.1/demo_wiki/&#64;&#64;create.html?name=more">?More...</a></p>
   >>> len(links)
   2
 
@@ -116,7 +116,7 @@ Links with fragments (anchor references) and parameters
   <li><a class="reference"
          href="http://127.0.0.1/demo_wiki/about#content?language=en">About content</a></li>
   <li><a class="reference create"
-         href="http://127.0.0.1/demo_wiki/create.html?name=more#content?language=en">?More content</a></li>
+         href="http://127.0.0.1/demo_wiki/&#64;&#64;create.html?name=more#content?language=en">?More content</a></li>
   </ul>
 
 External links

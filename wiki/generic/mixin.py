@@ -122,11 +122,12 @@ class Wiki(BaseWiki):
 
     def createPage(self, name, title, text=u''):
         # TODO: delegate to generic folder
-        # page = self[name] = WikiPage(name)
+        # page = self[name] = self.pageFactory(name)
         self._setObject(name, self.pageFactory(name))
         page = getattr(self, name)
         page.title = title
         page.text = text
+        # TODO: notify(ObjectAddedEvent())
         return page
 
     def getManager(self):
@@ -144,6 +145,7 @@ class WikiPage(BaseWikiPage):
 
     def getWiki(self):
         # TODO: fetch wiki in a generic way
+        # return self.getParent()
         return aq_parent(aq_inner(self))
 
 

@@ -72,7 +72,7 @@ class LinkProcessor(object):
         if self.request is not None:
             if target is None:
                 #uri = link.refuri = '%s/create.html?name=%s' % (
-                uri = '%s/create.html?name=%s' % (
+                uri = '%s/@@create.html?name=%s' % (
                                 absoluteURL(wiki, self.request), link.name)
             else:
                 uri = target.getURI(self.request)
