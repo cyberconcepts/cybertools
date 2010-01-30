@@ -106,8 +106,12 @@ fieldTypes = SimpleVocabulary((
               instanceName='checkboxes'),
     FieldType('calculated', 'display', u'Calculated Value',
               instanceName='calculated'),
+    FieldType('heading', 'heading', u'Fieldgroup Heading',
+              fieldRenderer='field_heading', storeData=False),
     FieldType('spacer', 'spacer', u'Spacer',
               fieldRenderer='field_spacer', storeData=False),
+    FieldType('explanation', 'explanation', u'Explanation',
+              fieldRenderer='field_explanation', storeData=False),
 ))
 
 # TODO: move this to organize.service... (???)
@@ -120,6 +124,12 @@ standardFieldNames = SimpleVocabulary((
     SimpleTerm('number', 'number', 'Number of participants'),
     # TODO: on organize.service: extend this list, e.g. with 'totalCost'
 ))
+
+defaultValueTypes = SimpleVocabulary((
+    SimpleTerm('string', 'string', 'String'),
+    SimpleTerm('tales', 'tales', 'TAL expression'),
+))
+
 
 class IField(IComponent):
     """ May be used for data entry or display.
@@ -155,6 +165,13 @@ class IField(IComponent):
                 description=_(u'Value with which to pre-set the field contents. '
                         'Use this also for populating a calculated field.'),
                 required=False,)
+    defaultValueType = schema.Choice(
+                title=_(u'Default type'),
+                description=_(u'The type of the default, i.e. a fixed string '
+                        u'or an expression that is used to calculate the value.'),
+                required=False,
+                default='string',
+                vocabulary=defaultValueTypes)
     required = schema.Bool(
                 title=_(u'Required'),
                 description=_(u'Must a value be entered into this field?'),

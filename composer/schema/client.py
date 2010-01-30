@@ -29,6 +29,8 @@ from zope.component import adapts
 from zope.interface import implements
 
 from cybertools.composer.message.base import MessageManager
+from cybertools.composer.rule.base import RuleManager, EventType
+from cybertools.composer.rule.base import Rule, Action
 from cybertools.composer.schema.interfaces import IClient
 from cybertools.composer.schema.interfaces import IClientManager, IClientFactory
 from cybertools.util.jeep import Jeep
@@ -112,4 +114,32 @@ class MessageManagerAdapter(MessageManager):
     @Lazy
     def messages(self):
         return self.context.messages
+
+
+class RuleManagerAdapter(RuleManager):
+
+    adapts(IClientManager)
+
+    def __init__(self, context):
+        self.context = context
+
+
+eventTypes = Jeep((
+    EventType('client.checkout'),
+))
+
+
+def getCheckoutRule(sender):
+    """ A rule for sending a confirmation message, provided by default.
+    """
+    checkoutRule = Rule('checkout')
+    checkoutRule.events.append(eventTypes['client.checkout'])
+    checkoutRule.actions.append(Action('sendmail',
+                      parameters=dict(sender=sender,
+                                      messageName='feedback_text')))
+    checkoutRule.actions.append(Action('redirect',
+                      parameters=dict(viewName='message_view.html',
+                                      messageName='feedback_html',
+                                      clearClient=True)))
+    return checkoutRule
 

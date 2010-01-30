@@ -25,8 +25,11 @@ $Id$
 from zope import component
 from zope.cachedescriptors.property import Lazy
 
-from cybertools.composer.schema.browser.common import BaseView
 from cybertools.composer.interfaces import IInstance
+from cybertools.composer.rule.base import Event
+from cybertools.composer.rule.interfaces import IRuleManager
+from cybertools.composer.schema.browser.common import BaseView
+from cybertools.composer.schema.client import eventTypes, getCheckoutRule
 from cybertools.composer.schema.interfaces import IClientFactory
 from cybertools.composer.schema.schema import FormState
 
@@ -101,3 +104,60 @@ class SchemaView(BaseView):
         self.request.response.redirect(self.getNextUrl())
         return False
 
+
+class FormManagerView(BaseView):
+
+    isManageMode = False
+
+    def getCustomView(self):
+        if self.isManageMode:
+            return None
+        viewName = self.context.getViewName()
+        if viewName:
+            return component.getMultiAdapter((self.context, self.request),
+                                             name=viewName)
+        return None
+
+    @Lazy
+    def manager(self):
+        return self.context
+
+    def overview(self):
+        return []
+
+
+class CheckoutView(BaseView):
+
+    def getClient(self):
+        clientName = self.getClientName()
+        if clientName is None:
+            return None
+        return self.context.getClients().get(clientName)
+
+    def getClientData(self):
+        client = self.getClient()
+        if client is None:
+            return {}
+        instance = IInstance(client)
+        data = instance.applyTemplate()
+        return data
+
+    def update(self):
+        data = self.getClientData()
+        if data.get('errors'):
+            return True
+        form = self.request.form
+        clientName = self.getClientName()
+        if not form.get('action'):
+            return True     # TODO: error, redirect to overview
+        client = self.getClient()
+        if client is None:
+            return True     # TODO: error, redirect to overview
+        # send mail
+        rm = IRuleManager(self.context)
+        rm.addRule(getCheckoutRule(self.context.senderEmail))
+        result = rm.handleEvent(Event(eventTypes['client.checkout'],
+                                      client, self.request))
+        #params = '?message=thankyou&id=' + self.clientName
+        #self.request.response.redirect(self.url + '/checkout.html' + params)
+        return False
