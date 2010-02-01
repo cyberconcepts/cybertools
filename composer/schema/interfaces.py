@@ -40,8 +40,8 @@ class ISchema(ITemplate):
     name = schema.ASCII(
                 title=_(u'Schema name'),
                 description=_(u'The internal name of the schema; will be used '
-                'to identify data fields of instance objects that '
-                'are associated with this schema.'),
+                    u'to identify data fields of instance objects that '
+                    u'are associated with this schema.'),
                 required=True,)
     title = schema.TextLine(
                 title=_(u'Title'),
@@ -50,6 +50,13 @@ class ISchema(ITemplate):
     description = schema.Text(
                 title=_(u'Description'),
                 description=_(u'A brief description of the item.'),
+                required=False,)
+    labelWidth = schema.TextLine(
+                title=_(u'Label column width'),
+                description=_(u'The width of the label column; please enter '
+                    u'a value like used for CSS style sheets, '
+                    u'e.g. "200px" or "20%".'),
+                default=u'auto',
                 required=False,)
 
     fields = Attribute('The components the schema is built up of. '

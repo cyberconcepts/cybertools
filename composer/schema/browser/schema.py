@@ -137,20 +137,6 @@ class FormManagerView(BaseView):
             result.append(data)
         return result
 
-    def details(self, clientName):
-        result = []
-        client = self.context.getClients().get(clientName)
-        schemas = [s for s in self.context.getClientSchemas()
-                     if ISchema.providedBy(s)]
-        instance = IInstance(client)
-        for s in schemas:
-            instance.template = s
-            data = instance.applyTemplate()
-            for f in s.fields:
-                if f.storeData:
-                    result.append(dict(label=f.title, value=data.get(f.name)))
-        return result
-
 
 class CheckoutView(BaseView):
 

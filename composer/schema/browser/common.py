@@ -28,7 +28,7 @@ from zope.app.session.interfaces import ISession
 from zope.cachedescriptors.property import Lazy
 
 from cybertools.composer.interfaces import IInstance
-from cybertools.composer.schema.interfaces import IClientFactory
+from cybertools.composer.schema.interfaces import IClientFactory, ISchema
 
 
 schema_macros = ViewPageTemplateFile('schema_macros.pt')
@@ -158,3 +158,18 @@ class BaseView(object):
     def getSessionInfo(self, key, default=None, packageId=packageId):
         session = ISession(self.request)[packageId]
         return session.get(key, default)
+
+    def details(self, clientName):
+        result = []
+        client = self.context.getClients().get(clientName)
+        schemas = [s for s in self.context.getClientSchemas()
+                     if ISchema.providedBy(s)]
+        instance = IInstance(client)
+        for s in schemas:
+            instance.template = s
+            data = instance.applyTemplate()
+            for f in s.fields:
+                if f.storeData:
+                    result.append(dict(label=f.title, value=data.get(f.name)))
+        return result
+
