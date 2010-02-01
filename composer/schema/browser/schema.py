@@ -33,6 +33,7 @@ from cybertools.composer.schema.browser.common import BaseView
 from cybertools.composer.schema.client import eventTypes, getCheckoutRule
 from cybertools.composer.schema.interfaces import IClientFactory, ISchema
 from cybertools.composer.schema.schema import FormState
+from cybertools.stateful.interfaces import IStateful
 from cybertools.util.jeep import Jeep
 
 
@@ -123,12 +124,16 @@ class FormManagerView(BaseView):
             break
         return False
 
-    def overview(self):
+    def overview(self, ignoreTemporary=True):
         result = []
         for c in self.context.getClients().values():
+            state = IStateful(c).state
+            if ignoreTemporary and state == 'temporary':
+                continue
             instance = IInstance(c)
             data = instance.applyTemplate()
             data['id'] = data['__name__']
+            data['state'] = state
             result.append(data)
         return result
 
@@ -142,7 +147,8 @@ class FormManagerView(BaseView):
             instance.template = s
             data = instance.applyTemplate()
             for f in s.fields:
-                result.append(dict(label=f.title, value=data[f.name]))
+                if f.storeData:
+                    result.append(dict(label=f.title, value=data.get(f.name)))
         return result
 
 
@@ -173,6 +179,10 @@ class CheckoutView(BaseView):
         client = self.getClient()
         if client is None:
             return True     # TODO: error, redirect to overview
+        # submit
+        stf = IStateful(client)
+        if stf.state == 'temporary':
+            stf.doTransition('submit')
         # send mail
         rm = IRuleManager(self.context)
         rm.addRule(getCheckoutRule(self.context.senderEmail))

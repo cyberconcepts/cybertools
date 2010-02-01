@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -33,6 +33,10 @@ from cybertools.composer.rule.base import RuleManager, EventType
 from cybertools.composer.rule.base import Rule, Action
 from cybertools.composer.schema.interfaces import IClient
 from cybertools.composer.schema.interfaces import IClientManager, IClientFactory
+from cybertools.stateful.base import StatefulAdapter
+from cybertools.stateful.definition import registerStatesDefinition
+from cybertools.stateful.definition import StatesDefinition
+from cybertools.stateful.definition import State, Transition
 from cybertools.util.jeep import Jeep
 from cybertools.util.randomname import generateName
 
@@ -122,6 +126,40 @@ class RuleManagerAdapter(RuleManager):
 
     def __init__(self, context):
         self.context = context
+
+
+# registration states
+
+clientStates = 'composer.schema.client'
+
+registerStatesDefinition(
+    StatesDefinition(clientStates,
+        State('temporary', 'temporary', ('submit', 'cancel',)),
+        State('submitted', 'submitted',
+                    ('change', 'retract', 'confirm', 'reject',)),
+        State('cancelled', 'cancelled', ('activate',)),
+        State('retracted', 'retracted', ('activate', 'cancel',)),
+        State('confirmed', 'confirmed',
+                    ('change', 'retract', 'reject',)),
+        State('rejected', 'rejected',
+                    ('change', 'retract', 'confirm',)),
+        Transition('cancel', 'Cancel registration', 'cancelled'),
+        Transition('submit', 'Submit registration', 'submitted'),
+        Transition('change', 'Change registration', 'submitted'),
+        Transition('retract', 'Retract registration', 'retracted'),
+        Transition('activate', 'Activate cancelled registration',
+                    'temporary'),
+        Transition('confirm', 'Confirm registration', 'confirmed'),
+        Transition('reject', 'Reject registration', 'rejected'),
+        initialState='temporary',
+))
+
+
+class StatefulClient(StatefulAdapter):
+
+    adapts(IClient)
+
+    statesDefinition = clientStates
 
 
 eventTypes = Jeep((
