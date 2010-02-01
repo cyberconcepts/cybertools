@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 20098 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -58,10 +58,10 @@ class RegistrationsExportCsv(BaseView):
         for service in self.context.getServices():
             for clientName, reg in service.registrations.items():
                 client = reg.client
-                data = IInstance(client).applyTemplate()
                 state = IStateful(reg).getStateObject()
                 if state.name == 'temporary' and not withTemporary:
                     continue
+                data = IInstance(client).applyTemplate()
                 yield [self.encode(service.title) or service.name,
                        clientName,
                        self.encode(data.get('standard.organization', '')),

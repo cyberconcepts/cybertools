@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -24,14 +24,16 @@ $Id$
 
 from zope import component
 from zope.cachedescriptors.property import Lazy
+from zope.traversing.browser import absoluteURL
 
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.rule.base import Event
 from cybertools.composer.rule.interfaces import IRuleManager
 from cybertools.composer.schema.browser.common import BaseView
 from cybertools.composer.schema.client import eventTypes, getCheckoutRule
-from cybertools.composer.schema.interfaces import IClientFactory
+from cybertools.composer.schema.interfaces import IClientFactory, ISchema
 from cybertools.composer.schema.schema import FormState
+from cybertools.util.jeep import Jeep
 
 
 class SchemaView(BaseView):
@@ -109,21 +111,39 @@ class FormManagerView(BaseView):
 
     isManageMode = False
 
-    def getCustomView(self):
-        if self.isManageMode:
-            return None
-        viewName = self.context.getViewName()
-        if viewName:
-            return component.getMultiAdapter((self.context, self.request),
-                                             name=viewName)
-        return None
-
     @Lazy
     def manager(self):
         return self.context
 
+    def update(self):
+        if self.isManageMode:
+            return True
+        for tpl in self.context.getClientSchemas():
+            self.context.request.response.redirect(absoluteURL(tpl, self.request))
+            break
+        return False
+
     def overview(self):
-        return []
+        result = []
+        for c in self.context.getClients().values():
+            instance = IInstance(c)
+            data = instance.applyTemplate()
+            data['id'] = data['__name__']
+            result.append(data)
+        return result
+
+    def details(self, clientName):
+        result = []
+        client = self.context.getClients().get(clientName)
+        schemas = [s for s in self.context.getClientSchemas()
+                     if ISchema.providedBy(s)]
+        instance = IInstance(client)
+        for s in schemas:
+            instance.template = s
+            data = instance.applyTemplate()
+            for f in s.fields:
+                result.append(dict(label=f.title, value=data[f.name]))
+        return result
 
 
 class CheckoutView(BaseView):
@@ -147,7 +167,7 @@ class CheckoutView(BaseView):
         if data.get('errors'):
             return True
         form = self.request.form
-        clientName = self.getClientName()
+        #clientName = self.getClientName()
         if not form.get('action'):
             return True     # TODO: error, redirect to overview
         client = self.getClient()

@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -319,15 +319,15 @@ class IClientFactory(Interface):
         """
 
 
+clientManagerViews = SimpleVocabulary((
+    SimpleTerm('', '', u'Default view'),
+    SimpleTerm('redirect_registration.html', 'redirect_registration.html',
+               u'Redirect to registration')
+))
+
 class IClientManager(Interface):
     """ Cares for a client typically providing schemas.
     """
-
-    senderEmail = schema.TextLine(
-                title=_(u'Sender email'),
-                description=_(u'Email address that will be used as sender '
-                        'address of confirmation and feedback messages.'),
-                required=False,)
 
     clients = Attribute('A collection of client objects (e.g. persons) '
                 'associated with this client manager.')
@@ -339,3 +339,14 @@ class IClientManager(Interface):
         """ Add the client object given to the collection of clients.
         """
 
+
+class IFormManager(IClientManager):
+    """ A standalone object that manages client data via one or more
+        schema objects.
+    """
+
+    senderEmail = schema.TextLine(
+                title=_(u'Sender email'),
+                description=_(u'Email address that will be used as sender '
+                        'address of confirmation and feedback messages.'),
+                required=False,)
