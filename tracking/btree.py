@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -70,11 +70,13 @@ class Track(Persistent):
 
     indexdata = metadata
 
-    def __init__(self, taskId, runId, userName, data={}):
+    def __init__(self, taskId, runId, userName, data=None):
         self.taskId = taskId
         self.runId = runId
         self.userName = userName
         self.timeStamp = getTimeStamp()
+        if data is None:
+            data = {}
         self.data = data
 
     #def getName(self):
@@ -281,7 +283,6 @@ class TrackingStorage(BTreeContainer):
                 start, end = value
                 result = self.intersect(result,
                                         self.indexes['timeStamp'].apply((start, end)))
-        #return result and [self[self.idFromNum(r)] for r in result] or set()
         return result and (self[self.idFromNum(r)] for r in result) or set()
 
     def intersect(self, r1, r2):
@@ -295,13 +296,6 @@ class TrackingStorage(BTreeContainer):
 
     def getTaskIds(self):
         return self.taskUsers.keys()
-
-
-#def timeStamp2ISO(ts):
-#    return time.strftime('%Y-%m-%d %H:%M', time.gmtime(ts))
-
-#def getTimeStamp():
-#    return int(time.time())
 
 
 @adapter(ITrack, IObjectRemovedEvent)
