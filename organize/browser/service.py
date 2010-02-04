@@ -226,15 +226,15 @@ class CheckoutView(ServiceManagerView):
         return reg.service.start
 
     def update(self):
-        data = self.getClientData()
-        if data['errors']:
-            return True
-        form = self.request.form
-        clientName = self.getClientName()
-        if not form.get('action'):
-            return True     # TODO: error, redirect to overview
         client = self.getClient()
         if client is None:
+            return True     # TODO: error, redirect to overview
+        data = self.getClientData()
+        if data.get('errors'):
+            return True
+        form = self.request.form
+        #clientName = self.getClientName()
+        if not form.get('action'):
             return True     # TODO: error, redirect to overview
         regs = IClientRegistrations(client).getRegistrations()
         for reg in regs:
