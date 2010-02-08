@@ -16,139 +16,95 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*
- *
- * $Id$
- *
- */
+
+// $Id$
+
 
 dojo.provide('jocy.talk');
+
+
+dojo.declare('jocy.talk.Manager', null, {
+
+    info: 'jocy.talk Manager',
+
+    constructor: function(){
+        this.connections = {};  // map URLs to connection objects
+    },
+
+    start: function(url, receiver, user, password) {
+        url = url.replace(/\/$/, '');
+        // TODO: close connection if already present
+        var conn = new jocy.talk.Connection(url, receiver, user, password);
+        this.connections[url] = conn;
+        conn.init();
+        conn.start();
+    },
+
+    send: function(url, data) {
+    },
+
+    close: function(url) {
+    }
+
+});
+
+jocy.talk.manager = new jocy.talk.Manager();
 
 
 dojo.declare('jocy.talk.Connection', null, {
 
     info: 'jocy.talk Connection',
-    constructor: function(url, client, user, password){
+
+    constructor: function(url, receiver, user, password) {
         this.url = url.replace(/\/$/, '');
-        this.client = client;
+        this.receiver = receiver;   // receive callback function
         this.user = user;
         this.password = password;
-        this._cometdInitialized = false;
-    },
-    initCometd: function() {
-        if (!this._cometdInitialized) {
-            dojox.cometd.init(this.url + '/cometd');
-            this._cometdInitialized = true;
-        }
-    },
-    unload: function(){
-        if (this._cometdInitialized) {
-            dojox.cometd.disconnect();
-            this._cometdInitialized = false;
-        }
+        this.initialized = false;
+        this.clientId = '';     // id provided by server
     },
 
-    // ReST methods
-    get: function(resourcePath, data, cbName, user, password) {
-        return dojo.xhrGet({
-            url: this._setupUrl(resourcePath),
-            load: dojo.hitch(this, function(response, ioArgs) {
-                return this._callback(response, ioArgs, cbName);
-            }),
-            content: data,
+    init: function() {
+        // request client id
+        message = {request: 'start'};
+        return dojo.xhrPost({
+            url: this.url,
+            postData: dojo.toJson(message),
             handleAs: 'json',
-            user: user,
-            password: password
-        });
-    },
-    getSynchronous: function(resourcePath, data) {
-        var result = {};
-        dojo.xhrGet({
-            url: this._setupUrl(resourcePath),
-            load: function(response, ioArgs) {
-                result = response;
-                return response;
-            },
-            content: data,
-            handleAs: 'json',
-            user: this.user,
-            password: this.password,
-            sync: true
-        });
-        return result;
-    },
-    put: function(resourcePath, data, cbName) {
-        return dojo.xhrPut({
-            url: this._setupU(cbName),
             load: dojo.hitch(this, function(response, ioArgs) {
-                return this._callback(response, ioArgs, cbName);
-            }),
-            putData: dojo.toJson(data),
+                this.clientId = response.client_id;
+            })
         });
     },
-    post: function(resourcePath, data, cbName) {
-        return dojo.xhrGet({
+
+    start: function() {
+        // start polling
+    },
+
+    close: function() {
+    },
+
+    send: function(resourcePath, data) {
+        return dojo.xhrPost({
             url: this._setupUrl(resourcePath),
             load: dojo.hitch(this, function(response, ioArgs) {
-                return this._callback(response, ioArgs, cbName);
+                return this._callback(response, ioArgs);
             }),
             postData: dojo.toJson(data)
         });
     },
-    rpc: function(resourcePath, methodName, data, cbName) {
-        return this.post(resourcePath, {method: methodName, data: data}, cbName);
-    },
-    remove: function(resourcePath, cbName) {
-        return dojo.xhrDelete({
-            url: this._setupU(resourcePath),
-            load: dojo.hitch(this, function(response, ioArgs) {
-                return this._callback(response, ioArgs, cbName);
-            }),
-        });
-    },
-
-    // cometd methods
-    publish: function(channel, data) {
-        this.initCometd();
-        return dojox.cometd.publish(channel, data);
-    },
-    subscribe: function(channel, cbName){
-        this.initCometd();
-        return dojox.cometd.subscribe(channel, this.client, cbName);
-    },
-    unsubscribe: function(channel){
-        this.initCometd();
-        return dojox.cometd.unsubscribe(channel, this.client);
-    },
 
     // private methods
+
+    _poll: function() {
+    },
+
     _setupUrl: function(path) {
         slash = (path.charAt(0) == '/' ? '' : '/');
         return this.url + slash + path;
     },
-    _callback: function(response, ioArgs, cbName) {
-        this.client[cbName](response);
-        return response;
-    },
 
-    /* dojox.cometd example */
-    join: function(name) {
-        if(name == null || name.length==0 ){
-            alert('Please enter a username!');
-        } else {
-            this._username=name;
-            dojox.cometd.startBatch();
-            dojox.cometd.subscribe("/chat/demo", this, "_alert");
-            dojox.cometd.publish("/chat/demo",
-                    {user: this._username, join: true,
-                     chat: this._username + " has joined"});
-            dojox.cometd.endBatch();
-            this._meta = dojo.subscribe("/cometd/meta", function(event) {
-                console.debug(event);
-            });
-        }
-    },
     _alert: function(data) {
         alert(data);
-    },
+    }
 });
