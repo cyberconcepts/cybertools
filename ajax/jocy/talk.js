@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+ * Copyright (c) 2010 Helmut Merz helmutm@cy55.de
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,88 +23,102 @@
 dojo.provide('jocy.talk');
 
 
-dojo.declare('jocy.talk.Manager', null, {
-
-    info: 'jocy.talk Manager',
-
-    constructor: function(){
-        this.connections = {};  // map URLs to connection objects
-    },
-
-    start: function(url, receiver, user, password) {
-        url = url.replace(/\/$/, '');
-        // TODO: close connection if already present
-        var conn = new jocy.talk.Connection(url, receiver, user, password);
-        this.connections[url] = conn;
-        conn.init();
-        conn.start();
-    },
-
-    send: function(url, data) {
-    },
-
-    close: function(url) {
-    }
-
-});
-
-jocy.talk.manager = new jocy.talk.Manager();
-
-
 dojo.declare('jocy.talk.Connection', null, {
 
     info: 'jocy.talk Connection',
 
-    constructor: function(url, receiver, user, password) {
-        this.url = url.replace(/\/$/, '');
-        this.receiver = receiver;   // receive callback function
-        this.user = user;
-        this.password = password;
-        this.initialized = false;
-        this.clientId = '';     // id provided by server
+    constructor: function() {
+        this.receiver = null;
+        this.polling = false;
+        this.id = null;
     },
 
-    init: function() {
-        // request client id
-        message = {request: 'start'};
+    open: function(receiver, id) {
+        this.receiver = receiver;
+        if (id != undefined) {
+            this.id = id;
+        } else {
+            this._getid();
+        }
+        this._poll();
+        return this.id;
+    },
+
+    close: function() {
         return dojo.xhrPost({
-            url: this.url,
-            postData: dojo.toJson(message),
-            handleAs: 'json',
+            url: '/.stop/' + this.id,
             load: dojo.hitch(this, function(response, ioArgs) {
-                this.clientId = response.client_id;
+                this.polling = false;
             })
         });
     },
 
-    start: function() {
-        // start polling
-    },
-
-    close: function() {
-    },
-
-    send: function(resourcePath, data) {
+    send: function(path, data) {
         return dojo.xhrPost({
-            url: this._setupUrl(resourcePath),
-            load: dojo.hitch(this, function(response, ioArgs) {
-                return this._callback(response, ioArgs);
-            }),
+            url: '/.send/' + this.id + path,
             postData: dojo.toJson(data)
         });
     },
 
     // private methods
 
+    _getId: function() {
+        return dojo.xhrPost({
+            url: '/.getid',
+            sync: true,
+            load: dojo.hitch(this, function(response, ioArgs) {
+                this.id = response;
+            })
+        });
+    },
+
     _poll: function() {
+        if (this.polling) {
+            return;
+        }
+        if (this.id == undefined) {
+            this._getId();
+        }
+        this.polling = true;
+        return dojo.xhrPost({
+            url: '/.poll/' + this.id,
+            handleAs: 'json',
+            error: dojo.hitch(this, this._handlePollError),
+            load: dojo.hitch(this, this._handlePollResponse)
+        });
     },
 
-    _setupUrl: function(path) {
-        slash = (path.charAt(0) == '/' ? '' : '/');
-        return this.url + slash + path;
+    _handlePollResponse: function(response, ioArgs) {
+        if (!this.polling) {
+            return;
+        }
+        this.polling = false;
+        t = response.type;
+        switch (response.type) {
+            case 'stop':
+                break;
+            case 'idle':
+                this._poll();
+                break;
+            case 'error':
+                self.receiver(response.data);
+                break;
+            case 'data':
+                this._poll();
+                self.receiver(response.data);
+                break;
+            default:
+                this.poll();
+        }
     },
 
-    _alert: function(data) {
-        alert(data);
+    _handlePollError: function(response, ioArgs) {
+        if (!this.polling) {
+            return;
+        }
+        this.polling = false;
+        this._poll();
     }
 });
+
+jocy.talk.connection = new jocy.talk.Connection();
