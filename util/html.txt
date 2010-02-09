@@ -18,3 +18,12 @@ $Id$
   >>> sanitize(input, ['p', 'b'], ['class'])
   u'\n<p class="standard">\n<b>Text</b>\n</p>\n'
 
+All comments are stripped from the HTML input.
+
+  >>> input2 = """<html>
+  ... <p>text</p>
+  ... <!-- comment -->
+  ... <p>text</p>"""
+
+  >>> sanitize(input2)
+  u'\n<p>text</p>\n\n<p>text</p>'
