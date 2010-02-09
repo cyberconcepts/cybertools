@@ -31,6 +31,8 @@ from zope.component import adapts
 from zope import component
 from zope.i18n.format import DateTimeParseError
 from zope.i18n.locales import locales
+from zope.tales.engine import Engine
+from zope.tales.tales import Context
 
 from cybertools.composer.base import Component
 from cybertools.composer.schema.interfaces import IField, IFieldInstance
@@ -51,6 +53,8 @@ class Field(Component):
     renderFactory = None
     default = None
     default_method = None
+    defaultValueType = 'static'
+
     value_type = None
 
     fieldTypeInfo = None
@@ -84,10 +88,20 @@ class Field(Component):
     def getDefaultValue(self):
         if callable(self.default_method):
             return self.default_method()
+        if self.defaultValueType == 'tales':
+            expr = Engine.compile(self.default)
+            ctx = Context(Engine, self.getContextProperties())
+            return expr(ctx)
         return self.default
     def setDefaultValue(self, value):
         self.default = value
     defaultValue = property(getDefaultValue, setDefaultValue)
+
+    def getDefaultValueExpr(self):
+        return self.default
+    def setDefaultValueExpr(self, value):
+        self.default = value
+    defaultValueExpr = property(getDefaultValueExpr, setDefaultValueExpr)
 
     @property
     def fieldRenderer(self):
@@ -129,6 +143,9 @@ class Field(Component):
         fi.clientInstance = clientInstance
         return fi
 
+    def getContextProperties(self):
+        return dict(context=self, user=None)
+
 
 class FieldInstance(object):
 
@@ -152,7 +169,7 @@ class FieldInstance(object):
             method = getattr(self.clientInstance.context, dm, None)
             if method:
                 return method()
-        return self.context.defaultValue
+        return self.context.getDefaultValue()
 
     def getRawValue(self, data, key, default=None):
         return data.get(key, default)

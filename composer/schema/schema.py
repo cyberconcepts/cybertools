@@ -52,6 +52,9 @@ class Schema(Template):
 
     @property
     def fields(self):
+        return self.getFields()
+
+    def getFields(self):
         return self.components
 
     @property

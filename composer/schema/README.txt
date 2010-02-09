@@ -61,6 +61,13 @@ Field types
   >>> sorted(t.token for t in textFieldTypes)
   ['textarea', 'textline']
 
+Dynamic default values
+----------------------
+
+  >>> idField = Field(u'id', default='user/title|string:???', defaultValueType='tales')
+  >>> idField.getDefaultValue()
+  '???'
+
 
 Creating a schema from an interface
 ===================================
@@ -164,6 +171,7 @@ Create a new object using a schema-based form
   >>> form = CreateForm(container, TestRequest(form=input))
   >>> form.interface = IPerson
   >>> form.factory = Person
+
   >>> form.nextUrl = 'dummy_url'  # avoid hassle with IAbsoluteURL view...
   >>> form.getName = lambda x: x.lastName.lower()
 

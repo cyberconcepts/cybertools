@@ -133,7 +133,7 @@ standardFieldNames = SimpleVocabulary((
 ))
 
 defaultValueTypes = SimpleVocabulary((
-    SimpleTerm('string', 'string', 'String'),
+    SimpleTerm('static', 'static', 'Static data'),
     SimpleTerm('tales', 'tales', 'TAL expression'),
 ))
 
@@ -167,17 +167,17 @@ class IField(IComponent):
                 required=False,
                 default='',
                 vocabulary=standardFieldNames,)
-    defaultValue = schema.TextLine(
+    defaultValueExpr = schema.TextLine(
                 title=_(u'Default'),
                 description=_(u'Value with which to pre-set the field contents. '
                         'Use this also for populating a calculated field.'),
                 required=False,)
     defaultValueType = schema.Choice(
                 title=_(u'Default type'),
-                description=_(u'The type of the default, i.e. a fixed string '
+                description=_(u'The type of the default, i.e. a static value '
                         u'or an expression that is used to calculate the value.'),
                 required=False,
-                default='string',
+                default='static',
                 vocabulary=defaultValueTypes)
     required = schema.Bool(
                 title=_(u'Required'),
