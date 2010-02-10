@@ -163,14 +163,14 @@ class ClientInstance(object):
         template = self.template
         if template is not None:
             values = attrs.get(self.aspect, {})
-            for f in template.fields:
+            for f in template.getFields():
                 if not f.storeData:
                     # a dummy field, e.g. a spacer
                     continue
                 fi = f.getFieldInstance(self)
                 name = f.name
                 #value = values.get(name, u'')
-                value = values.get(name, f.defaultValue)
+                value = values.get(name, f.getDefaultValue())
                 value = mode == 'view' and fi.display(value) or fi.marshall(value)
                 result[name] = value
         # update result with standard fields:

@@ -22,6 +22,8 @@ Common base class(es) for schema and other template views.
 $Id$
 """
 
+from datetime import datetime
+import time
 from zope import component
 from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.app.session.interfaces import ISession
@@ -29,6 +31,7 @@ from zope.cachedescriptors.property import Lazy
 
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.interfaces import IClientFactory, ISchema
+from cybertools.util.format import formatDate
 
 
 schema_macros = ViewPageTemplateFile('schema_macros.pt')
@@ -172,4 +175,15 @@ class BaseView(object):
                 if f.storeData:
                     result.append(dict(label=f.title, value=data.get(f.name)))
         return result
+
+    def getFormattedDate(self, date=None, type='date', variant='medium',
+                         adjustTz=False):
+        if date is not None and not isinstance(date, (int, float)):
+            return '???'
+        if adjustTz:
+            date = time.gmtime(date)[:6]
+        else:
+            date = time.localtime(date)[:6]
+        date = datetime(*date)
+        return formatDate(date, type=type, variant=variant, lang=self.getLanguage())
 

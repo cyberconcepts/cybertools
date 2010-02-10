@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -56,15 +56,6 @@ class BaseView(SchemaBaseView):
         return self.manager.getClients().get(clientName)
 
     # output formatting
-
-    def getFormattedDate(self, date=None, type='date', variant='medium',
-                         adjustTz=False):
-        if adjustTz:
-            date = time.gmtime(date)[:6]
-        else:
-            date = time.localtime(date)[:6]
-        date = datetime(*date)
-        return formatDate(date, type=type, variant=variant, lang=self.getLanguage())
 
     def getFromTo(self, service=None):
         if service is None:

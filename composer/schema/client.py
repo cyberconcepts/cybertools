@@ -24,6 +24,7 @@ $Id$
 
 from BTrees.OOBTree import OOBTree
 from persistent import Persistent
+from time import time
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 from zope.interface import implements
@@ -88,8 +89,11 @@ class Client(Persistent):
 
     implements(IClient)
 
+    timeStamp = None
+
     def __init__(self, manager=None):
         self.manager = manager
+        self.timeStamp = int(time())
 
 
 class ClientFactory(object):

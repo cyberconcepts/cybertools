@@ -29,11 +29,11 @@ from zope import component
 from zope.cachedescriptors.property import Lazy
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.interfaces import ISchema
-from cybertools.organize.browser.service import BaseView
+from cybertools.composer.schema.browser.schema import FormManagerView
 from cybertools.stateful.interfaces import IStateful
 
 
-class RegistrationsExportCsv(BaseView):
+class RegistrationsExportCsv(FormManagerView):
 
     encoding = 'ISO8859-15'
     #delimiter = ';'
@@ -51,84 +51,22 @@ class RegistrationsExportCsv(BaseView):
         response.setHeader('Content-Type', 'text/x-comma-separated-values')
         response.setHeader('Content-Length', size)
 
-    def getData(self):
-        withTemporary = self.request.get('with_temporary')
-        yield ['Service', 'Client ID', 'Organization', 'First Name', 'Last Name',
-               'E-Mail', 'Number', 'State']
-        for service in self.context.getServices():
-            for clientName, reg in service.registrations.items():
-                client = reg.client
-                state = IStateful(reg).getStateObject()
-                if state.name == 'temporary' and not withTemporary:
-                    continue
-                data = IInstance(client).applyTemplate()
-                yield [self.encode(service.title) or service.name,
-                       clientName,
-                       self.encode(data.get('standard.organization', '')),
-                       self.encode(data.get('standard.lastName', '')),
-                       self.encode(data.get('standard.firstName', '')),
-                       self.encode(data.get('standard.email', '')),
-                       reg.number,
-                       state.title
-                ]
-
     def getAllDataInColumns(self):
-        """ Yield all data available, with a column for each service and
+        """ Yield all data available, with
             columns for all data fields of all data templates.
         """
         withTemporary = self.request.get('with_temporary')
         context = self.context
-        services = context.getServices()
-        withWaitingList = False
-        for service in services:
-            if service.waitingList:
-                withWaitingList = True
-                break
         schemas = [s for s in context.getClientSchemas() if ISchema.providedBy(s)]
         headline = (['Client ID', 'Time Stamp']
              + list(itertools.chain(*[[self.encode(f.title)
                                             for f in s.fields
                                             if f.storeData]
                                                     for s in schemas])))
-        for s in services:
-            headline.append(self.encode(s.title))
-            if withWaitingList:
-                headline.append('WL ' + self.encode(s.title))
-        #     + [self.encode(s.title) for s in services])
-        #if withWaitingList:
-        #    headline += ['WL ' + self.encode(s.title) for s in services]
         lines = []
         clients = context.getClients()
         for name, client in clients.items():
-            hasRegs = False
-            regs = []
-            #waiting = []
-            timeStamp = ''
-            for service in services:
-                reg = service.registrations.get(name)
-                if reg is None:
-                    regs.append(0)
-                    if withWaitingList:
-                        regs.append(0)
-                    #waiting.append(0)
-                else:
-                    state = IStateful(reg).getStateObject()
-                    if state.name == 'temporary' and not withTemporary:
-                        regs.append(0)
-                        if withWaitingList:
-                            regs.append(0)
-                        #waiting.append(0)
-                    else:
-                        regs.append(reg.number)
-                        if withWaitingList:
-                            regs.append(reg.numberWaiting)
-                        #waiting.append(reg.numberWaiting)
-                        if reg.number or reg.numberWaiting:
-                            hasRegs = True
-                        if reg.timeStamp < timeStamp:
-                            timeStamp = reg.timeStamp
-            if not hasRegs:
-                continue
+            timeStamp = client.timeStamp
             line = [name, timeStamp]
             for schema in schemas:
                 instance = IInstance(client)
@@ -137,9 +75,6 @@ class RegistrationsExportCsv(BaseView):
                 for f in schema.fields:
                     if f.storeData:
                         line.append(self.encode(data.get(f.name, '')))
-            line += regs
-            #if withWaitingList:
-            #    line += waiting
             lines.append(line)
         lines.sort(key=lambda x: x[1])
         for l in lines:
@@ -152,7 +87,7 @@ class RegistrationsExportCsv(BaseView):
         if xlsv == '2007':
             delimiter = ';'
         methodName = self.request.get('get_data_method', 'getAllDataInColumns')
-        method = getattr(self, methodName, self.getData)
+        method = getattr(self, methodName, self.getAllDataInColumns)
         output = StringIO()
         try:
             csv.writer(output, dialect='excel', delimiter=delimiter,
@@ -161,13 +96,6 @@ class RegistrationsExportCsv(BaseView):
             import traceback; traceback.print_exc()
             raise
         result = output.getvalue()
-        self.setHeaders(len(result))
-        return result
-
-    def render2(self):
-        # using cybertools.reporter.resultset
-        rs = self.getData()     # should return a ResultSet
-        result = rs.asCsv()
         self.setHeaders(len(result))
         return result
 
