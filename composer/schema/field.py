@@ -91,7 +91,10 @@ class Field(Component):
         if self.defaultValueType == 'tales':
             expr = Engine.compile(self.default)
             ctx = Context(Engine, self.getContextProperties())
-            return expr(ctx)
+            try:
+                return expr(ctx)
+            except AttributeError, KeyError:
+                return u''
         return self.default
     def setDefaultValue(self, value):
         self.default = value
