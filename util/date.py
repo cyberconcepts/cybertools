@@ -25,13 +25,29 @@ $Id$
 import time
 
 
+def getTimeStamp():
+    return int(time.time())
+
+
 def timeStamp2ISO(ts, useGM=False, format='%Y-%m-%d %H:%M'):
+    return formatTimeStamp(ts, useGM, format)
+
+def formatTimeStamp(ts, useGM=False, format='%Y-%m-%d %H:%M'):
+    if ts is None:
+        ts = getTimeStamp()
     fct = useGM and time.gmtime or time.localtime
     return time.strftime(format, fct(ts))
     #return time.strftime('%Y-%m-%d %H:%M', time.gmtime(ts))
     #return time.strftime('%Y-%m-%d %H:%M', time.localtime(ts))
 
-def getTimeStamp():
-    return int(time.time())
 
+def str2timeStamp(s):
+    try:
+        t = time.strptime(s, '%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        try:
+            t = time.strptime(s, '%Y-%m-%d %H:%M')
+        except ValueError:
+            t = time.strptime(s, '%Y-%m-%d')
+    return int(time.mktime(t))
 
