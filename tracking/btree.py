@@ -182,7 +182,8 @@ class TrackingStorage(BTreeContainer):
         trackId = self.idFromNum(self.trackNum)
         return trackId, self.trackNum
 
-    def saveUserTrack(self, taskId, runId, userName, data, update=False, timeStamp=None):
+    def saveUserTrack(self, taskId, runId, userName, data, update=False,
+                      timeStamp=None):
         ts = timeStamp or getTimeStamp()
         if not runId:
             runId = self.currentRuns.get(taskId) or self.startRun(taskId)
