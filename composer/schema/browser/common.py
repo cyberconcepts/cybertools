@@ -178,8 +178,10 @@ class BaseView(object):
 
     def getFormattedDate(self, date=None, type='date', variant='medium',
                          adjustTz=False):
-        if date is not None and not isinstance(date, (int, float)):
-            return '???'
+        #if date is not None and not isinstance(date, (int, float)):
+            #print '***', date, repr(date), date.__class__
+            #return '???'
+            #date = date.timeTime()
         if adjustTz:
             date = time.gmtime(date)[:6]
         else:
