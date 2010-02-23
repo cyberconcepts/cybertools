@@ -51,6 +51,10 @@ dojoCssLightbox = Layout('css.dojo.lightbox', 'page.css', renderer=standardRende
              media='all', resource='ajax.dojo/dojox/image/resources/Lightbox.css',
              order=12)
 
+dojoCssScrollPane = Layout('css.dojo.scrollpane', 'page.css', renderer=standardRenderers.css,
+             media='all', resource='ajax.dojo/dojox/layout/resources/ScrollPane.css',
+             order=13)
+
 
 class DojoLayoutInstance(LayoutInstance):
 
