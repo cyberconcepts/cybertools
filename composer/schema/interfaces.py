@@ -77,6 +77,8 @@ class ISchemaFactory(Interface):
 
 class FieldType(SimpleTerm):
 
+    hidden = False
+
     def __init__(self, value, token=None, title=None, **kw):
         super(FieldType, self).__init__(value, token, title)
         self.name = value

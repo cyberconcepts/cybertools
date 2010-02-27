@@ -290,6 +290,8 @@ class FileUploadFieldInstance(FieldInstance):
 class EmailFieldInstance(FieldInstance):
 
     def validate(self, value, data=None):
+        if not value and self.context.required:
+            self.setError('required_missing')
         if value and '@' not in value:
             self.setError('invalid_email_address')
 

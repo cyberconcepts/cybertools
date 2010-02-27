@@ -119,9 +119,10 @@ class FormManagerView(BaseView):
     def update(self):
         if self.isManageMode:
             return True
-        for tpl in self.context.getClientSchemas():
-            self.context.request.response.redirect(absoluteURL(tpl, self.request))
-            break
+        self.context.request.response.redirect(self.firstFormUrl())
+        #for tpl in self.context.getClientSchemas():
+        #    self.context.request.response.redirect(absoluteURL(tpl, self.request))
+        #    break
         return False
 
     def overview(self, ignoreTemporary=True):
@@ -136,6 +137,10 @@ class FormManagerView(BaseView):
             data['state'] = state
             result.append(data)
         return result
+
+    def firstFormUrl(self):
+        for tpl in self.context.getClientSchemas():
+            return absoluteURL(tpl, self.request)
 
 
 class CheckoutView(BaseView):
