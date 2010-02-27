@@ -620,6 +620,7 @@ class RegistrationTemplateView(BaseView):
 
     def update(self):
         newClient = False
+        client = None
         form = self.request.form
         clientName = self.getClientName()
         if not form.get('action'):
@@ -627,9 +628,9 @@ class RegistrationTemplateView(BaseView):
         manager = self.context.getManager()
         if clientName:
             client = manager.getClients().get(clientName)
-            if client is None:
-                return True
-        else:
+            #if client is None:
+            #    return True
+        if client is None:
             client = IClientFactory(manager)()
             newClient = True    # make persistent later
         regs = self.state = IClientRegistrations(client)
