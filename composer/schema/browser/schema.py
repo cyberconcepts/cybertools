@@ -73,6 +73,7 @@ class SchemaView(BaseView):
 
     def update(self):
         newClient = False
+        client = None
         form = self.request.form
         clientName = self.getClientName()
         if not form.get('action'):
@@ -84,11 +85,11 @@ class SchemaView(BaseView):
         manager = self.context.getManager()
         if clientName:
             client = manager.getClients().get(clientName)
-            if client is None:
+            #if client is None:
                 # no valid clientName - show empty form
-                return True
+                #return True
             #self.setClientName(clientName) # store in view and session
-        else:
+        if client is None:
             client = IClientFactory(manager)()
             # only add client to manager after validation, so we have
             # to keep the info about new client here
