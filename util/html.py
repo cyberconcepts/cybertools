@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ $Id$
 """
 
 from cybertools.text.lib.BeautifulSoup import BeautifulSoup, Comment
+from cybertools.text.lib.BeautifulSoup import Declaration, NavigableString
 
 validTags = ('a b br div em font h1 h2 h3 i li ol p pre span strong '
              'table td tr u ul').split()
@@ -72,3 +73,18 @@ def checkStyle(k):
         if k.startswith(name):
             return True
     return False
+
+
+def stripAll(value):
+    def collectText(tags):
+        for tag in tags:
+            if type(tag) is NavigableString:
+                data.append(tag)
+            elif tag is not None and type(tag) is not Declaration:
+                collectText(tag.contents)
+    data = []
+    soup = BeautifulSoup(value)
+    collectText(soup.contents)
+    text = u''.join(data).replace(u'\n', u'').replace(u'&nbsp;', u' ')
+    return text
+

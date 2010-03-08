@@ -8,15 +8,15 @@ $Id$
 
   >>> input = """<html>
   ... <p class="standard" style="font-size: 200%; font-weight: bold">
-  ...   <a href="blubb"><b>Text</b></a>
+  ...   <a href="blubb"><b>Text</b>, and more</a>
   ... </p>
   ... </html>"""
 
   >>> sanitize(input, validAttrs=['style'])
-  u'\n<p style="font-weight: bold">\n<a><b>Text</b></a>\n</p>\n'
+  u'\n<p style="font-weight: bold">\n<a><b>Text</b>, and more</a>\n</p>\n'
 
   >>> sanitize(input, ['p', 'b'], ['class'])
-  u'\n<p class="standard">\n<b>Text</b>\n</p>\n'
+  u'\n<p class="standard">\n<b>Text</b>, and more\n</p>\n'
 
 All comments are stripped from the HTML input.
 
@@ -27,3 +27,9 @@ All comments are stripped from the HTML input.
 
   >>> sanitize(input2)
   u'\n<p>text</p>\n\n<p>text</p>'
+
+It is also possible to strip all HTML tags from the input string.
+
+  >>> from cybertools.util.html import stripAll
+  >>> stripAll(input)
+  u'Text, and more'
