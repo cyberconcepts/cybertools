@@ -52,9 +52,10 @@
                    tal:attributes="href item/taskUrl"
                    tal:content="item/taskTitle"></a></td>
             <td tal:content="item/run"></td>
-            <td><a tal:omit-tag="not:item/userUrl"
-                   tal:attributes="href item/userUrl"
-                   tal:content="item/userTitle"></a></td>
+            <td><a tal:define="userUrl view/userUrl|nothing"
+                   tal:omit-tag="not:userUrl"
+                   tal:attributes="href userUrl"
+                   tal:content="item/userTitle|string:???"></a></td>
             <td tal:content="item/timeStamp"></td>
           </tr>
           </tal:list>

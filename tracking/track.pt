@@ -16,15 +16,19 @@
       <td tal:content="view/run"></td></tr>
     <tr>
       <td>User:</td>
-      <td><a tal:omit-tag="not:view/userUrl"
-             tal:attributes="href view/userUrl"
+      <td><a tal:define="userUrl view/userUrl|nothing"
+             tal:omit-tag="not:userUrl"
+             tal:attributes="href userUrl"
              tal:content="view/userTitle" /></td></tr>
     <tr>
       <td>Timestamp:</td>
       <td tal:content="view/timeStamp"></td></tr>
     <tr tal:repeat="key view/additionalMetadataFields">
       <td><span tal:replace="key" />:</td>
-      <td tal:content="view/metadata/?key"></td></tr>
+      <td><a tal:define="target python: view.getMetadataTarget(key)"
+             tal:omit-tag="not:target/url"
+             tal:attributes="href target/url"
+             tal:content="python: target['title'] or '???'" /></td></tr>
   </table>
   <h2>Data</h2>
   <div tal:content="context/data" />
