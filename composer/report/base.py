@@ -49,6 +49,7 @@ class ReportManager(object):
             id = generateName(self.checkId)
             report.identifier = id
         self.reports[id] = report
+        report.manager = self
         return report
 
     def checkId(self, id):
