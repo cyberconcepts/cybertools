@@ -77,8 +77,31 @@ class IReport(ITemplate):
     manager = Attribute('The manager of this message object')
 
     fields = Attribute('An ordered collection of all field definitions '
-                    'available for this report.')
-    renderers = Attribute('An ordered collection of renderers for this report.')
+                    'available for this report type.')
+    renderers = Attribute('An ordered collection of renderers available '
+                    'for this report type.')
+
+    queryCriteria = Attribute('The criteria to be used for executing the '
+                    'query step.')
+    sortSpec = Attribute('A sequence of fields/sort directions to be used for '
+                    'executing the sorting step.')
+    outputSpec = Attribute('A sequence of output fields (column/cell '
+                    'specifications) to be used for presenting the result data.')
+
+    def getQueryFields():
+        """ Return a sequence of fields that may be used for setting up
+            the query criteria.
+        """
+
+    def getSortFields():
+        """ Return a sequence of fields that may be used for setting up
+            the sort criteria.
+        """
+
+    def getOutputFields():
+        """ Return a sequence of fields that may be used for setting up
+            the output specification.
+        """
 
 
 class FieldType(SimpleTerm):
@@ -121,3 +144,9 @@ class IField(IComponent):
                 required=True,
                 default='textline',
                 vocabulary=fieldTypes,)
+    executionSteps = schema.List(
+                title=_(u'Execution Steps'),
+                description=_(u'The execution steps for which this field may '
+                        u'be used.'),
+                required=True,
+                default=['query', 'sort', 'output'],)
