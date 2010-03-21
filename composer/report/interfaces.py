@@ -25,6 +25,7 @@ $Id$
 from zope.interface import Interface, Attribute
 from zope.i18nmessageid import MessageFactory
 from zope import schema
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
 from cybertools.composer.interfaces import ITemplate, IComponent
 from cybertools.composer.interfaces import IInstance
@@ -33,7 +34,7 @@ _ = MessageFactory('cybertools.composer')
 
 
 class IReportManager(Interface):
-    """ A manager (or container) for complex messages.
+    """ A manager (or container) for reports.
     """
 
     title = schema.TextLine(
@@ -47,9 +48,13 @@ class IReportManager(Interface):
         """ Add a report.
         """
 
+    def getReport(id):
+        """ Retrieve a report.
+        """
 
-class IReport(Interface):
-    """ A complex message that may be expanded using instance data.
+
+class IReport(ITemplate):
+    """ A configurable report.
     """
 
     identifier = schema.ASCIILine(
@@ -71,3 +76,48 @@ class IReport(Interface):
 
     manager = Attribute('The manager of this message object')
 
+    fields = Attribute('An ordered collection of all field definitions '
+                    'available for this report.')
+    renderers = Attribute('An ordered collection of renderers for this report.')
+
+
+class FieldType(SimpleTerm):
+
+    instanceName = ''
+
+    def __init__(self, value, token=None, title=None, **kw):
+        super(FieldType, self).__init__(value, token, title)
+        self.name = value
+        for k, v in kw.items():
+            setattr(self, k, v)
+
+fieldTypes = SimpleVocabulary((
+    FieldType('textline', 'textline', u'Textline'),
+    FieldType('number', 'number', u'Number', instanceName='number'),
+    FieldType('date', 'date', u'Date', instanceName='date'),
+))
+
+
+class IField(IComponent):
+    """ Describes a field that may be used in query criteria, for specifying
+        columns or cells for display, or for sorting.
+    """
+
+    name = schema.ASCII(
+                title=_(u'Field name'),
+                description=_(u'The internal name of the field'),
+                required=True,)
+    title = schema.TextLine(
+                title=_(u'Title'),
+                description=_(u'The title or label of the field'),
+                required=True,)
+    description = schema.Text(
+                title=_(u'Description'),
+                description=_(u'A brief description of the field'),
+                required=False,)
+    fieldType = schema.Choice(
+                title=_(u'Field type'),
+                description=_(u'The type of the field'),
+                required=True,
+                default='textline',
+                vocabulary=fieldTypes,)
