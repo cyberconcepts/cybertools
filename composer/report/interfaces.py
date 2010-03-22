@@ -27,7 +27,7 @@ from zope.i18nmessageid import MessageFactory
 from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
-from cybertools.composer.interfaces import ITemplate, IComponent
+from cybertools.composer.interfaces import ITemplate, IComponent, ICompound
 from cybertools.composer.interfaces import IInstance
 
 _ = MessageFactory('cybertools.composer')
@@ -127,20 +127,20 @@ class IField(IComponent):
     """
 
     name = schema.ASCII(
-                title=_(u'Field name'),
-                description=_(u'The internal name of the field'),
+                title=_(u'Field Name'),
+                description=_(u'The internal name of the field.'),
                 required=True,)
     title = schema.TextLine(
                 title=_(u'Title'),
-                description=_(u'The title or label of the field'),
+                description=_(u'The visible title or label of the field.'),
                 required=True,)
     description = schema.Text(
                 title=_(u'Description'),
-                description=_(u'A brief description of the field'),
+                description=_(u'A brief description of the field.'),
                 required=False,)
     fieldType = schema.Choice(
-                title=_(u'Field type'),
-                description=_(u'The type of the field'),
+                title=_(u'Field Type'),
+                description=_(u'The type of the field.'),
                 required=True,
                 default='textline',
                 vocabulary=fieldTypes,)
@@ -150,3 +150,88 @@ class IField(IComponent):
                         u'be used.'),
                 required=True,
                 default=['query', 'sort', 'output'],)
+
+
+class IBaseReportComponent(IComponent):
+
+    name = schema.ASCII(
+                title=_(u'Field Name'),
+                description=_(u'The internal name of the field.'),
+                required=True,)
+    title = schema.TextLine(
+                title=_(u'Title'),
+                description=_(u'The visible title of the field.'),
+                required=True,)
+    baseName = schema.ASCII(
+                title=_(u'Base Field Name'),
+                description=_(u'The name of the predefined field specification '
+                        u'this field is based on.'),
+                required=True,)
+    expression = schema.ASCII(
+                title=_(u'Expression'),
+                description=_(u'Optional: an expression to be applied to '
+                        u'the field\'s value before using it in the '
+                        u'corresponding execution step.'),
+                required=False,)
+
+
+class ILeafQueryCriteria(IBaseReportComponent):
+    """ A terminal query criteria element.
+    """
+
+    operator = schema.Choice(
+                title=_(u'Operator'),
+                description=_(u'Operator to be used for comparison.'),
+                required=True,
+                default='in',
+                values=('=', '<', '<=', '>', '>=', '!=', 'in'),)
+    comparisonValue = schema.Object(
+                title=_(u'Comparison Value'),
+                description=_(u'The value to be used for comparison.'),
+                schema=Interface,
+                required=True,)
+
+
+class ICompoundQueryCriteria(ICompound):
+    """ A query criteria element consisting of leaf query criteria elements.
+        The names of the component criteria are given by the ``parts``
+        attribute.
+    """
+
+    logicalOperator = schema.Choice(
+                title=_(u'Operator'),
+                description=_(u'Logical operator for connecting the sub-criteria.'),
+                required=True,
+                default='and',
+                values=('and', 'or'),)
+
+
+class ISortField(IBaseReportComponent):
+    """ Specification for a field to be used for sorting.""
+    """
+
+    direction = schema.Choice(
+                title=_(u'Sort Direction'),
+                description=_(u'Sort direction: Ascending or descending.'),
+                required=True,
+                default='ascending',
+                values=('ascending', 'descending'),)
+
+
+class IOutputField(IBaseReportComponent):
+    """ Specification for a field to be used as a table column or cell.""
+    """
+
+    label = schema.TextLine(
+                title=_(u'Lable'),
+                description=_(u'The label to be used when displaying the field.'),
+                required=True,)
+    format = schema.ASCII(
+                title=_(u'Format'),
+                description=_(u'A format string for displaying the field.'),
+                required=False,)
+    instanceName = schema.ASCII(
+                title=_(u'Instance Name'),
+                description=_(u'The name referencing a field instance class '
+                        u'to be used for processing the field\'s value.'),
+                required=False,)
