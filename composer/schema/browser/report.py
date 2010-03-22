@@ -59,7 +59,8 @@ class RegistrationsExportCsv(FormManagerView):
         context = self.context
         schemas = [s for s in context.getClientSchemas() if ISchema.providedBy(s)]
         headline = (['Client ID', 'Time Stamp']
-             + list(itertools.chain(*[[self.encode(f.title)
+             #+ list(itertools.chain(*[[self.encode(f.title)
+             + list(itertools.chain(*[[self.encode(f.name)
                                             for f in s.fields
                                             if f.storeData]
                                                     for s in schemas])))

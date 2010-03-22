@@ -141,7 +141,10 @@ class FormManagerView(BaseView):
 
     def firstFormUrl(self):
         for tpl in self.context.getClientSchemas():
-            return absoluteURL(tpl, self.request)
+            url = absoluteURL(tpl, self.request)
+            if self.isManageMode and 'client' in self.request.form:
+                url = '%s?id=%s' % (url, self.request.form['client'])
+            return url
 
 
 class CheckoutView(BaseView):

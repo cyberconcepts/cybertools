@@ -28,6 +28,7 @@ from zope import component
 from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.app.session.interfaces import ISession
 from zope.cachedescriptors.property import Lazy
+from zope.traversing.browser.absoluteurl import absoluteURL
 
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.schema.interfaces import IClientFactory, ISchema
@@ -152,6 +153,10 @@ class BaseView(object):
     def url(self):
         from zope.traversing.browser import absoluteURL
         return absoluteURL(self.context, self.request)
+
+    def firstFormUrl(self):
+        for tpl in self.context.getClientSchemas():
+            return absoluteURL(tpl, self.request)
 
     def setSessionInfo(self, key, value, packageId=packageId):
         session = ISession(self.request)[packageId]
