@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,12 +22,38 @@ Base classes for views.
 $Id$
 """
 
+from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope import component
 from Products.Five import BrowserView
+#from Products.Five.browser.pagetemplatefile import PageTemplateFile
 
 
-class GenericView(BrowserView):
+generic_page = ViewPageTemplateFile('generic.pt')
+view_macros = ViewPageTemplateFile('view_macros.pt')
+
+
+class BaseView(BrowserView):
+
+    index = generic_page
+    default_template = None     # specify in subclass
+
+    def __call__(self):
+        return self.index(self)
+
+    def getMainMacro(self):
+        return view_macros.macros['main']
+
+    def getDefaultTemplate(self):
+        return self.default_template
+
+    def getContentMacro(self):
+        return self.getDefaultTemplate().macros[self.content_renderer]
+
+
+# generic views for use with generic persistent objects with type-based adapters
+
+class GenericView(BaseView):
 
     name = 'index_html'
 

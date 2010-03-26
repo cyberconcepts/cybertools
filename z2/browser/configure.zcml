@@ -1,0 +1,19 @@
+<!-- $Id$ -->
+
+<configure
+    xmlns:zope="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+        name="index_html"
+        for="cybertools.util.generic.interfaces.IGeneric"
+        class="cybertools.z2.browser.view.GenericView"
+        permission="zope2.View" />
+
+  <browser:page
+        name="create.html"
+        for="cybertools.util.generic.interfaces.IGeneric"
+        class="cybertools.z2.browser.view.GenericAddForm"
+        permission="zope2.ManageProperties" />
+
+</configure>

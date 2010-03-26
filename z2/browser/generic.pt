@@ -1,0 +1,14 @@
+<tal:show condition="view/update">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      metal:use-macro="view/getMainMacro">
+
+  <body>
+
+    <div metal:fill-slot="content">
+      <metal:content use-macro="view/getContentMacro" />
+    </div>
+
+  </body>
+
+</html>
+</tal:show>

@@ -14,16 +14,6 @@
   <zope:adapter factory="cybertools.z2.base.BaseFolder"
                 provides="cybertools.util.generic.interfaces.IGenericFolder" />-->
 
-  <browser:page
-        name="index_html"
-        for="cybertools.util.generic.interfaces.IGeneric"
-        class="cybertools.z2.browser.GenericView"
-        permission="zope2.View" />
-
-  <browser:page
-        name="create.html"
-        for="cybertools.util.generic.interfaces.IGeneric"
-        class="cybertools.z2.browser.GenericAddForm"
-        permission="zope2.ManageProperties" />
+  <include package=".browser" />
 
 </configure>
