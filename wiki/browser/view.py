@@ -27,6 +27,8 @@ from zope.cachedescriptors.property import Lazy
 from zope import component
 from zope.traversing.browser import absoluteURL
 
+from cybertools.link.interfaces import ILinkManager
+
 
 class WikiBaseView(object):
 
