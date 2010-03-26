@@ -4,7 +4,8 @@ Data Caching
 
 $Id$
 
-  >>> from cybertools.util.cache import cache
+  >>> from cybertools.util import cache
+  >>> cache = cache.internalCache
 
   >>> @cache(lambda *args: 'calc')
   ... def calculate():

@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ class CacheItem(object):
             self.value = INVALID
 
 
-def cache(getIdentifier, lifetime=3600):
+def internalCache(getIdentifier, lifetime=3600):
     def _cache(fct):
         def __cache(*args, **kw):
             id = getIdentifier(*args, **kw)
@@ -75,6 +75,8 @@ def cache(getIdentifier, lifetime=3600):
             return value
         return __cache
     return _cache
+
+cache = internalCache
 
 
 # memcached implementation
