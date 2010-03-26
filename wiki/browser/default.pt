@@ -1,0 +1,62 @@
+<html>
+
+
+<metal:content define-macro="manager">
+    <h1>Wiki Manager</h1>
+    <h2>Wikis</h2>
+    <table>
+      <tr tal:repeat="wiki view/listWikis">
+        <td>
+          <a tal:attributes="href wiki/absolute_url"
+             tal:content="wiki/context/title" />
+        </td>
+      </tr>
+    </table>
+</metal:content>
+
+
+<metal:content define-macro="wiki">
+    <h1>Wiki</h1>
+    <div tal:repeat="page view/listPages">
+      <a tal:attributes="href page/absolute_url"
+         tal:content="page/title" />
+    </div>
+</metal:content>
+
+
+<metal:content define-macro="wikipage">
+    <div metal:define-macro="edit">
+      <tal:edit condition="python: request.get('mode') == 'edit'">
+        <h1>Edit <span tal:content="context/title">Wiki Page</span></h1>
+        <form method="post">
+          <input type="hidden" name="form_action" value="edit" />
+          <div>
+            <div>Title</div>
+            <div>
+                <input name="title" size="40"
+                    tal:attributes="value context/title"/></div>
+            </div>
+          <div>
+          <div>Text</div>
+            <div>
+                <textarea name="text" rows="15" cols="60"
+                        tal:content="context/text" /></div>
+            </div>
+          <div>
+            <div><input type="submit" value="Save" /></div><br />
+          </div>
+        </form>
+      </tal:edit>
+    </div>
+    <div metal:define-macro="show">
+        <h1 tal:content="context/title">Wiki Page</h1>
+        <div tal:content="structure view/render" />
+        <tal:show condition="python: request.get('mode') != 'edit'">
+          <div>&nbsp;</div>
+          <div><a href="?mode=edit">Edit</a></div>
+        </tal:show>
+    </div>
+</metal:content>
+
+
+</html>
