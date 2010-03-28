@@ -23,11 +23,11 @@ $Id$
 """
 
 from zope.cachedescriptors.property import Lazy
-from cybertools.view import base
+from cybertools.view import pac
 from cybertools.view.web.zpt.template import Template
 
 
-class View(base.View):
+class View(pac.View):
     """ A generic web-based view - not necessarily HTML-/browser-based.
     """
 

@@ -9,7 +9,7 @@ $Id$
 import unittest, doctest
 from zope.testing.doctestunit import DocFileSuite
 
-from cybertools.view.base import View
+from cybertools.view.pac import View
 
 
 class Test(unittest.TestCase):

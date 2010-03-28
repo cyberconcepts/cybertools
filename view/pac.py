@@ -17,7 +17,10 @@
 #
 
 """
-Generic view base class.
+Generic view base class, following the PAC (Presentation Abstraction Control)
+pattern.
+
+Obsolete - do not use any more!
 
 $Id$
 """
