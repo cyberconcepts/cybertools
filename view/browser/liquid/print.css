@@ -1,0 +1,17 @@
+/*
+ $Id$
+
+*/
+
+body {
+    font-size: 11px;
+}
+
+.top, #header, #menu, #sub-section, #footer, .object-actions, .button {
+    display: none;
+}
+
+#content {
+    width: 100%;
+    color: Black;
+}

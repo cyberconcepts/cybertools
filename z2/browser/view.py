@@ -22,51 +22,23 @@ Base classes for views.
 $Id$
 """
 
-from zope.app.pagetemplate import ViewPageTemplateFile
-from zope.cachedescriptors.property import Lazy
-from zope import component
 from Products.Five import BrowserView
-#from Products.Five.browser.pagetemplatefile import PageTemplateFile
+
+from cybertools.view.browser.view import BaseView, GenericView
 
 
-generic_page = ViewPageTemplateFile('generic.pt')
-view_macros = ViewPageTemplateFile('view_macros.pt')
+class BaseView(BrowserView, BaseView):
 
-
-class BaseView(BrowserView):
-
-    index = generic_page
-    default_template = None     # specify in subclass
-
-    def __call__(self):
-        return self.index(self)
-
-    def getMainMacro(self):
-        return view_macros.macros['main']
-
-    def getDefaultTemplate(self):
-        return self.default_template
-
-    def getContentMacro(self):
-        return self.getDefaultTemplate().macros[self.content_renderer]
+    resource_prefix = '/++resource++'
 
 
 # generic views for use with generic persistent objects with type-based adapters
+# (not used at the moment - obsolete?)
 
-class GenericView(BaseView):
-
-    name = 'index_html'
-
-    @Lazy
-    def object(self):
-        return self.context.typeInterface(self.context)
-
-    @Lazy
-    def objectView(self):
-        return component.getMultiAdapter((self.object, self.request), name=self.name)
+class GenericView(BaseView, GenericView):
 
     def __call__(self):
-        return self.objectView()
+        return GenericView.__call__(self)
 
 
 class GenericAddForm(GenericView):

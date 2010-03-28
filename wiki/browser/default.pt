@@ -59,4 +59,9 @@
 </metal:content>
 
 
+<metal:portlet define-macro="navigation">
+  <p>Menu</p>
+</metal:portlet>
+
+
 </html>

@@ -1,0 +1,13 @@
+<tal:show condition="view/update">
+<html metal:use-macro="view/mainMacro">
+
+  <body>
+
+    <div metal:fill-slot="content">
+      <metal:content use-macro="view/contentMacro" />
+    </div>
+
+  </body>
+
+</html>
+</tal:show>

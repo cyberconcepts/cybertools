@@ -34,6 +34,12 @@ class WikiBaseView(object):
 
     default_template = ViewPageTemplateFile('default.pt')
 
+    @Lazy
+    def actions(self):
+        return dict(top=[],
+                    portlet_left=[self.default_template.macros['navigation']],
+                    portlet_right=[])
+
 
 class WikiManagerView(WikiBaseView):
 
