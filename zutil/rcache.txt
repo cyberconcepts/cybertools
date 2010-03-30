@@ -1,0 +1,69 @@
+============
+Data Caching
+============
+
+$Id$
+
+  >>> from cybertools.zutil.rcache import rcache, rcacheproperty
+
+  >>> class View(object):
+  ...     def __init__(self, context, request):
+  ...         self.context = context
+  ...         self.request = request
+  ...
+  ...     @rcache
+  ...     def calculate():
+  ...         print 'calculating'
+  ...         return 42
+  ...
+  ...     @rcacheproperty
+  ...     def value():
+  ...         print 'calculating'
+  ...         return 43
+
+  >>> from zope.publisher.browser import TestRequest
+  >>> request = TestRequest()
+
+When we first call the calculation method it gets executed.
+
+  >>> v1 = View(None, request)
+  >>> v1.calculate()
+  calculating
+  42
+
+Subsequent calls just fetch the value from the cache.
+
+  >>> v1.calculate()
+  42
+
+Even if we create a new view object (with the same request as before) the
+value is just taken from the cache.
+
+  >>> v2 = View(None, request)
+  >>> v2.calculate()
+  42
+
+Let's now have a look at the case where the result of the calculation is
+stored immediately in the view.
+
+  >>> v1.value
+  calculating
+  43
+  >>> v1.value
+  43
+
+  >>> v2.value
+  43
+
+If we associate a new request with the view the calculation is done again
+when using the method.
+
+  >>> v1.request = TestRequest()
+  >>> v1.calculate()
+  calculating
+  42
+
+If we use the property the value is taken direktly from the instance.
+
+  >>> v1.value
+  43

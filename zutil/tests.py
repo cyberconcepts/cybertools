@@ -19,7 +19,8 @@ def test_suite():
         #unittest.makeSuite(Test),  # we don't need this
         #doctest.DocTestSuite(cybertools.zutil.property, optionflags=flags),
         DocFileSuite('jeep.txt', optionflags=flags),
-        ))
+        doctest.DocFileSuite('rcache.txt', optionflags=flags),
+    ))
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
