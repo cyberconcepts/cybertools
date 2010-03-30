@@ -28,7 +28,7 @@ INVALID = object()
 
 def caching(self, method, id):
     annot = self.request.annotations
-    item = annot.setdefault('cybertools.util.rcache', {})
+    item = annot.setdefault('cybertools.zutil.rcache', {})
     value = item.get(id, INVALID)
     if value is INVALID:
         value = method()
