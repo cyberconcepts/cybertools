@@ -12,12 +12,12 @@ $Id$
   ...         self.request = request
   ...
   ...     @rcache
-  ...     def calculate():
+  ...     def calculate(self):
   ...         print 'calculating'
   ...         return 42
   ...
   ...     @rcacheproperty
-  ...     def value():
+  ...     def value(self):
   ...         print 'calculating'
   ...         return 43
 

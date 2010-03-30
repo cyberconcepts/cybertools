@@ -31,7 +31,7 @@ def caching(self, method, id):
     item = annot.setdefault('cybertools.zutil.rcache', {})
     value = item.get(id, INVALID)
     if value is INVALID:
-        value = method()
+        value = method(self)
         item[id] = value
     return value
 
