@@ -44,7 +44,7 @@ value is just taken from the cache.
   42
 
 Let's now have a look at the case where the result of the calculation is
-stored immediately in the view.
+stored immediately in the view, as an instance attribute (property).
 
   >>> v1.value
   calculating
