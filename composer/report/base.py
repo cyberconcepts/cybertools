@@ -26,7 +26,7 @@ from zope.interface import implements
 
 from cybertools.composer.base import Component, Element, Compound
 from cybertools.composer.base import Template
-from cybertools.composer.report.field import Field
+from cybertools.composer.report import field
 from cybertools.composer.report.interfaces import IReportManager, IReport
 from cybertools.util.jeep import Jeep
 from cybertools.util.randomname import generateName
@@ -56,20 +56,24 @@ class ReportManager(object):
     def checkId(self, id):
         return id not in self.reports.keys()
 
-
-label = Field('label', u'Label',
-                u'A short text that identifies a row for humans.')
+    def getReport(self, id):
+        if self.reports is None:
+            return None
+        return self.reports.get(id)
 
 
 class Report(Template):
 
     implements(IReport)
 
-    name = identifier = u''
+    name = identifier = title = description = u''
     type = 'generic'
     manager = None
 
-    fields = Jeep((label,))
+    fields = Jeep((field.label,))
+    renderers = ()
+    sortSpec = ()
+    outputSpec = ()
 
     def __init__(self, name):
         self.name = name

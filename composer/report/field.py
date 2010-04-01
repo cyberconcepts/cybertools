@@ -57,3 +57,7 @@ class Field(Component):
     def name(self):
         return self.__name__
 
+
+label = Field('label', u'Label',
+                u'A short text that identifies a row for humans.')
+
