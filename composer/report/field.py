@@ -43,6 +43,8 @@ class Field(Component):
     default = None
     instance_name = None
 
+    executionSteps = ['query', 'sort', 'output']
+
     def __init__(self, name, title=None, fieldType='textline', **kw):
         assert name
         self.__name__ = name

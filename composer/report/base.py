@@ -71,10 +71,24 @@ class Report(Template):
     manager = None
 
     fields = Jeep((field.label,))
+    defaultOutputFields = (field.label,)
+
     renderers = ()
     sortSpec = ()
-    outputSpec = ()
+    outputFields = ()
 
     def __init__(self, name):
         self.name = name
+
+    def getAllOutputFields(self):
+        return [f for f in self.fields if 'output' in f.executionSteps]
+
+    def getActiveOutputFields(self):
+        if not self.outputFields:
+            return self.defaultOutputFields
+        return self.outputFields
+
+    def getAvailableOutputFields(self):
+        return [f for f in self.getAllOutputFields()
+                  if f not in self.getActiveOutputFields()]
 
