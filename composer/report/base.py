@@ -89,6 +89,7 @@ class Report(Template):
         return self.outputFields
 
     def getAvailableOutputFields(self):
+        activeNames = [f.name for f in self.getActiveOutputFields()]
         return [f for f in self.getAllOutputFields()
-                  if f not in self.getActiveOutputFields()]
+                  if f.name not in activeNames]
 
