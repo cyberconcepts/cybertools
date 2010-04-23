@@ -55,15 +55,15 @@ class BaseLoader(object):
         self.logger = getLogger('Loader')
         self.groups = {}
 
-    def load(self, elements):
-        self.loadRecursive(elements)
+    def load(self, elements, recur=True):
+        self.loadRecursive(elements, recur)
         self.transcript.write('Rows loaded: %(count)i; changes: %(changed)i; '
                               'errors: %(errors)i\n' % self.summary)
 
-    def loadRecursive(self, elements):
+    def loadRecursive(self, elements, recur=True):
         for element in elements:
             element.execute(self)
-            if element.subElements is not None:
+            if recur and element.subElements is not None:
                 self.loadRecursive(element.subElements)
             self.summary['count'] += 1
 
@@ -72,6 +72,12 @@ class BaseLoader(object):
         self.errors.append(message)
         self.summary['errors'] += 1
         self.logger.error(message)
+
+    def warn(self, message):
+        self.transcript.write(message + '\n')
+        self.errors.append(message)
+        self.summary['warnings'] += 1
+        self.logger.warn(message)
 
     def change(self, message=None):
         if message is not None:

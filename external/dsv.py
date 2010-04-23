@@ -38,17 +38,26 @@ xls2csv = '%(cpath)s -f %%Y-%%m-%%d %(fpath)s.xls >%(fpath)s.csv'
 
 class CsvReader(BaseReader):
 
+    encoding = 'UTF-8'
     elementFactories = {None: Element}
     fieldNames = ()
-    start = stop = None
+    start = stop = sortKey = None
 
     def read(self, input):
         result = []
+        for x in range(self.start or 0):
+            input.readline()    # skip lines on top
         reader = csv.DictReader(input, self.fieldNames)
         lastIdentifiers = {}
-        for idx, row in enumerate(list(reader)[self.start:self.stop]):
+        rows = list(reader)[:self.stop]
+        if self.sortKey:
+            rows.sort(key=self.sortKey)
+        for idx, row in enumerate(rows):
+            if self.ignoreRow(idx, row):
+                continue
             currentElements = {}
             for k, v in row.items():
+                k, v = self.preprocessField(k, v)
                 if k is None:
                     continue
                 type = None
@@ -59,6 +68,8 @@ class CsvReader(BaseReader):
                     ef = self.elementFactories.get(type)
                     if ef is None:
                         raise ValueError('Missing element factory for %r.' % type)
+                    if ef == 'ignore':
+                        continue
                     element = currentElements[type] = ef()
                     element.type = type
                 element[k] = v      # ?TODO: unmarshall
@@ -69,6 +80,12 @@ class CsvReader(BaseReader):
                     result.append(element)
                     lastIdentifiers[element.type] = id
         return result
+
+    def ignoreRow(self, idx, row):
+        return False
+
+    def preprocessField(self, k, v):
+        return k, v
 
     def getDate(self, value, correctBug=False):
         if not value:
