@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ class Element(dict):
 
     implements(IElement)
 
+    encoding = 'UTF-8'
     type = ''
     identifierName = ''
     object = None
@@ -49,7 +50,8 @@ class Element(dict):
 
     @property
     def identifier(self):
-        return self.get(self.identifierName)
+        id = self.get(self.identifierName)
+        return id
 
     def __getitem__(self, key):
         if isinstance(key, Element):
@@ -70,10 +72,18 @@ class Element(dict):
         self.subElements.append(element)
         element.parent = self
 
-    def setParent(self, elementsMapping):
-        parent = elementsMapping.get(self.parentType)
-        if parent is not None:
-            parent.add(self)
+    def setParent(self, elementsMapping, allElements=None):
+        pt = self.parentType
+        if pt:
+            pCurr = elementsMapping.get(pt)
+            if pCurr is not None:
+                if allElements and pCurr.identifier:
+                    parent = allElements.get(pt, {}).get(pCurr.identifier)
+                else:
+                    parent = pCurr
+                if parent is not None:
+                    parent.add(self)
+
 
     def execute(self, loader):
         pass

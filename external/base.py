@@ -68,20 +68,20 @@ class BaseLoader(object):
             self.summary['count'] += 1
 
     def error(self, message):
-        self.transcript.write(message + '\n')
+        self.transcript.write(message.encode('UTF-8') + '\n')
         self.errors.append(message)
         self.summary['errors'] += 1
         self.logger.error(message)
 
     def warn(self, message):
-        self.transcript.write(message + '\n')
+        self.transcript.write(message.encode('UTF-8') + '\n')
         self.errors.append(message)
         self.summary['warnings'] += 1
         self.logger.warn(message)
 
     def change(self, message=None):
         if message is not None:
-            self.transcript.write(message + '\n')
+            self.transcript.write(message.encode('UTF-8') + '\n')
             self.changes.append(message)
             self.logger.info(message)
         self.summary['changed'] += 1

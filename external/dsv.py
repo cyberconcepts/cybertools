@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ class CsvReader(BaseReader):
         for x in range(self.start or 0):
             input.readline()    # skip lines on top
         reader = csv.DictReader(input, self.fieldNames)
-        lastIdentifiers = {}
+        allElements = {}
         rows = list(reader)[:self.stop]
         if self.sortKey:
             rows.sort(key=self.sortKey)
@@ -72,13 +72,20 @@ class CsvReader(BaseReader):
                         continue
                     element = currentElements[type] = ef()
                     element.type = type
-                element[k] = v      # ?TODO: unmarshall
+                if isinstance(v, str):
+                    v = v.decode(self.encoding)
+                element[k] = v
             for element in sorted(currentElements.values(), key=lambda x: x.order):
-                id = element.identifier
-                if not id or id != lastIdentifiers.get(element.type):
-                    element.setParent(currentElements)
+                if element.identifier is None:
                     result.append(element)
-                    lastIdentifiers[element.type] = id
+                    element.setParent(currentElements, allElements)
+                else:
+                    typeEntry = allElements.setdefault(element.type, {})
+                    existing = typeEntry.get(element.identifier)
+                    if existing is None:
+                        typeEntry[element.identifier] = element
+                        result.append(element)
+                        element.setParent(currentElements, allElements)
         return result
 
     def ignoreRow(self, idx, row):
