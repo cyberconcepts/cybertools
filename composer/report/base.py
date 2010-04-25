@@ -72,6 +72,7 @@ class Report(Template):
 
     fields = Jeep((field.label,))
     defaultOutputFields = (field.label,)
+    presentationFormat = None
 
     renderers = ()
     sortSpec = ()
@@ -80,16 +81,26 @@ class Report(Template):
     def __init__(self, name):
         self.name = name
 
-    def getAllOutputFields(self):
+    def getQueryFields(self):
+        return [f for f in self.fields if 'query' in f.executionSteps]
+
+    def getSortFields(self):
+        return [f for f in self.fields if 'sort' in f.executionSteps]
+
+    def getOutputFields(self):
         return [f for f in self.fields if 'output' in f.executionSteps]
 
     def getActiveOutputFields(self):
         if not self.outputFields:
-            return self.defaultOutputFields
+            fieldNames = [f.name for f in self.getOutputFields()]
+            return [f for f in self.defaultOutputFields
+                      if f.name in fieldNames]
         return self.outputFields
 
     def getAvailableOutputFields(self):
         activeNames = [f.name for f in self.getActiveOutputFields()]
-        return [f for f in self.getAllOutputFields()
+        return [f for f in self.getOutputFields()
                   if f.name not in activeNames]
 
+    def getPresentationFormats(self):
+        return [dict(renderer='default', title='Default')]
