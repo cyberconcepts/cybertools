@@ -49,6 +49,7 @@ class BaseLoader(object):
     def __init__(self, context):
         self.context = context
         self.changes = []
+        self.created = []
         self.errors = []
         self.summary = dict(count=0, new=0, changed=0, errors=0, warnings=0)
         self.transcript = StringIO()
@@ -57,7 +58,8 @@ class BaseLoader(object):
 
     def load(self, elements, recur=True):
         self.loadRecursive(elements, recur)
-        self.transcript.write('Rows loaded: %(count)i; changes: %(changed)i; '
+        self.transcript.write('Objects loaded: %(count)i; created: %(new)i, '
+                              'changes: %(changed)i, warnings: %(warnings)i, '
                               'errors: %(errors)i\n' % self.summary)
 
     def loadRecursive(self, elements, recur=True):
@@ -79,9 +81,14 @@ class BaseLoader(object):
         self.summary['warnings'] += 1
         self.logger.warn(message)
 
+    def new(self, message=None):
+        if message is not None:
+            self.transcript.write('Object created: ' + message.encode('UTF-8') + '\n')
+            self.created.append(message)
+        self.summary['new'] += 1
+
     def change(self, message=None):
         if message is not None:
-            self.transcript.write(message.encode('UTF-8') + '\n')
+            self.transcript.write('Object changed: ' + message.encode('UTF-8') + '\n')
             self.changes.append(message)
-            self.logger.info(message)
         self.summary['changed'] += 1
