@@ -28,6 +28,7 @@ from cybertools.composer.base import Component, Element, Compound
 from cybertools.composer.base import Template
 from cybertools.composer.report import field
 from cybertools.composer.report.interfaces import IReportManager, IReport
+from cybertools.composer.report.interfaces import ILeafQueryCriteria
 from cybertools.util.jeep import Jeep
 from cybertools.util.randomname import generateName
 
@@ -78,6 +79,8 @@ class Report(Template):
     sortSpec = ()
     outputFields = ()
 
+    queryCriteria = None
+
     def __init__(self, name):
         self.name = name
 
@@ -104,3 +107,22 @@ class Report(Template):
 
     def getPresentationFormats(self):
         return [dict(renderer='default', title='Default')]
+
+
+class LeafQueryCriteria(Element):
+
+    implements(ILeafQueryCriteria)
+
+    def __init__(self, name, operator, comparisonValue):
+        self.name = name
+        self.operator = operator
+        self.comparisonValue = comparisonValue
+
+
+class CompoundQueryCriteria(Compound):
+
+    logicalOperator = 'and'
+
+    def __init__(self, parts):
+        self.parts = Jeep(parts)
+
