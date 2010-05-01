@@ -89,7 +89,7 @@ class ItemView(BaseView):
         response = self.request.response
         response.setHeader('Content-Type', self.context.contentType)
         response.setHeader('Content-Length', len(data))
-        response.setHeader('Content-Disposition', 'filename="%s"' % fn)
+        response.setHeader('Content-Disposition', 'inline; filename="%s"' % fn)
         return data
 
     def getFileName(self):
