@@ -32,6 +32,7 @@ dojo.declare('jocy.talk.Connection', null, {
         this.connected = false;
         this.receiver = null;
         this.receiving = false;
+        this.repeat_receiving = false;
         this.id = (name == undefined | name == '' ? null : name);
     },
 
@@ -49,11 +50,12 @@ dojo.declare('jocy.talk.Connection', null, {
         });
     },
 
-    receive: function(timeout) {
+    receive: function(repeat) {
         if (this.receiving) {
             return;
         }
         this.receiving = true;
+        this.repeat_receiving = repeat;
         return dojo.xhrPost({
             url: this.url + '/.talk/receive/' + this.id,
             handleAs: 'json',
@@ -82,7 +84,7 @@ dojo.declare('jocy.talk.Connection', null, {
             error: dojo.hitch(this, this._handleError),
             load: dojo.hitch(this, function(response, ioArgs) {
                 console.log(response);
-                this.receiving = false;
+                this.repeat_receiving = false;
             })
         });
     },
@@ -95,7 +97,9 @@ dojo.declare('jocy.talk.Connection', null, {
             return;
         }
         this.receiving = false;
-        st = response.state;
+        if (this.repeat_receiving) {
+            receive(true);
+        }
     },
 
     _handleReceiveError: function(response, ioArgs) {
