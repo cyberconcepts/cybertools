@@ -22,10 +22,6 @@ Wiki implementation = mixin classes for Zope2 content objects.
 $Id$
 """
 
-try:
-    from Acquisition import aq_inner, aq_parent
-except ImportError:
-    pass
 from BTrees.IOBTree import IOTreeSet
 from BTrees.OOBTree import OOBTree
 from persistent.mapping import PersistentMapping
@@ -117,22 +113,23 @@ class Wiki(BaseWiki):
         return self.getId()
 
     def getPages(self):
-        # TODO: restrict to wiki page objects; use generic access methods
-        return dict((k, v) for k, v in self.objectItems())
+        # TODO: restrict to wiki page objects
+        #return dict((k, v) for k, v in self.objectItems())
+        return dict((k, v) for k, v in self.getItems())
 
     def createPage(self, name, title, text=u''):
-        # TODO: delegate to generic folder
-        # page = self[name] = self.pageFactory(name)
-        self._setObject(name, self.pageFactory(name))
-        page = getattr(self, name)
+        #self._setObject(name, self.pageFactory(name))
+        #page = getattr(self, name)
+        self[name] = self.pageFactory(name)
+        page = self[name]
         page.title = title
         page.text = text
-        # TODO: notify(ObjectAddedEvent())
+        # notify(ObjectAddedEvent()): called by persistent mixin class
         return page
 
     def getManager(self):
-        # TODO: fetch tool/utility in a generic way
-        return self.portal_wikimanager
+        # provide in subclass
+        raise NotImplementedError
 
 
 class WikiPage(BaseWikiPage):
@@ -144,9 +141,7 @@ class WikiPage(BaseWikiPage):
     text = property(getText, setText)
 
     def getWiki(self):
-        # TODO: fetch wiki in a generic way
-        # return self.getParent()
-        return aq_parent(aq_inner(self))
+        return self.getParent()
 
 
 class LinkManager(BaseLinkManager):

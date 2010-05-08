@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ Base classes.
 $Id$
 """
 
+from Acquisition import aq_inner, aq_parent
 from persistent.mapping import PersistentMapping
 from zope.app.container.interfaces import IObjectAddedEvent
 from zope import component
@@ -60,6 +61,9 @@ class GenericObject(object):
         self.__generic_attributes__[attr] = value
         return value
 
+    def getParent(self):
+        return aq_parent(aq_inner(self))
+
 
 class GenericFolder(GenericObject):
     """ Provide generic (i.e. dictionary-like) folder access to Zope2's
@@ -67,6 +71,15 @@ class GenericFolder(GenericObject):
     """
 
     implements(IGenericFolder)
+
+    def __getitem__(self, name):
+        return getattr(self, name)
+
+    def __setitem__(self, name, value):
+        self._setObject(name, value)
+
+    def getItems(self, types=None):
+        return self.objectItems(types)
 
 
 @component.adapter(IGeneric, IObjectAddedEvent)

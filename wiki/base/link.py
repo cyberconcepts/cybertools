@@ -54,13 +54,14 @@ class LinkProcessor(object):
             targetPageName, params = targetPageName.split('?', 1)
         if '#' in targetPageName:
             targetPageName, fragment = targetPageName.split('#', 1)
-        existing = iter(lm.query(source=self.source, name=self.targetName))
-        if existing:
-            link = existing.next()
+        #existing = iter(lm.query(source=self.source, name=self.targetName))
+        for link in lm.query(source=self.source, name=self.targetName):
+            #link = existing.next()
             if link.target is not None:
                 target = manager.getObject(link.target)
             else:
                 target = None
+            break
         else:
             target = wiki.getPage(targetPageName)
             link = lm.createLink(name=self.targetName,
