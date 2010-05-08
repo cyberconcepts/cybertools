@@ -40,7 +40,8 @@ class Writer(object):
         self.writer.translator_class = BodyTranslator
 
     def write(self, tree):
-        return publish_from_doctree(tree, writer=self.writer)
+        return publish_from_doctree(tree, writer=self.writer,
+                                    settings_overrides={'embed_stylesheet': False})
 
 
 class BodyTranslator(HTMLTranslator):
