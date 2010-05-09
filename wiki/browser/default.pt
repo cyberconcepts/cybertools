@@ -70,7 +70,7 @@
       <tal:show condition="view/showEditButton">
         <div>&nbsp;</div>
         <div>
-          <a tal:attributes="href string:${context/absolute_url}/edit.html">Edit</a>
+          <a tal:attributes="href string:${context/absolute_url}/@@edit.html">Edit</a>
         </div>
       </tal:show>
     </div>

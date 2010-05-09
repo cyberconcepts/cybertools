@@ -102,7 +102,7 @@ class CreatePage(object):
         for link in lm.query(name=name):
             if link.target is None:
                 link.update(target=page)
-        self.request.response.redirect('%s/edit.html' %
+        self.request.response.redirect('%s/@@edit.html' %
                 absoluteURL(page, self.request))
         return False
 
