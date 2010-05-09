@@ -16,7 +16,7 @@
 
 
 <metal:content define-macro="wiki">
-    <h1>Wiki</h1>
+    <h1 tal:content="context/title">Wiki</h1>
     <div tal:repeat="page view/listPages">
       <a tal:attributes="href page/absolute_url"
          tal:content="page/title" />
