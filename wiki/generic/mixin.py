@@ -88,6 +88,14 @@ class WikiManager(BaseWikiManager):
         if uid in self.wikiUids:
             self.wikiUids.remove(uid)
 
+    def renameWiki(self, wiki, newName):
+        intIds = self.getPlugin(IIntIds)
+        self.removeWiki(wiki)
+        intIds.unregister(wiki)
+        wiki.rename(newName)
+        intIds.register(wiki)
+        self.addWiki(wiki)
+
     def listWikis(self):
         for uid in self.wikiUids:
             yield self.getObject(uid)
@@ -114,7 +122,6 @@ class Wiki(BaseWiki):
 
     def getPages(self):
         # TODO: restrict to wiki page objects
-        #return dict((k, v) for k, v in self.objectItems())
         return dict((k, v) for k, v in self.getItems())
 
     def createPage(self, name, title, text=u''):

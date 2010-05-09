@@ -17,7 +17,7 @@
 #
 
 """
-Planning and recording activities (work items).
+Store wiki links as tracks.
 
 $Id$
 """
@@ -91,7 +91,7 @@ class Link(BaseLink, Stateful, Track):
         return component.getUtility(IStatesDefinition, name=self.statesDefinition)
 
 
-class xx_LinkManager(BaseLinkManager):
+class LinkManager(BaseLinkManager):
     """ A tracking storage adapter managing wiki links.
     """
 

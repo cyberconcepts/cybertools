@@ -5,5 +5,6 @@
     xmlns:browser="http://namespaces.zope.org/browser">
 
   <browser:resource name="base.css" file="base.css" />
+  <browser:resource name="logo.png" file="logo.png" />
 
 </configure>

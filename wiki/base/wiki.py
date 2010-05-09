@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -58,6 +58,11 @@ class WikiManager(BaseConfiguration):
         if name in self.wikis:
             del self.wikis[name]
 
+    def renameWiki(self, wiki, newName):
+        del self.wikis[wiki.name]
+        self.wikis[newName] = wiki
+        wiki.rename(newName)
+
     def listWikis(self):
         return self.wikis.values()
 
@@ -110,7 +115,6 @@ class Wiki(BaseConfiguration):
         self.name = name
         self.title = title or name
         self.pages = {}
-        #self.setup()
 
     def setup(self):
         self.getManager().addWiki(self)

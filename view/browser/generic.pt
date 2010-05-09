@@ -3,7 +3,7 @@
 
   <body>
 
-    <div metal:fill-slot="content">
+    <div metal:fill-slot="main">
       <metal:content use-macro="view/contentMacro" />
     </div>
 

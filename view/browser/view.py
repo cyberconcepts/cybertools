@@ -37,6 +37,7 @@ class BaseView(object):
     index = generic_page
     default_template = view_macros     # specify in subclass
     resource_prefix = '/@@/'
+    mode = 'view'
 
     def __call__(self):
         return self.index(self)

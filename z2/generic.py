@@ -64,6 +64,9 @@ class GenericObject(object):
     def getParent(self):
         return aq_parent(aq_inner(self))
 
+    def rename(self, newName):
+        self.getParent().manage_renameObject(self.name, newName)
+
 
 class GenericFolder(GenericObject):
     """ Provide generic (i.e. dictionary-like) folder access to Zope2's

@@ -23,8 +23,13 @@ $Id$
 """
 
 from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 from cybertools.view.browser.view import BaseView, GenericView
+
+
+main_page = ViewPageTemplateFile('main.pt')
+zmi_page = ViewPageTemplateFile('main_zmi.pt')
 
 
 class BaseView(BrowserView, BaseView):

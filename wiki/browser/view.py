@@ -25,6 +25,8 @@ $Id$
 from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope import component
+from zope.event import notify
+from zope.lifecycleevent import ObjectModifiedEvent
 from zope.traversing.browser import absoluteURL
 
 from cybertools.link.interfaces import ILinkManager
@@ -64,6 +66,27 @@ class WikiView(WikiBaseView):
         return self.context.listPages()
 
 
+class WikiEditForm(WikiView):
+
+    content_renderer = 'wiki_edit'
+
+    def update(self):
+        form = self.request.form
+        action = form.get('form_action')
+        if action == 'edit':
+            title = form.get('title')
+            if title and title != self.context.title:
+                self.context.title = title
+                notify(ObjectModifiedEvent(self.context))
+            name = form.get('name')
+            if name and name != self.context.name:
+                self.context.getManager().renameWiki(self.context, name)
+            self.request.response.redirect(
+                            absoluteURL(self.context, self.request))
+            return False
+        return True
+
+
 class CreatePage(object):
 
     def update(self):
@@ -71,6 +94,7 @@ class CreatePage(object):
         name = form.get('name')
         title = name
         page = self.context.createPage(name, title)
+        notify(ObjectModifiedEvent(page))
         # record in LinkManager
         manager = self.context.getManager()
         lmName = self.context.getConfig('linkManager')
@@ -78,7 +102,7 @@ class CreatePage(object):
         for link in lm.query(name=name):
             if link.target is None:
                 link.update(target=page)
-        self.request.response.redirect('%s?mode=edit' %
+        self.request.response.redirect('%s/edit.html' %
                 absoluteURL(page, self.request))
         return False
 
@@ -96,10 +120,15 @@ class WikiPageView(WikiBaseView):
             text = form.get('text')
             if text and text != self.context.text:
                 self.context.text = text
-            # TODO: notify(ObjectModifiedEvent())
-            #self.request.response.redirect(absoluteURL(self.context, self.request))
-            #return False
+            notify(ObjectModifiedEvent(self.context))
         return True
 
     def render(self):
         return self.context.render(self.request)
+
+    def edit(self):
+        self.mode = 'edit'
+        return self()
+
+    def showEditButton(self):
+        return self.mode != 'edit'
