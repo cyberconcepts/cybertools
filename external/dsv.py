@@ -57,24 +57,27 @@ class CsvReader(BaseReader):
                 continue
             currentElements = {}
             for k, v in row.items():
-                k, v = self.preprocessField(k, v)
-                if k is None:
+                keys, v = self.preprocessField(k, v)
+                if not keys:
                     continue
-                type = None
-                if '.' in k:
-                    type, k = k.split('.', 1)
-                element = currentElements.get(type)
-                if element is None:
-                    ef = self.elementFactories.get(type)
-                    if ef is None:
-                        raise ValueError('Missing element factory for %r.' % type)
-                    if ef == 'ignore':
-                        continue
-                    element = currentElements[type] = ef()
-                    element.type = type
-                if isinstance(v, str):
-                    v = v.decode(self.encoding)
-                element[k] = v
+                if not isinstance(keys, (tuple, list)):
+                    keys = [keys]
+                for k in keys:
+                    type = None
+                    if '.' in k:
+                        type, k = k.split('.', 1)
+                    element = currentElements.get(type)
+                    if element is None:
+                        ef = self.elementFactories.get(type)
+                        if ef is None:
+                            raise ValueError('Missing element factory for %r.' % type)
+                        if ef == 'ignore':
+                            continue
+                        element = currentElements[type] = ef()
+                        element.type = type
+                    if isinstance(v, str):
+                        v = v.decode(self.encoding)
+                    self.setValue(element, k, v)
             for element in sorted(currentElements.values(), key=lambda x: x.order):
                 if element.identifier is None:
                     result.append(element)
@@ -93,6 +96,9 @@ class CsvReader(BaseReader):
 
     def preprocessField(self, k, v):
         return k, v
+
+    def setValue(self, element, k, v):
+        element[k] = v
 
     def getDate(self, value, correctBug=False):
         if not value:
