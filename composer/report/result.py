@@ -22,14 +22,20 @@ Report result sets and related classes.
 $Id$
 """
 
+from zope.cachedescriptors.property import Lazy
+
+from cybertools.composer.interfaces import IInstance
+
 
 class Row(object):
 
-    def __init__(self, context):
+    def __init__(self, context, parent):
         self.context = context
+        self.parent = parent
 
     def __getattr__(self, attr):
-        return getattr(self.context, attr)
+        f = self.parent.context.fields[attr]
+        return f.getValue(self)
 
 
 class ResultSet(object):
@@ -41,7 +47,7 @@ class ResultSet(object):
         self.sortCriteria = sortCriteria
 
     def getResult(self):
-        result = [self.rowFactory(item) for item in self.data]
+        result = [self.rowFactory(item, self) for item in self.data]
         if self.sortCriteria:
             result.sort(key=lambda x: [f.getSortValue(x) for f in self.sortCriteria])
         return result

@@ -42,6 +42,7 @@ class Field(Component):
     vocabulary = None
     default = None
     instance_name = None
+    storeData = True
 
     executionSteps = ['query', 'sort', 'output']
 
@@ -59,9 +60,17 @@ class Field(Component):
     def name(self):
         return self.__name__
 
+    def getValue(self, row):
+        value = getattr(row.context, self.name)
+        if value is None:
+            return u''
+        if isinstance(value, basestring):
+            return value
+        return getattr(value, 'title', str(value))
+
     def getSortValue(self, row):
         # TODO: consider 'descending' flag, use raw value instead of formatted one
-        return getattr(row, self.name)
+        return self.getValue(row)
 
 
 label = Field('label', u'Label',

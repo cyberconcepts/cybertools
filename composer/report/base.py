@@ -85,6 +85,10 @@ class Report(Template):
     def __init__(self, name):
         self.name = name
 
+    @property
+    def components(self):
+        return self.fields
+
     def getQueryFields(self):
         return [f for f in self.fields if 'query' in f.executionSteps]
 
