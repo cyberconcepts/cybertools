@@ -59,6 +59,10 @@ class Field(Component):
     def name(self):
         return self.__name__
 
+    def getSortValue(self, row):
+        # TODO: consider 'descending' flag, use raw value instead of formatted one
+        return getattr(row, self.name)
+
 
 label = Field('label', u'Label',
                 u'A short text that identifies a row for humans.')

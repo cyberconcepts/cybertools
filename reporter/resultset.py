@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,8 +17,10 @@
 #
 
 """
-Example classes for the cybertools.reporter package. These use the
-cybertools.contact package
+Result set and related classes for reporting.
+
+Now obsolete (but still used in some projects),
+use cybertools.composer.report.result instead.
 
 $Id$
 """
