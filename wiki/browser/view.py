@@ -127,8 +127,8 @@ class WikiPageView(WikiBaseView):
         return self.context.render(self.request)
 
     def edit(self):
-        self.mode = 'edit'
+        self.view_mode = 'edit'
         return self()
 
     def showEditButton(self):
-        return self.mode != 'edit'
+        return self.view_mode != 'edit'

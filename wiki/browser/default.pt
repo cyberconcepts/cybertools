@@ -41,7 +41,7 @@
 
 <metal:content define-macro="wikipage">
     <div metal:define-macro="edit">
-      <tal:edit condition="python: view.mode == 'edit'">
+      <tal:edit condition="python: view.view_mode == 'edit'">
         <h1>Edit <span tal:content="context/title">Wiki Page</span></h1>
         <form method="post"
               tal:attributes="action context/absolute_url">
