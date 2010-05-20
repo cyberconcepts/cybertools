@@ -122,13 +122,10 @@ class Wiki(BaseWiki):
         return dict((k, v) for k, v in self.getItems())
 
     def createPage(self, name, title, text=u''):
-        #self._setObject(name, self.pageFactory(name))
-        #page = getattr(self, name)
         self[name] = self.pageFactory(name)
         page = self[name]
         page.title = title
         page.text = text
-        # notify(ObjectAddedEvent()): called by persistent mixin class
         return page
 
     def getManager(self):
