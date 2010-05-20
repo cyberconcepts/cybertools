@@ -81,6 +81,11 @@ class BaseLoader(object):
         self.summary['warnings'] += 1
         self.logger.warn(message)
 
+    def info(self, message, showInTranscript=True):
+        if showInTranscript:
+            self.transcript.write(message.encode('UTF-8') + '\n')
+        self.logger.info(message)
+
     def new(self, message=None):
         if message is not None:
             self.transcript.write('Object created: ' + message.encode('UTF-8') + '\n')
