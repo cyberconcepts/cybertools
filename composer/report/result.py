@@ -25,6 +25,7 @@ $Id$
 from zope.cachedescriptors.property import Lazy
 
 from cybertools.composer.interfaces import IInstance
+from cybertools.composer.report.base import BaseQueryCriteria
 
 
 class Row(object):
@@ -40,14 +41,17 @@ class Row(object):
 
 class ResultSet(object):
 
-    def __init__(self, context, data, rowFactory=Row, sortCriteria=None):
+    def __init__(self, context, data, rowFactory=Row,
+                 sortCriteria=None, queryCriteria=BaseQueryCriteria()):
         self.context = context
         self.data = data
         self.rowFactory = rowFactory
         self.sortCriteria = sortCriteria
+        self.queryCriteria = queryCriteria
 
     def getResult(self):
-        result = [self.rowFactory(item, self) for item in self.data]
+        result = [self.rowFactory(item, self) for item in self.data
+                    if self.queryCriteria.check(item)]
         if self.sortCriteria:
             result.sort(key=lambda x: [f.getSortValue(x) for f in self.sortCriteria])
         return result

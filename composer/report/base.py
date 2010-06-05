@@ -28,7 +28,8 @@ from cybertools.composer.base import Component, Element, Compound
 from cybertools.composer.base import Template
 from cybertools.composer.report import field
 from cybertools.composer.report.interfaces import IReportManager, IReport
-from cybertools.composer.report.interfaces import ILeafQueryCriteria
+from cybertools.composer.report.interfaces import IQueryCriteria, ILeafQueryCriteria
+from cybertools.composer.report.interfaces import ICompoundQueryCriteria
 from cybertools.util.jeep import Jeep
 from cybertools.util.randomname import generateName
 
@@ -125,7 +126,15 @@ class Report(Template):
         return [dict(renderer='default', title='Default')]
 
 
-class LeafQueryCriteria(Element):
+class BaseQueryCriteria(Component):
+
+    implements(IQueryCriteria)
+
+    def check(self, obj):
+        return True
+
+
+class LeafQueryCriteria(BaseQueryCriteria, Element):
 
     implements(ILeafQueryCriteria)
 
@@ -135,7 +144,9 @@ class LeafQueryCriteria(Element):
         self.comparisonValue = comparisonValue
 
 
-class CompoundQueryCriteria(Compound):
+class CompoundQueryCriteria(BaseQueryCriteria, Compound):
+
+    implements(ICompoundQueryCriteria)
 
     logicalOperator = 'and'
 

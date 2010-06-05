@@ -175,7 +175,15 @@ class IBaseReportComponent(IComponent):
                 required=False,)
 
 
-class ILeafQueryCriteria(IBaseReportComponent):
+class IQueryCriteria(Interface):
+
+    def check(obj):
+        """ Return True if the object given meets the query conditions
+            specified by this criteria object.
+        """
+
+
+class ILeafQueryCriteria(IQueryCriteria, IBaseReportComponent):
     """ A terminal query criteria element.
     """
 
@@ -192,7 +200,7 @@ class ILeafQueryCriteria(IBaseReportComponent):
                 required=True,)
 
 
-class ICompoundQueryCriteria(ICompound):
+class ICompoundQueryCriteria(IQueryCriteria, IBaseReportComponent, ICompound):
     """ A query criteria element consisting of leaf query criteria elements.
         The names of the component criteria are given by the ``parts``
         attribute.
