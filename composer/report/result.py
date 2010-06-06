@@ -50,8 +50,8 @@ class ResultSet(object):
         self.queryCriteria = queryCriteria
 
     def getResult(self):
-        result = [self.rowFactory(item, self) for item in self.data
-                    if self.queryCriteria.check(item)]
+        result = [self.rowFactory(item, self) for item in self.data]
+        result = [row for row in result if self.queryCriteria.check(row)]
         if self.sortCriteria:
             result.sort(key=lambda x: [f.getSortValue(x) for f in self.sortCriteria])
         return result

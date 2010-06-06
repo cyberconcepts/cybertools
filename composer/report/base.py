@@ -143,6 +143,12 @@ class LeafQueryCriteria(BaseQueryCriteria, Element):
         self.operator = operator
         self.comparisonValue = comparisonValue
 
+    def check(self, obj):
+        value = getattr(obj, self.name, None)
+        if value is not None:
+            return value in self.comparisonValue
+        return True
+
 
 class CompoundQueryCriteria(BaseQueryCriteria, Compound):
 
@@ -153,3 +159,8 @@ class CompoundQueryCriteria(BaseQueryCriteria, Compound):
     def __init__(self, parts):
         self.parts = Jeep(parts)
 
+    def check(self, obj):
+        for p in self.parts:
+            if not p.check(obj):
+                return False
+        return True

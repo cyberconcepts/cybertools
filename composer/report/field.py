@@ -43,6 +43,7 @@ class Field(Component):
     default = None
     instance_name = None
     storeData = True
+    renderer = 'standard'
 
     executionSteps = ['query', 'sort', 'output']
 
@@ -60,8 +61,11 @@ class Field(Component):
     def name(self):
         return self.__name__
 
+    def getRawValue(self, row):
+        return getattr(row.context, self.name)
+
     def getValue(self, row):
-        value = getattr(row.context, self.name)
+        value = self.getRawValue(row)
         if value is None:
             return u''
         if isinstance(value, basestring):
