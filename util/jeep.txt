@@ -113,6 +113,11 @@ More Methods and Operators
   'third value'
   >>> len(jeep)
   2
+  >>> jeep.pop('blubb')
+  Traceback (most recent call last):
+  ...
+  KeyError: 'blubb'
+  >>> jeep.pop('blubb', None)
 
   >>> 'third' in jeep
   False

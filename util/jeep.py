@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ $Id$
 """
 
 _notfound = object()
+_undefined = object()
 
 class Jeep(object):
 
@@ -86,7 +87,7 @@ class Jeep(object):
 
     def values(self):
         return list(self)
-        return [self[k] for k in self]
+        #return [self[k] for k in self]
 
     def items(self):
         return [(k, self[k]) for k in self._sequence]
@@ -121,11 +122,14 @@ class Jeep(object):
         for key, value in mapping.items():
             self[key] = value
 
-    def pop(self, key=-1):
-        value = self[key]
+    def pop(self, key=-1, default=_undefined):
         if type(key) in (int, long):
             key = self._sequence[key]
-        delattr(self, key)
+        if default is _undefined:
+            value = self[key]
+        else:
+            value = self.get(key, default)
+        self.remove(key)
         return value
 
     def find(self, obj):
