@@ -220,6 +220,15 @@ class IService(Interface):
                         'object (participant) may be assigned with one '
                         'registration by entering a corresponding number.'),
                 required=False,)
+    presetRegistrationField = schema.Bool(
+                title=_(u'Preset Registration Field'),
+                description=_(u'Check this field if the field for the number '
+                        u'of registrations should have a default of 1 '
+                        u'(instead of 0) or the corresponding checkbox '
+                        u'should be checked by default. This is only useful '
+                        u'if the service manager contains only a single service.'),
+                required=False,
+                default=False)
     allowDirectRegistration = schema.Bool(
                 title=_(u'Allow direct registration'),
                 description=_(u'When this field is checked participants '

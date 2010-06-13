@@ -102,6 +102,7 @@ class Service(object):
     allowRegWithNumber = False
     allowDirectRegistration = True
     waitingList = False
+    presetRegistrationField = False
 
     def __init__(self, name=None, title=u'', capacity=-1, **kw):
         self.name = self.__name__ = name
