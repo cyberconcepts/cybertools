@@ -69,6 +69,8 @@ class Transition(Action):
 
     implements(ITransition)
 
+    actors = None
+
     def __init__(self, name, title, targetState, **kw):
         super(Transition, self).__init__(name, title, **kw)
         self.targetState = targetState
