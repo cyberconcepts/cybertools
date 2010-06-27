@@ -73,6 +73,15 @@ class IReport(ITemplate):
                 title=_(u'Description'),
                 description=_(u'A brief description of the report.'),
                 required=False,)
+    owner = schema.ASCIILine(
+                title=_(u'Owner'),
+                description=_(u'The user ID of the owner of the report.'),
+                required=True,)
+    public = schema.Bool(
+                title=_(u'Public'),
+                description=_(u'Check this field to make the report available '
+                        u'to others.'),
+                required=False,)
 
     manager = Attribute('The manager of this message object')
 
