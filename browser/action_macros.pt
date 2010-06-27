@@ -3,8 +3,7 @@
      $Id$-->
 
 
-<metal:action define-macro="action"
-              tal:condition="action/condition">
+<metal:action define-macro="action">
     <div class="action"
          tal:attributes="class action/cssClass;
                          id action/dialogName|nothing;
