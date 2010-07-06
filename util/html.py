@@ -60,9 +60,12 @@ def sanitizeStyle(value, validStyles=validStyles):
     result = []
     for item in value.split(';'):
         if ':' in item:
-            k, v = item.split(':')
-            if checkStyle(k):
-                result.append(item.strip())
+            #k, v = item.split(':')
+            parts = item.split(':')
+            if len(parts) == 2:
+                k, v = parts
+                if checkStyle(k):
+                    result.append(item.strip())
     return '; '.join(result)
 
 def checkStyle(k):
