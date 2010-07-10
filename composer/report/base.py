@@ -138,16 +138,21 @@ class LeafQueryCriteria(BaseQueryCriteria, Element):
 
     implements(ILeafQueryCriteria)
 
-    def __init__(self, name, operator, comparisonValue):
+    def __init__(self, name, operator, comparisonValue, field):
         self.name = name
         self.operator = operator
         self.comparisonValue = comparisonValue
+        self.field = field
 
-    def check(self, obj):
-        value = getattr(obj, self.name, None)
-        if value is not None:
-            return value in self.comparisonValue
-        return True
+    def check(self, row):
+        if not self.comparisonValue:
+            return True
+        #value = getattr(row, self.name, None)
+        value = self.field.getSelectValue(row)
+        #print '***', self.name, self.operator, self.comparisonValue, value
+        #if value is not None:
+        return value in self.comparisonValue
+        #return True
 
 
 class CompoundQueryCriteria(BaseQueryCriteria, Compound):

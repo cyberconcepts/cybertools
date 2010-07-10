@@ -64,6 +64,10 @@ class Field(Component):
     def getRawValue(self, row):
         return getattr(row.context, self.name)
 
+    def getSelectValue(self, row):
+        return getattr(row, self.name, None)
+        #return self.getRawValue(row)
+
     def getValue(self, row):
         value = self.getRawValue(row)
         if value is None:
