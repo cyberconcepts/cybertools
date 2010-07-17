@@ -47,6 +47,12 @@ class Field(Component):
 
     executionSteps = ['query', 'sort', 'output']
 
+    operators = [{'token': 'eq', 'label': '=='},
+                 {'token': 'lt', 'label': '<'},
+                 {'token': 'le', 'label': '<='},
+                 {'token': 'gt', 'label': '>'},
+                 {'token': 'ge', 'label': '>='},]
+
     def __init__(self, name, title=None, fieldType='textline', **kw):
         assert name
         self.__name__ = name
