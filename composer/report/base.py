@@ -91,8 +91,13 @@ class Report(Template):
     def components(self):
         return self.fields
 
-    def getQueryFields(self):
-        return [f for f in self.fields if 'query' in f.executionSteps]
+    def getQueryFields(self, include=None, exclude=None):
+        result = [f for f in self.fields if 'query' in f.executionSteps]
+        if include:
+            result = [f for f in result if f.fieldType in include]
+        if exclude:
+            result = [f for f in result if f.fieldType not in exclude]
+        return result
 
     def getOutputFields(self):
         return [f for f in self.fields if 'output' in f.executionSteps]
@@ -150,7 +155,14 @@ class LeafQueryCriteria(BaseQueryCriteria, Element):
             return True
         value = self.field.getSelectValue(row)
         if self.operator == 'in':
-            return value in self.comparisonValue
+            if isinstance(value, (list, tuple)):
+                for v in value:
+                    if v in self.comparisonValue:
+                        return True
+                else:
+                    return False
+            else:
+                return value in self.comparisonValue
         op = getattr(operator, self.operator, None)
         if op is None:
             # TODO: log warning

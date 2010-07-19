@@ -39,6 +39,7 @@ class Field(Component):
 
     implements(IField)
 
+    fieldType = 'text'
     vocabulary = None
     default = None
     instance_name = None
