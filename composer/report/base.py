@@ -22,7 +22,7 @@ Basic classes for report management.
 $Id$
 """
 
-import operator
+import operator as standard_operators
 from zope.interface import implements
 
 from cybertools.composer.base import Component, Element, Compound
@@ -154,21 +154,28 @@ class LeafQueryCriteria(BaseQueryCriteria, Element):
         if not self.comparisonValue:
             return True
         value = self.field.getSelectValue(row)
-        if self.operator == 'in':
-            if isinstance(value, (list, tuple)):
-                for v in value:
-                    if v in self.comparisonValue:
-                        return True
-                else:
-                    return False
-            else:
-                return value in self.comparisonValue
-        op = getattr(operator, self.operator, None)
+        op = operators.get(self.operator)
+        if op is None:
+            op = getattr(standard_operators, self.operator, None)
         if op is None:
             # TODO: log warning
             return True
         #print '***', self.field.name, value, op, self.comparisonValue
         return op(value, self.comparisonValue)
+
+
+def checkOnly(value, compValue):
+    if not value:
+        return 'none' in compValue
+    for v in value:
+        if v not in compValue:
+            return False
+    return True
+
+def checkIn(value, compValue):
+    return value in compValue
+
+operators = {'only': checkOnly, 'in': checkIn}
 
 
 class CompoundQueryCriteria(BaseQueryCriteria, Compound):

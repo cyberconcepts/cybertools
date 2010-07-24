@@ -45,6 +45,7 @@ class Field(Component):
     instance_name = None
     storeData = True
     renderer = 'standard'
+    operator = 'in'
 
     executionSteps = ['query', 'sort', 'output']
 
