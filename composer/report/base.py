@@ -163,6 +163,18 @@ class LeafQueryCriteria(BaseQueryCriteria, Element):
         #print '***', self.field.name, value, op, self.comparisonValue
         return op(value, self.comparisonValue)
 
+    def showComparisonValue(self):
+        if self.field.fieldType == 'selection':
+            return ', '.join([v for v in self.comparisonValue])
+        return self.comparisonValue
+
+    def showOperator(self):
+        op = self.operator
+        for item in self.field.operators:
+            if item['token'] == op:
+                return item['label']
+        return op
+
 
 def checkOnly(value, compValue):
     if not value:
