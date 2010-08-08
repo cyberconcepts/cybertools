@@ -37,4 +37,7 @@
        package, but not depending on loops -->
   <include package=".loops" />
 
+  <!-- a skin based on blueprint css -->
+  <include package=".blue" />
+
 </configure>

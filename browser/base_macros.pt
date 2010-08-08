@@ -1,3 +1,5 @@
+<!-- $Id -->
+
 <metal:logo define-macro="logo">
   <a href="#" name="logo" title="Home"
      tal:attributes="href macro/href;
@@ -8,12 +10,15 @@
 </metal:logo>
 
 
-<metal:css define-macro="css">
-  <style type="text/css" media="all"
-         tal:attributes="media macro/media"
-         tal:content="string:@import url(${resourceBase}${macro/resourceName});">
-      @import url(some.css);
-  </style>
+<metal:css define-macro="css"
+           tal:define="isIE macro/is_ie|nothing">
+  <tal:ie condition="isIE"
+          content="structure string:&lt;!--[if lt IE 8]&gt;" />
+  <link rel="stylesheet" href="css/blueprint/screen.css" type="text/css"
+        tal:attributes="href string:${resourceBase}${macro/resourceName};
+                        media macro/media;" />
+  <tal:ie condition="isIE"
+          content="structure string:&lt;![endif]--&gt;" />
 </metal:css>
 
 
