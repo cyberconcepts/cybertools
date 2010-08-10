@@ -89,7 +89,7 @@
            tal:define="width field/width|nothing"
            tal:attributes="name name; id name;
                            style python:
-                                ('width: %s;;' % (width and str(width)+'px' or '550px')) +
+                                ('width: %s;;' % (width and str(width)+'px' or '600px')) +
                                 'height: 1.5em;;';
                            value data/?name|string:;
                            required field/required_js;" />
@@ -117,7 +117,7 @@
            tal:define="width field/width|nothing"
            tal:attributes="name name;
                            style python:
-                                'width: %s' % (width and str(width)+'px' or '550px');
+                                'width: %s' % (width and str(width)+'px' or '600px');
                            value data/?name|string:" />
 </metal:password>
 
@@ -129,7 +129,7 @@
            tal:attributes="name name;
                            rows python: height or 3;
                            style python:
-                                'width: %s' % (width and str(width)+'px' or '550px');"
+                                'width: %s' % (width and str(width)+'px' or '600px');"
            tal:content="data/?name|string:">
     </textarea>
 </metal:textarea>
@@ -175,7 +175,7 @@
             tal:attributes="name name;
                          rows python: height or 3;
                          style python:
-                               'width: %s' % (width and str(width)+'px' or '550px');"
+                               'width: %s' % (width and str(width)+'px' or '600px');"
             tal:content="data/?name|string:" />
 </metal:list>
 
