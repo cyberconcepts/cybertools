@@ -26,6 +26,12 @@ from zope.interface import Interface, Attribute
 from zope import schema
 
 
+class IIntIdProvider(Interface):
+    """ An object that may be addressed by an intid (a unique id
+        represented by an integer) that is registered in a wiki manager plugin.
+    """
+
+
 class IWikiConfigInfo(Interface):
     """ A collection of configuration settings.
     """
@@ -93,7 +99,7 @@ class IWikiManager(Interface):
         """
 
 
-class IWiki(Interface):
+class IWiki(IIntIdProvider):
     """ A collection of wiki pages, or - more generally - wiki components.
     """
 
@@ -139,7 +145,7 @@ class IWebResource(Interface):
         """
 
 
-class IWikiPage(IWebResource):
+class IWikiPage(IWebResource, IIntIdProvider):
     """ An object representing a page of a wiki.
     """
 

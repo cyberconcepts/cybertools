@@ -27,7 +27,6 @@ from BTrees.OOBTree import OOBTree
 from persistent.mapping import PersistentMapping
 from zope.app.intid import IntIds
 from zope.app.intid.interfaces import IIntIds
-from zope.app.keyreference.interfaces import IKeyReference
 from zope.cachedescriptors.property import Lazy
 from zope import component
 from zope.component import adapts
@@ -91,7 +90,6 @@ class WikiManager(BaseWikiManager):
 
     def renameWiki(self, wiki, newName):
         wiki.rename(newName)
-        moveKeyReference(self.getPlugin(IIntIds), wiki)
 
     def listWikis(self):
         for uid in self.wikiUids:
@@ -161,11 +159,3 @@ class LinkManager(BaseLinkManager):
     def getObject(self, uid):
         return self.manager.getObject(uid)
 
-
-def moveKeyReference(intIds, obj):
-    """ Make sure entry in intIds utility is updated after a move or rename.
-    """
-    key = IKeyReference(obj)
-    uid = intIds.getId(obj)
-    intIds.refs[uid] = key
-    intIds.ids[key] = uid
