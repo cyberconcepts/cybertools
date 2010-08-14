@@ -23,6 +23,7 @@ $Id$
 """
 
 import os
+import shutil
 from zope.interface import implements
 import transaction
 from transaction.interfaces import IDataManager
@@ -92,6 +93,15 @@ class FileSystemStorage(object):
     def getUniqueAddress(self, address, params={}):
         subDir = params.get('subdirectory')
         return self.getDir(address, subDir)
+
+    def copyDataFile(self, sourceAddress, sourceParams, targetAddress, targetParams):
+        source = self.getDir(sourceAddress, sourceParams.get('subdirectory'))
+        target = self.getDir(targetAddress, targetParams.get('subdirectory'))
+        targetDir = os.path.dirname(target)
+        if not os.path.exists(targetDir):
+            os.makedirs(targetDir)
+        shutil.copyfile(source, target)
+
 
 
 class FSSDataManager(object):
