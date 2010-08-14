@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ class Controller(object):
         self.configure()
         #self.view.setupController()
         self.view.controller = self   # notify the view
+        self.templates = {}
 
     skin = None         # may be overwritten by the view
 
@@ -75,6 +76,12 @@ class Controller(object):
         provider = component.queryMultiAdapter((self.context, self.request),
                                           IMemberInfoProvider)
         return provider is not None and provider.data or None
+
+    def getTemplateMacros(self, name, default):
+        template = self.templates.get(name)
+        if template is None:
+            template = default
+        return template.macros
 
 
 class Macros(dict):
