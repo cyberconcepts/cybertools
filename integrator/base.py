@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ Base implementation for accessing external content objects.
 $Id$
 """
 
+import mimetypes
 import os
 from urllib import urlencode
 from zope.app.container.contained import Contained
@@ -210,3 +211,7 @@ class MimeTypes(dict):
         mtFile.close()
 
 mimeTypes = MimeTypes()
+
+
+mimetypes.init(mimetypes.knownfiles +
+               [os.path.join(os.path.dirname(__file__), 'mime.types')])

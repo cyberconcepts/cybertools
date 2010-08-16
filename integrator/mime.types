@@ -217,6 +217,7 @@ application/vnd.mozilla.xul+xml			xul
 application/vnd.ms-artgalry
 application/vnd.ms-asf
 application/vnd.ms-excel			xls xlb xlt
+application/vnd.ms-excel.sheet.macroEnabled.12 xlsm
 application/vnd.ms-lrm
 application/vnd.ms-pki.seccat			cat
 application/vnd.ms-pki.stl			stl
@@ -249,6 +250,8 @@ application/vnd.oasis.opendocument.text		odt
 application/vnd.oasis.opendocument.text-master	odm
 application/vnd.oasis.opendocument.text-template ott
 application/vnd.oasis.opendocument.text-web	oth
+application/vnd.openxmlformats-officedocument.wordprocessingml.document docx
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet xlsx
 application/vnd.osa.netdeploy
 application/vnd.palm
 application/vnd.pg.format

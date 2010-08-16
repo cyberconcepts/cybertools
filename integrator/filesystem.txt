@@ -110,3 +110,12 @@ A file object has additional attributes/methods.
   >>> html.icon
   'html'
 
+
+MIMETypes
+=========
+
+  >>> import mimetypes
+  >>> mimetypes.guess_type('test.xlsx')
+  ('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', None)
+  >>> mimetypes.guess_type('test.xlsm')
+  ('application/vnd.ms-excel.sheet.macroEnabled.12', None)
