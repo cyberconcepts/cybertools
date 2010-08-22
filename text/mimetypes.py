@@ -39,6 +39,7 @@ extensions = {
     'application/vnd.openxmlformats-officedocument.wordprocessingml.template': 'dotx',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.template': 'xltx',
+    'application/vnd.visio': 'vsd',
     'application/x-pdf': 'pdf',
     'image/gif': 'gif',
     'image/jpeg': 'jpg',
