@@ -22,6 +22,8 @@ Storing data in files in the file system.
 $Id$
 """
 
+from datetime import datetime
+from logging import getLogger
 import os
 import shutil
 from zope.interface import implements
@@ -32,6 +34,9 @@ import cybertools
 from cybertools.storage.interfaces import IExternalStorage
 
 DEFAULT_DIRECTORY = 'extfiles'
+
+
+logger = getLogger('cybertools.storage.filesystem')
 
 
 class FileSystemStorage(object):
@@ -75,8 +80,7 @@ class FileSystemStorage(object):
             f.close()
             return data
         except IOError, e:
-            from logging import getLogger
-            getLogger('cybertools.storage.filesystem.FileSystemStorage').warn(e)
+            logger.warn(e)
                         #'File %r cannot be read.' % fn)
             return ''
 
@@ -86,9 +90,19 @@ class FileSystemStorage(object):
         try:
             return os.path.getsize(fn)
         except OSError, e:
-            from logging import getLogger
-            getLogger('cybertools.storage.filesystem.FileSystemStorage').warn(e)
+            logger.warn(e)
             return 0
+
+    def getMTime(self, address, params={}):
+        subDir = params.get('subdirectory')
+        fn = self.getDir(address, subDir)
+        try:
+            ts = os.path.getmtime(fn)
+            if ts:
+                return datetime.fromtimestamp(ts)
+        except OSError, e:
+            logger.warn(e)
+            return None
 
     def getUniqueAddress(self, address, params={}):
         subDir = params.get('subdirectory')
