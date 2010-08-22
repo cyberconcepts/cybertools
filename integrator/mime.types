@@ -218,6 +218,9 @@ application/vnd.ms-artgalry
 application/vnd.ms-asf
 application/vnd.ms-excel			xls xlb xlt
 application/vnd.ms-excel.sheet.macroEnabled.12 xlsm
+application/vnd.ms-excel.template.macroEnabled.12 xltm
+application/vnd.ms-word.document.macroEnabled.12 docm
+application/vnd.ms-word.template.macroEnabled.12 dotm
 application/vnd.ms-lrm
 application/vnd.ms-pki.seccat			cat
 application/vnd.ms-pki.stl			stl
@@ -251,7 +254,9 @@ application/vnd.oasis.opendocument.text-master	odm
 application/vnd.oasis.opendocument.text-template ott
 application/vnd.oasis.opendocument.text-web	oth
 application/vnd.openxmlformats-officedocument.wordprocessingml.document docx
+application/vnd.openxmlformats-officedocument.wordprocessingml.template dotx
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet xlsx
+application/vnd.openxmlformats-officedocument.spreadsheetml.template xltx
 application/vnd.osa.netdeploy
 application/vnd.palm
 application/vnd.pg.format

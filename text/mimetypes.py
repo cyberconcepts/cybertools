@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 #
 
 """
-Some mime types stuff.
+Some mime types rules, redefined here for more specific assignments.
 
 $Id$
 """
@@ -26,11 +26,20 @@ extensions = {
     'application/msword': 'doc',
     'application/pdf': 'pdf',
     'application/vnd.ms-excel': 'xls',
+    'application/vnd.ms-excel.sheet.macroEnabled.12': 'xlsm',
+    'application/vnd.ms-excel.template.macroEnabled.12': 'xltm',
     'application/vnd.ms-powerpoint': 'ppt',
+    'application/vnd.ms-word.document.macroEnabled.12': 'docm',
+    'application/vnd.ms-word.template.macroEnabled.12': 'dotm',
     'application/vnd.oasis.opendocument.graphics': 'odg',
     'application/vnd.oasis.opendocument.presentation': 'odp',
     'application/vnd.oasis.opendocument.spreadsheet': 'ods',
     'application/vnd.oasis.opendocument.text': 'odt',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.template': 'dotx',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.template': 'xltx',
+    'application/x-pdf': 'pdf',
     'image/gif': 'gif',
     'image/jpeg': 'jpg',
     'image/png': 'png',
