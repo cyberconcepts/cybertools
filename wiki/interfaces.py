@@ -314,3 +314,10 @@ class ILinkProcessor(INodeProcessor):
     def addText(text):
         """ Add additional text to the link on the rendered page.
         """
+
+
+class IPreprocessor(Interface):
+    """ A callable with one argument (a string or unicode object) that
+        processes this source and returns the resulting string or unicode
+        object.
+    """

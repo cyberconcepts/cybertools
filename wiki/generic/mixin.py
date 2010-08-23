@@ -76,6 +76,7 @@ class WikiManager(BaseWikiManager):
         plugins[(IIntIds, '')] = IntIds()
         plugins[(ILinkManager, 'internal')] = LinkManager(self)
         self.setConfig('linkManager', 'internal')
+        self.setConfig('preprocessor', ['mediawiki'])
 
     def addWiki(self, wiki):
         uid = self.getUid(wiki)

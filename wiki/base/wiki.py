@@ -30,6 +30,7 @@ from zope.traversing.browser import absoluteURL
 from cybertools.wiki.common import protocols, ExternalPage
 from cybertools.wiki.interfaces import IWikiConfiguration
 from cybertools.wiki.interfaces import IWikiManager, IWiki, IWikiPage
+from cybertools.wiki.interfaces import IPreprocessor
 from cybertools.wiki.interfaces import IParser, IWriter
 from cybertools.wiki.base.config import BaseConfiguration
 
@@ -198,8 +199,12 @@ class WikiPage(BaseConfiguration):
         writer = component.getUtility(IWriter, name=writerName)
         return writer.write(tree)
 
-    def preprocess(self, source):
-        return source
+    def preprocess(self, text):
+        preprocs = self.getConfig('preprocessor') or []
+        for name in preprocs:
+            pp = component.getUtility(IPreprocessor, name=name)
+            text = pp(text)
+        return text
 
     def postprocess(self, result):
         return result
