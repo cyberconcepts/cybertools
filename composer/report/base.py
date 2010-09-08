@@ -187,7 +187,13 @@ def checkOnly(value, compValue):
 def checkIn(value, compValue):
     return value in compValue
 
-operators = {'only': checkOnly, 'in': checkIn}
+def checkAny(value, compValue):
+    for v in value:
+        if v in compValue:
+            return True
+    return False
+
+operators = {'any': checkAny, 'in': checkIn, 'only': checkOnly}
 
 
 class CompoundQueryCriteria(BaseQueryCriteria, Compound):
