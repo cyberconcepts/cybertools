@@ -321,3 +321,59 @@ class IPreprocessor(Interface):
         processes this source and returns the resulting string or unicode
         object.
     """
+
+
+# Wiki extensions
+
+class IMediaManager(Interface):
+    """
+    """
+
+    name = Attribute('A page name or address unique within the wiki.')
+    title = Attribute('A short string describing the wiki page the may be '
+                'use as a page title.')
+
+    def getWiki():
+        """ Return the wiki this object belongs to.
+        """
+
+    def createObject(name, title=None):
+        """ Create a new media object identified by the name (address -
+            may be a path) given and return it.
+        """
+
+    def removeObject(name):
+        """ Remove the object identified by name.
+        """
+
+    def getObject(name):
+        """ Return the media object with the name given or None if not present.
+        """
+
+    def listObjects():
+        """ Return a collection of the media object belonging to this
+            media manager.
+        """
+
+
+class IMediaObject(Interface):
+    """
+    """
+
+    name = Attribute('An object name or address unique within the wiki.')
+    title = Attribute('A short string describing the object that may be '
+                'use as a page title.')
+
+    def getManager():
+        """ Return the media manager this object is managed by.
+        """
+
+    def getRawData():
+        """ Return a byte string or an iterable or a file-like object
+            providing the byte data of the object.
+        """
+
+    def setRawData(data):
+        """ Store the data given with the object. The ``data`` argument
+            may be a byte string, an iterable or a file-like object.
+        """
