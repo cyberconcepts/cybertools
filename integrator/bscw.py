@@ -190,7 +190,7 @@ class ReadContainer(BSCWProxyBase, ReadContainer):
     def data(self):
         data = self.attributes
         if len(data) > 1:
-            return dict((item['id'], item) for item in data[1])
+            return dict((item['id'], item) for item in data[1] if 'id' in item)
         else:
             return {}
 
