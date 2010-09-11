@@ -350,16 +350,21 @@ class IOrder(Interface):
     """
     """
 
-    orderId = Attribute(u'Order Identifier')
+    orderId = schema.TextLine(title=u'Order Identifier')
+    orderDate = schema.Date(
+            title=u'Order Date',
+            description=u'The day the order was issued.')
+    paymentType = schema.TextLine(
+            title=u'Payment Type',
+            description=u'The payment type to be used for the order.')
+
     shop = Attribute(u'The shop this order belongs to.')
     customer = Attribute(u'The customer issuing this order.')
     invoiceAddress = Attribute(u'The address the invoice should be sent to.')
     shippingAddress = Attribute(u'The address the products should be sent to.')
-    paymentType = Attribute(u'The payment type to be used for the order.')
     netValues = Attribute(u'A collection of net total values (IValue objects)'
                 u'of the order.')
     total = Attribute(u'The total gross value (Decimal) of the order.')
-    orderDate = Attribute(u'The day the order was issued.')
     orderType = Attribute(u'Some string used for identifying the type of the order.')
 
 
