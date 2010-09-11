@@ -93,9 +93,13 @@ class PILTransform(object):
         box = (left, upper, right, lower)
         self.im = self.im.crop(box)
 
-    def resize(self, width, height):
+    def resize(self, width, height=None):
         if self.im is None:
             return
+        if not height:
+            ow, oh = self.im.size
+            ratio = float(ow) / float(oh)
+            height = int(round(float(width) / ratio))
         dims = (width, height)
         self.im.thumbnail(dims, Image.ANTIALIAS)
 

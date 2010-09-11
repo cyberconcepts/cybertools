@@ -133,7 +133,7 @@ class MediaAssetFile(object):
                         mediaFile.crop(*dims)
                 elif command == "size":
                     size = [int(i) for i in args.split(",")]
-                    if size and len(size) == 2:
+                    if size:
                         mediaFile.resize(*size)
             outputFormat = self.getContentType(variant)
             mediaFile.save(path, outputFormat)
