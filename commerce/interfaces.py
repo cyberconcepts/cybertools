@@ -362,9 +362,13 @@ class IOrder(Interface):
     customer = Attribute(u'The customer issuing this order.')
     invoiceAddress = Attribute(u'The address the invoice should be sent to.')
     shippingAddress = Attribute(u'The address the products should be sent to.')
+
+    shippingCost = Attribute(u'The cost to be applied for shipping.')
+    total = Attribute(u'The total gross value (Decimal) of the order.')
+
+    # not implemented yet
     netValues = Attribute(u'A collection of net total values (IValue objects)'
                 u'of the order.')
-    total = Attribute(u'The total gross value (Decimal) of the order.')
     orderType = Attribute(u'Some string used for identifying the type of the order.')
 
 
