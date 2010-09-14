@@ -364,6 +364,9 @@ class IOrder(Interface):
     shippingAddress = Attribute(u'The address the products should be sent to.')
 
     shippingCost = Attribute(u'The cost to be applied for shipping.')
+    additionalCost = Attribute(u'An additional value to be added to the '
+                        u'net value of the order.')
+    tax = Attribute(u'The tax value to be added to the net value of the order.')
     total = Attribute(u'The total gross value (Decimal) of the order.')
 
     # not implemented yet
