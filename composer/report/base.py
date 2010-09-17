@@ -193,7 +193,11 @@ def checkAny(value, compValue):
             return True
     return False
 
-operators = {'any': checkAny, 'in': checkIn, 'only': checkOnly}
+def checkNotAny(value, compValue):
+    return not checkAny(value, compValue)
+
+operators = {'any': checkAny, 'not_any': checkNotAny,
+             'in': checkIn, 'only': checkOnly}
 
 
 class CompoundQueryCriteria(BaseQueryCriteria, Compound):
