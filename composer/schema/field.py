@@ -235,6 +235,8 @@ class DateFieldInstance(NumberFieldInstance):
     def marshall(self, value):
         if value is None:
             return ''
+        if isinstance(value, basestring):
+            return value
         return strftime('%Y-%m-%dT%H:%M', value.timetuple())
 
     def display(self, value):
