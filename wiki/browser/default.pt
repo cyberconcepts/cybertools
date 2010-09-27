@@ -3,6 +3,13 @@
 
 <metal:content define-macro="manager">
     <h1>Wiki Manager</h1>
+    <h2>Settings</h2>
+    <form method="post">
+      <input type="hidden" name="form.action" value="apply" />
+      <textarea rows="10" cols="50" name="config"
+                tal:content="view/configForEditing" /><br />
+      <input type="submit" name="apply" value="Apply" />
+    </form>
     <h2>Wikis</h2>
     <table>
       <tr tal:repeat="wiki view/listWikis">

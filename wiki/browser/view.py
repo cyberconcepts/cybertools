@@ -42,6 +42,16 @@ class WikiBaseView(object):
                     portlet_left=[self.default_template.macros['navigation']],
                     portlet_right=[])
 
+    def configForEditing(self):
+        lines = []
+        for k, v in self.context.getConfigInfo().items():
+            if isinstance(v, (list, tuple)):
+                v = '[%s]' % ', '.join(v)
+            if v is None:
+                v = ''
+            lines.append('%s: %s' % (k, v))
+        return '\n'.join(lines)
+
 
 class WikiManagerView(WikiBaseView):
 
@@ -49,7 +59,29 @@ class WikiManagerView(WikiBaseView):
 
     def update(self):
         form = self.request.form
+        if form.get('form.action') == 'apply' and 'config' in form:
+            self.processConfigData(form['config'])
         return True
+
+    def processConfigData(self, input):
+        for line in input.splitlines():
+            if line:
+                self.processConfigLine(line)
+
+    def processConfigLine(self, line):
+        value = None
+        k, v = line.split(':', 1)
+        key = k.strip()
+        v = v.strip()
+        if v:
+            if v.startswith('[') and v.endswith(']'):
+                value = [s.strip() for s in v[1:-1].split(',')]
+            else:
+                value = v
+        if not value:
+            value = None
+        if value != self.context.getConfig(key):
+            self.context.setConfig(key, value)
 
     def listWikis(self):
         return self.context.listWikis()
