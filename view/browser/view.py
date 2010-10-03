@@ -39,6 +39,9 @@ class BaseView(object):
     resource_prefix = '/@@/'
     view_mode = 'view'
 
+    def wrap(self):
+        return self
+
     def __call__(self):
         return self.index(self)
 

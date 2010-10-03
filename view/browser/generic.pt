@@ -3,7 +3,8 @@
 
   <body>
 
-    <div metal:fill-slot="main">
+    <div metal:fill-slot="main"
+         tal:define="view view/wrap">
       <metal:content use-macro="view/contentMacro" />
     </div>
 

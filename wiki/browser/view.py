@@ -149,14 +149,14 @@ class WikiPageView(WikiBaseView):
             title = form.get('title')
             if title and title != self.context.title:
                 self.context.title = title
-            text = form.get('text')
+            text = toUnicode(form.get('text'))
             if text and text != self.context.text:
                 self.context.text = text
             notify(ObjectModifiedEvent(self.context))
         return True
 
     def render(self):
-        return self.context.render(self.request)
+        return toUnicode(self.context.render(self.request))
 
     def edit(self):
         self.view_mode = 'edit'
@@ -164,3 +164,13 @@ class WikiPageView(WikiBaseView):
 
     def showEditButton(self):
         return self.view_mode != 'edit'
+
+
+def toUnicode(text, encoding='UTF-8'):
+    if not isinstance(text, str):
+        return text
+    try:
+        return text.decode(encoding)
+    except UnicodeDecodeError:
+        return text.decode('ISO8859-15')
+
