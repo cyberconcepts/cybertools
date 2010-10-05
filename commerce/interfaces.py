@@ -357,6 +357,12 @@ class IOrder(Interface):
     paymentType = schema.TextLine(
             title=u'Payment Type',
             description=u'The payment type to be used for the order.')
+    paymentId = schema.TextLine(
+            title=u'Payment ID',
+            description=u'A string identifying the payment transaction.')
+    comments = schema.Text(
+            title=u'Comments',
+            description=u'Some arbitrary text associated with the order.')
 
     shop = Attribute(u'The shop this order belongs to.')
     customer = Attribute(u'The customer issuing this order.')
