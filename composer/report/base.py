@@ -74,6 +74,7 @@ class Report(Template):
     manager = None
 
     fields = Jeep((field.label,))
+    hiddenQueryFields = ()
     defaultOutputFields = (field.label,)
     defaultSortCriteria = (field.label,)
     presentationFormat = None
@@ -97,7 +98,7 @@ class Report(Template):
             result = [f for f in result if f.fieldType in include]
         if exclude:
             result = [f for f in result if f.fieldType not in exclude]
-        return result
+        return [f for f in result if f not in self.hiddenQueryFields]
 
     def getOutputFields(self):
         return [f for f in self.fields if 'output' in f.executionSteps]
