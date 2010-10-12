@@ -1,0 +1,32 @@
+<!-- $Id$ -->
+
+<configure
+   xmlns:zope="http://namespaces.zope.org/zope"
+   xmlns="http://namespaces.zope.org/browser"
+   i18n_domain="zope">
+
+  <zope:interface
+      interface="cybertools.browser.mojo.Mojo"
+      type="zope.publisher.interfaces.browser.IBrowserSkinType"
+      name="Mojo" />
+
+  <page for="*"
+        name="body.html"
+        class="cybertools.browser.mojo.browser.View"
+        permission="zope.View"
+        layer="cybertools.browser.mojo.Mojo" />
+
+  <page name="controller"
+        for="zope.publisher.interfaces.browser.IBrowserView"
+        class="cybertools.browser.mojo.controller.Controller"
+        permission="zope.Public"
+        layer="cybertools.browser.mojo.Mojo" />
+
+  <resource name="base.css"   file="base.css"
+        layer="cybertools.browser.mojo.Mojo" />
+  <resource name="print.css"  file="print.css"
+        layer="cybertools.browser.mojo.Mojo" />
+  <resource name="custom.css" file="custom.css"
+        layer="cybertools.browser.mojo.Mojo" />
+
+</configure>

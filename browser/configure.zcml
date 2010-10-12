@@ -40,4 +40,7 @@
   <!-- a skin based on blueprint css -->
   <include package=".blue" />
 
+  <!-- a skin for management tasks based on Dojo -->
+  <include package=".mojo" />
+
 </configure>
