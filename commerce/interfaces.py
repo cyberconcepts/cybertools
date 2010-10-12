@@ -360,6 +360,9 @@ class IOrder(Interface):
     paymentId = schema.TextLine(
             title=u'Payment ID',
             description=u'A string identifying the payment transaction.')
+    state = schema.TextLine(
+            title=u'State',
+            description=u'A string specifying the state of the order.')
     comments = schema.Text(
             title=u'Comments',
             description=u'Some arbitrary text associated with the order.')
