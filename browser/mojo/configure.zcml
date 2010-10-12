@@ -16,6 +16,12 @@
         permission="zope.View"
         layer="cybertools.browser.mojo.Mojo" />
 
+  <page for="*"
+        name="cybertools.body_macros"
+        template="body.pt"
+        permission="zope.Public"
+        layer="cybertools.browser.mojo.Mojo" />
+
   <page name="controller"
         for="zope.publisher.interfaces.browser.IBrowserView"
         class="cybertools.browser.mojo.controller.Controller"
