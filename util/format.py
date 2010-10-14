@@ -64,6 +64,7 @@ def toStr(value, encoding='UTF-8'):
     return str(value)
 
 def toUnicode(value, encoding='UTF-8', fallback='ISO8859-15'):
+    # or: fallback='CP852'
     if isinstance(value, unicode):
         return value
     elif isinstance(value, str):
