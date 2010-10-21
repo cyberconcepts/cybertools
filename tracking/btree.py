@@ -86,6 +86,7 @@ class Track(Persistent):
         if not newData:
             return
         self.timeStamp = getTimeStamp()
+        getParent(self).indexTrack(0, self, 'timeStamp')
         data = self.data
         data.update(newData)
         self.data = data    # record change
