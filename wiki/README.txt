@@ -163,3 +163,14 @@ created.
 Media Objects
 =============
 
+  >>> from cybertools.wiki.interfaces import IMediaManager
+  >>> mmName = manager.getConfig('mediaManager')
+  >>> mm = component.getAdapter(wiki, IMediaManager, name=mmName)
+
+  >>> media01 = mm.createObject('media01', 'Media Object #1')
+  >>> media01.setRawData('Some data we don\'t care about...')
+  >>> media01.getRawData()
+  "Some data..."
+
+  >>> [(obj.name, obj.title) for obj in mm.listObjects()]
+  [('media01', 'Media Object #1')]

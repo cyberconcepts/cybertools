@@ -95,4 +95,5 @@ class WikiConfiguration(BaseConfiguration):
                     writer='docutils.html',
                     linkManager='basic',
                     nodeProcessors=dict(reference=['default']),
+                    mediaManager='default',
     )

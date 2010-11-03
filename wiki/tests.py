@@ -16,6 +16,7 @@ from zope.traversing.browser.interfaces import IAbsoluteURL
 
 from cybertools.relation.tests import IntIdsStub
 from cybertools.wiki.base.config import WikiConfiguration
+from cybertools.wiki.base.media import WikiMediaManager
 from cybertools.link.base import LinkManager
 from cybertools.link.interfaces import ILinkManager
 from cybertools.wiki.dcu.html import Writer as DocutilsHTMLWriter
@@ -61,6 +62,7 @@ def setUp(testCase):
     component.provideAdapter(process.Reference, name='default')
     component.provideUtility(LinkManager(), provides=ILinkManager,
                              name='cybertools.link')
+    component.provideAdapter(WikiMediaManager, name='default')
     from cybertools.wiki.generic import adapter
     adapter.IntIds = IntIdsStub
 

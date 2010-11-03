@@ -150,7 +150,7 @@ class IWikiPage(IWebResource, IIntIdProvider):
     """
 
     name = Attribute('A page name or address unique within the wiki.')
-    title = Attribute('A short string describing the wiki page the may be '
+    title = Attribute('A short string describing the wiki page that may be '
                 'use as a page title.')
     text = Attribute('The page content in input text format.')
 
@@ -330,7 +330,7 @@ class IMediaManager(Interface):
     """
 
     name = Attribute('A page name or address unique within the wiki.')
-    title = Attribute('A short string describing the wiki page the may be '
+    title = Attribute('A short string describing the object that may be '
                 'use as a page title.')
 
     def getWiki():
