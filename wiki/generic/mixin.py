@@ -160,3 +160,8 @@ class LinkManager(BaseLinkManager):
     def getObject(self, uid):
         return self.manager.getObject(uid)
 
+
+class MediaContainer(object):
+
+    pass
+

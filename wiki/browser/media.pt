@@ -1,0 +1,13 @@
+<html>
+
+
+<metal:content define-macro="media_manager">
+    <h1 tal:content="context/title">Media Manager</h1>
+    <div tal:repeat="obj view/listObjects">
+      <a tal:attributes="href obj/absolute_url"
+         tal:content="obj/title" />
+    </div>
+</metal:content>
+
+
+</html>
