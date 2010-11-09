@@ -2,11 +2,30 @@
 
 
 <metal:content define-macro="media_manager">
-    <h1 tal:content="context/title">Media Manager</h1>
-    <div tal:repeat="obj view/listObjects">
-      <a tal:attributes="href obj/absolute_url"
-         tal:content="obj/title" />
-    </div>
+    <h1>
+      <span tal:content="context/title" />:
+      <span i18n:translate="">Media Manager</span></h1>
+    <form method="post" enctype="multipart/form-data">
+      <input type="hidden" name="form_action" value="upload" />
+      <div>
+        <input type="file" name="file" /></div>
+      <div>
+        <input type="submit" name="upload" value="Upload File" /></div>
+    </form>
+    <tal:listing define="objects view/listObjects"
+                 condition="objects">
+      <h2 i18n:translate="">Media Objects</h2>
+      <div tal:repeat="obj objects">
+        <a tal:attributes="href obj/absolute_url"
+           tal:content="obj/title" />
+      </div>
+    </tal:listing>
+</metal:content>
+
+
+<metal:content define-macro="media_object">
+    <h1>
+      <span tal:content="context/title" /></h1>
 </metal:content>
 
 

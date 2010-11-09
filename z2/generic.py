@@ -84,6 +84,9 @@ class GenericFolder(GenericObject):
     def getItems(self, types=None):
         return self.objectItems(types)
 
+    def values(self, types=None):
+        return self.objectValues(types)
+
 
 @component.adapter(IGeneric, IObjectAddedEvent)
 def setup(obj, event):

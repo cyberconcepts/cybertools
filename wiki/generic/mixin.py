@@ -36,6 +36,7 @@ from cybertools.link.base import Link, LinkManager as BaseLinkManager
 from cybertools.link.interfaces import ILinkManager
 from cybertools.util.generic.interfaces import IGenericObject, IGenericFolder
 from cybertools.wiki.base.config import WikiConfigInfo, BaseConfigurator
+from cybertools.wiki.base.media import MediaObject
 from cybertools.wiki.base.wiki import WikiManager as BaseWikiManager
 from cybertools.wiki.base.wiki import Wiki as BaseWiki
 from cybertools.wiki.base.wiki import WikiPage as BaseWikiPage
@@ -162,6 +163,11 @@ class LinkManager(BaseLinkManager):
 
 
 class MediaContainer(object):
+
+    pass
+
+
+class MediaObject(MediaObject):
 
     pass
 

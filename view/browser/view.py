@@ -35,7 +35,7 @@ view_macros = ViewPageTemplateFile(os.path.join('liquid', 'view_macros.pt'))
 class BaseView(object):
 
     index = generic_page
-    default_template = view_macros     # specify in subclass
+    default_template = template = view_macros     # specify in subclass
     resource_prefix = '/@@/'
     view_mode = 'view'
 
@@ -55,8 +55,11 @@ class BaseView(object):
     def defaultMacros(self):
         return self.default_template.macros
 
+    def macros(self):
+        return self.template.macros
+
     def contentMacro(self):
-        return self.defaultMacros()[getattr(self, 'content_renderer', 'content')]
+        return self.macros()[getattr(self, 'content_renderer', 'content')]
 
     #@rcache
     def homeURL(self):

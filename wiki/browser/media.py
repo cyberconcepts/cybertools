@@ -29,20 +29,38 @@ from zope.event import notify
 from zope.lifecycleevent import ObjectModifiedEvent
 from zope.traversing.browser import absoluteURL
 
+from cybertools.wiki.browser.view import WikiBaseView
 from cybertools.wiki.interfaces import IMediaManager
 
 
-class MediaManagerView(object):
+class MediaManagerView(WikiBaseView):
 
-    default_template = ViewPageTemplateFile('default.pt')
+    template = ViewPageTemplateFile('media.pt')
 
     content_renderer = 'media_manager'
 
     def update(self):
+        form = self.request.form
+        if form.get('form_action') == 'upload':
+            f = form.get('file')
+            if f:
+                data = f.read()
+                mmName = self.context.getConfig('mediaManager')
+                mm = component.getAdapter(self.context, IMediaManager, name=mmName)
+                obj = mm.createObject(f.filename)
+                obj.setRawData(data)
         return True
 
     def listObjects(self):
         mmName = self.context.getConfig('mediaManager')
         mm = component.getAdapter(self.context, IMediaManager, name=mmName)
         return mm.listObjects()
+
+
+
+class MediaObjectView(WikiBaseView):
+
+    template = ViewPageTemplateFile('media.pt')
+
+    content_renderer = 'media_object'
 

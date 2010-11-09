@@ -46,17 +46,17 @@ class BaseView(BrowserView, BaseView):
     template_name = 'view_macros'
     content_renderer = 'content'
 
-    def defaultMacros(self):
+    def macros(self):
         template = getattr(self.context, self.template_name, None)
         if template is None:
-            return super(BaseView, self).defaultMacros()
+            return super(BaseView, self).macros()
         return template.macros
 
     def contentMacro(self):
         macroName = self.content_renderer
-        macro = self.defaultMacros().get(macroName)
+        macro = self.macros().get(macroName)
         if macro is None:
-            return super(BaseView, self).defaultMacros()[macroName]
+            return super(BaseView, self).macros()[macroName]
         return macro
 
 

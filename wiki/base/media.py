@@ -70,7 +70,7 @@ class MediaObject(object):
 
     def __init__(self, name, title=None, parent=None):
         self.name = name
-        self.title = title or Name
+        self.title = title or name
         self.parent = parent
 
     def getManager(self):

@@ -35,6 +35,7 @@ from cybertools.link.interfaces import ILinkManager
 class WikiBaseView(object):
 
     default_template = ViewPageTemplateFile('default.pt')
+    template = default_template
 
     @Lazy
     def actions(self):
