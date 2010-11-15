@@ -39,7 +39,7 @@ class Controller(BaseController):
         macros = self.macros
         presentationMode = self.request.get('liquid.viewmode') == 'presentation'
         params = [('blue/blue8.css', 'all', 20, False),
-                  ('blue/blueprint/print.css', 'print', 25, False),
+                  ('print.css', 'print', 25, False),
                   ('blue/blueprint/ie.css', 'all', 30, True),
                   ('custom.css', 'all', 100, False)]
         #if presentationMode:
