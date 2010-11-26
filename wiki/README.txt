@@ -167,10 +167,29 @@ Media Objects
   >>> mmName = manager.getConfig('mediaManager')
   >>> mm = component.getAdapter(wiki, IMediaManager, name=mmName)
 
-  >>> media01 = mm.createObject('media01', 'Media Object #1')
+  >>> media01 = mm.createObject('media01.jpg', 'Media Object #1')
   >>> media01.setRawData('Some data we don\'t care about...')
   >>> media01.getRawData()
   "Some data..."
 
   >>> [(obj.name, obj.title) for obj in mm.listObjects()]
-  [('media01', 'Media Object #1')]
+  [('media01.jpg', 'Media Object #1')]
+
+Embed media objects (images) in Wiki text
+-----------------------------------------
+
+  >>> imagePage1 = wiki.createPage('with_image')
+  >>> imagePage1.text = '''
+  ... **A page with an image**
+  ...
+  ... .. image:: media01.jpg
+  ...
+  ... `Back to the Start Page <start_page>`_
+  ... '''
+
+  >>> print imagePage1.render(TestRequest())
+  <p><strong>A page with an image</strong></p>
+  <img src="http://127.0.0.1/demo_wiki/.media/media01.jpg" />
+  <p><a class="reference"
+        href="http://127.0.0.1/demo_wiki/start_page">Back to the Start Page</a></p>
+

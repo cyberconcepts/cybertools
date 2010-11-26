@@ -24,6 +24,7 @@ $Id$
 
 from zope.component import adapts
 from zope.interface import implements
+from zope.traversing.browser import absoluteURL
 from cybertools.wiki.interfaces import IWiki, IMediaManager, IMediaObject
 
 
@@ -84,3 +85,17 @@ class MediaObject(object):
 
     def setRawData(self, data):
         self.data = data
+
+    # IWebResource
+
+    @property
+    def uid(self):
+        return self.getUid()
+
+    def getUid(self):
+        return self.parent.getManager().getUid(self)
+        #return self.getWiki().getManager().getUid(self)
+
+    def getURI(self, request):
+        return absoluteURL(self, request)
+

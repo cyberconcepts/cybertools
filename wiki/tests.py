@@ -22,7 +22,7 @@ from cybertools.link.interfaces import ILinkManager
 from cybertools.wiki.dcu.html import Writer as DocutilsHTMLWriter
 from cybertools.wiki.dcu.rstx import Parser as DocutilsRstxParser
 from cybertools.wiki.dcu import process
-from cybertools.wiki.interfaces import IWiki, IWikiPage
+from cybertools.wiki.interfaces import IWiki, IWikiPage, IMediaObject
 #from cybertools.wiki.tracking import link
 
 
@@ -45,6 +45,13 @@ class PageURL(WikiURL):
                           self.context.name)
 
 
+class MediaURL(WikiURL):
+
+    def __call__(self):
+        return '%s/.media/%s' % (WikiURL(self.context.parent, self.request)(),
+                          self.context.name)
+
+
 class Test(unittest.TestCase):
     "Basic tests for the wiki package."
 
@@ -55,11 +62,13 @@ class Test(unittest.TestCase):
 def setUp(testCase):
     component.provideAdapter(WikiURL, (IWiki, IBrowserRequest), IAbsoluteURL)
     component.provideAdapter(PageURL, (IWikiPage, IBrowserRequest), IAbsoluteURL)
+    component.provideAdapter(MediaURL, (IMediaObject, IBrowserRequest), IAbsoluteURL)
     component.provideUtility(IntIdsStub())
     component.provideUtility(WikiConfiguration())
     component.provideUtility(DocutilsHTMLWriter(), name='docutils.html')
     component.provideUtility(DocutilsRstxParser(), name='docutils.rstx')
     component.provideAdapter(process.Reference, name='default')
+    component.provideAdapter(process.Image, name='default')
     component.provideUtility(LinkManager(), provides=ILinkManager,
                              name='cybertools.link')
     component.provideAdapter(WikiMediaManager, name='default')

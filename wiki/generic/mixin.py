@@ -40,7 +40,7 @@ from cybertools.wiki.base.media import MediaObject
 from cybertools.wiki.base.wiki import WikiManager as BaseWikiManager
 from cybertools.wiki.base.wiki import Wiki as BaseWiki
 from cybertools.wiki.base.wiki import WikiPage as BaseWikiPage
-from cybertools.wiki.interfaces import IWikiConfigInfo
+from cybertools.wiki.interfaces import IWikiConfigInfo, IWikiPage
 
 
 class PersistentConfigInfo(PersistentMapping):
@@ -118,8 +118,8 @@ class Wiki(BaseWiki):
         return self.getId()
 
     def getPages(self):
-        # TODO: restrict to wiki page objects
-        return dict((k, v) for k, v in self.getItems())
+        return dict((k, v) for k, v in self.getItems()
+                           if IWikiPage.providedBy(v))
 
     def createPage(self, name, title, text=u''):
         self[name] = self.pageFactory(name)

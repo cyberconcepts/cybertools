@@ -94,6 +94,7 @@ class WikiConfiguration(BaseConfiguration):
                     parser='docutils.rstx',
                     writer='docutils.html',
                     linkManager='basic',
-                    nodeProcessors=dict(reference=['default']),
+                    nodeProcessors=dict(reference=['default'],
+                                        image=['default']),
                     mediaManager='default',
     )

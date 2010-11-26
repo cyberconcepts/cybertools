@@ -5,6 +5,9 @@
     <h1>
       <span tal:content="context/title" />:
       <span i18n:translate="">Media Manager</span></h1>
+    <div>
+      <a tal:attributes="href context/absolute_url"
+         i18n:translate="">Back to Wiki</a><br />&nbsp;</div>
     <form method="post" enctype="multipart/form-data">
       <input type="hidden" name="form_action" value="upload" />
       <div>

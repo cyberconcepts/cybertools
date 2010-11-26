@@ -23,12 +23,14 @@ $Id: process.py 3153 2009-01-17 16:51:09Z helmutm $
 """
 
 from docutils.nodes import Text
+from zope import component
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 from zope.interface import implements
 
 from cybertools.wiki.base.link import LinkProcessor
-from cybertools.wiki.dcu.html import HTMLReferenceNode
+from cybertools.wiki.dcu.html import HTMLImageNode, HTMLReferenceNode
+from cybertools.wiki.interfaces import IMediaManager
 
 
 class Reference(LinkProcessor):
@@ -55,3 +57,27 @@ class Reference(LinkProcessor):
 
     def addText(self, text):
         self.context.node.insert(0, Text(text))
+
+
+class Image(Reference):
+
+    adapts(HTMLImageNode)
+
+    def findTarget(self, manager, wiki, text):
+        mmName = wiki.getConfig('mediaManager')
+        mm = component.getAdapter(wiki, IMediaManager, name=mmName)
+        return mm.getObject(text)
+
+    def getTarget(self, manager, wiki, uid):
+        return manager.getObject(uid)
+
+    def setURI(self, uri):
+        self.context.atts['src'] = uri
+
+    @Lazy
+    def targetName(self):
+        return self.context.node['uri']
+
+    def markPresentation(self, feature):
+        pass
+

@@ -49,6 +49,17 @@ class BodyTranslator(HTMLTranslator):
     def astext(self):
         return u''.join(self.body_pre_docinfo + self.docinfo + self.body)
 
+    def visit_image(self, node):
+        # copied from docutils.writers.html4css1
+        atts = {}
+        atts['src'] = node['uri']
+        # TODO: provide processing of other attributes
+        suffix = '\n'
+        self.context.append('')
+        htmlNode = HTMLImageNode(self.document, node, atts)
+        self.processNode(htmlNode)
+        self.body.append(self.emptytag(node, 'img', suffix, **atts))
+
     def visit_reference(self, node):
         # copied from docutils.writers.html4css1
         if node.has_key('refuri'):
@@ -88,5 +99,10 @@ class HTMLNode(object):
 
 
 class HTMLReferenceNode(HTMLNode):
+
+    pass
+
+
+class HTMLImageNode(HTMLNode):
 
     pass
