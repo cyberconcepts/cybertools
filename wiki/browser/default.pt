@@ -25,7 +25,7 @@
 <metal:content define-macro="wiki">
     <h1 tal:content="context/title">Wiki</h1>
     <div>
-      <a tal:attributes="href string:${context/absolute_url}/media.html"
+      <a tal:attributes="href string:${context/absolute_url}/@@media.html"
          i18n:translate="">Media Manager</a></div>
     <h2 i18n:translate="">Wiki Pages</h2>
     <div tal:repeat="page view/listPages">
