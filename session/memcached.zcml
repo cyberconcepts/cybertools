@@ -1,0 +1,44 @@
+<!-- $Id$ -->
+
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="cybertools.session">
+
+  <adapter
+      factory="cybertools.session.memcached.Session"
+      provides="zope.app.session.interfaces.ISession"
+      permission="zope.Public" />
+
+  <!--<adapter
+      factory="cybertools.session.memcached.Session"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      name="session" />-->
+
+  <utility
+      factory="cybertools.session.memcached.SessionDataContainer"
+      name="cybertools.session.memcached" />
+
+  <class class="cybertools.session.memcached.Session">
+    <allow interface="zope.app.session.interfaces.ISession" />
+    <implements interface="zope.traversing.interfaces.IPathAdapter" />
+  </class>
+
+  <class class="cybertools.session.memcached.SessionDataContainer">
+    <require
+        interface="zope.app.session.interfaces.ISessionDataContainer"
+        permission="zope.Public" />
+    <require
+        set_schema="zope.app.session.interfaces.ISessionDataContainer"
+        permission="zope.ManageServices" />
+  </class>
+
+  <class class="cybertools.session.memcached.SessionData">
+    <allow interface="zope.app.session.interfaces.ISessionData" />
+  </class>
+
+  <class class="cybertools.session.memcached.SessionPkgData">
+    <allow interface="zope.app.session.interfaces.ISessionPkgData" />
+  </class>
+
+</configure>
