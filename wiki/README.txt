@@ -193,3 +193,21 @@ Embed media objects (images) in Wiki text
   <p><a class="reference"
         href="http://127.0.0.1/demo_wiki/start_page">Back to the Start Page</a></p>
 
+Link to media objects (files) in Wiki text
+------------------------------------------
+
+  >>> imagePage2 = wiki.createPage('with_image_link')
+  >>> imagePage2.text = '''
+  ... **A page with a link to an image**
+  ...
+  ... `Media Object #1 <media01.jpg>`_
+  ...
+  ... `Back to the Start Page <start_page>`_
+  ... '''
+
+  >>> print imagePage2.render(TestRequest())
+  <p><strong>A page with a link to an image</strong></p>
+  <p><a class="reference"
+        href="http://127.0.0.1/demo_wiki/.media/media01.jpg">Media Object #1</a></p>
+  <p><a class="reference"
+        href="http://127.0.0.1/demo_wiki/start_page">Back to the Start Page</a></p>

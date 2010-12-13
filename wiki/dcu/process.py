@@ -49,6 +49,17 @@ class Reference(LinkProcessor):
     def targetName(self):
         return self.context.node['refuri']
 
+    def findTarget(self, manager, wiki, name):
+        target = wiki.getPage(name)
+        if target is None:
+            return self.findTargetMedia(manager, wiki, name)
+        return target
+
+    def findTargetMedia(self, manager, wiki, name):
+        mmName = wiki.getConfig('mediaManager')
+        mm = component.getAdapter(wiki, IMediaManager, name=mmName)
+        return mm.getObject(name)
+
     def setURI(self, uri):
         self.context.atts['href'] = uri
 
@@ -63,20 +74,15 @@ class Image(Reference):
 
     adapts(HTMLImageNode)
 
-    def findTarget(self, manager, wiki, text):
-        mmName = wiki.getConfig('mediaManager')
-        mm = component.getAdapter(wiki, IMediaManager, name=mmName)
-        return mm.getObject(text)
-
-    def getTarget(self, manager, wiki, uid):
-        return manager.getObject(uid)
-
-    def setURI(self, uri):
-        self.context.atts['src'] = uri
-
     @Lazy
     def targetName(self):
         return self.context.node['uri']
+
+    def findTarget(self, manager, wiki, name):
+        return self.findTargetMedia(manager, wiki, name)
+
+    def setURI(self, uri):
+        self.context.atts['src'] = uri
 
     def markPresentation(self, feature):
         pass

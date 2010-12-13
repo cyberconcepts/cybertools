@@ -58,13 +58,11 @@ class LinkProcessor(object):
         for link in lm.query(source=self.source, name=self.targetName):
             #link = existing.next()
             if link.target is not None:
-                #target = manager.getObject(link.target)
                 target = self.getTarget(manager, wiki, link.target)
             else:
                 target = None
             break
         else:
-            #target = wiki.getPage(targetPageName)
             target = self.findTarget(manager, wiki, targetPageName)
             link = lm.createLink(name=self.targetName,
                                  source=self.source, target=target)
