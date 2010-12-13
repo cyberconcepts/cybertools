@@ -39,7 +39,7 @@ rendererTemplate = ViewPageTemplateFile('renderer.pt')
 
 class CachableRenderer(object):
 
-    lifetime = 3600
+    lifetime = 3 * 3600
 
     def __init__(self, view, renderer):
         self.view = view
