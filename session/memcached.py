@@ -37,7 +37,7 @@ class SessionDataContainer(object):
 
     implements(ISessionDataContainer)
 
-    lifetime = 8 * 3600
+    lifetime = 24 * 3600
     namespace = 'cybertools.session'
 
     def __getitem__(self, key):
