@@ -37,10 +37,27 @@ from cybertools.util.cache import cache
 rendererTemplate = ViewPageTemplateFile('renderer.pt')
 
 
+class CachableRenderer(object):
+
+    lifetime = 3600
+
+    def __init__(self, view, renderer):
+        self.view = view
+        self.renderer = renderer
+
+    def getRenderMacroId(self, *args):
+        return 'renderer.' + '.'.join(args)
+
+    @cache(getRenderMacroId, lifetime=lifetime)
+    def renderMacro(self, *args):
+        return rendererTemplate(self.view, view=self.view, macro=self.renderer)
+
+
 class BaseView(object):
 
     template = ViewPageTemplateFile('base.pt')
     rendererTemplate = rendererTemplate
+    cachableRendererFactory = CachableRenderer
 
     page = None
     parent = None
@@ -61,22 +78,8 @@ class BaseView(object):
 
     def cachedRenderer(self, name, *args):
         baseRenderer = self.renderer.template.macros[name]
-        cr = CachableRenderer(self, baseRenderer)
+        cr = self.cachableRendererFactory(self, baseRenderer)
         return cr.renderMacro(*args)
-
-
-class CachableRenderer(object):
-
-    def __init__(self, view, renderer):
-        self.view = view
-        self.renderer = renderer
-
-    def getRenderMacroId(self, *args):
-        return 'renderer.' + '.'.join(args)
-
-    @cache(getRenderMacroId, lifetime=3600)
-    def renderMacro(self, *args):
-        return rendererTemplate(self.view, view=self.view, macro=self.renderer)
 
 
 class Page(BaseView):
