@@ -345,7 +345,7 @@ class ListFieldInstance(FieldInstance):
             return u''
         if isinstance(value, basestring):
             return value
-        return u' | '.join(self.valueFieldInstance.display(v) for v in value)
+        return u' | '.join(unicode(self.valueFieldInstance.display(v)) for v in value)
 
     def unmarshall(self, value):
         if isinstance(value, basestring):
