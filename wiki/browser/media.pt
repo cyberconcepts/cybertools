@@ -19,7 +19,7 @@
                  condition="objects">
       <h2 i18n:translate="">Media Objects</h2>
       <div tal:repeat="obj objects">
-        <a tal:attributes="href obj/absolute_url"
+        <a tal:attributes="href string:${obj/absolute_url}/@@view"
            tal:content="obj/title" />
       </div>
     </tal:listing>

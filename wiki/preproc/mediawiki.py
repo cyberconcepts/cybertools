@@ -28,16 +28,26 @@ import re
 linkPattern = re.compile(r'\[\[(.+)\]\]')
 
 
-def createRstxLink(match):
+def preprocess(source):
+    result = linkPattern.sub(processLinkPattern, source)
+    return result
+
+
+def processLinkPattern(match):
     value = match.group(1)
     parts = value.split('|')
-    text = name = parts[0].strip()
-    if len(parts) > 1:
-        text = parts[-1].strip()
+    name = parts.pop(0).strip()
+    if ':' in name:
+        prefix, name = name.split(':', 1)
+        return createRstxImage(name, parts, prefix)
+    else:
+        return createRstxLink(name, parts)
+
+def createRstxLink(name, parts, prefix=None):
+    text = parts and parts[-1].strip() or name
     return '`%s <%s>`__' % (text, name)
 
+def createRstxImage(name, parts, prefix=None):
+    return '\n\n.. image:: %s\n\n' % name
 
-def preprocess(source):
-    result = linkPattern.sub(createRstxLink, source)
-    return result
 
