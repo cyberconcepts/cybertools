@@ -152,7 +152,8 @@ class LeafQueryCriteria(BaseQueryCriteria, Element):
         self.field = field
 
     def check(self, row):
-        if not self.comparisonValue:
+        #if not self.comparisonValue:
+        if self.comparisonValue in (None, '',):
             return True
         value = self.field.getSelectValue(row)
         op = operators.get(self.operator)
@@ -161,7 +162,7 @@ class LeafQueryCriteria(BaseQueryCriteria, Element):
         if op is None:
             # TODO: log warning
             return True
-        #print '***', self.field.name, value, op, self.comparisonValue
+        #print '***', self.field.name, repr(value), op, repr(self.comparisonValue)
         return op(value, self.comparisonValue)
 
     def showComparisonValue(self):
