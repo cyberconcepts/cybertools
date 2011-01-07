@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -29,6 +29,9 @@ extensions = {
     'application/vnd.ms-excel.sheet.macroenabled.12': 'xlsm',
     'application/vnd.ms-excel.template.macroenabled.12': 'xltm',
     'application/vnd.ms-powerpoint': 'ppt',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'pptx',
+    'application/vnd.openxmlformats-officedocument.presentationml.template': 'potx',
+    'application/vnd.openxmlformats-officedocument.presentationml.slideshow': 'ppsx',
     'application/vnd.ms-word.document.macroenabled.12': 'docm',
     'application/vnd.ms-word.template.macroenabled.12': 'dotm',
     'application/vnd.oasis.opendocument.graphics': 'odg',
