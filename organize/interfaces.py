@@ -346,6 +346,20 @@ class IScheduledService(IService):
     duration = Attribute('Time delta between start and end date/time.')
 
 
+class ICompoundService(IService):
+    """ A service that consists of a set of sub-services, e.g. a conference,
+        a course or a multi-day seminar.
+        Sub-services may be other compound services or simple services; 
+        in addition there may be service parts additional strucure elements.
+    """
+
+
+class IServicePart(IService):
+    """ A service that provides a substructure element of a compound service,
+        e.g. a conference track or a conference day.
+    """
+
+
 class IClient(Interface):
     """ An fairly abstract interface for objects to be used as clients
         for services.

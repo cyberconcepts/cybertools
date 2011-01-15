@@ -1,0 +1,752 @@
+===============
+Service Manager
+================
+
+  ($Id$)
+
+This package does not provide functionality on its own but shows only
+how to integrate other packages into an application package.
+
+  >>> from zope.app.testing.setup import placefulSetUp, placefulTearDown
+  >>> site = placefulSetUp(True)
+
+  >>> from cybertools.organize.tests import setUp
+  >>> setUp(site)
+
+  >>> from zope import component
+
+  >>> from cybertools.composer import schema
+  >>> from cybertools.composer.interfaces import IInstance
+  >>> from cybertools.composer.schema.interfaces import IClientFactory
+  >>> from cybertools.organize import service
+
+
+Setting up a Service Manager
+============================
+
+A service manager is a collection of individual services; in our
+example the service manager represents a workshop with two
+parts (events, lectures, ...).
+
+  >>> workshop = site['workshop'] = service.ServiceManager()
+  >>> workshop.__parent__ = site
+  >>> workshop.__name__ = 'workshop'
+
+  >>> event1 = service.ScheduledService('event1', category='event', manager=workshop,
+  ...                                   title=u'Event 1', capacity=5)
+  >>> event2 = service.ScheduledService('event2', category='event', manager=workshop,
+  ...                                   title=u'Event 2')
+  >>> workshop.services.append(event1)
+  >>> workshop.services.append(event2)
+
+In order to be able to registrate participants for the workshop we
+have to provide data structures for the participants (the service
+clients. This is done via to form descriptions (schemas), one for the
+personal data (first name, last name), and one for the address.
+
+  >>> workshop.clientSchemas.append(schema.Schema(
+  ...               schema.Field('lastName', u'Last Name', required=True,
+  ...                            standardFieldName='lastName'),
+  ...               schema.Field('firstName', u'First Name'),
+  ...               schema.Field('email', u'Email Address', required=True,
+  ...                            fieldType='email', standardFieldName='email'),
+  ...               schema.Field('age', u'Age', fieldType='number'),
+  ...               schema.Field('addr', u'Personal Address', required=True,
+  ...                            fieldtype='radiobuttons',
+  ...                            vocabulary=u'Mrs\nMr'),
+  ...               schema.Field('acadTitles', u'Academic Titles',
+  ...                            fieldtype='checkboxes',
+  ...                            vocabulary=u'Prof.\nDr.'),
+  ...               name='person',
+  ...               manager=workshop,
+  ... ))
+  >>> workshop.clientSchemas.append(schema.Schema(
+  ...               schema.Field('street', u'Street'),
+  ...               schema.Field('city', u'City', required=True),
+  ...               schema.Field('country', u'Country', required=True,
+  ...                            fieldType='dropdown', vocabulary=u'USA\nGermany'),
+  ...               name='address',
+  ...               manager=workshop,
+  ... ))
+
+
+Registration of Clients
+=======================
+
+So we are now ready to register participants.
+
+  >>> client1 = IClientFactory(workshop)()
+  >>> client1Name = workshop.addClient(client1)
+
+  >>> data = dict(addr=u'Mr', lastName=u'Skywalker', email='luke@skywalker.universe')
+  >>> inst = component.getAdapter(client1, IInstance, name='editor')
+  >>> inst.template = workshop.clientSchemas['person']
+  >>> state = inst.applyTemplate(data=data)
+
+  >>> list(client1.__schema_attributes__)
+  ['schema.client.__standard__', 'schema.client.person']
+
+  >>> client1.__schema_attributes__['schema.client.person']['lastName']
+  u'Skywalker'
+
+Instead of directly peeking into the attributes we can also use a
+suitable instance adapter.
+
+  >>> inst = IInstance(client1)
+  >>> inst.template = workshop.clientSchemas['person']
+  >>> inst.applyTemplate()
+  {'acadTitles': u'', 'standard.lastName': u'Skywalker', 'addr': u'Mr',
+   'firstName': u'', 'lastName': u'Skywalker', 'age': '', '__name__': '...',
+   'email': u'luke@skywalker.universe',
+   'standard.email': u'luke@skywalker.universe'}
+
+Note that the ``standardFieldName`` setting for the ``lastName`` field
+results in a 'standard.lastName' entry; this technique may be used to
+retrieve certain standard informations from a client without having to
+use a template.
+
+Using schema views for displaying and editing data
+--------------------------------------------------
+
+We need some additional setup for working with schema views - so we have to
+supply some session handling stuff in order to work with client names.
+
+  >>> from zope.interface import implements
+  >>> from zope.app.session.interfaces import IClientIdManager, ISessionDataContainer
+  >>> from zope.app.session import session
+  >>> component.provideAdapter(session.ClientId)
+  >>> component.provideAdapter(session.Session)
+  >>> component.provideUtility(session.RAMSessionDataContainer(), ISessionDataContainer)
+  >>> class ClientIdManager(object):
+  ...     implements(IClientIdManager)
+  ...     def getClientId(self, request): return 'dummy'
+  >>> component.provideUtility(ClientIdManager())
+
+  >>> from zope.publisher.browser import TestRequest
+  >>> from cybertools.composer.schema.browser.schema import SchemaView
+
+  >>> request = TestRequest()
+  >>> schema = workshop.clientSchemas['person']
+  >>> view = SchemaView(schema, request)
+
+Let's have a closer look at some of the view's attributes.
+
+  >>> [f.name for f in view.fields]
+  ['lastName', 'firstName', 'email', 'age', 'addr', 'acadTitles']
+
+  >>> view.data
+  {}
+
+Providing an id will enable the view to return the data of
+the corresponding client.
+
+  >>> input = dict(id=client1Name)
+  >>> request = TestRequest(form=input)
+  >>> view = SchemaView(schema, request)
+  >>> view.data
+  {'acadTitles': u'', 'standard.lastName': u'Skywalker', 'addr': u'Mr',
+   'firstName': u'', 'lastName': u'Skywalker', 'age': '', '__name__': '...',
+   'email': u'luke@skywalker.universe',
+   'standard.email': u'luke@skywalker.universe'}
+
+When we provide data and an 'update' action a new client object will
+be created - if we clear the client name in the session first via
+``view.setClientName('')``.
+
+  >>> input = dict(lastName='Solo', firstName='Han', email='han.solo@space.net',
+  ...              addr=u'Mr', action='update')
+  >>> request = TestRequest(form=input)
+  >>> view = SchemaView(schema, request)
+  >>> view.setClientName('')
+  >>> view.update()
+  False
+
+  >>> client2Name = view.clientName
+  >>> client2Name != client1Name
+  True
+
+  >>> input = dict(id=client2Name)
+  >>> request = TestRequest(form=input)
+  >>> view = SchemaView(schema, request)
+  >>> view.data
+  {'acadTitles': u'', 'standard.lastName': u'Solo', 'addr': u'Mr',
+   'firstName': u'Han', 'lastName': u'Solo',
+   'age': '', '__name__': '...', 'email': u'han.solo@space.net',
+   'standard.email': u'han.solo@space.net'}
+
+If we provide an id parameter we may also change an existing client.
+
+  >>> input = dict(lastName=u'Skywalker', firstName=u'Luke', id=client1Name,
+  ...              email='luke@skywalker.universe', addr=u'Mr', action='update')
+  >>> request = TestRequest(form=input)
+  >>> view = SchemaView(schema, request)
+  >>> view.update()
+  False
+
+  >>> input = dict(id=client1Name)
+  >>> request = TestRequest(form=input)
+  >>> view = SchemaView(schema, request)
+  >>> view.data
+  {'acadTitles': u'', 'standard.lastName': u'Skywalker', 'addr': u'Mr',
+   'firstName': u'Luke', 'lastName': u'Skywalker', 'age': '', '__name__': '...',
+   'email': u'luke@skywalker.universe',
+   'standard.email': u'luke@skywalker.universe'}
+
+If we do not provide a value for a required attribute we get a validation
+error and the form will be displayed again.
+
+  >>> input = dict(firstName=u'Anakin', action='update')
+  >>> request = TestRequest(form=input)
+  >>> view = SchemaView(schema, request)
+  >>> view.update()
+  True
+
+The same happens if we provide a number field with a string that cannot
+be converted to an integer.
+
+  >>> input = dict(firstName=u'Anakin', lastName=u'Skywalker', age='foo',
+  ...             action='update')
+  >>> request = TestRequest(form=input)
+  >>> view = SchemaView(schema, request)
+  >>> view.update()
+  True
+
+More on special field types
+---------------------------
+
+  >>> schema2 = workshop.clientSchemas['address']
+  >>> countryField = schema2.fields.country
+  >>> countryField.getVocabularyItems()
+  [{'token': u'USA', 'title': u'USA'}, {'token': u'Germany', 'title': u'Germany'}]
+
+
+Registering for Services Using a Registration Template
+======================================================
+
+  >>> from cybertools.organize.service import RegistrationTemplate
+
+  >>> workshop.clientSchemas.append(RegistrationTemplate(
+  ...               name='regform',
+  ...               manager=workshop))
+
+  >>> regForm = workshop.clientSchemas['regform']
+
+  >>> list(regForm.services)
+  [<...ScheduledService object...>, <...ScheduledService object...>]
+
+The registration action itself is performed using an IClientRegistrations
+adapter for a client object.
+
+  >>> from cybertools.organize.interfaces import IClientRegistrations
+  >>> from cybertools.organize.service import ClientRegistrations
+  >>> component.provideAdapter(ClientRegistrations)
+
+  >>> regs = IClientRegistrations(client1)
+  >>> regs.template = regForm
+  >>> regs.register([regForm.services[0]])
+
+  >>> regs = list(regs.getRegistrations())
+  >>> regs
+  [<...Registration object...>]
+  >>> regs[0].client is client1
+  True
+
+Using a registration template view for displaying and editing registration data
+-------------------------------------------------------------------------------
+
+(Note: after creating a view we usually clear the client name in the session
+using ``view.setClientName('')`` in order to create a new client object.)
+
+  >>> from cybertools.organize.browser.service import RegistrationTemplateView
+
+  >>> request = TestRequest()
+  >>> regForm = workshop.clientSchemas['regform']
+  >>> view = RegistrationTemplateView(regForm, request)
+  >>> view.setClientName('')
+
+  >>> len(view.services)
+  2
+
+  >>> view.getRegistrations()
+  []
+
+Providing an id will enable the view to return the data of
+the corresponding client.
+
+  >>> input = dict(id=client1Name)
+  >>> request = TestRequest(form=input)
+  >>> view = RegistrationTemplateView(regForm, request)
+  >>> regs = list(view.getRegistrations())
+  >>> regs
+  [<...Registration object...>]
+  >>> regs[0].client is client1
+  True
+
+When we provide registration data and an 'update' action a new client object will
+be created.
+
+  >>> input = dict(service_tokens=['event2'], action='update')
+  >>> request = TestRequest(form=input)
+  >>> view = RegistrationTemplateView(regForm, request)
+  >>> view.setClientName('')
+  >>> view.update()
+  False
+
+  >>> client3Name = view.clientName
+
+  >>> input = dict(id=client3Name)
+  >>> request = TestRequest(form=input)
+  >>> view = RegistrationTemplateView(regForm, request)
+  >>> regs = list(view.getRegistrations())
+  >>> regs
+  [<...Registration object...>]
+  >>> regs[0].client.__name__ == client3Name
+  True
+  >>> regs[0].service.token
+  'event2'
+
+If we provide an id parameter we may also change an existing client.
+
+  >>> input = dict(service_tokens=['event1'], id=client1Name, action='update')
+  >>> request = TestRequest(form=input)
+  >>> view = RegistrationTemplateView(regForm, request)
+  >>> view.update()
+  False
+
+  >>> input = dict(id=client1Name)
+  >>> request = TestRequest(form=input)
+  >>> view = RegistrationTemplateView(regForm, request)
+  >>> regs = list(view.getRegistrations())
+  >>> len(regs)
+  1
+  >>> regs[0].service.token
+  'event1'
+
+Let's finally look at the services and what they know about the clients
+registered for them.
+
+  >>> clientNames = [client1Name, client2Name, client3Name]
+
+  >>> for service in workshop.getServices():
+  ...     for cn, reg in sorted(service.registrations.items()):
+  ...         print 'client-%i: ' % (clientNames.index(cn)+1), reg.service.name
+  client-1: event1
+  client-3: event2
+
+
+More on Schema-based Forms and Template Views
+=============================================
+
+Navigation
+----------
+
+If a service provides more than one template (schema or registration
+template) the form may show buttons to navigate to the next or previous
+template together with saving the data entered.
+
+  >>> schema = workshop.clientSchemas['person']
+  >>> view = SchemaView(schema, TestRequest())
+  >>> view.getPreviousTemplate()
+  ''
+  >>> view.getNextTemplate()
+  'http://127.0.0.1/workshop/address'
+
+  >>> schema = workshop.clientSchemas['address']
+  >>> view = SchemaView(schema, TestRequest())
+  >>> view.getPreviousTemplate()
+  'http://127.0.0.1/workshop/person'
+  >>> view.getNextTemplate()
+  'http://127.0.0.1/workshop/regform'
+
+  >>> schema = workshop.clientSchemas['regform']
+  >>> view = SchemaView(schema, TestRequest())
+  >>> view.previousTemplate
+  'http://127.0.0.1/workshop/address'
+  >>> view.getNextTemplate()
+  ''
+
+  >>> view.getCheckoutView()
+  'http://127.0.0.1/workshop/checkout.html'
+
+
+Message Definition and Rule Handling
+====================================
+
+Setting up a message manager with messages
+------------------------------------------
+
+  >>> messageText = '''Dear $person.firstName $person.lastName,
+  ... You have been registered for the following $services.
+  ... $@@list_registrations_text
+  ... $footer
+  ... '''
+
+  >>> from cybertools.composer.message.interfaces import IMessageManager
+  >>> from cybertools.organize.service import MessageManagerAdapter
+  >>> component.provideAdapter(MessageManagerAdapter)
+  >>> messageManager = IMessageManager(workshop)
+
+  >>> messageManager.addMessage('feedback_text', messageText,
+  ...                           subjectLine='Workshop Registration')
+  >>> messageManager.addMessage('footer', 'Best regards, $sender')
+  >>> messageManager.addMessage('sender', 'Jack')
+  >>> messageManager.addMessage('services', text='events')
+
+Controlling actions with rules
+------------------------------
+
+Let's first set up a rule with two actions.
+
+  >>> from cybertools.composer.rule.base import Rule, Action, Event
+  >>> from cybertools.organize.service import eventTypes
+  >>> checkoutEvent = eventTypes['service.checkout']
+
+  >>> checkoutRule = Rule('checkout')
+  >>> checkoutRule.events.append(checkoutEvent)
+
+  >>> checkoutRule.actions.append(Action('sendmail',
+  ...                   parameters=dict(sender='manager@workshops.com',
+  ...                                   messageName='feedback_text')))
+
+We also have to provide rule instance and action handler adapters that
+will do the real work.
+
+  >>> from cybertools.composer.rule.instance import RuleInstance
+  >>> from cybertools.composer.rule.interfaces import IRuleInstance
+  >>> component.provideAdapter(RuleInstance, provides=IRuleInstance)
+  >>> from cybertools.composer.rule.mail import MailActionHandler
+  >>> from cybertools.composer.rule.message import MessageActionHandler
+  >>> component.provideAdapter(MessageActionHandler, name='message')
+  >>> component.provideAdapter(MailActionHandler, name='sendmail')
+
+We can now get a rule manager for our workshop and add the rule to it.
+
+  >>> from cybertools.composer.rule.interfaces import IRuleManager
+  >>> from cybertools.organize.service import RuleManagerAdapter
+  >>> component.provideAdapter(RuleManagerAdapter)
+  >>> ruleManager = IRuleManager(workshop)
+  >>> ruleManager.addRule(checkoutRule)
+
+For testing purposes we also have to register a TestMailer that
+just prints the message and other parameters.
+
+  >>> from cybertools.composer.rule.tests import TestMailer
+  >>> from zope.sendmail.interfaces import IMailDelivery
+  >>> component.provideUtility(TestMailer(), provides=IMailDelivery, name='Mail')
+
+We are now ready to trigger a registration checkout.
+
+  >>> result = ruleManager.handleEvent(Event(checkoutEvent, client1))
+  sender: manager@workshops.com
+  recipients: [u'luke@skywalker.universe']
+  subject: Workshop Registration
+  message:
+  Dear Luke Skywalker,
+  You have been registered for the following events.
+  @@list_registrations_text
+  Best regards, Jack
+  <BLANKLINE>
+
+In addition to sending mails we can also control the redirection to a
+feedback or thankyou page with a rule.
+
+  >>> messageHtml = '''<p>Dear $person.firstName $person.lastName,</p>
+  ... <p>You have been registered for the following $services.</p>
+  ... <div>$@@list_registrations_html</div>
+  ... <div>$footer</div>
+  ... '''
+  >>> messageManager.addMessage('feedback_html', messageHtml)
+  >>> checkoutRule.actions.append(Action('redirect',
+  ...                   parameters=dict(viewName='message_view.html',
+  ...                                   messageName='feedback_html')))
+
+  >>> from cybertools.composer.rule.web import RedirectActionHandler
+  >>> component.provideAdapter(RedirectActionHandler, name='redirect')
+
+  >>> request = TestRequest()
+  >>> request._app_names = ['workshop', 'checkout.html']
+  >>> result = ruleManager.handleEvent(Event(checkoutEvent, client1, request))
+  sender: ...
+
+This redirects to a special message view that will deliver the
+rendered message.
+
+  >>> from cybertools.composer.rule.web import MessageView
+  >>> input = dict(message='feedback_html')
+  >>> view = MessageView(workshop, TestRequest(form=input))
+  >>> view.getMessage()
+  u'<p>Dear Luke Skywalker...'
+
+
+Service Manager and Service Views
+=================================
+
+  >>> from cybertools.organize.browser.service import ServiceManagerView
+  >>> wsView = ServiceManagerView(workshop, TestRequest())
+
+Service manager view
+--------------------
+
+The service manager view provides an ``overview()`` method that
+allows a hierarchical presentation.
+
+  >>> overview = wsView.overview()
+  >>> for line in overview:
+  ...     print line['title'], line['isHeadline'], line['level']
+  Event True 0
+  Event 1 False 1
+  Event 2 False 1
+
+Service view
+------------
+
+  >>> from cybertools.organize.browser.service import ServiceView
+  >>> srvView = ServiceView(event1, TestRequest(form=dict(with_temporary='yes')))
+
+The service view allows us to retrieve the registrations of a service, e.g.
+to list them on a page template.
+
+  >>> regs = srvView.listRegistrations()
+  >>> len(list(regs))
+  1
+  >>> reg = regs.keys()[0]
+
+There are also convenience methods for retrieving and formatting client
+and registration data.
+
+  >>> regInfo = srvView.getRegistrationInfo(reg)
+  >>> clientInfo = srvView.getDataForClient(reg)
+  >>> print srvView.formatClientInfo(clientInfo)
+  Skywalker
+  >>> print regInfo['number'], regInfo['stateTitle']
+  1 temporary
+
+The service view also provides fields that sum up the numbers of all
+(non-temporary) registrations. (The number of waiting participants is empty
+because the ``waitingList`` flag has not been set.)
+
+  >>> srvView.registeredTotalSubmitted
+  0
+  >>> srvView.registeredTotalsSubmitted
+  {'numberWaiting': '', 'number': 0}
+
+Checkout
+--------
+
+After finishing registrating for services the user may check out (submit)
+her registrations.
+
+  >>> from cybertools.organize.browser.service import CheckoutView
+  >>> checkout = CheckoutView(workshop, TestRequest())
+  >>> data = checkout.getClientData()
+  >>> list(sorted(data))
+  ['__name__', 'errors', 'info_messages', 'service_registrations',
+   'standard.email', 'standard.lastName']
+
+  >>> checkout.getRegistrationsInfo()
+  [...]
+  >>> checkout.listRegistrationsText()
+  u'Event 1\nDatum: -\nUhrzeit: -\n\n'
+
+When the user clicks the "Confirm Registration" button the corresponding
+actions will be carried out.
+
+  >>> input = dict(action='update')
+  >>> request = TestRequest(form=input)
+  >>> request._app_names = ['workshop', 'checkout.html']
+  >>> checkout = CheckoutView(workshop, request)
+  >>> checkout.update()
+  sender: unknown@sender.com
+  recipients: [u'luke@skywalker.universe']
+  subject: Workshop Registration
+  message: ...
+  False
+
+The checkout procedure has set the registrations' state to 'submitted'.
+
+  >>> srvView = ServiceView(event1, TestRequest())
+  >>> srvView.getRegistrationInfo(reg)['state']
+  'submitted'
+  >>> srvView.registeredTotalSubmitted
+  1
+
+What happens if we submit a registration again?
+(We supply the clientName because this may have been cleared on checkout
+for security reasons.)
+
+  >>> input = dict(action='update', id=client1Name)
+  >>> request = TestRequest(form=input)
+  >>> request._app_names = ['workshop', 'checkout.html']
+  >>> checkout = CheckoutView(workshop, request)
+  >>> checkout.update()
+  sender: unknown@sender.com
+  recipients: [u'luke@skywalker.universe']
+  subject: Workshop Registration
+  message: ...
+  False
+
+  >>> srvView.getRegistrationInfo(reg)['state']
+  'submitted'
+
+
+Waiting List
+============
+
+The use of the waiting list is controlled by the ``waitingList`` flag.
+
+  >>> event1.waitingList
+  False
+
+  >>> len(event1.registrations)
+  1
+  >>> event1.availableCapacity
+  4
+
+We now limit the capacity of the event to 1 so that there is no place available
+any more.
+
+  >>> event1.capacity = 1
+  >>> event1.availableCapacity
+  0
+
+  >>> regView = RegistrationTemplateView(regForm, TestRequest())
+  >>> regView.setClientName('')
+  >>> regView.allowRegistration(event1)
+  False
+
+If we now set the ``waitingList`` flag to True further registration is
+possible.
+
+  >>> event1.waitingList = True
+  >>> regView.allowRegistration(event1)
+  True
+
+  >>> input = dict(lastName='Walker', firstName='John', email='john@walker.tv',
+  ...              addr=u'Mr', action='update')
+  >>> request = TestRequest(form=input)
+  >>> schema = workshop.clientSchemas['person']
+  >>> view = SchemaView(schema, request)
+  >>> view.setClientName('')
+  >>> view.update()
+  False
+  >>> client4Name = view.clientName
+  >>> input = {'action': 'update', 'service.event1': 3, 'id': client4Name}
+  >>> regView = RegistrationTemplateView(regForm, TestRequest(form=input))
+  >>> regView.update()
+  False
+
+  >>> for reg in sorted(event1.registrations.values(), key=lambda x: x.number):
+  ...     print reg.number, reg.numberWaiting
+  0 3
+  1 0
+
+Let's fix the last registration by running the checkout process.
+
+  >>> input = dict(action='update', id=client4Name)
+  >>> request = TestRequest(form=input)
+  >>> request._app_names = ['workshop', 'checkout.html']
+  >>> checkout = CheckoutView(workshop, request)
+  >>> checkout.update()
+  sender: ...
+
+Taking over free places
+-----------------------
+
+What happens if one of the participants cancels her registration?
+
+  >>> input = {'action': 'update', 'service.event1': 0, 'id': client1Name}
+  >>> regView = RegistrationTemplateView(regForm, TestRequest(form=input))
+  >>> regView.update()
+  False
+  >>> for reg in sorted(event1.registrations.values(), key=lambda x: x.number):
+  ...     print reg.number, reg.numberWaiting
+  0 3
+
+As the participants on the waiting list get priority over newly registering
+participants the available capacity will still be 0 as long as there are
+people on the waiting list.
+
+  >>> event1.availableCapacity
+  0
+  >>> input = {'action': 'update', 'service.event1': 2}
+  >>> regView = RegistrationTemplateView(regForm, TestRequest(form=input))
+  >>> regView.setClientName('')
+  >>> regView.update()
+  False
+  >>> for reg in sorted(event1.registrations.values(), key=lambda x: x.numberWaiting):
+  ...     print reg.number, reg.numberWaiting
+  0 2
+  0 3
+
+Now the participant on the waiting list registers again - and gets the
+free place.
+
+  >>> input = {'action': 'update', 'service.event1': 3, 'id': client4Name}
+  >>> regView = RegistrationTemplateView(regForm, TestRequest(form=input))
+  >>> regView.update()
+  False
+  >>> for reg in sorted(event1.registrations.values(), key=lambda x: x.number):
+  ...     print reg.number, reg.numberWaiting
+  0 2
+  1 2
+
+Let's finally fix this registration by running the checkout process.
+
+  >>> input = dict(action='update', id=client4Name)
+  >>> request = TestRequest(form=input)
+  >>> request._app_names = ['workshop', 'checkout.html']
+  >>> checkout = CheckoutView(workshop, request)
+  >>> checkout.update()
+  sender: ...
+
+Excel Export
+============
+
+  >>> from cybertools.organize.browser.report import RegistrationsExportCsv
+  >>> input = dict(get_data_method='getData')
+  >>> csv = RegistrationsExportCsv(workshop, TestRequest(form=input))
+  >>> print csv.render()
+  "Service","Client ID","Organization","First Name","Last Name","E-Mail","Number","State"
+  "Event 1","...","","Walker","","john@walker.tv",1,"submitted"
+
+  >>> input = dict(get_data_method='getAllDataInColumns')
+  >>> csv = RegistrationsExportCsv(workshop, TestRequest(form=input))
+  >>> result = csv.render().splitlines()
+  >>> print result[0]
+  "Client ID","Time Stamp","Last Name","First Name","Email Address","Age","Personal Address","Academic Titles","Street","City","Country","Event 1","WL Event 1","Event 2","WL Event 2"
+  >>> len(result)
+  2
+  >>> print [f.strip('"') for f in result[1].split(',')[1:]]
+  ['...', 'Walker', 'John', 'john@walker.tv', '', 'Mr', '', '', '', '', '1', '2', '0', '0']
+
+
+Removal of services and clients
+===============================
+
+  >>> from cybertools.organize.service import serviceRemoved, clientRemoved
+
+  >>> client4 = workshop.clients[client4Name]
+
+  >>> regs = IClientRegistrations(client4)
+  >>> regs.template = regForm
+  >>> len(regs.getRegistrations())
+  1
+
+  >>> serviceRemoved(event1, None)
+  >>> len(regs.getRegistrations())
+  0
+
+  >>> regs.register([event2])
+  >>> len(event2.registrations)
+  2
+
+  >>> clientRemoved(client4, None)
+  >>> len(event2.registrations)
+  1
+
+
+Fin de partie
+=============
+
+  >>> placefulTearDown()
+

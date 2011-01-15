@@ -1,0 +1,38 @@
+============
+Form Manager
+============
+
+  ($Id$)
+
+This package does not provide functionality on its own but shows only
+how to integrate other packages into an application package.
+
+  >>> from zope.app.testing.setup import placefulSetUp, placefulTearDown
+  >>> site = placefulSetUp(True)
+
+  >>> from cybertools.organize.tests import setUp
+  >>> setUp(site)
+
+  >>> from zope import component
+
+  >>> from cybertools.composer import schema
+  >>> from cybertools.composer.schema import client
+
+
+Setting up a Form Manager
+=========================
+
+  >>> fm = client.ClientManager()
+
+
+Form Manager Views
+==================
+
+  >>> from cybertools.composer.schema.browser.schema import FormManagerView
+
+
+Fin de partie
+=============
+
+  >>> placefulTearDown()
+

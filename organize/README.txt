@@ -57,10 +57,8 @@ Tasks
   >>> from cybertools.organize.task import Task
 
 
-Service Management
-==================
+Service and Form Management
+===========================
 
-  >>> from cybertools.organize.service import Service
-
-(See cyberapps.tumsm for comprehensive description and tests.)
+See servicemanager.txt and formmanager.txt.
 
