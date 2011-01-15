@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ $Id$
 """
 
 import time
+from datetime import datetime
 
 
 def getTimeStamp():
@@ -51,3 +52,6 @@ def str2timeStamp(s):
             t = time.strptime(s, '%Y-%m-%d')
     return int(time.mktime(t))
 
+
+def strptime(s, format='%Y-%m-%d %H:%M:%S'):
+    return datetime(*(time.strptime(s, format)[:6]))
