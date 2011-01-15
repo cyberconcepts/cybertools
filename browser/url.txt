@@ -1,0 +1,12 @@
+===================
+URL Rewriting Tools
+===================
+
+  >>> from cybertools.browser.url import TraversalRedirector
+
+  >>> url = ('http://sona.de:9083/sites/ctt/views/sona/suche.html'
+  ...        '?category=2141533106&manufacturer=&x=8&y=7')
+
+  >>> result = ('http://www.sona.de/suche.html'
+  ...           '?category=2141533106&manufacturer=&x=8&y=7')
+
