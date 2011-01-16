@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -174,6 +174,16 @@ class IServiceManager(Interface):
 
     services = Attribute('A collection of services managed by this object.')
 
+    def getServices():
+        """ Return a collection of all services directly assigned
+            to this service manager.
+        """
+
+    def getAllServices():
+        """ Return a collection of all services belonging
+            to this service manager.
+        """
+
     def isActive():
         """ Return True if object is active, e.g. based on effective/expiration
             dates or workflow state.
@@ -214,11 +224,17 @@ class IService(Interface):
                 vocabulary=serviceCategories,
                 default='event',
                 required=False,)
+    bookable = schema.Bool(
+                title=_(u'May people register for this service'),
+                description=_(u'When this field is checked participants '
+                        u'may directly register for this service.'),
+                default=True,
+                required=False,)
     allowRegWithNumber = schema.Bool(
                 title=_(u'Allow registration with number'),
                 description=_(u'When this field is checked more than one '
-                        'object (participant) may be assigned with one '
-                        'registration by entering a corresponding number.'),
+                        u'object (participant) may be assigned with one '
+                        u'registration by entering a corresponding number.'),
                 required=False,)
     presetRegistrationField = schema.Bool(
                 title=_(u'Preset Registration Field'),
@@ -232,9 +248,9 @@ class IService(Interface):
     allowDirectRegistration = schema.Bool(
                 title=_(u'Allow direct registration'),
                 description=_(u'When this field is checked participants '
-                        'may register themselves directly on the page '
-                        'with the service description; otherwise registration '
-                        'is only possible on a registration template.'),
+                        u'may register themselves directly on the page '
+                        u'with the service description; otherwise registration '
+                        u'is only possible on a registration template.'),
                 required=False,)
     externalId = schema.TextLine(
                 title=_(u'External ID'),
@@ -247,49 +263,49 @@ class IService(Interface):
     capacity = schema.Int(
                 title=_(u'Capacity'),
                 description=_(u'The capacity (maximum number of clients) '
-                        'of this service; a negative number means: '
-                        'no restriction, i.e. unlimited capacity.'),
+                        u'of this service; a negative number means: '
+                        u'no restriction, i.e. unlimited capacity.'),
                 required=False,)
     waitingList = schema.Bool(
                 title=_(u'Waiting list'),
                 description=_(u'Check this field if participants beyond the '
-                        'capacity of the service should be kept in a '
-                        'waiting list.'),
+                        u'capacity of the service should be kept in a '
+                        u'waiting list.'),
                 required=False,)
     location = schema.TextLine(
                 title=_(u'Location information'),
                 description=_(u'Basic location information or '
-                        'start point for transport services.'),
+                        u'start point for transport services.'),
                 required=False,)
     locationUrl = schema.TextLine(
                 title=_(u'URL for location'),
                 description=_(u'Web address (URL) with more information '
-                        'about the location.'),
+                        u'about the location.'),
                 required=False,)
     location2 = schema.TextLine(
                 title=_(u'Location information (2)'),
                 description=_(u'Additional location information or '
-                        'end point for transport services.'),
+                        u'end point for transport services.'),
                 required=False,)
     location2Url = schema.TextLine(
                 title=_(u'URL for location (2)'),
                 description=_(u'Web address (URL) with more information '
-                        'about the location.'),
+                        u'about the location.'),
                 required=False,)
     webAddress = schema.TextLine(
                 title=_(u'Web address'),
                 description=_(u'Web address (URL) for more information '
-                        'about the service.'),
+                        u'about the service.'),
                 required=False,)
     info = schema.TextLine(
                 title=_(u'Additional information'),
                 description=_(u'Name/title of a document or web page that '
-                        'offers additional information.'),
+                        u'offers additional information.'),
                 required=False,)
     infoUrl = schema.TextLine(
                 title=_(u'URL for additional information'),
                 description=_(u'Web address (URL) of a document or web page that '
-                        'offers additional information.'),
+                        u'offers additional information.'),
                 required=False,)
 
     availableCapacity = Attribute('Available capacity, i.e. number of seats '
@@ -325,6 +341,57 @@ class IService(Interface):
         """ Remove the client from this service's registrations.
         """
 
+    def getSubservices():
+        """ Return a collection of immediate sub-services.
+        """
+
+    def addSubservice(service):
+        """ Add the service given as a sub-service to this service.
+        """
+
+    def removeSubservice(service):
+        """ Remove the sub-service given.
+        """
+
+    def getParentService():
+        """ Return the immediate parent service if present, or None otherwise.
+        """
+
+    def getServiceCollections():
+        """ Return a collection of service collection this service is assgned to.
+        """
+
+
+collectionTypes = SimpleVocabulary((
+    SimpleTerm('day', 'day', u'Day'),
+    SimpleTerm('track', 'track', u'Track'),
+))
+
+class IServiceCollection(IService):
+    """ A service that provides a substructure element of a compound service,
+        e.g. a conference track or a conference day.
+    """
+
+    collectionType = schema.Choice(
+                title=_(u'Type'),
+                description=_(u'The type of '
+                        'this service collection, e.g. a day or a track.'),
+                vocabulary=collectionTypes,
+                default='day',
+                required=False,)
+
+    def getAssignedServices():
+        """ Return a collection of services assigned to this collection.
+        """
+
+    def assignService(service):
+        """ Assign a service to this collection.
+        """
+
+    def deassignService(service):
+        """ Remove a service from this collection.
+        """
+
 
 class IScheduledService(IService):
     """ A service that starts at a certain date/time and
@@ -344,20 +411,6 @@ class IScheduledService(IService):
     end.default_method = 'getEndFromManager'
 
     duration = Attribute('Time delta between start and end date/time.')
-
-
-class ICompoundService(IService):
-    """ A service that consists of a set of sub-services, e.g. a conference,
-        a course or a multi-day seminar.
-        Sub-services may be other compound services or simple services; 
-        in addition there may be service parts additional strucure elements.
-    """
-
-
-class IServicePart(IService):
-    """ A service that provides a substructure element of a compound service,
-        e.g. a conference track or a conference day.
-    """
 
 
 class IClient(Interface):

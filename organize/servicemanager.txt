@@ -327,8 +327,8 @@ registered for them.
 
   >>> clientNames = [client1Name, client2Name, client3Name]
 
-  >>> for service in workshop.getServices():
-  ...     for cn, reg in sorted(service.registrations.items()):
+  >>> for svc in workshop.getServices():
+  ...     for cn, reg in sorted(svc.registrations.items()):
   ...         print 'client-%i: ' % (clientNames.index(cn)+1), reg.service.name
   client-1: event1
   client-3: event2
@@ -743,6 +743,21 @@ Removal of services and clients
   >>> clientRemoved(client4, None)
   >>> len(event2.registrations)
   1
+
+
+Compound Services
+=================
+
+Let's set up a new service manager with a fairly complicated multi-day
+conference that is organized in parallel tracks.
+
+  >>> conference = site['conference'] = service.ServiceManager()
+  >>> conference.__parent__ = site
+  >>> conference.__name__ = 'conference'
+
+  >>> main = service.Service('conf_main', manager=conference,
+  ...                                   title=u'Conference', capacity=5)
+  >>> conference.services.append(main)
 
 
 Fin de partie

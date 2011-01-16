@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ from cybertools.util.jeep import Jeep
 from cybertools.util.randomname import generateName
 from cybertools.organize.interfaces import IServiceManager
 from cybertools.organize.interfaces import IService, IScheduledService
+from cybertools.organize.interfaces import IServiceCollection
 from cybertools.organize.interfaces import IRegistration, IRegistrationTemplate
 from cybertools.organize.interfaces import IClientRegistrations
 
@@ -94,8 +95,15 @@ class Service(object):
 
     registrationsFactory = OOBTree
     registrationFactory = PersistentRegistration
+    subservicesFactory = Jeep
+    collectionsFactory = set
 
     manager = None
+    parent = None
+    subservices = None
+    collections = None
+
+    bookable = True
     category = None
     location = locationUrl = externalId = u''
     cost = 0.0
@@ -110,6 +118,10 @@ class Service(object):
         self.capacity = capacity
         if self.registrationsFactory is not None:
             self.registrations = self.registrationsFactory()
+        if self.subservicesFactory is not None:
+            self.subservices = self.subservicesFactory()
+        if self.collectionsFactory is not None:
+            self.collections = self.collectionsFactory()
         self.classification = []
         for k, v in kw.items():
             setattr(self, k, v)
@@ -119,6 +131,21 @@ class Service(object):
 
     def getManager(self):
         return self.manager
+
+    def getSubservices(self):
+        return self.subservices.values()
+
+    def addSubservice(self, service):
+        self.subservices.append(service)
+
+    def removeSubservice(self, service):
+        del self.subservices[service.name]
+
+    def getParentService(self):
+        return self.parent
+
+    def getServiceCollections(self):
+        return self.collections.values()
 
     def getClassification(self):
         return self.classification
@@ -218,6 +245,30 @@ class ScheduledService(Service):
         return getattr(self.getManager(), 'start', None)
     def getEndFromManager(self):
         return getattr(self.getManager(), 'end', None)
+
+
+class ServiceCollection(ScheduledService):
+
+    implements(IServiceCollection)
+
+    assignmentsFactory = set
+
+    assignments = None
+    collectionType = u'day'
+
+    def __init__(self, name=None, title=u'', capacity=-1, **kw):
+        super(ServiceCollection, self).__init__(name, title, capacity, kw)
+        if self.assignmentsFactory is not None:
+            self.assignments = self.assignmentsFactory()
+
+    def getAssignedServices(self):
+        return self.assignments
+
+    def assignService(self, service):
+        self.assignments.add(service)
+
+    def deassignService(self, service):
+        self.assignments.remove(service)
 
 
 # registration stuff
