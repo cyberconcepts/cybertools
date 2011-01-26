@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ from zope.interface import Interface, Attribute
 from zope import schema
 from zope.i18nmessageid import MessageFactory
 
-_ = MessageFactory('zope')
+_ = MessageFactory('cybertools.knowledge')
 
 
 class IKnowledgeElement(Interface):
@@ -68,6 +68,9 @@ class IKnowledgeElement(Interface):
 class IKnowing(Interface):
     """ Someone who knows something.
     """
+
+    knowledge = Attribute('A set of knowledge elements that this object '
+            'knows about.')
 
     def getKnowledge():
         """ Return the collection of elements that constitute the
