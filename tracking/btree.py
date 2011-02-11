@@ -285,7 +285,9 @@ class TrackingStorage(BTreeContainer):
                 start, end = value
                 result = self.intersect(result,
                                         self.indexes['timeStamp'].apply((start, end)))
-        return result and (self[self.idFromNum(r)] for r in result) or set()
+        result = result and (self.get(self.idFromNum(r)) for r in result) or set()
+        #return result
+        return [t for t in result if t is not None]
 
     def intersect(self, r1, r2):
         return r1 is None and r2 or intersection(r1, r2)
