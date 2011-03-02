@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -39,7 +39,8 @@ rendererTemplate = ViewPageTemplateFile('renderer.pt')
 
 class CachableRenderer(object):
 
-    lifetime = 3 * 3600
+    #lifetime = 3 * 3600
+    lifetime = 24 * 3600
 
     def __init__(self, view, renderer):
         self.view = view
