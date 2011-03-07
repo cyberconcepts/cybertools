@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ def workItemStates():
               color='red'),
         State('planned', 'planned',
               ('plan', 'accept', 'start', 'work', 'finish', 'delegate',
-               'cancel', 'modify'), color='red'),
+               'move', 'cancel', 'modify'), color='red'),
         State('accepted', 'accepted',
               ('plan', 'accept', 'start', 'work', 'finish', 'cancel', 'modify'),
               color='yellow'),
@@ -66,6 +66,8 @@ def workItemStates():
         # not directly reachable states:
         State('delegated', 'delegated', (), color='purple'),
         State('delegated_x', 'delegated', (), color='purple'),
+        State('moved', 'moved', (), color='grey'),
+        State('moved_x', 'moved', (), color='grey'),
         State('replaced', 'replaced', (), color='grey'),
         State('planned_x', 'planned', (), color='red'),
         State('accepted_x', 'accepted', (), color='yellow'),
@@ -79,6 +81,7 @@ def workItemStates():
         Transition('cancel', 'cancel', 'cancelled'),
         Transition('modify', 'modify', 'new'),
         Transition('delegate', 'delegate', 'planned'),
+        Transition('move', 'move', 'planned'),
         Transition('close', 'close', 'closed'),
         initialState='new')
 
@@ -209,6 +212,19 @@ class WorkItem(Stateful, Track):
         new.reindex('state')
         return new
 
+    def move(self, userName, **kw):
+        if self.state in ('planned', 'accepted', 'done'):
+            self.state = self.state + '_x'
+            self.reindex('state')
+        moved = self.createNew('move', userName, **kw)
+        moved.state = 'moved'
+        moved.reindex('state')
+        task = kw.pop('task', None)
+        new = moved.createNew('plan', userName, taskId=task, **kw)
+        new.doTransition('plan')
+        new.reindex('state')
+        return new
+
     def close(self, userName, **kw):
         kw['start'] = kw['end'] = getTimeStamp()
         kw['duration'] = kw['effort'] = None
@@ -222,7 +238,8 @@ class WorkItem(Stateful, Track):
                 item.reindex('state')
         return new
 
-    specialActions = dict(modify=modify, delegate=delegate, close=close)
+    specialActions = dict(modify=modify, delegate=delegate, move=move,
+                          close=close)
 
     def setData(self, ignoreParty=False, **kw):
         if self.state != 'new':
@@ -244,7 +261,8 @@ class WorkItem(Stateful, Track):
         if start and end and end < start:
             data['end'] = start
 
-    def createNew(self, action, userName, copyData=None, **kw):
+    def createNew(self, action, userName, taskId=None, copyData=None, **kw):
+        taskId = taskId or self.taskId
         if copyData is None:
             copyData = self.initAttributes
         newData = {}
@@ -259,7 +277,7 @@ class WorkItem(Stateful, Track):
             if v not in (None, _not_found):
                 newData[k] = v
         workItems = IWorkItems(getParent(self))
-        new = workItems.add(self.taskId, userName, self.runId, **newData)
+        new = workItems.add(taskId, userName, self.runId, **newData)
         return new
 
     def replace(self, other, keepState=False):
