@@ -204,7 +204,9 @@ class WorkItem(Stateful, Track):
             if self.state in ('planned', 'accepted', 'done'):
                 self.state = self.state + '_x'
                 self.reindex('state')
-            delegated = self.createNew('delegate', userName, ignoreParty=True, **kw)
+            xkw = dict(kw)
+            xkw.pop('party', None)
+            delegated = self.createNew('delegate', userName, ignoreParty=True, **xkw)
         delegated.state = 'delegated'
         delegated.reindex('state')
         new = delegated.createNew('plan', userName, **kw)
