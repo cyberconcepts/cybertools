@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,16 +22,30 @@ A generic view class.
 $Id$
 """
 
-from zope import component
-from zope.interface import Interface, implements
-from zope.cachedescriptors.property import Lazy
-from zope.publisher.interfaces.browser import IBrowserSkinType
 from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
+from zope.interface import Interface, implements
+from zope.cachedescriptors.property import Lazy
+from zope import component
+from zope.event import notify
+from zope.publisher.interfaces.browser import IBrowserSkinType
 
 
 mainTemplate = ViewPageTemplateFile('main.pt')
 popupTemplate = ViewPageTemplateFile('liquid/popup.pt')
+
+
+class IBodyRenderedEvent(Interface):
+    """ Is fired when the page body has been rendered. """
+
+
+class BodyRenderedEvent(object):
+
+    implements(IBodyRenderedEvent)
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
 
 
 class UnboundTemplateFile(ViewPageTemplateFile):
@@ -119,7 +133,9 @@ class GenericView(object):
     def pageBody(self):
         bodyTemplate = component.getMultiAdapter((self.context, self.request),
                                                  name='body.html').bodyTemplate
-        return bodyTemplate(self)
+        body = bodyTemplate(self)
+        notify(BodyRenderedEvent(self.context, self.request))
+        return body
 
     def setSkin(self, skinName):
         skin = None
