@@ -53,16 +53,13 @@ class Action(object):
     allowed = True
     permission = None
     roles = []
+    doBefore = []
 
     def __init__(self, name, title=None, **kw):
         self.name = self.__name__ = name
         self.title = title
         for k, v in kw.items():
             setattr(self, k, v)
-
-    @staticmethod
-    def doBefore(context):
-        return None
 
 
 class Transition(Action):
@@ -106,7 +103,11 @@ class StatesDefinition(object):
         if trans not in self.getAvailableTransitionsFor(obj):
             raise ValueError("Transition '%s' is not reachable from state '%s'."
                                     % (transition, obj.getState()))
-        trans.doBefore(obj)
+        if isinstance(trans.doBefore, (list, tuple)):
+            for fct in trans.doBefore:
+                fct(obj)
+        else:
+            trans.doBefore(obj)
         obj.state = trans.targetState
         obj.getStateObject().setSecurity(obj)
 
