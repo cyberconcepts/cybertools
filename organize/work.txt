@@ -160,8 +160,8 @@ delegated so that it may be selected by queries.
   <WorkItem ['001', 2, 'john', '2008-12-22 19:33', 'delegated']:
    {'start': 1229970800, 'created': ..., 'creator': 'john'}>
   >>> wi08
-  <WorkItem ['001', 2, 'annie', '2008-12-22 19:33', 'planned']:
-   {'start': 1229970800, 'created': ..., 'creator': 'john'}>
+  <WorkItem ['001', 3, 'annie', '2008-12-22 19:33', 'planned']:
+   {'start': 1229970800, 'created': ..., 'source': '0000007', 'creator': 'john'}>
   >>> len(list(workItems))
   8
 
@@ -179,11 +179,20 @@ Note that nevertheless only the last work item of a run may be modified.
   >>> wi09 = wi08.doAction('modify', 'annie', duration=3600)
 
   >>> wi08
-  <WorkItem ['001', 2, 'annie', '2008-12-22 19:33', 'replaced']:
+  <WorkItem ['001', 3, 'annie', '2008-12-22 19:33', 'replaced']:
    {'start': 1229970800, 'created': ..., 'creator': 'john'}>
   >>> wi09
-  <WorkItem ['001', 2, 'annie', '2008-12-22 19:33', 'planned']:
+  <WorkItem ['001', 3, 'annie', '2008-12-22 19:33', 'planned']:
    {'duration': 3600, 'start': 1229970800, 'created': ..., 'creator': 'annie'}>
+
+
+Moving Work Items to Other Tasks
+================================
+
+  >>> wi10 = wi07.doAction('move', 'john')
+  >>> wi10
+  <WorkItem ['001', 4, 'john', '2008-12-22 19:33', 'delegated']:
+   {'start': 1229970800, 'created': ..., 'source': '0000010', 'creator': 'john'}>
 
 
 Queries
@@ -193,7 +202,7 @@ Runs
 ----
 
   >>> list(tracks.runs)
-  [2]
+  [2, 3, 4]
   >>> list(tracks.finishedRuns)
   [1]
 
@@ -203,8 +212,18 @@ Some Special Cases
 
 Close a run with some delegated items.
 
-  >>> wi10 = wi09.doAction('finish', 'annie')
-  >>> wi11 = wi10.doAction('close', 'john')
+  >>> wi07a = workItems.query(run=2)[-2]
+  >>> wi07b = workItems.query(run=2)[-1]
+  >>> wi07b
+  <WorkItem ['001', 2, 'john', '2008-12-22 19:33', 'moved']: {'start': 1229970800,
+   'created': ..., 'target': '0000011', 'creator': 'john'}>
 
-  >>> wi07.state
+  >>> wi07c = wi07b.doAction('close', 'john')
+
+  >>> wi07a.state
   'delegated_x'
+  >>> wi07b.state
+  'moved_x'
+
+  >>> list(tracks.finishedRuns)
+  [1, 2]

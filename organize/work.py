@@ -48,25 +48,33 @@ def workItemStates():
               ('plan', 'accept', 'start', 'work', 'finish', 'delegate',
                'move', 'cancel', 'modify'), color='red'),
         State('accepted', 'accepted',
-              ('plan', 'accept', 'start', 'work', 'finish', 'cancel', 'modify'),
+              ('plan', 'accept', 'start', 'work', 'finish',
+               'move', 'cancel', 'modify'),
               color='yellow'),
         State('running', 'running',
-              ('work', 'finish', 'cancel', 'modify'),
+              ('work', 'finish', 'move', 'cancel', 'modify'),
               color='orange'),
         State('done', 'done',
               ('plan', 'accept', 'start', 'work', 'finish', 'delegate',
-               'cancel', 'modify'), color='lightgreen'),
+               'move', 'cancel', 'modify'), color='lightgreen'),
         State('finished', 'finished',
-              ('plan', 'accept', 'start', 'work', 'finish', 'modify', 'close'),
+              ('plan', 'accept', 'start', 'work', 'finish',
+               'move', 'modify', 'close'),
               color='green'),
         State('cancelled', 'cancelled',
-              ('plan', 'accept', 'start', 'work', 'modify', 'close'),
+              ('plan', 'accept', 'start', 'work', 'move', 'modify', 'close'),
               color='grey'),
         State('closed', 'closed', (), color='lightblue'),
         # not directly reachable states:
-        State('delegated', 'delegated', (), color='purple'),
+        State('delegated', 'delegated',
+              ('plan', 'accept', 'start', 'work', 'finish', 'close', 'delegate',
+               'move', 'cancel', 'modify'),
+              color='purple'),
         State('delegated_x', 'delegated', (), color='purple'),
-        State('moved', 'moved', (), color='grey'),
+        State('moved', 'moved',
+              ('plan', 'accept', 'start', 'work', 'finish', 'close', 'delegate',
+               'move', 'cancel', 'modify'),
+              color='grey'),
         State('moved_x', 'moved', (), color='grey'),
         State('replaced', 'replaced', (), color='grey'),
         State('planned_x', 'planned', (), color='red'),
@@ -201,7 +209,7 @@ class WorkItem(Stateful, Track):
             delegated = self
             self.setData(ignoreParty=True, **kw)
         else:
-            if self.state in ('planned', 'accepted', 'done'):
+            if self.state in ('planned', 'accepted', 'delegated', 'moved', 'done'):
                 self.state = self.state + '_x'
                 self.reindex('state')
             xkw = dict(kw)
@@ -209,22 +217,26 @@ class WorkItem(Stateful, Track):
             delegated = self.createNew('delegate', userName, ignoreParty=True, **xkw)
         delegated.state = 'delegated'
         delegated.reindex('state')
-        new = delegated.createNew('plan', userName, **kw)
+        new = delegated.createNew('plan', userName, runId=0, **kw)
+        new.data['source'] = delegated.name
         new.doTransition('plan')
         new.reindex('state')
+        delegated.data['target'] = new.name
         return new
 
     def move(self, userName, **kw):
-        if self.state in ('planned', 'accepted', 'done'):
-            self.state = self.state + '_x'
-            self.reindex('state')
         moved = self.createNew('move', userName, **kw)
         moved.state = 'moved'
         moved.reindex('state')
         task = kw.pop('task', None)
-        new = moved.createNew('plan', userName, taskId=task, **kw)
-        new.doTransition('plan')
+        new = moved.createNew(None, userName, taskId=task, runId=0, **kw)
+        new.data['source'] = moved.name
+        new.state = self.state
         new.reindex('state')
+        moved.data['target'] = new.name
+        if self.state in ('planned', 'accepted', 'delegated', 'moved', 'done'):
+            self.state = self.state + '_x'
+            self.reindex('state')
         return new
 
     def close(self, userName, **kw):
@@ -235,7 +247,7 @@ class WorkItem(Stateful, Track):
         new.reindex('state')
         getParent(self).stopRun(runId=self.runId, finish=True)
         for item in self.currentWorkItems:
-            if item.state in ('planned', 'accepted', 'done',  'delegated'):
+            if item.state in ('planned', 'accepted', 'done', 'delegated', 'moved'):
                 item.state = item.state + '_x'
                 item.reindex('state')
         return new
@@ -263,8 +275,10 @@ class WorkItem(Stateful, Track):
         if start and end and end < start:
             data['end'] = start
 
-    def createNew(self, action, userName, taskId=None, copyData=None, **kw):
+    def createNew(self, action, userName, taskId=None, copyData=None,
+                  runId=None, **kw):
         taskId = taskId or self.taskId
+        runId = runId is None and self.runId or runId
         if copyData is None:
             copyData = self.initAttributes
         newData = {}
@@ -279,7 +293,7 @@ class WorkItem(Stateful, Track):
             if v not in (None, _not_found):
                 newData[k] = v
         workItems = IWorkItems(getParent(self))
-        new = workItems.add(taskId, userName, self.runId, **newData)
+        new = workItems.add(taskId, userName, runId, **newData)
         return new
 
     def replace(self, other, keepState=False):

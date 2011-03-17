@@ -98,6 +98,10 @@ class Track(Persistent):
                                 repr([md[a] for a in self.metadata_attributes]),
                                 repr(self.data))
 
+    @property
+    def name(self):
+        return self.__name__
+
 
 class TrackingStorage(BTreeContainer):
 
