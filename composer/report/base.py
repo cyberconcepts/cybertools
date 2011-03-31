@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -152,9 +152,11 @@ class LeafQueryCriteria(BaseQueryCriteria, Element):
         self.field = field
 
     def check(self, row):
-        #if not self.comparisonValue:
-        if self.comparisonValue in (None, '',):
-            return True
+        comparisonValue = self.comparisonValue
+        if comparisonValue in (None, '',):
+            comparisonValue = self.field.defaultComparisonValue
+            if comparisonValue in (None, '',):
+                return True
         value = self.field.getSelectValue(row)
         op = operators.get(self.operator)
         if op is None:
@@ -162,11 +164,10 @@ class LeafQueryCriteria(BaseQueryCriteria, Element):
         if op is None:
             # TODO: log warning
             return True
-        #print '***', self.field.name, repr(value), op, repr(self.comparisonValue)
-        return op(value, self.comparisonValue)
+        return op(value, comparisonValue)
 
     def showComparisonValue(self):
-        if self.field.fieldType == 'selection':
+        if self.field.fieldType == 'selection' and self.comparisonValue:
             return ', '.join([v for v in self.comparisonValue])
         return self.comparisonValue
 

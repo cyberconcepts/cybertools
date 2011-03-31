@@ -41,7 +41,7 @@ class Field(Component):
 
     fieldType = 'text'
     vocabulary = None
-    default = None
+    default = defaultComparisonValue = None
     instance_name = None
     storeData = True
     renderer = 'standard'
