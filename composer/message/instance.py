@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ Message instance and related classes.
 $Id$
 """
 
+from cgi import parse_qs
 from string import Template
 from zope import component
 from zope.interface import implements
@@ -57,8 +58,14 @@ class DataProvider(object):
         if key.startswith('@@'):
             if client is None:
                 return '$' + key
-            view = self.getView(key[2:])
+            viewName = key[2:]
+            params = {}
+            if '?' in viewName:
+                viewName, params = viewName.split('?', 1)
+                params = parse_qs(params)
+            view = self.getView(viewName)
             if view is not None:
+                view.options = params
                 return view()
             else:
                 return key
@@ -153,4 +160,4 @@ class MessageInstance(Instance):
 
 class MessageTemplate(Template):
 
-    idpattern = r'@{0,2}[_a-z][_.|a-z0-9]*[_a-z0-9]+'
+    idpattern = r'@{0,2}[_a-z][_.|a-z0-9]*[_a-z0-9?&=]+'
