@@ -532,7 +532,7 @@ image/cgm
 image/g3fax
 image/gif					gif
 image/ief					ief
-image/jpeg					jpeg jpg jpe
+image/jpeg					jpe jpeg jpg
 image/naplps
 image/pcx					pcx
 image/png					png
