@@ -92,6 +92,9 @@ class Report(Template):
     def components(self):
         return self.fields
 
+    def getAllQueryFields(self):
+        return [f for f in self.fields if 'query' in f.executionSteps]
+
     def getQueryFields(self, include=None, exclude=None):
         result = [f for f in self.fields if 'query' in f.executionSteps]
         if include:
