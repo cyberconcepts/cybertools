@@ -20,7 +20,7 @@
 Collect version information from different packages.
 """
 
-revision = '$Id$'
+revision = '$Id: version.py 3014 2008-11-28 10:56:14Z helmutm $'
 version = '0.4'
 package = 'cybertools.util.version'
 

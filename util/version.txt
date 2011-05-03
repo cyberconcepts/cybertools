@@ -16,8 +16,8 @@ $Id$
   >>> v.short
   '0.4'
 
-  >>> v = versions.get('foo')
-  >>> v
-  foo 0.0-3014
-  >>> print v
-  0.0-3014
+>>> #v = versions.get('foo')
+>>> #v
+foo 0.0-3014
+>>> #print v
+0.0-3014
