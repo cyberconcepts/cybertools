@@ -86,7 +86,8 @@ class Field(Component):
 
     def getSortValue(self, row):
         # TODO: consider 'descending' flag, use raw value instead of formatted one
-        return self.getValue(row)
+        return getattr(row, self.name, None)
+        #return self.getValue(row)
 
 
 label = Field('label', u'Label',
