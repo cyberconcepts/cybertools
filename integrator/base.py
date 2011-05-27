@@ -213,5 +213,5 @@ class MimeTypes(dict):
 mimeTypes = MimeTypes()
 
 
-mimetypes.init(mimetypes.knownfiles +
-               [os.path.join(os.path.dirname(__file__), 'mime.types')])
+mimetypes.init([os.path.join(os.path.dirname(__file__), 'mime.types')] +
+               mimetypes.knownfiles)

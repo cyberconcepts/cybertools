@@ -346,6 +346,7 @@ application/x-cdf				cdf
 application/x-cdlink				vcd
 application/x-chess-pgn				pgn
 application/x-core
+application/x-coreldraw				cdr
 application/x-cpio				cpio
 application/x-csh				csh
 application/x-debian-package			deb udeb
@@ -555,7 +556,6 @@ image/vnd.svf
 image/vnd.wap.wbmp				wbmp
 image/vnd.xiff
 image/x-cmu-raster				ras
-image/x-coreldraw				cdr
 image/x-coreldrawpattern			pat
 image/x-coreldrawtemplate			cdt
 image/x-corelphotopaint				cpt
