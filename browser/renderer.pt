@@ -1,0 +1,6 @@
+<!-- $Id$ -->
+
+<tal:renderer define="view nocall:options/view;
+                      macro options/macro">
+  <metal:content use-macro="macro" />
+</tal:renderer>

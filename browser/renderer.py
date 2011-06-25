@@ -22,6 +22,10 @@ Use ZPT macros as layout renderers.
 $Id$
 """
 
+from zope.app.pagetemplate import ViewPageTemplateFile
+
+from cybertools.util.cache import cache
+
 
 class RendererFactory(object):
     """ Provider for ZPT macros.
@@ -57,4 +61,24 @@ class Renderer(object):
 
     def __call__(self):
         return self.template.macros[self.name]
+
+
+rendererTemplate = ViewPageTemplateFile('renderer.pt')
+
+class CachableRenderer(object):
+
+    lifetime = 3 * 3600
+    #lifetime = 24 * 3600
+
+    def __init__(self, view, renderer):
+        self.view = view
+        self.renderer = renderer
+
+    def getRenderMacroId(self, *args):
+        return 'renderer.' + '.'.join(args)
+
+    @cache(getRenderMacroId, lifetime=lifetime)
+    def renderMacro(self, *args):
+        return rendererTemplate(self.view, view=self.view, macro=self.renderer)
+
 

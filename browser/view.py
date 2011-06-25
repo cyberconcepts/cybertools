@@ -30,6 +30,8 @@ from zope import component
 from zope.event import notify
 from zope.publisher.interfaces.browser import IBrowserSkinType
 
+from cybertools.browser.renderer import CachableRenderer
+
 
 mainTemplate = ViewPageTemplateFile('main.pt')
 popupTemplate = ViewPageTemplateFile('liquid/popup.pt')
@@ -66,6 +68,8 @@ class GenericView(object):
     index = mainTemplate
 
     template = macro = menu = skin = None
+
+    cachableRendererFactory = CachableRenderer
 
     _updated = False
 
@@ -145,3 +149,6 @@ class GenericView(object):
                 applySkin(self.request, skin)
         self.skin = skin
 
+    def cachedRenderer(self, baseRenderer, *args):
+        cr = self.cachableRendererFactory(self, baseRenderer)
+        return cr.renderMacro(*args)
