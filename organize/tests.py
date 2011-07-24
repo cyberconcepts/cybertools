@@ -30,6 +30,7 @@ def setUp(site):
     component.provideAdapter(field.FieldInstance)
     component.provideAdapter(field.NumberFieldInstance, name='number')
     component.provideAdapter(field.EmailFieldInstance, name='email')
+    #component.provideAdapter(field.DropdownFieldInstance, name='dropdown')
     component.provideAdapter(service.StatefulRegistration)
 
 

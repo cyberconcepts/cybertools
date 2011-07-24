@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -142,7 +142,9 @@ class Field(Component):
 
     def getFieldInstance(self, clientInstance=None):
         instanceName = self.instance_name or self.getFieldTypeInfo().instanceName
-        fi = component.getAdapter(self, IFieldInstance, name=instanceName)
+        fi = component.queryAdapter(self, IFieldInstance, name=instanceName)
+        if fi is None:
+            fi = component.getAdapter(self, IFieldInstance, name='')
         fi.clientInstance = clientInstance
         return fi
 
@@ -361,3 +363,14 @@ class CheckBoxesFieldInstance(ListFieldInstance):
 
     def ummarshal(self, value):
         return value
+
+
+class DropdownFieldInstance(FieldInstance):
+
+    def display(self, value):
+        items = self.context.getVocabularyItems()
+        for item in items:
+            if item['token'] == value:
+                return item['title']
+        return value
+
