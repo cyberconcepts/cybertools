@@ -187,6 +187,7 @@ class WorkItem(Stateful, Track):
             self.reindex('state')
             return self
         new = self.createNew(action, userName, **kw)
+        new.userName = self.userName
         if self.state == 'running':
             new.replace(self)
         elif self.state in ('planned', 'accepted', 'done'):
@@ -201,6 +202,7 @@ class WorkItem(Stateful, Track):
             self.setData(**kw)
             return self
         new = self.createNew('modify', userName, **kw)
+        new.userName = self.userName
         new.replace(self, keepState=True)
         return new
 
@@ -214,7 +216,7 @@ class WorkItem(Stateful, Track):
                 self.reindex('state')
             xkw = dict(kw)
             xkw.pop('party', None)
-            delegated = self.createNew('delegate', userName, ignoreParty=True, **xkw)
+            delegated = self.createNew('delegate', userName, **xkw)
         delegated.state = 'delegated'
         delegated.reindex('state')
         new = delegated.createNew('plan', userName, runId=0, **kw)
@@ -230,6 +232,7 @@ class WorkItem(Stateful, Track):
         moved.reindex('state')
         task = kw.pop('task', None)
         new = moved.createNew(None, userName, taskId=task, runId=0, **kw)
+        new.userName = self.userName
         new.data['source'] = moved.name
         new.state = self.state
         new.reindex('state')
@@ -243,6 +246,7 @@ class WorkItem(Stateful, Track):
         kw['start'] = kw['end'] = getTimeStamp()
         kw['duration'] = kw['effort'] = None
         new = self.createNew('close', userName, copyData=('title',), **kw)
+        new.userName = self.userName
         new.state = 'closed'
         new.reindex('state')
         getParent(self).stopRun(runId=self.runId, finish=True)
