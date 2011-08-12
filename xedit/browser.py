@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,12 +22,12 @@
 $Id$
 """
 
-from zope.app import zapi
 from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope.event import notify
 from zope.lifecycleevent import ObjectModifiedEvent
 from zope.security.proxy import removeSecurityProxy
+from zope.traversing.browser import absoluteURL
 
 
 class ExternalEditorView(object):
@@ -42,9 +42,11 @@ class ExternalEditorView(object):
         context = removeSecurityProxy(self.context)
         data = context.data
         r = []
-        r.append('url:' + (url or zapi.absoluteURL(context, self.request)))
+        r.append('url:' + (url or absoluteURL(context, self.request)))
         r.append('content_type:' + str(context.contentType))
-        r.append('meta_type:' + '.'.join((context.__module__, context.__class__.__name__)))
+        r.append('meta_type:' + '.'.join((context.__module__,
+                                          context.__class__.__name__)))
+        r.append('title:' + context.title.encode('UTF-8'))
         auth = self.request.get('_auth')
         if auth:
             print 'ExternalEditorView: auth = ', auth
