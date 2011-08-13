@@ -24,6 +24,7 @@ Authors: Johann Schimpf, Erich Seifert.
 $Id$
 """
 
+from cStringIO import StringIO
 from logging import getLogger
 import mimetypes
 import os, re, sys
@@ -78,6 +79,15 @@ class MediaAssetFile(object):
         data =f.read()
         f.close()
         return data
+
+    def getImageSize(self, variant=None, data=None):
+        if data is None:
+            data = self.getData(variant)
+        pt = PILTransform()
+        pt.open(StringIO(data))
+        if pt.im is None:
+            return (0, 0)
+        return pt.im.size
 
     def getContentType(self, variant=None):
         contentType = self.getMimeType()
@@ -169,7 +179,8 @@ class MediaAssetFile(object):
         return self.dataPath
 
     def getOriginalData(self):
-        f = self.getDataPath().open()
+        #f = self.getDataPath().open()
+        f = open(self.getDataPath(), 'rb')
         data = f.read()
         f.close()
         return data

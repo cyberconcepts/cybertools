@@ -15,10 +15,15 @@ Image Transformations
 =====================
 
   >>> rules = dict(
-  ...           minithumb='size(96, 72)',
+  ...           minithumb='size(96, 1000)',
   ... )
 
   >>> asset = MediaAssetFile(image1, rules, 'image/jpeg')
+
+  >>> asset.getImageSize()
+  (238, 191)
+  >>> asset.getImageSize('minithumb')
+  (96, 77)
 
   >>> asset.transform()
 
