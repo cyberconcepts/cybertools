@@ -46,7 +46,7 @@ class ExternalEditorView(object):
         r.append('content_type:' + str(context.contentType))
         r.append('meta_type:' + '.'.join((context.__module__,
                                           context.__class__.__name__)))
-        r.append('title:' + context.title.encode('UTF-8'))
+        r.append('title:' + fromUnicode(context.title))
         auth = self.request.get('_auth')
         if auth:
             print 'ExternalEditorView: auth = ', auth
@@ -57,10 +57,11 @@ class ExternalEditorView(object):
         if cookie:
             r.append('cookie:' + cookie)
         r.append('')
-        r.append(data)
+        r.append(fromUnicode(data))
         result = '\n'.join(r)
         self.setHeaders(len(result))
-        return fromUnicode(result)
+        return result
+        #return fromUnicode(result)
 
     def save(self):
         data = self.request.get('editor.data')
