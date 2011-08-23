@@ -194,7 +194,8 @@ class WorkItem(Stateful, Track):
             self.state = self.state + '_x'
             self.reindex('state')
         new.doTransition(action)
-        new.reindex('state')
+        #new.reindex('state')
+        new.reindex()
         return new
 
     def modify(self, userName, **kw):
@@ -204,6 +205,7 @@ class WorkItem(Stateful, Track):
         new = self.createNew('modify', userName, **kw)
         new.userName = self.userName
         new.replace(self, keepState=True)
+        new.reindex()
         return new
 
     def delegate(self, userName, **kw):
@@ -222,7 +224,8 @@ class WorkItem(Stateful, Track):
         new = delegated.createNew('plan', userName, runId=0, **kw)
         new.data['source'] = delegated.name
         new.doTransition('plan')
-        new.reindex('state')
+        #new.reindex('state')
+        new.reindex()
         delegated.data['target'] = new.name
         return new
 
@@ -235,7 +238,8 @@ class WorkItem(Stateful, Track):
         new.userName = self.userName
         new.data['source'] = moved.name
         new.state = self.state
-        new.reindex('state')
+        #new.reindex('state')
+        new.reindex()
         moved.data['target'] = new.name
         if self.state in ('planned', 'accepted', 'delegated', 'moved', 'done'):
             self.state = self.state + '_x'
@@ -248,7 +252,8 @@ class WorkItem(Stateful, Track):
         new = self.createNew('close', userName, copyData=('title',), **kw)
         new.userName = self.userName
         new.state = 'closed'
-        new.reindex('state')
+        #new.reindex('state')
+        new.reindex()
         getParent(self).stopRun(runId=self.runId, finish=True)
         for item in self.currentWorkItems:
             if item.state in ('planned', 'accepted', 'done', 'delegated', 'moved'):
