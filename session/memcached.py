@@ -46,8 +46,14 @@ class SessionDataContainer(object):
 
     def __setitem__(self, key, value):
         client = component.getUtility(IMemcachedClient)
-        #print '***', key, value
-        client.set(value, key, lifetime=self.lifetime, ns=self.namespace)
+        oldValue = client.query(key, ns=self.namespace)
+        if oldValue:
+            oldValue.update(value)
+            newValue = oldValue
+        else:
+            newValue = value
+        #print '***', oldValue, value, newValue
+        client.set(newValue, key, lifetime=self.lifetime, ns=self.namespace)
 
 
 class Session(object):
