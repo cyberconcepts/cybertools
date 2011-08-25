@@ -52,7 +52,6 @@ class SessionDataContainer(object):
             newValue = oldValue
         else:
             newValue = value
-        #print '***', oldValue, value, newValue
         client.set(newValue, key, lifetime=self.lifetime, ns=self.namespace)
 
 
