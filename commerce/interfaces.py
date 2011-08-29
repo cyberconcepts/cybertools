@@ -1,6 +1,6 @@
 #-*- coding: UTF-8 -*-
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -363,6 +363,9 @@ class IOrder(Interface):
     paymentTransactionId = schema.TextLine(
             title=u'Payment Transaction ID',
             description=u'The transaction ID provided by the payment service.')
+    shipmentMode = schema.TextLine(
+            title=u'Shipment Mode',
+            description=u'The mode of shipment to be used for the order.')
     state = schema.TextLine(
             title=u'State',
             description=u'A string specifying the state of the order.')
