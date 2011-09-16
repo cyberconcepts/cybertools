@@ -42,7 +42,9 @@ class SessionDataContainer(object):
 
     def __getitem__(self, key):
         client = component.getUtility(IMemcachedClient)
-        return client.query(key, ns=self.namespace)
+        value = client.query(key, ns=self.namespace)
+        value.parent = self
+        return value
 
     def __setitem__(self, key, value):
         client = component.getUtility(IMemcachedClient)
@@ -85,6 +87,12 @@ class SessionData(dict):
         self.id = id
         self.parent = parent
 
+    def __getitem__(self, key):
+        value = super(SessionData, self).__getitem__(key)
+        if isinstance(value, SessionPkgData):
+            value.parent = self
+        return value
+
     def __setitem__(self, key, value):
         super(SessionData, self).__setitem__(key, value)
         self.parent[self.id] = self
@@ -105,3 +113,5 @@ class SessionPkgData(SessionData):
 
     implements(ISessionPkgData)
 
+    def __getitem__(self, key):
+        return super(SessionPkgData, self).__getitem__(key)
