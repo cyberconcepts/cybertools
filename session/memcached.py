@@ -43,7 +43,8 @@ class SessionDataContainer(object):
     def __getitem__(self, key):
         client = component.getUtility(IMemcachedClient)
         value = client.query(key, ns=self.namespace)
-        value.parent = self
+        if value:
+            value.parent = self
         return value
 
     def __setitem__(self, key, value):
