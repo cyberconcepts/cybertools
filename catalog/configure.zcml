@@ -5,7 +5,7 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="zope">
 
-  <zope:class class="cybertools.catalog.keyword.KeywordIndex">
+  <!--<zope:class class="cybertools.catalog.keyword.KeywordIndex">
     <require permission="zope.ManageServices"
              interface="zope.app.catalog.interfaces.IAttributeIndex
                         zope.index.interfaces.IStatistics"
@@ -37,6 +37,6 @@
       fields="interface field_name field_callable"
       permission="zope.ManageServices"
       menu="zmi_views" title="Configuration"
-      />
+      />-->
 
 </configure>
