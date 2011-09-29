@@ -61,13 +61,13 @@
       factory=".auth.LoopsSessionCredentialsPlugin"
      />
 
-  <zope:localUtility class=".auth.LoopsSessionCredentialsPlugin">
+  <zope:class class=".auth.LoopsSessionCredentialsPlugin">
 
     <zope:require
         permission="zope.ManageServices"
         interface="zope.app.authentication.session.IBrowserFormChallenger"
         set_schema="zope.app.authentication.session.IBrowserFormChallenger" />
 
-  </zope:localUtility>
+  </zope:class>
 
 </configure>

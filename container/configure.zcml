@@ -29,7 +29,6 @@
       template="../ajax/innerHtml.pt"
       class="cybertools.container.base.ContainerView"
       permission="zope.ManageContent"
-      menu="zmi_views" title="Contents"
       />
 
 </configure>

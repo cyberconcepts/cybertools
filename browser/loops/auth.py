@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@ $Id$
 """
 
 import urllib
-from zope.app import zapi
 from zope.app.authentication.session import SessionCredentialsPlugin
 from zope.app.component import hooks
 from zope.app.i18n import ZopeMessageFactory as _
@@ -33,6 +32,7 @@ from zope.app.security.interfaces import ILogoutSupported
 from zope.cachedescriptors.property import Lazy
 from zope.i18n import translate
 from zope.publisher.interfaces.http import IHTTPRequest
+from zope.traversing.browser import absoluteURL
 
 
 class LoopsSessionCredentialsPlugin(SessionCredentialsPlugin):
@@ -49,7 +49,7 @@ class LoopsSessionCredentialsPlugin(SessionCredentialsPlugin):
         camefrom = request.getApplicationURL() + path
         if 'login' in camefrom:
             camefrom = '/'.join(camefrom.split('/')[:-1])
-        url = '%s/@@%s?%s' % (zapi.absoluteURL(site, request),
+        url = '%s/@@%s?%s' % (absoluteURL(site, request),
                               self.loginpagename,
                               urllib.urlencode({'camefrom': camefrom}))
         request.response.redirect(url)
