@@ -28,11 +28,11 @@ from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from zope.interface import Interface, Attribute
 from zope.i18nmessageid import MessageFactory
 
-from cybertools.util.jeep import Jeep, Term
 from cybertools.organize.interfaces import IAddress as IBaseAddress
 from cybertools.organize.interfaces import IPerson as IBasePerson
 from cybertools.tracking.interfaces import ITrack
-from loops import util
+from cybertools.util.jeep import Jeep, Term
+from cybertools.util import util
 
 _ = MessageFactory('cybertools.commerce')
 

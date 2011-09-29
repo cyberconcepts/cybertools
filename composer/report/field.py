@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ class Field(Component):
         self.__name__ = name
         title = title or name
         self.fieldType = fieldType
-        super(Field, self).__init__(title, __name__=name, **kw)
+        #super(Field, self).__init__(title, __name__=name, **kw)
         self.title = title
         for k, v in kw.items():
             setattr(self, k, v)

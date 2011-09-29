@@ -75,14 +75,14 @@ Note: We cannot just print the error directly, since there is a
 of the source correctly. So we construct an information string by hand.
 
   >>> def print_err(err):
-  ...     print ('%(msg)s, %(filename)s, line %(lineno)i, offset %(offset)i'
-  ...           % err.__dict__)
+  ...     print ('%s, %s, line %i, offset %i'
+  ...           % (err.msg, err.filename, err.lineno, err.offset))
   ...
   >>> try:
   ...     pp.setSource(u"'''<html>...</html>") #'''"
   ... except SyntaxError, err:
   ...     print_err(err)
-  EOF while scanning triple-quoted string, /pp, line 4, offset 47
+  EOF while scanning triple-quoted string literal, /pp, line 4, offset 48
 
   >>> try:
   ...     pp.setSource(u"prin 'hello'")

@@ -9,9 +9,9 @@ $Id$
 import unittest, doctest
 from zope.testing.doctestunit import DocFileSuite
 
-from zope.app.intid.interfaces import IIntIds
 from zope import component
 from zope.interface import implements
+from zope.intid.interfaces import IIntIds
 
 from cybertools.commerce.order import OrderItems
 from cybertools.commerce.product import Product

@@ -4,7 +4,7 @@ import unittest
 from zope.testing.doctestunit import DocFileSuite
 from zope.interface.verify import verifyClass
 from zope.interface import implements
-from zope.app.intid.interfaces import IIntIds
+from zope.intid.interfaces import IIntIds
 
 
 class IntIdsStub(object):

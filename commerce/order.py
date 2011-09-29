@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,11 +22,11 @@ Order and order item classes.
 $Id$
 """
 
-from zope.app.intid.interfaces import IIntIds
 from zope.cachedescriptors.property import Lazy
 from zope import component
 from zope.component import adapts
 from zope.interface import implements, Interface
+from zope.intid.interfaces import IIntIds
 
 from cybertools.commerce.common import getUidForObject, getObjectForUid
 from cybertools.commerce.common import Relation, BaseObject

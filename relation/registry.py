@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ from zope.component import adapts
 from zope.interface import Interface, Attribute, implements
 from zope.app.catalog.catalog import Catalog, ResultSet
 from zope.app.catalog.field import FieldIndex
-from zope.app.intid.interfaces import IIntIds
+from zope.intid.interfaces import IIntIds
 from zope.location.interfaces import ILocation
 from zope.event import notify
 from zope.component.interfaces import ObjectEvent

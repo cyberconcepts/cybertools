@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -28,12 +28,12 @@ $Id$
 from BTrees.IFBTree import weightedIntersection, weightedUnion
 from BTrees.IFBTree import difference, IFBTree, IFBucket, IFSet
 from BTrees.IIBTree import IISet, union
-from zope.app.intid.interfaces import IIntIds
 from zope.app.catalog.catalog import ResultSet
 from zope.app.catalog.field import IFieldIndex
 from zope.app.catalog.text import ITextIndex
 from zope.app.catalog.interfaces import ICatalog
 from zope import component
+from zope.intid.interfaces import IIntIds
 
 from cybertools.catalog.keyword import IKeywordIndex
 

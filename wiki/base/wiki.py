@@ -22,9 +22,9 @@ A Wiki manager managing wikis and wiki-related objects, esp plugins.
 $Id$
 """
 
-from zope.app.intid.interfaces import IIntIds
 from zope import component
 from zope.interface import implements
+from zope.intid.interfaces import IIntIds
 from zope.traversing.browser import absoluteURL
 
 from cybertools.wiki.common import protocols, ExternalPage

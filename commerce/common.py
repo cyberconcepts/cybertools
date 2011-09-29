@@ -1,6 +1,6 @@
 #-*- coding: UTF-8 -*-
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -23,8 +23,8 @@ Common functionality.
 $Id$
 """
 
-from zope.app.intid.interfaces import IIntIds
 from zope import component
+from zope.intid.interfaces import IIntIds
 
 
 class ContainerAttribute(object):

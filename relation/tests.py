@@ -1,12 +1,10 @@
 # $Id$
 
 import unittest
-from zope.testing.doctestunit import DocFileSuite
 from zope.app.testing import ztapi
 from zope.interface.verify import verifyClass
 from zope.interface import implements
-from zope.app import zapi
-from zope.app.intid.interfaces import IIntIds
+from zope.intid.interfaces import IIntIds
 
 from cybertools.relation.interfaces import IDyadicRelation, ITriadicRelation
 from cybertools.relation.interfaces import IRelation, IPredicate
@@ -62,7 +60,7 @@ class TestRelation(unittest.TestCase):
 def test_suite():
     return unittest.TestSuite((
                 unittest.makeSuite(TestRelation),
-                DocFileSuite('README.txt'),
+                doctest.DocFileSuite('README.txt'),
             ))
 
 if __name__ == '__main__':

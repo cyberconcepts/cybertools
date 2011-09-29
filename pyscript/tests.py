@@ -9,7 +9,6 @@ import unittest, doctest
 from zope import component
 from zope.interface import implements
 from zope.location.traversing import LocationPhysicallyLocatable
-from zope.testing.doctestunit import DocFileSuite
 from zope.traversing.interfaces import IContainmentRoot
 from zope.traversing.interfaces import IPhysicallyLocatable
 from zope.traversing.adapters import RootPhysicallyLocatable
@@ -33,10 +32,10 @@ def setUp(test):
 
 def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
-    suites = [DocFileSuite('README.txt', optionflags=flags,
+    suites = [doctest.DocFileSuite('README.txt', optionflags=flags,
               setUp=setUp, tearDown=placelesssetup.tearDown)]
     if HAS_R:
-        suites.append(DocFileSuite('rstat.txt', optionflags=flags,
+        suites.append(doctest.DocFileSuite('rstat.txt', optionflags=flags,
                       setUp=setUp, tearDown=placelesssetup.tearDown))
     return unittest.TestSuite(suites)
 

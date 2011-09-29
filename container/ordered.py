@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ Ordered container implementation.
 $Id$
 """
 
-from zope.app import zapi
 from zope.app.container.ordered import OrderedContainer as BaseOrderedContainer
 from zope.cachedescriptors.property import Lazy
 from zope.app.i18n import ZopeMessageFactory as _

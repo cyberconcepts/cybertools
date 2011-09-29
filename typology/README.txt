@@ -8,7 +8,7 @@ arbitrary objects with types that may then be used for controlling
 execution of code, helping with search interfaces or editing of
 object data.
 
-  >>> from zope.app import zapi
+  >>> from zope import component
   >>> from zope.app.testing import ztapi
 
   >>> from cybertools.typology.interfaces import IType, ITypeManager
@@ -87,7 +87,7 @@ only persons of a certain age group we need a list of available types
 This is where type managers come in. A type manager is a utility or
 another (possibly persistent) object knowing about the available types.
 
-  >>> typeManager = zapi.getUtility(IAgeGroupManager)
+  >>> typeManager = component.getUtility(IAgeGroupManager)
   >>> types = typeManager.types
   >>> [t.title for t in types]
   [u'Child', u'Adult']

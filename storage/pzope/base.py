@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,13 +22,13 @@ Storage manager implementation for a full Zope 3 environment.
 $Id$
 """
 
+from persistent import Persistent
 from zope import component
 from zope.interface import implements
 from zope.app.component.hooks import getSite
 from zope.app.container.interfaces import IContained
-from zope.app.intid.interfaces import IIntIds
+from zope.intid.interfaces import IIntIds
 from zope.traversing.api import traverse, getPath
-from persistent import Persistent
 
 from cybertools.util.adapter import AdapterFactory
 

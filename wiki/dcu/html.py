@@ -31,6 +31,14 @@ from zope.interface import implements
 from cybertools.wiki.interfaces import INodeProcessor, IWriter
 
 
+class HTMLWriter(HTMLWriter):
+
+    def apply_template(self):
+        template = '%(body_pre_docinfo)s\n%(docinfo)s\n%(body)s'
+        subs = self.interpolation_dict()
+        return template % subs
+
+
 class Writer(object):
 
     implements(IWriter)

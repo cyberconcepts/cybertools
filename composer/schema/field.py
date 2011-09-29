@@ -71,7 +71,7 @@ class Field(Component):
         #title = title or u''
         title = title or name
         self.fieldType = fieldType
-        super(Field, self).__init__(title, __name__=name, **kw)
+        #super(Field, self).__init__(title, __name__=name, **kw)
         self.title = title
         for k, v in kw.items():
             setattr(self, k, v)

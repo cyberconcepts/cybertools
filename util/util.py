@@ -17,18 +17,26 @@
 #
 
 """
-login, logout and similar stuff.
+Utility functions.
 
 $Id$
 """
 
-from zope.app.publisher. browser import menu
-from zope.security import checkPermission
+from zope.schema import vocabulary
 
-class MenuAccessView(menu.MenuAccessView):
 
-    def __getitem__(self, menuId):
-        if menuId in ('zmi_actions', 'help_actions'):
-            if not checkPermission('zope.ManageSite', self.context):
-                return []
-        return super(MenuAccessView, self).__getitem__(menuId)
+class KeywordVocabulary(vocabulary.SimpleVocabulary):
+
+    def __init__(self, items, *interfaces):
+        """ ``items`` may be a tuple of (token, title) or a dictionary
+            with corresponding elements named 'token' and 'title'.
+        """
+        terms = []
+        for t in items:
+            if type(t) is dict:
+                token, title = t['token'], t['title']
+            else:
+                token, title = t
+            terms.append(vocabulary.SimpleTerm(token, token, title))
+        super(KeywordVocabulary, self).__init__(terms, *interfaces)
+
