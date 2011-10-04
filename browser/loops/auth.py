@@ -66,7 +66,7 @@ class LoginLogout(BaseLoginLogout):
                           default='[Login]'))
         elif ILogoutSupported(self.request, None) is not None:
             return u'<a href="@@logout.html?nextURL=%s/login.html">%s</a>' % (
-                zapi.absoluteURL(self.context, self.request),
+                absoluteURL(self.context, self.request),
                 translate(_('[Logout]'), context=self.request,
                           default='[Logout]'))
         else:
