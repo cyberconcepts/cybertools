@@ -10,6 +10,12 @@
 </metal:logo>
 
 
+<metal:meta define-macro="meta">
+  <meta tal:attributes="name macro/name;
+                        content macro/content" />
+</metal:meta>
+
+
 <metal:css define-macro="css"
            tal:define="isIE macro/is_ie|nothing">
   <tal:ie condition="isIE"

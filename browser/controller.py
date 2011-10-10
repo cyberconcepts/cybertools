@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -98,8 +98,6 @@ class Macros(dict):
             # make sure a certain resource is only registered once
             if identifier in self.identifiers:
                 return
-            #self.identifiers.add(identifier)
-            self.identifiers[identifier] = True
         if template is None:
             template = self.standardTemplate
         if name is None:
@@ -107,6 +105,8 @@ class Macros(dict):
         macro = Macro(template, name, priority, identifier=identifier, **kw)
         entry = self.setdefault(slot, [])
         entry.append(macro)
+        if identifier:
+            self.identifiers[identifier] = macro
 
     def hide(self, identifier):
         self.identifiers[identifier] = False

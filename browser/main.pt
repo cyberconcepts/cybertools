@@ -14,6 +14,10 @@
     </title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
+    <tal:meta repeat="macro controller/macros/meta">
+      <metal:css use-macro="macro" />
+    </tal:meta>
+
     <tal:css repeat="macro controller/macros/css">
       <metal:css use-macro="macro" />
     </tal:css>
