@@ -27,6 +27,7 @@ setup(name='cybertools',
             'zope.app.preview',
             'zope.app.renderer',
             'zope.app.session',
+            'zope.dublincore',
             'zope.sendmail',
       ],
       entry_points="""
