@@ -199,6 +199,9 @@ class FieldInstance(object):
         self.errors.append(error)
         self.severity = max(error.severity, self.severity)
 
+    def getRenderer(self, name):
+        return None
+
 
 class NumberFieldInstance(FieldInstance):
 

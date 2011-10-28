@@ -278,6 +278,14 @@ class IFieldInstance(Interface):
             allow for checking more than one data element.
         """
 
+    def getRenderer(name):
+        """ Return the renderer object (e.g. a ZPT macro) for this field
+            with the name given.
+
+            May return None in which case the calling application should
+            use a default renderer.
+        """
+
 
 class IFormState(Interface):
     """ Represents the state of all fields when editing.
