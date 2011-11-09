@@ -23,6 +23,7 @@
 <metal:fields define-macro="fields">
   <tal:define define="manageMode manageMode|view/manageMode|nothing;
                       fields view/fields;
+                      instance view/instance;
                       data view/data;
                       state view/formState">
     <table style="width: 100%">
@@ -160,7 +161,8 @@
            tal:attributes="name name;
                            style python:
                                 'width: %s' % (width and str(width)+'px' or '');">
-      <option tal:repeat="item field/getVocabularyItems"
+      <option tal:repeat="item python:
+                    field.getVocabularyItems(instance.context, request)"
               tal:content="item/title"
               tal:attributes="value item/token;
                               selected python:
