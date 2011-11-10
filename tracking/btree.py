@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -68,7 +68,15 @@ class Track(Persistent):
     def metadata(self):
         return dict((attr, getattr(self, attr)) for attr in self.metadata_attributes)
 
-    indexdata = metadata
+    @property
+    def indexdata(self):
+        data = {}
+        for attr in self.index_attributes:
+            if attr in self.metadata_attributes:
+                data[attr] = getattr(self, attr)
+            else:
+                data[attr] = self.data[attr]
+        return data
 
     def __init__(self, taskId, runId, userName, data=None):
         self.taskId = taskId
