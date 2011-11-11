@@ -25,12 +25,14 @@ $Id$
 from datetime import datetime
 from logging import getLogger
 from time import strptime, strftime
+from zope.app.form.browser.interfaces import ITerms
 from zope.interface import implements
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 from zope import component
 from zope.i18n.format import DateTimeParseError
 from zope.i18n.locales import locales
+from zope.schema.interfaces import IVocabularyFactory
 from zope.tales.engine import Engine
 from zope.tales.tales import Context
 
@@ -129,13 +131,28 @@ class Field(Component):
     def getTitleValue(self):
         return self.title or self.name
 
-    def getVocabularyItems(self):
+    def getVocabularyItems(self, context=None, request=None):
         voc = (self.vocabulary or '')
         if isinstance(voc, basestring):
+            terms = self.getVocabularyTerms(voc, context, request)
+            if terms is not None:
+                return terms
             voc = voc.splitlines()
             return [dict(token=t, title=t) for t in voc if t.strip()]
         else:
             return [dict(token=t.token, title=t.title or t.value) for t in voc]
+
+    def getVocabularyTerms(self, name, context, request):
+        if context is None or request is None:
+            return None
+        source = component.queryUtility(IVocabularyFactory, name=name)
+        if source is not None:
+            source = source(context)
+            terms = component.queryMultiAdapter((source, request), ITerms)
+            if terms is not None:
+                termsList = [terms.getTerm(value) for value in source]
+                return [dict(token=t.token, title=t.title) for t in termsList]
+        return None
 
     def getFieldTypeInfo(self):
         return self.fieldTypeInfo or fieldTypes.getTerm(self.fieldType)

@@ -69,7 +69,8 @@ class Report(Template):
 
     implements(IReport)
 
-    name = identifier = title = description = u''
+    name = identifier = u''
+    #title = description = u''
     type = 'generic'
     manager = None
 
