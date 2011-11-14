@@ -157,12 +157,14 @@ class Field(Component):
     def getFieldTypeInfo(self):
         return self.fieldTypeInfo or fieldTypes.getTerm(self.fieldType)
 
-    def getFieldInstance(self, clientInstance=None):
+    def getFieldInstance(self, clientInstance=None, context=None, request=None):
         instanceName = self.instance_name or self.getFieldTypeInfo().instanceName
         fi = component.queryAdapter(self, IFieldInstance, name=instanceName)
         if fi is None:
             fi = component.getAdapter(self, IFieldInstance, name='')
         fi.clientInstance = clientInstance
+        fi.clientContext = context
+        fi.request = request
         return fi
 
     def getContextProperties(self):
@@ -174,7 +176,7 @@ class FieldInstance(object):
     implements(IFieldInstance)
     adapts(IField)
 
-    clientInstance = None
+    clientInstance = clientContext = request = None
     value = undefined
 
     def __init__(self, context):
@@ -388,7 +390,7 @@ class CheckBoxesFieldInstance(ListFieldInstance):
 class DropdownFieldInstance(FieldInstance):
 
     def display(self, value):
-        items = self.context.getVocabularyItems()
+        items = self.context.getVocabularyItems(self.clientContext, self.request)
         for item in items:
             if item['token'] == value:
                 return item['title']

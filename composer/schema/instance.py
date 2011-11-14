@@ -52,7 +52,8 @@ class Instance(BaseInstance):
                 if not f.storeData:
                     # a dummy field, e.g. a spacer
                     continue
-                fi = f.getFieldInstance(self)
+                fi = f.getFieldInstance(self, context=kw.get('context'),
+                                              request=kw.get('request'))
                 name = f.name
                 value = getattr(self.context, name) or fi.default
                 if mode in ('view', 'preview'):
