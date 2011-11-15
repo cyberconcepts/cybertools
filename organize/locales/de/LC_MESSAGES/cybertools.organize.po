@@ -50,6 +50,9 @@ msgstr "Ende"
 msgid "Street, number"
 msgstr "Straße, Nr."
 
+msgid "City"
+msgstr "Stadt"
+
 msgid "ZIP code"
 msgstr "PLZ"
 
