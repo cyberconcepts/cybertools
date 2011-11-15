@@ -47,3 +47,15 @@ msgstr "Beginn"
 msgid "End date"
 msgstr "Ende"
 
+msgid "Street, number"
+msgstr "Straße, Nr."
+
+msgid "ZIP code"
+msgstr "PLZ"
+
+msgid "Additional lines"
+msgstr "Zusätzliche Zeilen"
+
+msgid "Additional address lines"
+msgstr "Zusätzliche Zeilen in Anschrift"
+
