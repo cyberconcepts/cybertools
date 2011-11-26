@@ -53,7 +53,20 @@ class IReportManager(Interface):
         """
 
 
-class IReport(ITemplate):
+class IReportParams(Interface):
+    """ Contains the real reporting parameters like query and sort criteria,
+        column definitions, etc.
+    """
+
+    queryCriteria = Attribute('The criteria to be used for executing the '
+                    'query step.')
+    sortSpec = Attribute('A sequence of fields/sort directions to be used for '
+                    'executing the sorting step.')
+    outputSpec = Attribute('A sequence of output fields (column/cell '
+                    'specifications) to be used for presenting the result data.')
+
+
+class IReport(ITemplate, IReportParams):
     """ A configurable report.
     """
 
@@ -89,13 +102,6 @@ class IReport(ITemplate):
                     'available for this report type.')
     renderers = Attribute('An ordered collection of renderers available '
                     'for this report type.')
-
-    queryCriteria = Attribute('The criteria to be used for executing the '
-                    'query step.')
-    sortSpec = Attribute('A sequence of fields/sort directions to be used for '
-                    'executing the sorting step.')
-    outputSpec = Attribute('A sequence of output fields (column/cell '
-                    'specifications) to be used for presenting the result data.')
 
     def getQueryFields():
         """ Return a sequence of fields that may be used for setting up
