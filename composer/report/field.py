@@ -47,7 +47,7 @@ class Field(Component):
     renderer = 'standard'
     operator = 'in'
 
-    executionSteps = ['query', 'sort', 'output']
+    executionSteps = ['query', 'sort', 'output']    # , 'totals']
 
     operators = [{'token': 'eq', 'label': '=='},
                  {'token': 'lt', 'label': '<'},

@@ -26,24 +26,33 @@ from cybertools.composer.interfaces import IInstance
 from cybertools.composer.report.base import BaseQueryCriteria
 
 
-def getContextAttr(obj, attr):
-    return getattr(obj.context, attr)
 
-
-class Row(object):
-
-    attributeHandlers = {}
+class BaseRow(object):
 
     def __init__(self, context, parent):
         self.context = context
         self.parent = parent
+        self.data = {}
 
     def __getattr__(self, attr):
         f = self.parent.context.fields[attr]
         return f.getValue(self)
 
     def getRawValue(self, attr):
-        return self.attributeHandlers.get(attr, getContextAttr)(self, attr)
+        return self.data.get(attr)
+
+
+class Row(BaseRow):
+
+    attributeHandlers = {}
+
+    def getRawValue(self, attr):
+        return self.attributeHandlers.get(attr, Row.getContextAttr)(self, attr)
+
+    @classmethod
+    def getContextAttr(obj, attr):
+        return getattr(obj.context, attr)
+
 
 
 class ResultSet(object):
@@ -55,6 +64,7 @@ class ResultSet(object):
         self.rowFactory = rowFactory
         self.sortCriteria = sortCriteria
         self.queryCriteria = queryCriteria
+        self.totals = BaseRow(None, self)
 
     def getResult(self):
         result = [self.rowFactory(item, self) for item in self.data]
