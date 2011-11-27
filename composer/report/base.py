@@ -18,8 +18,6 @@
 
 """
 Basic classes for report management.
-
-$Id$
 """
 
 import operator as standard_operators

@@ -18,8 +18,6 @@
 
 """
 Date and time utilities.
-
-$Id$
 """
 
 import time
@@ -30,6 +28,11 @@ def getTimeStamp():
     return int(time.time())
 
 
+def timeStamp2Date(ts, useGM=False):
+    if ts is None:
+        ts = getTimeStamp()
+    return datetime.fromtimestamp(ts)
+
 def timeStamp2ISO(ts, useGM=False, format='%Y-%m-%d %H:%M'):
     return formatTimeStamp(ts, useGM, format)
 
@@ -38,8 +41,6 @@ def formatTimeStamp(ts, useGM=False, format='%Y-%m-%d %H:%M'):
         ts = getTimeStamp()
     fct = useGM and time.gmtime or time.localtime
     return time.strftime(format, fct(ts))
-    #return time.strftime('%Y-%m-%d %H:%M', time.gmtime(ts))
-    #return time.strftime('%Y-%m-%d %H:%M', time.localtime(ts))
 
 
 def str2timeStamp(s):

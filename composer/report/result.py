@@ -18,8 +18,6 @@
 
 """
 Report result sets and related classes.
-
-$Id$
 """
 
 from zope.cachedescriptors.property import Lazy
@@ -28,7 +26,13 @@ from cybertools.composer.interfaces import IInstance
 from cybertools.composer.report.base import BaseQueryCriteria
 
 
+def getContextAttr(obj, attr):
+    return getattr(obj.context, attr)
+
+
 class Row(object):
+
+    attributeHandlers = {}
 
     def __init__(self, context, parent):
         self.context = context
@@ -38,12 +42,15 @@ class Row(object):
         f = self.parent.context.fields[attr]
         return f.getValue(self)
 
+    def getRawValue(self, attr):
+        return self.attributeHandlers.get(attr, getContextAttr)(self, attr)
+
 
 class ResultSet(object):
 
     def __init__(self, context, data, rowFactory=Row,
                  sortCriteria=None, queryCriteria=BaseQueryCriteria()):
-        self.context = context
+        self.context = context  # the report or report instance
         self.data = data
         self.rowFactory = rowFactory
         self.sortCriteria = sortCriteria
