@@ -49,7 +49,7 @@ class Row(BaseRow):
     def getRawValue(self, attr):
         return self.attributeHandlers.get(attr, Row.getContextAttr)(self, attr)
 
-    @classmethod
+    @staticmethod
     def getContextAttr(obj, attr):
         return getattr(obj.context, attr)
 
