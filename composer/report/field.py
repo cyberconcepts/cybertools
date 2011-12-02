@@ -47,7 +47,7 @@ class Field(Component):
     renderer = 'standard'
     operator = 'in'
 
-    executionSteps = ['query', 'sort', 'output']
+    executionSteps = ['query', 'sort', 'output']    # , 'totals']
 
     operators = [{'token': 'eq', 'label': '=='},
                  {'token': 'lt', 'label': '<'},
@@ -70,7 +70,7 @@ class Field(Component):
         return self.__name__
 
     def getRawValue(self, row):
-        return getattr(row.context, self.name)
+        return row.getRawValue(self.name)
 
     def getSelectValue(self, row):
         return getattr(row, self.name, None)
@@ -83,6 +83,9 @@ class Field(Component):
         if isinstance(value, basestring):
             return value
         return getattr(value, 'title', str(value))
+
+    def getDisplayValue(self, row):
+        return self.getValue(row)
 
     def getSortValue(self, row):
         # TODO: consider 'descending' flag, use raw value instead of formatted one
