@@ -55,5 +55,7 @@ class KeyTable(Grid):
                     FieldType('keytable', 'keytable',
                               u'A dictionary of records or rows the first '
                               u'column of which represents the key.',
+                              displayRenderer='display_records',
+                              inputRenderer='input_records',
                               instanceName='keytable',))
 
