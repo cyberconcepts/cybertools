@@ -2,8 +2,6 @@
 Schema and Field Management
 ===========================
 
-  ($Id$)
-
   >>> from cybertools.composer.schema import Schema
   >>> from cybertools.composer.schema import Field
 
@@ -193,3 +191,58 @@ Macros / renderers
   [u'field', u'field_spacer', u'fields', u'form', u'input_checkbox',
    u'input_date', u'input_dropdown', u'input_fileupload', u'input_html',
    u'input_list', u'input_password', u'input_textarea', u'input_textline']
+
+
+Special Field Types
+===================
+
+Grids, Records, Key Tables
+--------------------------
+
+  >>> from cybertools.composer.schema.grid.field import KeyTableFieldInstance
+
+  >>> ktfield = Field('data')
+  >>> ktfield.column_types = [zope.schema.Text(__name__='key', title=u'Key',),
+  ...                         zope.schema.Text(__name__='value', title=u'Value')]
+
+  >>> ktfi = KeyTableFieldInstance(ktfield)
+  >>> ktfi.unmarshall([dict(key='0001', value='First row')])
+  {u'0001': [u'First row']}
+
+  >>> ktfi.marshall({u'0001': [u'First row']})
+  [{'value': u'First row', 'key': u'0001'}]
+
+Now with some real stuff, using a field instance that takes the column types
+from the context object of the edit form.
+
+  >>> from cybertools.composer.schema.grid.interfaces import KeyTable
+  >>> from cybertools.composer.schema.grid.field import \
+  ...                               ContextBasedKeyTableFieldInstance
+  >>> component.provideAdapter(ContextBasedKeyTableFieldInstance, name='keytable')
+
+  >>> class IDataTable(Interface):
+  ...     title = zope.schema.TextLine(title=u'Title', required=False)
+  ...     columnNames = zope.schema.List(title=u'Column Names', required=False)
+  ...     data = KeyTable(title=u'Data', required=False)
+  >>> IDataTable['columnNames'].nostore = True
+
+  >>> class DataTable(object):
+  ...     implements(IDataTable)
+  ...     def __init__(self, title, columnNames):
+  ...         self.title = title
+  ...         self.columnNames = columnNames
+
+  >>> dt = DataTable('Account Types', ['identifier', 'label', 'info'])
+
+  >>> input = dict(title='Account Types',
+  ...              columnNames=['identifier', 'label', 'info'],
+  ...              data=[dict(identifier='0001', label='Standard', info='')],
+  ...              action='update')
+  >>> form = Form(dt, TestRequest(form=input))
+  >>> form.interface = IDataTable
+  >>> form.nextUrl = 'dummy_url'
+  >>> form.update()
+  False
+
+  >>> dt.data
+  {u'0001': [u'Standard', u'']}

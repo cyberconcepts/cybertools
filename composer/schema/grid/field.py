@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 Field and field instance classes for grids.
-
-$Id$
 """
 
 from zope import component
@@ -30,7 +28,7 @@ from zope.cachedescriptors.property import Lazy
 import zope.schema
 
 from cybertools.composer.schema.factory import createField
-from cybertools.composer.schema.field import ListFieldInstance
+from cybertools.composer.schema.field import Field, ListFieldInstance
 from cybertools.composer.schema.interfaces import IField, IFieldInstance
 from cybertools.composer.schema.interfaces import fieldTypes, undefined
 from cybertools.util.format import toStr, toUnicode
@@ -92,6 +90,13 @@ class GridFieldInstance(ListFieldInstance):
         result = []
         rows = json.loads(value)['items']
         for row in rows:
+            item = self.unmarshallRow(row)
+            if item:
+                result.append(item)
+        return result
+
+    def dummy(self):
+        for row in rows:
             item = {}
             empty = True
             for fi in self.columnFieldInstances:
@@ -105,6 +110,18 @@ class GridFieldInstance(ListFieldInstance):
             if not empty:
                 result.append(item)
         return result
+
+    def unmarshallRow(self, row):
+        item = {}
+        for fi in self.columnFieldInstances:
+            value = fi.unmarshall(row[fi.name])
+            if isinstance(value, basestring):
+                value = value.strip()
+            if fi.default is not None:
+                if value == fi.default:
+                    continue
+            item[fi.name] = value
+        return item
 
 
 class RecordsFieldInstance(GridFieldInstance):
@@ -123,19 +140,49 @@ class RecordsFieldInstance(GridFieldInstance):
             value = []
         result = []
         for row in value:
-            item = {}
-            empty = True
-            for fi in self.columnFieldInstances:
-                value = row[fi.name]
-                if isinstance(value, basestring):
-                    value = value.strip()
-                value = fi.unmarshall(value)
-                item[fi.name] = value
-                if fi.default is not None:
-                    if value and value != fi.default:
-                        empty = False
-                elif value:
-                    empty = False
-            if not empty:
+            item = self.unmarshallRow(row)
+            if item:
                 result.append(item)
         return result
+
+
+class KeyTableFieldInstance(RecordsFieldInstance):
+
+    @Lazy
+    def keyName(self):
+        return self.columnTypes[0].name
+
+    @Lazy
+    def dataNames(self):
+        return [f.name for f in self.columnTypes[1:]]
+
+    def marshall(self, value):
+        result = []
+        if not value:
+            return result
+        for k, v in value.items():
+            item = {self.keyName: k}
+            for idx, name in enumerate(self.dataNames):
+                item[name] = v[idx]
+            result.append(item)
+        return result
+
+    def unmarshall(self, value):
+        if not value:
+            value = {}
+        result = {}
+        for row in value:
+            item = self.unmarshallRow(row)
+            if item:
+                result[item.pop(self.keyName)] = [item.get(name)
+                                                  for name in self.dataNames]
+        return result
+
+
+class ContextBasedKeyTableFieldInstance(KeyTableFieldInstance):
+
+    @Lazy
+    def columnTypes(self):
+        obj = self.clientInstance.context
+        return [Field(name) for name in obj.columnNames]
+
