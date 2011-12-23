@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 Grid field definition.
-
-$Id$
 """
 
 from zope import schema
@@ -49,4 +47,13 @@ class Records(Grid):
                     FieldType('records', 'records',
                               u'A series of records or rows.',
                               instanceName='records',))
+
+
+class KeyTable(Grid):
+
+    __typeInfo__ = ('keytable',
+                    FieldType('keytable', 'keytable',
+                              u'A dictionary of records or rows the first '
+                              u'column of which represents the key.',
+                              instanceName='keytable',))
 
