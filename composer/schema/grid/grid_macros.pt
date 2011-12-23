@@ -39,16 +39,14 @@
 
 
 <metal:input define-macro="input_records"
-             tal:define="fieldInstance python: field.getFieldInstance(item.instance);
+             tal:define="fieldInstance python: field.getFieldInstance(view.instance);
                          columns fieldInstance/columnTypes;
                          rows data/?name">
     <table class="records">
       <thead>
         <tr>
           <tal:header repeat="column columns">
-            <th width="auto" editable="true"
-                tal:attributes="field column/name;
-                                style string:width: ${column/baseField/width|string:auto};"
+            <th tal:attributes="field column/name;"
                 tal:content="column/title">Column Title</th>
           </tal:header>
         </tr>
@@ -90,6 +88,19 @@
                       dojo.byId('tbody.$name').appendChild(n);;" />
     </div><br />
 </metal:input>
+
+
+<metal:display define-macro="display_records"
+             tal:define="value data/?fieldName">
+    <table class="listing">
+        <tr>
+          <th tal:repeat="header value/headers"
+                tal:content="header">Column Title</th></tr>
+        <tr tal:repeat="row value/rows">
+          <td tal:repeat="cell row"
+              tal:content="cell" /></tr>
+    </table>
+</metal:display>
 
 
 </body>

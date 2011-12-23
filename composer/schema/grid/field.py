@@ -126,6 +126,9 @@ class GridFieldInstance(ListFieldInstance):
 
 class RecordsFieldInstance(GridFieldInstance):
 
+    def getRenderer(self, name):
+        return grid_macros.macros[name]
+
     def marshall(self, value):
         result = []
         for row in value or []:
@@ -155,6 +158,16 @@ class KeyTableFieldInstance(RecordsFieldInstance):
     @Lazy
     def dataNames(self):
         return [f.name for f in self.columnTypes[1:]]
+
+    def display(self, value):
+        headers = [fi.context.title for fi in self.columnFieldInstances]
+        rows = []
+        for k, v in value.items():
+            row = [k]
+            for idx, fi in enumerate(self.columnFieldInstances[1:]):
+                row.append(fi.display(v[idx]))
+            rows.append(row)
+        return dict(headers=headers, rows=rows)
 
     def marshall(self, value):
         result = []
