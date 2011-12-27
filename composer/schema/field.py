@@ -18,8 +18,6 @@
 
 """
 Schema fields and related classes.
-
-$Id$
 """
 
 from datetime import datetime
@@ -32,7 +30,7 @@ from zope.component import adapts
 from zope import component
 from zope.i18n.format import DateTimeParseError
 from zope.i18n.locales import locales
-from zope.schema.interfaces import IVocabularyFactory
+from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 from zope.tales.engine import Engine
 from zope.tales.tales import Context
 
@@ -139,8 +137,15 @@ class Field(Component):
                 return terms
             voc = voc.splitlines()
             return [dict(token=t, title=t) for t in voc if t.strip()]
-        else:
-            return [dict(token=t.token, title=t.title or t.value) for t in voc]
+        elif IContextSourceBinder.providedBy(voc):
+            source = voc(context)
+            terms = component.queryMultiAdapter((source, request), ITerms)
+            if terms is not None:
+                termsList = [terms.getTerm(value) for value in source]
+                return [dict(token=t.token, title=t.title) for t in termsList]
+            else:
+                return None
+        return [dict(token=t.token, title=t.title or t.value) for t in voc]
 
     def getVocabularyTerms(self, name, context, request):
         if context is None or request is None:
@@ -157,12 +162,14 @@ class Field(Component):
     def getFieldTypeInfo(self):
         return self.fieldTypeInfo or fieldTypes.getTerm(self.fieldType)
 
-    def getFieldInstance(self, clientInstance=None):
+    def getFieldInstance(self, clientInstance=None, context=None, request=None):
         instanceName = self.instance_name or self.getFieldTypeInfo().instanceName
         fi = component.queryAdapter(self, IFieldInstance, name=instanceName)
         if fi is None:
             fi = component.getAdapter(self, IFieldInstance, name='')
         fi.clientInstance = clientInstance
+        fi.clientContext = context
+        fi.request = request
         return fi
 
     def getContextProperties(self):
@@ -215,6 +222,9 @@ class FieldInstance(object):
         error = formErrors[errorName]
         self.errors.append(error)
         self.severity = max(error.severity, self.severity)
+
+    def getRenderer(self, name):
+        return None
 
 
 class NumberFieldInstance(FieldInstance):
@@ -385,7 +395,7 @@ class CheckBoxesFieldInstance(ListFieldInstance):
 class DropdownFieldInstance(FieldInstance):
 
     def display(self, value):
-        items = self.context.getVocabularyItems()
+        items = self.context.getVocabularyItems(self.clientContext, self.request)
         for item in items:
             if item['token'] == value:
                 return item['title']

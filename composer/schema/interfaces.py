@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 Schemas and Fields.
-
-$Id$
 """
 
 from zope import schema
@@ -276,6 +274,14 @@ class IFieldInstance(Interface):
 
             Optionally, in addition the full data set may be given to
             allow for checking more than one data element.
+        """
+
+    def getRenderer(name):
+        """ Return the renderer object (e.g. a ZPT macro) for this field
+            with the name given.
+
+            May return None in which case the calling application should
+            use a default renderer.
         """
 
 
