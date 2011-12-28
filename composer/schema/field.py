@@ -18,8 +18,6 @@
 
 """
 Schema fields and related classes.
-
-$Id$
 """
 
 from datetime import datetime
