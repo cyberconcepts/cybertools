@@ -162,6 +162,8 @@ class KeyTableFieldInstance(RecordsFieldInstance):
     def display(self, value):
         headers = [fi.context.title for fi in self.columnFieldInstances]
         rows = []
+        if value is None:
+            value = {}
         for k, v in value.items():
             row = [k]
             for idx, fi in enumerate(self.columnFieldInstances[1:]):
