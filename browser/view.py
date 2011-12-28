@@ -18,8 +18,6 @@
 
 """
 A generic view class.
-
-$Id$
 """
 
 from zope.app.pagetemplate import ViewPageTemplateFile
@@ -31,6 +29,7 @@ from zope.event import notify
 from zope.publisher.interfaces.browser import IBrowserSkinType
 
 from cybertools.browser.renderer import CachableRenderer
+import cybertools.util.date
 
 
 mainTemplate = ViewPageTemplateFile('main.pt')
@@ -152,3 +151,7 @@ class GenericView(object):
     def cachedRenderer(self, baseRenderer, *args):
         cr = self.cachableRendererFactory(self, baseRenderer)
         return cr.renderMacro(*args)
+
+    def currentYear(self):
+        return cybertools.util.date.year()
+

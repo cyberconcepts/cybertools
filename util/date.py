@@ -56,3 +56,9 @@ def str2timeStamp(s):
 
 def strptime(s, format='%Y-%m-%d %H:%M:%S'):
     return datetime(*(time.strptime(s, format)[:6]))
+
+
+def year(d=None):
+    if d is None:
+        d = datetime.today()
+    return d.year
