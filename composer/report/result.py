@@ -76,3 +76,7 @@ class ResultSet(object):
     def __iter__(self):
         return iter(self.getResult())
 
+    @Lazy
+    def displayedColumns(self):
+        return self.context.getActiveOutputFields()
+
