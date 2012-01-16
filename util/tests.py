@@ -25,6 +25,7 @@ def test_suite():
         doctest.DocFileSuite('defer.txt', optionflags=flags),
         doctest.DocFileSuite('format.txt', optionflags=flags),
         doctest.DocFileSuite('html.txt', optionflags=flags),
+        doctest.DocFileSuite('iterate.txt', optionflags=flags),
         doctest.DocFileSuite('multikey.txt', optionflags=flags),
         doctest.DocFileSuite('property.txt', optionflags=flags),
         doctest.DocFileSuite('json.txt', optionflags=flags),

@@ -1,0 +1,54 @@
+================================
+Iterator and Generator Utilities
+================================
+
+
+Batch Iterator
+==============
+
+A batch iterator only provides a limited number of items in one
+series of access steps.
+
+  >>> from cybertools.util.iterate import BatchIterator
+
+We create a BatchIterator upon a base iterator. The BatchIterator
+only gives us a limited portion of the values provided by the base
+iterator.
+
+  >>> it = BatchIterator(xrange(30))
+  >>> list(it)
+  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+  >>> list(it)
+  []
+
+Now we advance to the next batch. The return value tells us that the
+base iterator is not exhausted yet.
+
+  >>> it.advance()
+  True
+  >>> list(it)
+  [20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+
+Advancing would not help if the base iterator is exhausted.
+
+  >>> it.advance()
+  False
+  >>> list(it)
+  []
+
+We can also immediately start at the second batch by providing the ``start``
+argument to the BatchIterator constructor.
+
+  >>> it = BatchIterator(xrange(30), start=1)
+  >>> list(it)
+  [20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+
+We can use another limit (i.e. the batch size) via the BatchIterator constructor.
+
+  >>> it = BatchIterator(xrange(30), start=1, limit=8)
+  >>> list(it)
+  [8, 9, 10, 11, 12, 13, 14, 15]
+  >>> it.advance()
+  True
+  >>> list(it)
+  [16, 17, 18, 19, 20, 21, 22, 23]
