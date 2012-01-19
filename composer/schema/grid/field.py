@@ -120,7 +120,8 @@ class GridFieldInstance(ListFieldInstance):
             if fi.default is not None:
                 if value == fi.default:
                     continue
-            item[fi.name] = value
+            if value:
+                item[fi.name] = value
         return item
 
 
@@ -189,7 +190,7 @@ class KeyTableFieldInstance(RecordsFieldInstance):
         for row in value:
             item = self.unmarshallRow(row)
             if item:
-                result[item.pop(self.keyName)] = [item.get(name)
+                result[item.pop(self.keyName)] = [item.get(name) or u''
                                                   for name in self.dataNames]
         return result
 
