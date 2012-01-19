@@ -162,7 +162,7 @@
                            style python:
                                 'width: %s' % (width and str(width)+'px' or '');">
       <option tal:repeat="item python:
-                    field.getVocabularyItems(instance.context, request)"
+                    field.getVocabularyItems(instance, request)"
               tal:content="item/title"
               tal:attributes="value item/token;
                               selected python:

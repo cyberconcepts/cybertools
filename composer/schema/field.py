@@ -129,7 +129,10 @@ class Field(Component):
     def getTitleValue(self):
         return self.title or self.name
 
-    def getVocabularyItems(self, context=None, request=None):
+    def getVocabularyItems(self, instance=None, request=None):
+        context = None
+        if instance is not None:
+            context = instance.context
         voc = (self.vocabulary or '')
         if isinstance(voc, basestring):
             terms = self.getVocabularyTerms(voc, context, request)
@@ -138,7 +141,7 @@ class Field(Component):
             voc = voc.splitlines()
             return [dict(token=t, title=t) for t in voc if t.strip()]
         elif IContextSourceBinder.providedBy(voc):
-            source = voc(context)
+            source = voc(instance)
             terms = component.queryMultiAdapter((source, request), ITerms)
             if terms is not None:
                 termsList = [terms.getTerm(value) for value in source]
@@ -395,7 +398,7 @@ class CheckBoxesFieldInstance(ListFieldInstance):
 class DropdownFieldInstance(FieldInstance):
 
     def display(self, value):
-        items = self.context.getVocabularyItems(self.clientContext, self.request)
+        items = self.context.getVocabularyItems(self.clientInstance, self.request)
         for item in items:
             if item['token'] == value:
                 return item['title']
