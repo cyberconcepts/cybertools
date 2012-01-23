@@ -20,6 +20,7 @@
 A generic view class.
 """
 
+from logging import getLogger
 from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
 from zope.interface import Interface, implements
@@ -154,4 +155,8 @@ class GenericView(object):
 
     def currentYear(self):
         return cybertools.util.date.year()
+
+    def logInfo(self, message, logName='cybertools'):
+        logger = getLogger(logName)
+        logger.info(message)
 
