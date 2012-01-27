@@ -2,7 +2,10 @@
 A Basic API for Reports and Listings
 ====================================
 
-  ($Id$)
+Note: The basic reporting stuff (with Report, ReportInstance, Field, and ResultSet
+classes) is now in cybertools.composer.report. The stuff defined here is,
+however, still used in some (TUM) projects and may also be useful in other
+cases.
 
 TO DO...
 
