@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns="http://www.w3.org/TR/REC-html40">
+  <head>
+    <title xxtal:content="view/title">Document</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <xml xxtal:replace="structure view/mswordXml" />
+
+    <style type="text/css"
+           xxtal:content="view/css">
+    </style>
+  </head>
+
+  <body class="doc">
+    <div xxtal:replace="structure view/text">Body Text</div>
+  </body>
+
+</html>
