@@ -29,8 +29,12 @@ word_template = ViewPageTemplateFile('word_page.pt')
 
 class Base(BrowserPage):
 
-    def __call__(self):
-        return self.index()
+    encoding = 'UTF-8'
+
+    def __call__(self, *args, **kw):
+        data = self.index(*args, **kw).encode(self.encoding)
+        self.setHeader(data)
+        return data
 
 
 class WordDocument(Base):

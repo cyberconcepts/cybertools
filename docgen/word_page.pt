@@ -17,7 +17,7 @@
   </head>
 
   <body class="doc">
-    <div xxtal:replace="structure view/text">Body Text</div>
+    <metal:content use-macro="view/content" />
   </body>
 
 </html>
