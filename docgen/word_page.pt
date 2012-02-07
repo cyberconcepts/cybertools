@@ -9,10 +9,10 @@
     <title xxtal:content="view/title">Document</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-    <xml xxtal:replace="structure view/mswordXml" />
+    <xml tal:replace="structure view/mswordXml" />
 
     <style type="text/css"
-           xxtal:content="view/css">
+           tal:content="view/css">
     </style>
   </head>
 

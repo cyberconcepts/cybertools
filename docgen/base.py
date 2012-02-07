@@ -20,6 +20,7 @@
 View definitions for generation of documents.
 """
 
+import os
 from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope.publisher.browser import BrowserPage
@@ -40,6 +41,7 @@ class Base(BrowserPage):
 class WordDocument(Base):
 
     index = word_template
+    showLinks = False
 
     def setHeader(self, data, filename='document'):
         fn = '%s.doc' % filename
@@ -57,3 +59,12 @@ class WordDocument(Base):
         <w:DoNotOptimizeForBrowser />
         </w:WordDocument>
     </xml>"""
+
+    @Lazy
+    def css(self):
+        fn = os.path.join(os.path.dirname(__file__), 'word.css')
+        f = open(fn, 'r')
+        css = f.read()
+        f.close()
+        return css
+
