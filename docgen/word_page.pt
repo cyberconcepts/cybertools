@@ -17,7 +17,9 @@
   </head>
 
   <body class="doc">
-    <metal:content use-macro="view/content" />
+    <div class="Section2">
+      <metal:content use-macro="view/content" />
+    </div>
   </body>
 
 </html>
