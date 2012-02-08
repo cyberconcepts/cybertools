@@ -108,5 +108,6 @@ def createField(field, info=None):
               #value_type=getattr(field, 'value_type', None),
               nostore=getattr(field, 'nostore', False),
               multiple=getattr(field, 'multiple', False),
+              display_format=getattr(field, 'displayFormat', None),
               baseField=field,)
     return f
