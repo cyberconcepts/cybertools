@@ -33,6 +33,7 @@ class BaseRow(object):
         self.context = context
         self.parent = parent
         self.data = {}
+        self.sequenceNumber = 0
 
     def __getattr__(self, attr):
         f = self.parent.context.fields[attr]
@@ -71,6 +72,8 @@ class ResultSet(object):
         result = [row for row in result if self.queryCriteria.check(row)]
         if self.sortCriteria:
             result.sort(key=lambda x: [f.getSortValue(x) for f in self.sortCriteria])
+        for idx, row in enumerate(result):
+            row.sequenceNumber = idx + 1
         return result
 
     def __iter__(self):
