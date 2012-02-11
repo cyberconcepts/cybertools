@@ -30,7 +30,8 @@ word_template = ViewPageTemplateFile('word_page.pt')
 
 class Base(BrowserPage):
 
-    encoding = 'UTF-8'
+    #encoding = 'UTF-8'
+    encoding = 'ISO8859-15'
 
     def __call__(self, *args, **kw):
         data = self.index(*args, **kw).encode(self.encoding)
@@ -48,7 +49,8 @@ class WordDocument(Base):
         response = self.request.response
         response.setHeader('Cache-Control', '')
         response.setHeader('Pragma', '')
-        response.setHeader('Content-Type', 'application/msword;charset=utf-8')
+        response.setHeader('Content-Type',
+                           'application/msword;charset=%s' % self.encoding)
         response.setHeader('Content-Length', len(data))
         response.setHeader('Content-Disposition', 'filename="%s"' % fn)
 
