@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2012 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -48,12 +48,11 @@ class Row(BaseRow):
     attributeHandlers = {}
 
     def getRawValue(self, attr):
-        return self.attributeHandlers.get(attr, Row.getContextAttr)(self, attr)
+        return self.attributeHandlers.get(attr, self.getContextAttr)(self, attr)
 
     @staticmethod
     def getContextAttr(obj, attr):
         return getattr(obj.context, attr)
-
 
 
 class ResultSet(object):
