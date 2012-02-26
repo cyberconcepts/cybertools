@@ -47,7 +47,7 @@ class Row(BaseRow):
     attributeHandlers = {}
 
     def getRawValue(self, attr):
-        return self.attributeHandlers.get(attr, Row.getContextAttr)(self, attr)
+        return self.attributeHandlers.get(attr, self.getContextAttr)(self, attr)
 
     @staticmethod
     def getContextAttr(obj, attr):
