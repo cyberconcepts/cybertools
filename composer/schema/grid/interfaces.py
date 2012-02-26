@@ -46,6 +46,7 @@ class Records(Grid):
     __typeInfo__ = ('records',
                     FieldType('records', 'records',
                               u'A series of records or rows.',
+                              displayRenderer='display_records',
                               instanceName='records',))
 
 

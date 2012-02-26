@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2012 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 Implementation of report field definitions.
-
-$Id$
 """
 
 from datetime import datetime
@@ -92,6 +90,14 @@ class Field(Component):
         return getattr(row, self.name, None)
         #return self.getValue(row)
 
+
+class CalculatedField(Field):
+
+    def getRawValue(self, row):
+        return getattr(row, self.name)
+
+
+# sample field
 
 label = Field('label', u'Label',
                 u'A short text that identifies a row for humans.')
