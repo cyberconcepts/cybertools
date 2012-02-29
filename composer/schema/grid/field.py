@@ -128,7 +128,7 @@ class GridFieldInstance(ListFieldInstance):
 class RecordsFieldInstance(GridFieldInstance):
 
     def getRenderer(self, name):
-        return grid_macros.macros[name]
+        return grid_macros.macros.get(name)
 
     def marshall(self, value):
         result = []
