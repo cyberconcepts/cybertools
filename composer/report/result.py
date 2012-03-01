@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2012 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ class BaseRow(object):
         self.context = context
         self.parent = parent
         self.data = {}
+        self.sequenceNumber = 0
 
     def __getattr__(self, attr):
         f = self.parent.context.fields[attr]
@@ -54,7 +55,6 @@ class Row(BaseRow):
         return getattr(obj.context, attr)
 
 
-
 class ResultSet(object):
 
     def __init__(self, context, data, rowFactory=Row,
@@ -71,6 +71,8 @@ class ResultSet(object):
         result = [row for row in result if self.queryCriteria.check(row)]
         if self.sortCriteria:
             result.sort(key=lambda x: [f.getSortValue(x) for f in self.sortCriteria])
+        for idx, row in enumerate(result):
+            row.sequenceNumber = idx + 1
         return result
 
     def __iter__(self):
