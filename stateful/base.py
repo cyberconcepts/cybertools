@@ -51,8 +51,10 @@ class Stateful(object):
         return self.state
 
     def getStateObject(self):
-        state = self.getState()
-        return self.getStatesDefinition().states[state]
+        states = self.getStatesDefinition().states
+        if self.state not in states:
+            self.state = self.getStatesDefinition().initialState
+        return states[self.state]
 
     def doTransition(self, transition, historyInfo=None):
         sd = self.getStatesDefinition()
