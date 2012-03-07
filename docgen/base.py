@@ -41,6 +41,7 @@ class Base(BrowserPage):
 
 class WordDocument(Base):
 
+    isToplevel = True
     index = word_template
     showLinks = False
 
