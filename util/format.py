@@ -54,7 +54,7 @@ def formatDate(dt=None, type='date', variant='medium', lang='de'):
 
 def formatNumber(num, type='decimal', lang='de'):
     loc = locales.getLocale(lang)
-    fmt = de.numbers.getFormatter(type)
+    fmt = loc.numbers.getFormatter(type)
     return fmt.format(num)
 
 
