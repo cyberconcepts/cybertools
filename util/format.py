@@ -52,10 +52,10 @@ def formatDate(dt=None, type='date', variant='medium', lang='de'):
     return fmt.format(dt or datetime.now())
 
 
-def formatNumber(num, type='decimal', lang='de'):
+def formatNumber(num, type='decimal', lang='de', pattern=u'#,##0.00;-#,##0.00'):
     loc = locales.getLocale(lang)
-    fmt = de.numbers.getFormatter(type)
-    return fmt.format(num)
+    fmt = loc.numbers.getFormatter(type)
+    return fmt.format(num, pattern=pattern)
 
 
 def toStr(value, encoding='UTF-8'):
