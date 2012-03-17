@@ -1,2 +1,4 @@
 *.pyc
 ajax/dojo/*
+*.project
+*.pydevproject
