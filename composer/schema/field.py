@@ -400,7 +400,7 @@ class DropdownFieldInstance(FieldInstance):
     def display(self, value):
         items = self.context.getVocabularyItems(self.clientInstance, self.request)
         for item in items:
-            if item['token'] == value:
+            if str(item['token']) == str(value):
                 return item['title']
         return value
 
