@@ -30,8 +30,8 @@ word_template = ViewPageTemplateFile('word_page.pt')
 
 class Base(BrowserPage):
 
-    encoding = 'UTF-8'
-    #encoding = 'ISO8859-15'
+    #encoding = 'UTF-8'
+    encoding = 'ISO8859-15'
 
     def __call__(self, *args, **kw):
         data = self.index(*args, **kw).encode(self.encoding)
