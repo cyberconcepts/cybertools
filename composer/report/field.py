@@ -71,8 +71,9 @@ class Field(Component):
         return row.getRawValue(self.name)
 
     def getSelectValue(self, row):
-        return getattr(row, self.name, None)
-        #return self.getRawValue(row)   # better let row control selection...
+        return self.getValue(row)
+        #return self.getRawValue(row)
+        #return getattr(row, self.name, None)
 
     def getValue(self, row):
         value = self.getRawValue(row)
@@ -86,9 +87,9 @@ class Field(Component):
         return self.getValue(row)
 
     def getSortValue(self, row):
-        # TODO: consider 'descending' flag, use raw value instead of formatted one
-        return getattr(row, self.name, None)
-        #return self.getValue(row)
+        # TODO: consider 'descending' flag (?use raw value instead of formatted one?)
+        return self.getValue(row)
+        #return getattr(row, self.name, None)
 
 
 class CalculatedField(Field):
