@@ -44,6 +44,10 @@ class Field(Component):
     storeData = True
     renderer = 'standard'
     operator = 'in'
+    showTitle = True
+    colspan=1
+    colwidth='auto'
+    coltextalign='left'
 
     executionSteps = ['query', 'sort', 'output']    # , 'totals']
 
