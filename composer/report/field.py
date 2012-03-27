@@ -48,6 +48,10 @@ class Field(Component):
     colspan=1
     colwidth='auto'
     coltextalign='left'
+    colbordertop='1px solid #000'
+    colborderright='1px solid #000'
+    colborderbottom='1px solid #000'
+    colborderleft='1px solid #000'
 
     executionSteps = ['query', 'sort', 'output']    # , 'totals']
 
