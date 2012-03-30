@@ -53,9 +53,9 @@ class Row(BaseRow):
     @staticmethod
     def getContextAttr(obj, attr):
         return getattr(obj.context, attr)
-    
+
     def getCategories(self):
-        return [self.getRawValue(f.__name__) for f in 
+        return [self.getRawValue(f.name) for f in
                     self.parent.context.fields if 'category' in f.executionSteps]
 
 
@@ -63,31 +63,27 @@ class ResultSet(object):
 
     def __init__(self, context, data, rowFactory=Row,
                  sortCriteria=None, queryCriteria=BaseQueryCriteria(),
-                 filterDublicate=False):
+                 filterDuplicates=False):
         self.context = context  # the report or report instance
         self.data = data
         self.rowFactory = rowFactory
         self.sortCriteria = sortCriteria
         self.queryCriteria = queryCriteria
-        self.filterDublicate = filterDublicate
+        self.filterDuplicates = filterDuplicates
         self.totals = BaseRow(None, self)
-        
-    def filterDublicateRows(self, result):
-        res = []
+
+    def filterDuplicateRows(self, result):
+        seen = set()
         for row in result:
-            add = True
-            for r in res:
-                for f in self.categoryColumns:
-                    if row.getRawValue(f.__name__) == r.getRawValue(f.__name__):
-                        add = False
-            if add:
-                res.append(row)
-        return res
+            cats = tuple(row.getRawValue(f.name) for f in self.categoryColumns)
+            if cats not in seen:
+                seen.add(cats)
+                yield row
 
     def getResult(self):
         result = [self.rowFactory(item, self) for item in self.data]
-        if self.filterDublicate:
-            result = [row for row in self.filterDublicateRows(result)]
+        if self.filterDuplicates:
+            result = self.filterDuplicateRows(result)
         result = [row for row in result if self.queryCriteria.check(row)]
         if self.sortCriteria:
             result.sort(key=lambda x: [f.getSortValue(x) for f in self.sortCriteria])
@@ -108,20 +104,19 @@ class ResultSet(object):
 
 
 class CombinedResultSet(ResultSet):
-    
+
     def __init__(self, context, categorySet, resultSet):
         self.context = context
         self.categorySet = categorySet
         self.resultSet = resultSet
         self.totals = BaseRow(None, self)
-    
+
     def getResult(self):
         result = []
         for row in self.categorySet:
             result.append(row)
             for res in self.resultSet:
                 for f in self.categoryColumns:
-                    if res.getRawValue(f.__name__) == row.getRawValue(f.__name__):
+                    if res.getRawValue(f.name) == row.getRawValue(f.name):
                         result.append(res)
         return result
-    
