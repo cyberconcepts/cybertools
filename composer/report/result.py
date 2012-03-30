@@ -106,3 +106,22 @@ class ResultSet(object):
     def categoryColumns(self):
         return self.context.getCategoryFields()
 
+
+class CombinedResultSet(ResultSet):
+    
+    def __init__(self, context, categorySet, resultSet):
+        self.context = context
+        self.categorySet = categorySet
+        self.resultSet = resultSet
+        self.totals = BaseRow(None, self)
+    
+    def getResult(self):
+        result = []
+        for row in self.categorySet:
+            result.append(row)
+            for res in self.resultSet:
+                for f in self.categoryColumns:
+                    if res.getRawValue(f.__name__) == row.getRawValue(f.__name__):
+                        result.append(res)
+        return result
+    

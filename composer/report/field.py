@@ -46,6 +46,7 @@ class Field(Component):
     operator = 'in'
     showTitle = True
     colspan=1
+    colheaderspan=1
     colwidth='auto'
     coltextalign='left'
     colbordertop='1px solid #000'
