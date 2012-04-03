@@ -54,43 +54,44 @@ class Row(BaseRow):
     def getContextAttr(obj, attr):
         return getattr(obj.context, attr)
     
-    def getCategories(self):
-        return [self.getRawValue(f.__name__) for f in 
-                    self.parent.context.fields if 'category' in f.executionSteps]
+    def getGroupFields(self):
+        return [self.getRawValue(f.name) for f in 
+                    self.parent.context.fields if 'group' in f.executionSteps]
 
 
 class ResultSet(object):
 
-    def __init__(self, context, data, rowFactory=Row,
+    def __init__(self, context, data, rowFactory=Row, headerRowFactory=Row,
                  sortCriteria=None, queryCriteria=BaseQueryCriteria(),
                  filterDublicate=False):
         self.context = context  # the report or report instance
         self.data = data
         self.rowFactory = rowFactory
+        self.headerRowFactory = headerRowFactory
         self.sortCriteria = sortCriteria
         self.queryCriteria = queryCriteria
         self.filterDublicate = filterDublicate
         self.totals = BaseRow(None, self)
-        
-    def filterDublicateRows(self, result):
-        res = []
-        for row in result:
-            add = True
-            for r in res:
-                for f in self.categoryColumns:
-                    if row.getRawValue(f.__name__) == r.getRawValue(f.__name__):
-                        add = False
-            if add:
-                res.append(row)
-        return res
+
+    def insertHeaderRow(self, idx, result):
+        result.insert(idx, self.headerRowFactory(result[idx].context, self))
 
     def getResult(self):
         result = [self.rowFactory(item, self) for item in self.data]
-        if self.filterDublicate:
-            result = [row for row in self.filterDublicateRows(result)]
         result = [row for row in result if self.queryCriteria.check(row)]
         if self.sortCriteria:
             result.sort(key=lambda x: [f.getSortValue(x) for f in self.sortCriteria])
+        if self.hasGroupColumns:
+            for idx, row in enumerate(result):
+                insert = False
+                for f in self.groupColumns:
+                    if idx == 0:
+                        insert = True
+                    else:
+                        if result[idx].getRawValue(f.name) != result[idx-1].getRawValue(f.name):
+                            insert = True
+                if insert:
+                    self.insertHeaderRow(idx, result)
         for idx, row in enumerate(result):
             row.sequenceNumber = idx + 1
         return result
@@ -103,8 +104,12 @@ class ResultSet(object):
         return self.context.getActiveOutputFields()
 
     @Lazy
-    def categoryColumns(self):
-        return self.context.getCategoryFields()
+    def groupColumns(self):
+        return self.context.getGroupFields()
+    
+    @Lazy
+    def hasGroupColumns(self):
+        return len(self.groupColumns) > 0
 
 
 class CombinedResultSet(ResultSet):
