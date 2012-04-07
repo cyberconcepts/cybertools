@@ -134,8 +134,8 @@ class Report(Template):
     def getPresentationFormats(self):
         return [dict(renderer='default', title='Default')]
     
-    def getCategoryFields(self):
-        return [f for f in self.fields if 'category' in f.executionSteps]
+    def getGroupFields(self):
+        return [f for f in self.fields if 'group' in f.executionSteps]
 
 
 class BaseQueryCriteria(Component):
