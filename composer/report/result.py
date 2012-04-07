@@ -106,21 +106,3 @@ class ResultSet(object):
     def groupColumns(self):
         return self.context.getGroupFields()
 
-
-class CombinedResultSet(ResultSet):
-
-    def __init__(self, context, categorySet, resultSet):
-        self.context = context
-        self.categorySet = categorySet
-        self.resultSet = resultSet
-        self.totals = BaseRow(None, self)
-
-    def getResult(self):
-        result = []
-        for row in self.categorySet:
-            result.append(row)
-            for res in self.resultSet:
-                for f in self.categoryColumns:
-                    if res.getRawValue(f.name) == row.getRawValue(f.name):
-                        result.append(res)
-        return result
