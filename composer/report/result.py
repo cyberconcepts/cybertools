@@ -59,9 +59,15 @@ class Row(BaseRow):
                     self.parent.context.fields if 'group' in f.executionSteps]
 
 
+class GroupHeaderRow(BaseRow):
+
+    def getRawValue(self, attr):
+        return self.data.get(attr, u'')
+
+
 class ResultSet(object):
 
-    def __init__(self, context, data, rowFactory=Row, headerRowFactory=Row,
+    def __init__(self, context, data, rowFactory=Row, headerRowFactory=GroupHeaderRow,
                  sortCriteria=None, queryCriteria=BaseQueryCriteria()):
         self.context = context  # the report or report instance
         self.data = data
@@ -71,8 +77,12 @@ class ResultSet(object):
         self.queryCriteria = queryCriteria
         self.totals = BaseRow(None, self)
 
-    def insertHeaderRow(self, idx, result):
-        result.insert(idx, self.headerRowFactory(result[idx].context, self))
+    def insertHeaderRow(self, idx, result, columns):
+        headerRow = self.headerRowFactory(None, self)
+        for c in columns:
+            if c.output:
+                headerRow.data[c.output] = c.getDisplayValue(result[idx])
+        result.insert(idx, headerRow)
 
     def getResult(self):
         result = [self.rowFactory(item, self) for item in self.data]
@@ -81,16 +91,17 @@ class ResultSet(object):
             result.sort(key=lambda x: [f.getSortValue(x) for f in self.sortCriteria])
         if self.groupColumns:
             for idx, row in enumerate(result):
-                insert = False
+                insert = []
                 for f in self.groupColumns:
+                    output = [f] + f.outputWith
                     if idx == 0:
-                        insert = True
+                        insert.append(output)
                     else:
                         if (result[idx].getRawValue(f.name) !=
                                 result[idx-1].getRawValue(f.name)):
-                            insert = True
-                if insert:
-                    self.insertHeaderRow(idx, result)
+                            insert.append(output)
+                for output in insert:
+                    self.insertHeaderRow(idx, result, output)
         for idx, row in enumerate(result):
             row.sequenceNumber = idx + 1
         return result

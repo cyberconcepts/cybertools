@@ -45,6 +45,8 @@ class Field(Component):
     renderer = 'standard'
     operator = 'in'
     showTitle = True
+    output = None
+    outputWith = ()
     colspan=1
     colheaderspan=1
     colwidth='auto'
