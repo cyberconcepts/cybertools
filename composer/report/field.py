@@ -33,6 +33,33 @@ from cybertools.composer.report.interfaces import IField
 from cybertools.composer.report.interfaces import fieldTypes
 
 
+class Style(object):
+
+    initData = {}
+
+    def __getitem__(self, k):
+        return self.data[k]
+
+    def __init__(self, **kw):
+        self.data = dict(self.initData)
+        self.data.update(kw)
+
+    def __str__(self):
+        return ';'.join('%s: %s' % (k, v) for k, v in self.data.items())
+
+
+class TableCellStyle(Style):
+
+    initData = dict(
+        width='auto',
+        textalign='left',
+        bordertop='1px solid #000',
+        borderright='1px solid #000',
+        borderbottom='1px solid #000',
+        borderleft='1px solid #000',
+    )
+
+
 class Field(Component):
 
     implements(IField)
@@ -49,6 +76,7 @@ class Field(Component):
     outputWith = ()
     colspan=1
     colheaderspan=1
+    style = TableCellStyle()
     colwidth='auto'
     coltextalign='left'
     colbordertop='1px solid #000'

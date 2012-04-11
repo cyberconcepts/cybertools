@@ -81,8 +81,16 @@ class ResultSet(object):
         headerRow = self.headerRowFactory(None, self)
         for c in columns:
             if c.output:
-                headerRow.data[c.output] = c.getDisplayValue(result[idx])
+                #headerRow.data[c.output] = c.getRawValue(result[idx])
+                headerRow.data[c.output] = c.getRawValue(result[idx])
         result.insert(idx, headerRow)
+
+    def getHeaderRow(self, row, columns):
+        headerRow = self.headerRowFactory(None, self)
+        for c in columns:
+            if c.output:
+                headerRow.data[c.output] = c.getRawValue(row)
+        return headerRow
 
     def getResult(self):
         result = [self.rowFactory(item, self) for item in self.data]
@@ -90,18 +98,16 @@ class ResultSet(object):
         if self.sortCriteria:
             result.sort(key=lambda x: [f.getSortValue(x) for f in self.sortCriteria])
         if self.groupColumns:
-            for idx, row in enumerate(result):
-                insert = []
-                for f in self.groupColumns:
-                    output = [f] + f.outputWith
-                    if idx == 0:
-                        insert.append(output)
-                    else:
-                        if (result[idx].getRawValue(f.name) !=
-                                result[idx-1].getRawValue(f.name)):
-                            insert.append(output)
-                for output in insert:
-                    self.insertHeaderRow(idx, result, output)
+            res = []
+            groupValues = [None for f in self.groupColumns]
+            for row in result:
+                for idx, f in enumerate(self.groupColumns):
+                    value = f.getRawValue(row)
+                    if value != groupValues[idx]:
+                        groupValues[idx] = value
+                        res.append(self.getHeaderRow(row, (f,) + f.outputWith))
+                res.append(row)
+            result = res
         for idx, row in enumerate(result):
             row.sequenceNumber = idx + 1
         return result
