@@ -47,17 +47,19 @@ class Style(object):
     def __str__(self):
         return ';'.join('%s: %s' % (k, v) for k, v in self.data.items())
 
+    def items(self):
+        return self.data.items()
 
 class TableCellStyle(Style):
 
-    initData = dict(
-        width='auto',
-        textalign='left',
-        bordertop='1px solid #000',
-        borderright='1px solid #000',
-        borderbottom='1px solid #000',
-        borderleft='1px solid #000',
-    )
+    initData = {
+        'width':'auto',
+        'text-align':'left',
+        'border-top':'1px solid #000',
+        'border-right':'1px solid #000',
+        'border-bottom':'1px solid #000',
+        'border-left':'1px solid #000',
+    }
 
 
 class Field(Component):
@@ -77,12 +79,6 @@ class Field(Component):
     colspan=1
     colheaderspan=1
     style = TableCellStyle()
-    colwidth='auto'
-    coltextalign='left'
-    colbordertop='1px solid #000'
-    colborderright='1px solid #000'
-    colborderbottom='1px solid #000'
-    colborderleft='1px solid #000'
 
     executionSteps = ['query', 'sort', 'output']    # , 'totals']
 
