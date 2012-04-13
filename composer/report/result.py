@@ -20,6 +20,7 @@
 Report result sets and related classes.
 """
 
+from copy import copy
 from zope.cachedescriptors.property import Lazy
 
 from cybertools.composer.interfaces import IInstance
@@ -57,12 +58,24 @@ class Row(BaseRow):
     def getGroupFields(self):
         return [self.getRawValue(f.name) for f in 
                     self.parent.context.fields if 'group' in f.executionSteps]
-
-
+    @Lazy
+    def displayedColumns(self):
+        return self.parent.context.getActiveOutputFields()
+    
+    
 class GroupHeaderRow(BaseRow):
 
     def getRawValue(self, attr):
         return self.data.get(attr, u'')
+    
+    @Lazy
+    def displayedColumns(self):
+        fields = self.parent.context.getActiveOutputFields()
+        for col in self.headerColumns:
+            for idx, f in enumerate(fields):
+                if f.name == col.name:
+                    fields[idx] = col
+        return fields
 
 
 class ResultSet(object):
@@ -77,19 +90,15 @@ class ResultSet(object):
         self.queryCriteria = queryCriteria
         self.totals = BaseRow(None, self)
 
-    def insertHeaderRow(self, idx, result, columns):
-        headerRow = self.headerRowFactory(None, self)
-        for c in columns:
-            if c.output:
-                #headerRow.data[c.output] = c.getRawValue(result[idx])
-                headerRow.data[c.output] = c.getRawValue(result[idx])
-        result.insert(idx, headerRow)
-
     def getHeaderRow(self, row, columns):
         headerRow = self.headerRowFactory(None, self)
+        headerRow.headerColumns = []
         for c in columns:
             if c.output:
                 headerRow.data[c.output] = c.getRawValue(row)
+                headerColumn = copy(c)
+                headerColumn.__name__ = c.output
+                headerRow.headerColumns.append(headerColumn)
         return headerRow
 
     def getResult(self):
