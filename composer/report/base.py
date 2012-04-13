@@ -136,6 +136,9 @@ class Report(Template):
     
     def getGroupFields(self):
         return [f for f in self.fields if 'group' in f.executionSteps]
+    
+    def getTotalsFields(self):
+        return [f for f in self.fields if 'totals' in f.executionSteps]
 
 
 class BaseQueryCriteria(Component):
