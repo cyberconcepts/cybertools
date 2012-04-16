@@ -35,7 +35,7 @@ class BaseRow(object):
         self.data = {}
         self.sequenceNumber = 0
 
-    def __getattr__(self, attr):
+    def xx__getattr__(self, attr):
         f = self.parent.context.fields[attr]
         return f.getValue(self)
 
