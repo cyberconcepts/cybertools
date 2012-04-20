@@ -104,6 +104,8 @@ class Editor(BaseInstance):
             fi = formState.fieldInstances[name]
             #rawValue = data.get(name, u'')
             rawValue = fi.getRawValue(data, name, u'')
+            if rawValue == '__no_change__':
+                continue
             value = fi.unmarshall(rawValue)
             if ftype in fieldHandlers:  # caller wants special treatment of field
                 fieldHandlers[ftype](context, value, fi, formState)
