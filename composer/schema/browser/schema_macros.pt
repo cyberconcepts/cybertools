@@ -107,7 +107,7 @@
     <input type="text" name="field" style="width: 6em; height: 1.5em"
            dojoType="dijit.form.TimeTextBox"
            tal:define="width field/width|nothing"
-           tal:condition="field/hideTime|python:True"
+           tal:condition="not:field/hideTime|python:False"
            tal:attributes="name name;
                            value data/?name|string:;
                            required field/required_js" />
