@@ -50,6 +50,7 @@ class Style(object):
     def items(self):
         return self.data.items()
 
+
 class TableCellStyle(Style):
 
     initData = {
@@ -76,6 +77,7 @@ class Field(Component):
     output = None
     outputWith = ()
     style = TableCellStyle()
+    cssClass = ''
 
     executionSteps = ['query', 'sort', 'output']    # , 'totals']
 
