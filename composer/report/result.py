@@ -27,7 +27,6 @@ from cybertools.composer.interfaces import IInstance
 from cybertools.composer.report.base import BaseQueryCriteria
 
 
-
 class BaseRow(object):
 
     def __init__(self, context, parent):
@@ -35,10 +34,6 @@ class BaseRow(object):
         self.parent = parent
         self.data = {}
         self.sequenceNumber = 0
-
-    def xx__getattr__(self, attr):
-        f = self.parent.context.fields[attr]
-        return f.getValue(self)
 
     def getRawValue(self, attr):
         return self.data.get(attr)
@@ -62,6 +57,9 @@ class Row(BaseRow):
     def displayedColumns(self):
         return self.parent.context.getActiveOutputFields()
     
+    def useRowProperty(self, attr):
+        return getattr(self, attr)
+
     
 class GroupHeaderRow(BaseRow):
 
