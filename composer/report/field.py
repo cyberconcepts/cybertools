@@ -44,6 +44,7 @@ class Field(Component):
     storeData = True
     renderer = 'standard'
     operator = 'in'
+    cssClass = ''
 
     executionSteps = ['query', 'sort', 'output']    # , 'totals']
 
