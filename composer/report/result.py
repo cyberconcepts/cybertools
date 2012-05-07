@@ -75,8 +75,15 @@ class ResultSet(object):
             row.sequenceNumber = idx + 1
         return result
 
+    @Lazy
+    def result(self):
+        return self.getResult()
+
     def __iter__(self):
-        return iter(self.getResult())
+        return iter(self.result)
+
+    def first(self):
+        return self.result[0]
 
     @Lazy
     def displayedColumns(self):
