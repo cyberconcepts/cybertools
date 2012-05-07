@@ -231,8 +231,10 @@ class WorkItem(Stateful, Track):
 
     def move(self, userName, **kw):
         moved = self.createNew('move', userName, **kw)
+        moved.userName = self.userName
         moved.state = 'moved'
-        moved.reindex('state')
+        #moved.reindex('state')
+        moved.reindex()
         task = kw.pop('task', None)
         new = moved.createNew(None, userName, taskId=task, runId=0, **kw)
         new.userName = self.userName
