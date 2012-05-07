@@ -87,9 +87,8 @@ class Field(Component):
         return self.getValue(row)
 
     def getSortValue(self, row):
-        # TODO: consider 'descending' flag, use raw value instead of formatted one
-        return getattr(row, self.name, None)
-        #return self.getValue(row)
+        # TODO: consider 'descending' flag
+        return self.getValue(row)
 
 
 class CalculatedField(Field):
