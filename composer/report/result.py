@@ -83,7 +83,9 @@ class ResultSet(object):
         return iter(self.result)
 
     def first(self):
-        return self.result[0]
+        if len(self.result) > 0:
+            return self.result[0]
+        return self.rowFactory(None, self)
 
     @Lazy
     def displayedColumns(self):
