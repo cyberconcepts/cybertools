@@ -79,6 +79,7 @@ def checkStyle(k):
 
 
 def stripAll(value):
+    value = sanitize(value)
     def collectText(tags):
         for tag in tags:
             if type(tag) is NavigableString:
