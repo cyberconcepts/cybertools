@@ -121,14 +121,8 @@ class Field(Component):
         return self.getValue(row)
 
     def getSortValue(self, row):
-<<<<<<< HEAD
-        # TODO: consider 'descending' flag (?use raw value instead of formatted one?)
-        return self.getValue(row)
-        #return getattr(row, self.name, None)
-=======
         # TODO: consider 'descending' flag
         return self.getValue(row)
->>>>>>> master
 
 
 class CalculatedField(Field):
