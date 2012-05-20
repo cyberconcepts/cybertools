@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2012 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 Planning and recording activities (work items).
-
-$Id$
 """
 
 from zope import component
@@ -42,7 +40,8 @@ _not_found = object()
 def workItemStates():
     return StatesDefinition('workItemStates',
         State('new', 'new',
-              ('plan', 'accept', 'start', 'work', 'finish', 'delegate', 'cancel'),
+              ('plan', 'accept', 'start', 'work', 'finish', 'delegate', 
+               'cancel'),
               color='red'),
         State('planned', 'planned',
               ('plan', 'accept', 'start', 'work', 'finish', 'delegate',
@@ -67,13 +66,13 @@ def workItemStates():
         State('closed', 'closed', (), color='lightblue'),
         # not directly reachable states:
         State('delegated', 'delegated',
-              ('plan', 'accept', 'start', 'work', 'finish', 'close', 'delegate',
-               'move', 'cancel', 'modify'),
+              ('plan', 'accept', 'start', 'work', 'finish', 'close', 
+               'delegate', 'move', 'cancel', 'modify'),
               color='purple'),
         State('delegated_x', 'delegated', (), color='purple'),
         State('moved', 'moved',
-              ('plan', 'accept', 'start', 'work', 'finish', 'close', 'delegate',
-               'move', 'cancel', 'modify'),
+              ('plan', 'accept', 'start', 'work', 'finish', 'close', 
+               'delegate', 'move', 'cancel', 'modify'),
               color='grey'),
         State('moved_x', 'moved', (), color='grey'),
         State('replaced', 'replaced', (), color='grey'),
@@ -95,7 +94,7 @@ def workItemStates():
 
 
 fieldNames = ['title', 'description', 'start', 'end', 'duration', 'effort',
-              'comment', 'party']
+              'comment', 'party']   # for use in editingRules
 
 # meaning:  - not editable, value=default
 #           / not editable, value=None
@@ -125,11 +124,11 @@ class WorkItem(Stateful, Track):
 
     implements(IWorkItem)
 
-    statesDefinition = 'organize.workItemStates'
-
     metadata_attributes = Track.metadata_attributes + ('state',)
     index_attributes = metadata_attributes
     typeName = 'WorkItem'
+    typeInterface = IWorkItem
+    statesDefinition = 'organize.workItemStates'
 
     initAttributes = set(['party', 'title', 'description', 'start', 'end',
                           'duration', 'effort'])
@@ -141,7 +140,8 @@ class WorkItem(Stateful, Track):
         self.data['created'] = self.timeStamp
 
     def getStatesDefinition(self):
-        return component.getUtility(IStatesDefinition, name=self.statesDefinition)
+        return component.getUtility(IStatesDefinition, 
+                                    name=self.statesDefinition)
 
     @property
     def party(self):
@@ -165,7 +165,7 @@ class WorkItem(Stateful, Track):
         return self.data.get('effort') or self.duration
 
     def __getattr__(self, attr):
-        if attr not in IWorkItem:
+        if attr not in self.typeInterface:
             raise AttributeError(attr)
         return self.data.get(attr)
 
