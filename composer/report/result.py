@@ -121,8 +121,17 @@ class ResultSet(object):
             row.sequenceNumber = idx + 1
         return result
 
+    @Lazy
+    def result(self):
+        return self.getResult()
+
     def __iter__(self):
-        return iter(self.getResult())
+        return iter(self.result)
+
+    def first(self):
+        if len(self.result) > 0:
+            return self.result[0]
+        return self.rowFactory(None, self)
 
     @Lazy
     def displayedColumns(self):
