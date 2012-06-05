@@ -61,7 +61,7 @@ class Row(BaseRow):
     def useRowProperty(self, attr):
         return getattr(self, attr)
 
-    
+
 class GroupHeaderRow(BaseRow):
 
     def getRawValue(self, attr):
