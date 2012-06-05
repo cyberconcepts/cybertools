@@ -98,6 +98,7 @@ class ResultSet(object):
                 headerRow.data[c.output] = c.getRawValue(row)
                 headerColumn = copy(c)
                 headerColumn.__name__ = c.output
+                headerColumn.cssClass = c.cssClass
                 headerRow.headerColumns.append(headerColumn)
         return headerRow
             
