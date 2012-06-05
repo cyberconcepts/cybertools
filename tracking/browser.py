@@ -95,7 +95,7 @@ class TrackView(object):
 
     @Lazy
     def user(self):
-        return self.metadata.get('userName') or u''
+        return self.metadata['userName']
 
     userTitle = user
     userUrl = None
