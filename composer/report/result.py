@@ -51,12 +51,13 @@ class Row(BaseRow):
         return getattr(obj.context, attr)
 
     def getGroupFields(self):
-        return [self.getRawValue(f.name) for f in 
+        return [self.getRawValue(f.name) for f in
                     self.parent.context.fields if 'group' in f.executionSteps]
+
     @Lazy
     def displayedColumns(self):
         return self.parent.context.getActiveOutputFields()
-    
+
     def useRowProperty(self, attr):
         return getattr(self, attr)
 
@@ -65,7 +66,7 @@ class GroupHeaderRow(BaseRow):
 
     def getRawValue(self, attr):
         return self.data.get(attr, u'')
-    
+
     @Lazy
     def displayedColumns(self):
         fields = self.parent.context.getActiveOutputFields()
