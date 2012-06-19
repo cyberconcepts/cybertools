@@ -82,6 +82,7 @@ class Report(Template):
     queryCriteria = None
     outputFields = ()
     sortCriteria = ()
+    limits = None
 
 
     def __init__(self, name):

@@ -51,21 +51,22 @@ class Row(BaseRow):
         return getattr(obj.context, attr)
 
     def getGroupFields(self):
-        return [self.getRawValue(f.name) for f in 
+        return [self.getRawValue(f.name) for f in
                     self.parent.context.fields if 'group' in f.executionSteps]
+
     @Lazy
     def displayedColumns(self):
         return self.parent.context.getActiveOutputFields()
-    
+
     def useRowProperty(self, attr):
         return getattr(self, attr)
 
-    
+
 class GroupHeaderRow(BaseRow):
 
     def getRawValue(self, attr):
         return self.data.get(attr, u'')
-    
+
     @Lazy
     def displayedColumns(self):
         fields = self.parent.context.getActiveOutputFields()
@@ -78,15 +79,17 @@ class GroupHeaderRow(BaseRow):
 
 class ResultSet(object):
 
-    def __init__(self, context, data, rowFactory=Row, headerRowFactory=GroupHeaderRow,
-                 sortCriteria=None, queryCriteria=BaseQueryCriteria()):
-        
+    def __init__(self, context, data,
+                 rowFactory=Row, headerRowFactory=GroupHeaderRow,
+                 sortCriteria=None, queryCriteria=BaseQueryCriteria(),
+                 limits=None):
         self.context = context  # the report or report instance
         self.data = data
         self.rowFactory = rowFactory
         self.headerRowFactory = headerRowFactory
         self.sortCriteria = sortCriteria
         self.queryCriteria = queryCriteria
+        self.limits = limits
         self.totals = BaseRow(None, self)
 
     def getHeaderRow(self, row, columns):
@@ -105,7 +108,8 @@ class ResultSet(object):
         result = [self.rowFactory(item, self) for item in self.data]
         result = [row for row in result if self.queryCriteria.check(row)]
         if self.sortCriteria:
-            result.sort(key=lambda x: [f.getSortValue(x) for f in self.sortCriteria])
+            result.sort(key=lambda x: 
+                        [f.getSortValue(x) for f in self.sortCriteria])
         if self.groupColumns:
             res = []
             groupValues = [None for f in self.groupColumns]
@@ -117,6 +121,9 @@ class ResultSet(object):
                         res.append(self.getHeaderRow(row, (f,) + f.outputWith))
                 res.append(row)
             result = res
+        if self.limits:
+            start, stop = self.limits
+            result = result[start:stop]
         for idx, row in enumerate(result):
             row.sequenceNumber = idx + 1
         return result

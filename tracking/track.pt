@@ -19,7 +19,7 @@
       <td><a tal:define="userUrl view/userUrl|nothing"
              tal:omit-tag="not:userUrl"
              tal:attributes="href userUrl"
-             tal:content="view/userTitle" /></td></tr>
+             tal:content="view/userTitle|string:???" /></td></tr>
     <tr>
       <td>Timestamp:</td>
       <td tal:content="view/timeStamp"></td></tr>
