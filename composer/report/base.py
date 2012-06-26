@@ -140,6 +140,12 @@ class Report(Template):
     
     def getTotalsFields(self):
         return [f for f in self.fields if 'totals' in f.executionSteps]
+    
+    def getSubTotalsFields(self):
+        result = []
+        for gf in self.getGroupFields():
+            result.append([f for f in self.fields if gf.name in f.totals])
+        return result
 
 
 class BaseQueryCriteria(Component):

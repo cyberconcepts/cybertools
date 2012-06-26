@@ -78,6 +78,7 @@ class Field(Component):
     outputWith = ()
     style = TableCellStyle()
     cssClass = ''
+    totals = []
 
     executionSteps = ['query', 'sort', 'output']    # , 'totals']
 

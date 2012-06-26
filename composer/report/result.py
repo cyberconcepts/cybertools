@@ -75,6 +75,16 @@ class GroupHeaderRow(BaseRow):
                 if f.name == col.name:
                     fields[idx] = col
         return fields
+    
+    
+class SubTotalsRow(BaseRow):
+
+    def getRawValue(self, attr):
+        return self.data.get(attr, u'')
+
+    @Lazy
+    def displayedColumns(self):
+        return self.parent.context.getActiveOutputFields()
 
 
 class ResultSet(object):
@@ -103,6 +113,12 @@ class ResultSet(object):
                 headerColumn.cssClass = c.cssClass
                 headerRow.headerColumns.append(headerColumn)
         return headerRow
+    
+    def getSubTotalsRow(self, row, columns, values):
+        subTotalsRow = SubTotalsRow(None, self)
+        for idx, c in enumerate(columns):
+            subTotalsRow.data[c.name] = values[idx]
+        return subTotalsRow
             
     def getResult(self):
         result = [self.rowFactory(item, self) for item in self.data]
@@ -113,13 +129,26 @@ class ResultSet(object):
         if self.groupColumns:
             res = []
             groupValues = [None for f in self.groupColumns]
+            subTotals = [[0.0 for f in stc] for stc in self.subTotalsColumns]
             for row in result:
+                subTotalsRows = []
+                headerRows = []
                 for idx, f in enumerate(self.groupColumns):
                     value = f.getRawValue(row)
                     if value != groupValues[idx]:
                         groupValues[idx] = value
-                        res.append(self.getHeaderRow(row, (f,) + f.outputWith))
+                        headerRows.append(self.getHeaderRow(row, (f,) + f.outputWith))
+                        subTotalsRows.append(self.getSubTotalsRow(
+                            row, self.subTotalsColumns[idx], subTotals[idx]))
+                        subTotals[idx] = [0.0 for f in self.subTotalsColumns[idx]]
+                for subTotalsRow in reversed(subTotalsRows):
+                    res.append(subTotalsRow)
+                for headerRow in headerRows:
+                    res.append(headerRow)
                 res.append(row)
+                for idx, sc in enumerate(self.subTotalsColumns):
+                    for idx2, f in enumerate(sc):
+                        subTotals[idx][idx2] += f.getValue(row)
             result = res
         if self.limits:
             start, stop = self.limits
@@ -147,3 +176,8 @@ class ResultSet(object):
     @Lazy
     def groupColumns(self):
         return self.context.getGroupFields()
+    
+    @Lazy
+    def subTotalsColumns(self):
+        return self.context.getSubTotalsFields()
+    
