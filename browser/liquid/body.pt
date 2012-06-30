@@ -19,9 +19,11 @@
     </div>
 
     <div id="menu" metal:define-macro="menu">
-      <tal:portlet repeat="macro controller/macros/portlet_left">
-        <metal:portlet use-macro="macro" />
-      </tal:portlet>
+      <metal:left define-slot="portlet-left">
+        <tal:portlet repeat="macro controller/macros/portlet_left">
+          <metal:portlet use-macro="macro" />
+        </tal:portlet>
+      </metal:left>
     </div>
 
     <div id="content" metal:define-macro="content">
@@ -37,11 +39,10 @@
       </metal:content>
     </div>
 
-    <div id="sub-section"
-         xtal:condition="view/isAuthenticated">
-      <tal:portlet repeat="macro controller/macros/portlet_right">
-        <metal:portlet use-macro="macro" />
-      </tal:portlet>
+    <div id="sub-section" metal:define-slot="portlet-right">
+        <tal:portlet repeat="macro controller/macros/portlet_right">
+          <metal:portlet use-macro="macro" />
+        </tal:portlet>
     </div>
 
     <div id="footer" class="footer" metal:define-macro="footer">
