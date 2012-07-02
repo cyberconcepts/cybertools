@@ -106,6 +106,9 @@ class Report(Template):
     def getOutputFields(self):
         return [f for f in self.fields if 'output' in f.executionSteps]
 
+    def getAllFields(self):
+        return [f for f in self.fields]
+
     def getActiveOutputFields(self):
         if not self.outputFields:
             fieldNames = [f.name for f in self.getOutputFields()]
@@ -146,7 +149,7 @@ class Report(Template):
         for gf in self.getGroupFields():
             result.append([f for f in self.fields if gf.name in f.totals])
         return result
-
+    
 
 class BaseQueryCriteria(Component):
 

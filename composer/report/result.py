@@ -57,6 +57,10 @@ class Row(BaseRow):
     @Lazy
     def displayedColumns(self):
         return self.parent.context.getActiveOutputFields()
+    
+    @Lazy
+    def allColumns(self):
+        return self.partent.context.getAllFields()
 
     def useRowProperty(self, attr):
         return getattr(self, attr)
@@ -114,10 +118,12 @@ class ResultSet(object):
                 headerRow.headerColumns.append(headerColumn)
         return headerRow
     
-    def getSubTotalsRow(self, row, columns, values):
+    def getSubTotalsRow(self, row, columns, values, dcolumns):
         subTotalsRow = SubTotalsRow(None, self)
         for idx, c in enumerate(columns):
             subTotalsRow.data[c.name] = values[idx]
+        for c in dcolumns:
+            subTotalsRow.data[c.output] = u'SUMME: ' + c.getRawValue(row)
         return subTotalsRow
             
     def getResult(self):
@@ -130,7 +136,10 @@ class ResultSet(object):
             res = []
             groupValues = [None for f in self.groupColumns]
             subTotals = [[0.0 for f in stc] for stc in self.subTotalsColumns]
+            lastRow = None
             for row in result:
+                if lastRow is None:
+                    lastRow = row
                 subTotalsRows = []
                 headerRows = []
                 for idx, f in enumerate(self.groupColumns):
@@ -138,8 +147,11 @@ class ResultSet(object):
                     if value != groupValues[idx]:
                         groupValues[idx] = value
                         headerRows.append(self.getHeaderRow(row, (f,) + f.outputWith))
-                        subTotalsRows.append(self.getSubTotalsRow(
-                            row, self.subTotalsColumns[idx], subTotals[idx]))
+                        subTotalsRows.append(
+                            self.getSubTotalsRow(lastRow,
+                                                 self.subTotalsColumns[idx],
+                                                 subTotals[idx],
+                                                 f.outputWith))
                         subTotals[idx] = [0.0 for f in self.subTotalsColumns[idx]]
                 for subTotalsRow in reversed(subTotalsRows):
                     res.append(subTotalsRow)
@@ -149,6 +161,7 @@ class ResultSet(object):
                 for idx, sc in enumerate(self.subTotalsColumns):
                     for idx2, f in enumerate(sc):
                         subTotals[idx][idx2] += f.getValue(row)
+                lastRow = row
             result = res
         if self.limits:
             start, stop = self.limits
