@@ -27,10 +27,10 @@
     </div>
 
     <div id="content" metal:define-macro="content">
-      <div metal:define-slot="breadcrumbs" />
-      <div metal:define-slot="actions" />
-      <div metal:define-slot="message" />
-      <div metal:define-slot="view_modes" />
+      <div metal:define-slot="breadcrumbs"></div>
+      <div metal:define-slot="actions"></div>
+      <div metal:define-slot="message"></div>
+      <div metal:define-slot="view_modes"></div>
       <metal:content define-slot="content">
         <tal:content define="item nocall:view/item;
                              level level|python: 1;
@@ -49,10 +49,10 @@
 
     <div id="footer" class="footer" metal:define-macro="footer">
       <metal:footer define-slot="footer">
-      Powered by <b><a href="http://www.python.org">Python</a></b> &middot;
-      <b><a href="http://wiki.zope.org/zope3">Zope 3</a></b> &middot;
-      <b><a href="http://loops.cy55.de">
-        loops</a></b>.
+        Powered by <b><a href="http://www.python.org">Python</a></b> &middot;
+        <b><a href="http://wiki.zope.org/zope3">Zope 3</a></b> &middot;
+        <b><a href="http://loops.cy55.de">
+          loops</a></b>.
       </metal:footer>
     </div>
 
