@@ -150,6 +150,9 @@ class Report(Template):
             result.append([f for f in self.fields if gf.name in f.totals])
         return result
     
+    def getOutputFieldsForField(self, field):
+        return [f for f in self.fields if f.name == field.output]
+        
 
 class BaseQueryCriteria(Component):
 

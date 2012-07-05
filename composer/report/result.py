@@ -118,12 +118,13 @@ class ResultSet(object):
                 headerRow.headerColumns.append(headerColumn)
         return headerRow
     
-    def getSubTotalsRow(self, row, columns, values, dcolumns):
+    def getSubTotalsRow(self, idx, row, columns, values, dcolumns):
         subTotalsRow = SubTotalsRow(None, self)
         for idx, c in enumerate(columns):
             subTotalsRow.data[c.name] = values[idx]
-        for c in dcolumns:
-            subTotalsRow.data[c.output] = u'SUMME: ' + c.getRawValue(row)
+        if idx > 1:
+            for c in dcolumns:
+                subTotalsRow.data[c.output] = u'SUMME: ' + c.getRawValue(row)
         return subTotalsRow
             
     def getResult(self):
@@ -147,11 +148,15 @@ class ResultSet(object):
                     if value != groupValues[idx]:
                         groupValues[idx] = value
                         headerRows.append(self.getHeaderRow(row, (f,) + f.outputWith))
+                        outputColumns = f.outputWith
+                        if not outputColumns:
+                            outputColumns = self.getOutputColumnsForField(f)
                         subTotalsRows.append(
-                            self.getSubTotalsRow(lastRow,
+                            self.getSubTotalsRow(idx,
+                                                 lastRow,
                                                  self.subTotalsColumns[idx],
                                                  subTotals[idx],
-                                                 f.outputWith))
+                                                 outputColumns))
                         subTotals[idx] = [0.0 for f in self.subTotalsColumns[idx]]
                 for subTotalsRow in reversed(subTotalsRows):
                     res.append(subTotalsRow)
@@ -193,4 +198,7 @@ class ResultSet(object):
     @Lazy
     def subTotalsColumns(self):
         return self.context.getSubTotalsFields()
+    
+    def getOutputColumnsForField(self, f):
+        return self.context.getOutputFieldsForField(f)
     
