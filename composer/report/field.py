@@ -76,6 +76,7 @@ class Field(Component):
     operator = 'in'
     output = None
     outputWith = ()
+    totalsDescription = None
     style = TableCellStyle()
     cssClass = ''
     totals = []

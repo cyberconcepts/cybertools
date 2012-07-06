@@ -34,6 +34,7 @@ class BaseRow(object):
         self.parent = parent
         self.data = {}
         self.sequenceNumber = 0
+        self.cssClass = ''
 
     def getRawValue(self, attr):
         return self.data.get(attr)
@@ -118,13 +119,17 @@ class ResultSet(object):
                 headerRow.headerColumns.append(headerColumn)
         return headerRow
     
-    def getSubTotalsRow(self, idx, row, columns, values, dcolumns):
+    def getSubTotalsRow(self, gf, row, columns, values):
         subTotalsRow = SubTotalsRow(None, self)
+        subTotalsRow.cssClass = 'subTotalsRow'
         for idx, c in enumerate(columns):
             subTotalsRow.data[c.name] = values[idx]
-        if idx > 1:
-            for c in dcolumns:
-                subTotalsRow.data[c.output] = u'SUMME: ' + c.getRawValue(row)
+        if gf in self.subTotalsGroupColumns:
+            if gf.totalsDescription is None:
+                subTotalsRow.data[gf.output] = u'SUMME: ' + gf.getRawValue(row)
+            else:
+                subTotalsRow.data[gf.totalsDescription.output] = u'SUMME: ' + \
+                                            gf.totalsDescription.getRawValue(row)
         return subTotalsRow
             
     def getResult(self):
@@ -139,8 +144,6 @@ class ResultSet(object):
             subTotals = [[0.0 for f in stc] for stc in self.subTotalsColumns]
             lastRow = None
             for row in result:
-                if lastRow is None:
-                    lastRow = row
                 subTotalsRows = []
                 headerRows = []
                 for idx, f in enumerate(self.groupColumns):
@@ -148,16 +151,14 @@ class ResultSet(object):
                     if value != groupValues[idx]:
                         groupValues[idx] = value
                         headerRows.append(self.getHeaderRow(row, (f,) + f.outputWith))
-                        outputColumns = f.outputWith
-                        if not outputColumns:
-                            outputColumns = self.getOutputColumnsForField(f)
-                        subTotalsRows.append(
-                            self.getSubTotalsRow(idx,
-                                                 lastRow,
-                                                 self.subTotalsColumns[idx],
-                                                 subTotals[idx],
-                                                 outputColumns))
-                        subTotals[idx] = [0.0 for f in self.subTotalsColumns[idx]]
+                        if lastRow is not None:
+                            subTotalsRows.append(
+                                self.getSubTotalsRow(f,
+                                    lastRow,
+                                    self.subTotalsColumns[idx],
+                                    subTotals[idx]
+                                    ))
+                            subTotals[idx] = [0.0 for f in self.subTotalsColumns[idx]]
                 for subTotalsRow in reversed(subTotalsRows):
                     res.append(subTotalsRow)
                 for headerRow in headerRows:
@@ -198,6 +199,11 @@ class ResultSet(object):
     @Lazy
     def subTotalsColumns(self):
         return self.context.getSubTotalsFields()
+    
+    @Lazy
+    def subTotalsGroupColumns(self):
+        return self.context.getSubTotalsGroupFields()
+    
     
     def getOutputColumnsForField(self, f):
         return self.context.getOutputFieldsForField(f)

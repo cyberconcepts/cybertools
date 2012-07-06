@@ -150,6 +150,12 @@ class Report(Template):
             result.append([f for f in self.fields if gf.name in f.totals])
         return result
     
+    def getSubTotalsGroupFields(self):
+        result = []
+        for f in self.fields:
+            result.extend(gf for gf in self.getGroupFields() if gf.name in f.totals)
+        return result
+    
     def getOutputFieldsForField(self, field):
         return [f for f in self.fields if f.name == field.output]
         
