@@ -24,6 +24,7 @@ from datetime import datetime
 from logging import getLogger
 from time import strptime, strftime
 from zope.app.form.browser.interfaces import ITerms
+from zope.i18n.locales import locales
 from zope.interface import implements
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
@@ -260,6 +261,32 @@ class NumberFieldInstance(FieldInstance):
                 self.unmarshall(value)
             except (TypeError, ValueError):
                 self.setError('invalid_number')
+
+
+class FloatFieldInstance(NumberFieldInstance):
+
+    format = 'decimal'
+
+    def marshall(self, value):
+        return self.display(value, pattern=u'0.00;-0.00')
+
+    def display(self, value, pattern=u'#,##0.00;-#,##0.00'):
+        if value is None:
+            return ''
+        view = self.clientInstance.view
+        langInfo = view and getattr(view, 'languageInfo', None) or None
+        if langInfo:
+            locale = locales.getLocale(langInfo.language)
+            fmt = locale.numbers.getFormatter(self.format)
+            return fmt.format(value, pattern=pattern)
+        return '%.2f' % value
+
+    def unmarshall(self, value):
+        if not value:
+            return None
+        if ',' in value:
+            value = value.replace(',', '.')
+        return float(value)
 
 
 class DateFieldInstance(NumberFieldInstance):

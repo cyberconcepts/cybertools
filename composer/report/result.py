@@ -42,9 +42,11 @@ class BaseRow(object):
 class Row(BaseRow):
 
     attributeHandlers = {}
+    cssClass = u''
 
     def getRawValue(self, attr):
-        return self.attributeHandlers.get(attr, self.getContextAttr)(self, attr)
+        return self.attributeHandlers.get(
+                        attr, self.getContextAttr)(self, attr)
 
     @staticmethod
     def getContextAttr(obj, attr):
