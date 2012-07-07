@@ -263,7 +263,7 @@ class NumberFieldInstance(FieldInstance):
                 self.setError('invalid_number')
 
 
-class FloatFieldInstance(NumberFieldInstance):
+class DecimalFieldInstance(NumberFieldInstance):
 
     format = 'decimal'
 
