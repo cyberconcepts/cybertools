@@ -72,8 +72,8 @@ class Field(Component):
         return row.getRawValue(self.name)
 
     def getSelectValue(self, row):
-        return getattr(row, self.name, None)
-        #return self.getRawValue(row)   # better let row control selection...
+        return getattr(row, self.name, None) # backwards compatibility
+        # return self.getRawValue(row)       # overwrite with this in subclass
 
     def getValue(self, row):
         value = self.getRawValue(row)
