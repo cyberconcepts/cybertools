@@ -98,6 +98,8 @@ fieldTypes = SimpleVocabulary((
     FieldType('html', 'html', u'HTML Text'),
     FieldType('number', 'number', u'Number',
               inputRenderer='input_textline', instanceName='number'),
+    FieldType('decimal', 'decimal', u'Decimal',
+              inputRenderer='input_textline', instanceName='decimal'),
     FieldType('date', 'date', u'Date', instanceName='date'),
     FieldType('email', 'email', u'E-Mail Address',
               displayRenderer='display_email', inputRenderer='input_textline',

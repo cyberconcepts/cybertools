@@ -114,7 +114,7 @@ class GridFieldInstance(ListFieldInstance):
     def unmarshallRow(self, row):
         item = {}
         for fi in self.columnFieldInstances:
-            value = fi.unmarshall(row[fi.name])
+            value = fi.unmarshall(row.get(fi.name) or u'')
             if isinstance(value, basestring):
                 value = value.strip()
             if fi.default is not None:

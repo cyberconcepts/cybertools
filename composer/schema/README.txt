@@ -49,9 +49,9 @@ Field types
 
   >>> from cybertools.composer.schema.interfaces import fieldTypes
   >>> sorted(t.token for t in fieldTypes)
-  ['checkbox', 'checkboxes', 'date', 'display', 'dropdown', 'email', 'explanation',
-   'fileupload', 'heading', 'html', 'list', 'number', 'password', 'radiobuttons',
-   'spacer', 'textarea', 'textline']
+  ['checkbox', 'checkboxes', 'date', 'decimal', 'display', 'dropdown', 
+   'email', 'explanation', 'fileupload', 'heading', 'html', 'list', 'number', 
+   'password', 'radiobuttons', 'spacer', 'textarea', 'textline']
 
   >>> from zope.schema.vocabulary import SimpleVocabulary
   >>> textFieldTypes = SimpleVocabulary([t for t in fieldTypes if t.token in

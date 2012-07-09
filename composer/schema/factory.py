@@ -18,8 +18,6 @@
 
 """
 Schema factory stuff.
-
-$Id$
 """
 
 from zope.component import adapts
@@ -41,7 +39,7 @@ class Email(schema.TextLine):
 schema.Field.__typeInfo__ = ('textline',)
 schema.Password.__typeInfo__ = ('password',)
 schema.Int.__typeInfo__ = ('number',)
-schema.Float.__typeInfo__ = ('number',)
+schema.Float.__typeInfo__ = ('decimal',)
 schema.Choice.__typeInfo__ = ('dropdown',)
 
 
@@ -56,13 +54,13 @@ class SchemaFactory(object):
     fieldMapping = {
             #schema.TextLine: ('textline',),
             #schema.ASCIILine: ('textline',),
-            schema.Password: ('password',),
+            #schema.Password: ('password',),
             schema.Text: ('textarea',),
             schema.ASCII: ('textarea',),
             schema.Date: ('date',),
             schema.Datetime: ('date',),
-            schema.Int: ('number',),
-            schema.Float: ('number',),
+            #schema.Int: ('number',),
+            #schema.Float: ('decimal',),
             schema.Bool: ('checkbox',),
             schema.List: ('list',),
             #schema.Choice: ('dropdown',),
