@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2012 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 Report management.
-
-$Id$
 """
 
 from zope.interface import Interface, Attribute
@@ -60,10 +58,11 @@ class IReportParams(Interface):
 
     queryCriteria = Attribute('The criteria to be used for executing the '
                     'query step.')
-    sortSpec = Attribute('A sequence of fields/sort directions to be used for '
-                    'executing the sorting step.')
-    outputSpec = Attribute('A sequence of output fields (column/cell '
-                    'specifications) to be used for presenting the result data.')
+    sortCriteria = Attribute('A sequence of fields/sort directions to be '
+                    'used for executing the sorting step.')
+    outputFields = Attribute('A sequence of output fields (column/cell '
+                    'specifications) to be used for presenting the result '
+                    'data.')
 
 
 class IReport(ITemplate, IReportParams):
@@ -97,11 +96,21 @@ class IReport(ITemplate, IReportParams):
                 required=False,)
 
     manager = Attribute('The manager of this message object')
-
     fields = Attribute('An ordered collection of all field definitions '
                     'available for this report type.')
+    hiddenQueryFields = Attribute('Fields used for query criteria '
+                    'that are not shown to/editable by the user, '
+                    'e.g. because they are determined automatically.')
+    userSettings = Attribute('Fields that can be set by the user.')
+    defaultOutputFields = Attribute('Predefined output columns.')
+    defaultSortCriteria = Attribute('Predefined sort columns.')
+    presentationFormat = Attribute('Selected presentation format.')
     renderers = Attribute('An ordered collection of renderers available '
                     'for this report type.')
+    limits = Attribute('A pair of integers that specify the slice '
+                    '(i.e. start and stop values) that has to be taken '
+                    'from the sorted result set for output.')
+
 
     def getQueryFields():
         """ Return a sequence of fields that may be used for setting up

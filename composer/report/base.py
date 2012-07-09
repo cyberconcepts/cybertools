@@ -74,6 +74,7 @@ class Report(Template):
 
     fields = Jeep((field.label,))
     hiddenQueryFields = ()
+    userSettings = (field.label,)
     defaultOutputFields = (field.label,)
     defaultSortCriteria = (field.label,)
     presentationFormat = None
