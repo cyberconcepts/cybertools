@@ -73,7 +73,7 @@ class Field(Component):
 
     def getSelectValue(self, row):
         return getattr(row, self.name, None) # backwards compatibility
-        # return self.getRawValue(row)       # overwrite with this in subclass
+        # return self.getValue(row)       # overwrite with this in subclass
 
     def getValue(self, row):
         value = self.getRawValue(row)
