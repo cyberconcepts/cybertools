@@ -74,6 +74,7 @@ class Report(Template):
 
     fields = Jeep((field.label,))
     hiddenQueryFields = ()
+    userSettings = (field.label,)
     defaultOutputFields = (field.label,)
     defaultSortCriteria = (field.label,)
     presentationFormat = None
@@ -185,6 +186,9 @@ class LeafQueryCriteria(BaseQueryCriteria, Element):
             if comparisonValue in (None, '',):
                 return True
         value = self.field.getSelectValue(row)
+        if (self.field.fieldType == 'number' and 
+                isinstance(comparisonValue, basestring)):
+            comparisonValue = int(comparisonValue)
         op = operators.get(self.operator)
         if op is None:
             op = getattr(standard_operators, self.operator, None)
