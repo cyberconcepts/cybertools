@@ -128,10 +128,10 @@ class ResultSet(object):
             subTotalsRow.data[c.name] = values[idx]
         if gf in self.subTotalsGroupColumns:
             if gf.totalsDescription is None:
-                subTotalsRow.data[gf.output] = u'SUMME: ' + gf.getRawValue(row)
+                subTotalsRow.data[gf.output] = u'SUMME: ' + gf.getDisplayValue(row)
             else:
                 subTotalsRow.data[gf.totalsDescription.output] = u'SUMME: ' + \
-                                            gf.totalsDescription.getRawValue(row)
+                                            gf.totalsDescription.getDisplayValue(row)
         return subTotalsRow
             
     def getResult(self):
