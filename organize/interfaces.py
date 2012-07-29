@@ -527,16 +527,21 @@ class IWorkItem(ITrack):
                 'by its name or ID.')
     state = Attribute('The current state the work item is in.')
     # standard attributes
+    workItemType = Attribute('The type of the work item '
+                '(work, event, deadline).')
     title = Attribute('A short text characterizing the work item.')
     description = Attribute('A note about what has to be done, and why...')
+    deadline = Attribute('When the work has to be finished.')
     start = Attribute('When the work was started.')
     end = Attribute('When the work was finished.')
     duration = Attribute('How long it took to finish the work.')
-    effort = Attribute('How much effort (time units) it took to finish the work.')
+    effort = Attribute('How much effort (time units) it took '
+                'to finish the work.')
     comment = Attribute('A note about what has been done, and why...')
     # work item handling
     creator = Attribute('The party that has set up the work item.')
-    created = Attribute('The timeStamp of the initial creation of the work item.')
+    created = Attribute('The timeStamp of the initial creation '
+                'of the work item.')
     newTask = Attribute('Optional: a new task that has been created based '
                 'on this work item.')
 
