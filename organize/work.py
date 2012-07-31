@@ -143,12 +143,12 @@ workItemTypes = Jeep((
     WorkItemType('work', u'Unit of Work'),
     WorkItemType('scheduled', u'Scheduled Event',
         actions=('plan', 'accept', 'finish', 'cancel', 
-                 'modify', 'delegate', 'close', 'reopen'),
+                 'modify', 'delegate', 'move', 'close', 'reopen'),
         fields =('start-end', 'duration-effort',),
         color  ='#aaaaff'),
     WorkItemType('deadline', u'Deadline',
         actions=('plan', 'accept', 'finish', 'cancel', 
-                 'modify', 'delegate', 'close', 'reopen'),
+                 'modify', 'delegate', 'move', 'close', 'reopen'),
         fields =('deadline',),
         color  ='#ffffaa')
 ))
@@ -267,17 +267,18 @@ class WorkItem(Stateful, Track):
         return new
 
     def move(self, userName, **kw):
-        moved = self.createNew('move', userName, **kw)
+        xkw = dict(kw)
+        for k in ('deadline', 'start', 'end'):
+            xkw.pop(k, None)    # do not change on source item
+        moved = self.createNew('move', userName, **xkw)
         moved.userName = self.userName
         moved.state = 'moved'
-        #moved.reindex('state')
         moved.reindex()
         task = kw.pop('task', None)
         new = moved.createNew(None, userName, taskId=task, runId=0, **kw)
         new.userName = self.userName
         new.data['source'] = moved.name
         new.state = self.state
-        #new.reindex('state')
         new.reindex()
         moved.data['target'] = new.name
         if self.state in ('planned', 'accepted', 'delegated', 'moved', 'done'):
