@@ -37,10 +37,15 @@ class Relation(Persistent):
 
     order = 0
     relevance = 1.0
+    fallback = None
 
     @classmethod
     def getPredicateName(cls):
         return '%s.%s' % (cls.__module__, cls.__name__)
+
+    @property
+    def ident(self):
+        return self.getPredicateName()
 
     def validate(self, registry=None):
         return True
