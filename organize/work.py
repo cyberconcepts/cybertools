@@ -131,26 +131,26 @@ class WorkItemType(object):
     """
 
     def __init__(self, name, title, description=u'', 
-                 actions=None, fields=None, color=None):
+                 actions=None, fields=None, indicator=None):
         self.name = name
         self.title = title
         self.description = description
         self.actions = actions or list(editingRules)
         self.fields = fields or ('deadline', 'start-end', 'duration-effort')
-        self.color = color
+        self.indicator = indicator
 
 workItemTypes = Jeep((
-    WorkItemType('work', u'Unit of Work'),
+    WorkItemType('work', u'Unit of Work', indicator='work_work'),
     WorkItemType('scheduled', u'Scheduled Event',
         actions=('plan', 'accept', 'finish', 'cancel', 
                  'modify', 'delegate', 'move', 'close', 'reopen'),
         fields =('start-end', 'duration-effort',),
-        color  ='#aaaaff'),
+        indicator='work_event'),
     WorkItemType('deadline', u'Deadline',
         actions=('plan', 'accept', 'finish', 'cancel', 
                  'modify', 'delegate', 'move', 'close', 'reopen'),
         fields =('deadline',),
-        color  ='#ffffaa')
+        indicator='work_deadline')
 ))
 
 
@@ -179,6 +179,10 @@ class WorkItem(Stateful, Track):
     def getStatesDefinition(self):
         return component.getUtility(IStatesDefinition, 
                                     name=self.statesDefinition)
+
+    def getWorkItemType(self):
+        name = self.workItemType
+        return name and workItemTypes[name] or None
 
     @property
     def party(self):
@@ -231,7 +235,6 @@ class WorkItem(Stateful, Track):
             self.state = self.state + '_x'
             self.reindex('state')
         new.doTransition(action)
-        #new.reindex('state')
         new.reindex()
         return new
 
@@ -331,6 +334,10 @@ class WorkItem(Stateful, Track):
         if copyData is None:
             copyData = self.initAttributes
         newData = {}
+        start = kw.get('start')
+        deadline =  kw.get('deadline')
+        if not start and deadline:
+            kw['start'] = deadline
         for k in self.initAttributes.union(set(['comment'])):
             v = kw.get(k, _not_found)
             if v is _not_found and k in copyData:
