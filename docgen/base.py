@@ -64,9 +64,13 @@ class WordDocument(Base):
 
     @Lazy
     def css(self):
-        fn = os.path.join(os.path.dirname(__file__), 'word.css')
+        return self.loadCSS()
+
+    def loadCSS(self, filename='word.css', path=None):
+        if path is None:
+            path = os.path.dirname(__file__)
+        fn = os.path.join(path, filename)
         f = open(fn, 'r')
         css = f.read()
         f.close()
         return css
-
