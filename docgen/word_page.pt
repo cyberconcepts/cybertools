@@ -17,7 +17,8 @@
   </head>
 
   <body class="doc">
-    <div class="Section2">
+    <div class="Section2"
+         tal:omit-tag="view/omitSectionElement|nothing">
       <metal:content use-macro="view/content" />
     </div>
   </body>
