@@ -21,11 +21,13 @@ View definitions for generation of documents.
 """
 
 import os
+import quopri
 from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope.publisher.browser import BrowserPage
 
 word_template = ViewPageTemplateFile('word_page.pt')
+body_template = ViewPageTemplateFile('word_body.pt')
 
 
 class Base(BrowserPage):
@@ -34,15 +36,36 @@ class Base(BrowserPage):
     #encoding = 'ISO8859-15'
 
     def __call__(self, *args, **kw):
-        data = self.index(*args, **kw).encode(self.encoding)
-        self.setHeader(data)
-        return data
+        content = self.index(*args, **kw).encode(self.encoding)
+        self.setHeader(content)
+        return content
 
 
 class WordDocument(Base):
 
     index = word_template
+    bodyTemplate = body_template
     showLinks = False
+
+    def embed(self, *args, **kw):
+        self.encoding = 'Windows-1252'
+        bodyMarker = 'lxdoc_body'
+        content = self.bodyTemplate(*args, **kw).encode(self.encoding)
+        baseDocument = self.readDocTemplate()
+        document = baseDocument.replace(bodyMarker, 
+                                        self.quopri(content))
+        self.setHeader(document)
+        return document
+
+    def quopri(self, s):
+        return s.replace('="', '=3D"')
+
+    def readDocTemplate(self):
+        path = os.path.join(os.path.dirname(__file__), 'document.mht')
+        f = open(path, 'r')
+        doc = f.read()
+        f.close()
+        return doc
 
     def setHeader(self, data, filename='document'):
         fn = '%s.doc' % filename
