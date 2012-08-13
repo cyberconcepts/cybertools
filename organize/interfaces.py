@@ -506,6 +506,9 @@ class IJobManager(Interface):
     """ Collects and executes jobs.
     """
 
+    view = Attribute('An optional view object which the job manager '
+                'was called from.')
+
     def process():
         """ Do what has to be done...
         """
