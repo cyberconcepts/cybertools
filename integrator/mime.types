@@ -342,6 +342,7 @@ application/x-123				wk
 application/x-abiword				abw
 application/x-apple-diskimage			dmg
 application/x-bcpio				bcpio
+application/x-binary            repx
 application/x-bittorrent			torrent
 application/x-cdf				cdf
 application/x-cdlink				vcd
