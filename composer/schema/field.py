@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2012 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -273,6 +273,10 @@ class DecimalFieldInstance(NumberFieldInstance):
     def display(self, value, pattern=u'#,##0.00;-#,##0.00'):
         if value is None:
             return ''
+        if isinstance(value, basestring):
+            if not value.isdigit():
+                return value
+            value = float(value)
         view = self.clientInstance.view
         langInfo = view and getattr(view, 'languageInfo', None) or None
         if langInfo:
@@ -292,7 +296,7 @@ class DecimalFieldInstance(NumberFieldInstance):
 class DateFieldInstance(NumberFieldInstance):
 
     def marshall(self, value):
-        if value is None:
+        if not value:
             return ''
         if isinstance(value, basestring):
             return value
