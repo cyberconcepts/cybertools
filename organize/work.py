@@ -42,7 +42,7 @@ def workItemStates():
     return StatesDefinition('workItemStates',
         State('new', 'new',
               ('plan', 'accept', 'start', 'work', 'finish', 'delegate', 
-               'cancel'),
+               'cancel', 'reopen'),
               color='red'),
         State('planned', 'planned',
               ('plan', 'accept', 'start', 'work', 'finish', 'delegate',
