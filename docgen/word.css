@@ -78,6 +78,10 @@ th {
     font-weight: bold;
 }
 
+table.MsoHeader, p.MsoHeader {
+    mso-style-noshow:yes;    
+}
+
 span.MsoFootnoteReference {
     mso-style-noshow:yes;
     vertical-align: super;

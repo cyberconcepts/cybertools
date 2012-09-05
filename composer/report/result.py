@@ -25,6 +25,7 @@ from zope.cachedescriptors.property import Lazy
 
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.report.base import BaseQueryCriteria
+from cybertools.util.jeep import Jeep
 
 
 class BaseRow(object):
@@ -63,7 +64,7 @@ class Row(BaseRow):
     
     @Lazy
     def allColumns(self):
-        return self.partent.context.getAllFields()
+        return self.parent.context.getAllFields()
 
     def useRowProperty(self, attr):
         return getattr(self, attr)
@@ -192,7 +193,7 @@ class ResultSet(object):
 
     @Lazy
     def displayedColumns(self):
-        return self.context.getActiveOutputFields()
+        return Jeep(self.context.getActiveOutputFields())
 
     @Lazy
     def groupColumns(self):

@@ -187,6 +187,7 @@ class FieldInstance(object):
 
     clientInstance = clientContext = request = None
     value = undefined
+    request = None
 
     def __init__(self, context):
         self.context = context
@@ -433,5 +434,5 @@ class DropdownFieldInstance(FieldInstance):
         for item in items:
             if str(item['token']) == str(value):
                 return item['title']
-        return value
+        return value or u''
 

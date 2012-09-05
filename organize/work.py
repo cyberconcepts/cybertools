@@ -32,6 +32,7 @@ from cybertools.stateful.definition import State, Transition
 from cybertools.stateful.interfaces import IStatesDefinition
 from cybertools.tracking.btree import Track, getTimeStamp
 from cybertools.tracking.interfaces import ITrackingStorage
+from cybertools.util.jeep import Jeep
 
 _not_found = object()
 
@@ -41,7 +42,7 @@ def workItemStates():
     return StatesDefinition('workItemStates',
         State('new', 'new',
               ('plan', 'accept', 'start', 'work', 'finish', 'delegate', 
-               'cancel'),
+               'cancel', 'reopen'),
               color='red'),
         State('planned', 'planned',
               ('plan', 'accept', 'start', 'work', 'finish', 'delegate',
@@ -63,11 +64,11 @@ def workItemStates():
         State('cancelled', 'cancelled',
               ('plan', 'accept', 'start', 'work', 'move', 'modify', 'close'),
               color='grey'),
-        State('closed', 'closed', (), color='lightblue'),
+        State('closed', 'closed', ('reopen',), color='lightblue'),
         # not directly reachable states:
         State('delegated', 'delegated',
-              ('plan', 'accept', 'start', 'work', 'finish', 'close', 
-               'delegate', 'move', 'cancel', 'modify'),
+              ('plan', 'accept', #'start', 'work', 'finish', 
+               'close', 'delegate', 'move', 'cancel', 'modify'),
               color='purple'),
         State('delegated_x', 'delegated', (), color='purple'),
         State('moved', 'moved',
@@ -82,7 +83,7 @@ def workItemStates():
         # transitions:
         Transition('plan', 'plan', 'planned'),
         Transition('accept', 'accept', 'accepted'),
-        Transition('start', 'start working', 'running'),
+        Transition('start', 'start working', 'running'),    # obsolete?
         Transition('work', 'work', 'done'),
         Transition('finish', 'finish', 'finished'),
         Transition('cancel', 'cancel', 'cancelled'),
@@ -90,10 +91,12 @@ def workItemStates():
         Transition('delegate', 'delegate', 'planned'),
         Transition('move', 'move', 'planned'),
         Transition('close', 'close', 'closed'),
+        Transition('reopen', 're-open', 'planned'),
         initialState='new')
 
 
-fieldNames = ['title', 'description', 'start', 'end', 'duration', 'effort',
+fieldNames = ['title', 'description', 'deadline', 'start', 'end', 
+              'duration', 'effort',
               'comment', 'party']   # for use in editingRules
 
 # meaning:  - not editable, value=default
@@ -102,20 +105,53 @@ fieldNames = ['title', 'description', 'start', 'end', 'duration', 'effort',
 #           . default (may be empty)
 
 editingRules = dict(
-    plan    = {'*':         '++.....+'},
-    accept  = {'*':         '++.....-',
-               'planned':   '++++++.-',
-               'accepted':  '++++++.-'},
-    start   = {'*':         '++./...-'},
-    work    = {'*':         '++.....-',
-               'running':   '+++....-'},
-    finish  = {'*':         '++.....-',
-               'running':   '+++....-'},
-    cancel  = {'*':         '++////./'},
-    modify  = {'*':         '++++++++'},
-    delegate= {'*':         '++......'},
-    close   = {'*':         '++////./'},
+    plan    = {'*':         '+++.....+'},
+    accept  = {'*':         '+++.....-',
+               'planned':   '+++++++.-',
+               'accepted':  '+++++++.-'},
+    start   = {'*':         '+++./...-'},
+    work    = {'*':         '+++.....-',
+               'running':   '++++....-'},
+    finish  = {'*':         '+++.....-',
+               'running':   '++++....-'},
+    cancel  = {'*':         '+++////./'},
+    modify  = {'*':         '+++++++++'},
+    delegate= {'*':         '+++++++.+'},
+    move    = {'*':         '+++++++.-'},
+    close   = {'*':         '+++////./'},
+    reopen  = {'*':         '+++////./'},
 )
+
+
+class WorkItemType(object):
+    """ Specify the type of a work item.
+
+        The work item type controls which actions (transitions)
+        and fields are available for a certain work item.
+    """
+
+    def __init__(self, name, title, description=u'', 
+                 actions=None, fields=None, indicator=None):
+        self.name = name
+        self.title = title
+        self.description = description
+        self.actions = actions or list(editingRules)
+        self.fields = fields or ('deadline', 'start-end', 'duration-effort')
+        self.indicator = indicator
+
+workItemTypes = Jeep((
+    WorkItemType('work', u'Unit of Work', indicator='work_work'),
+    WorkItemType('scheduled', u'Scheduled Event',
+        actions=('plan', 'accept', 'finish', 'cancel', 
+                 'modify', 'delegate', 'move', 'close', 'reopen'),
+        fields =('start-end', 'duration-effort',),
+        indicator='work_event'),
+    WorkItemType('deadline', u'Deadline',
+        actions=('plan', 'accept', 'finish', 'cancel', 
+                 'modify', 'delegate', 'move', 'close', 'reopen'),
+        fields =('deadline',),
+        indicator='work_deadline')
+))
 
 
 class WorkItem(Stateful, Track):
@@ -130,7 +166,8 @@ class WorkItem(Stateful, Track):
     typeInterface = IWorkItem
     statesDefinition = 'organize.workItemStates'
 
-    initAttributes = set(['party', 'title', 'description', 'start', 'end',
+    initAttributes = set(['workItemType', 'party', 'title', 'description', 
+                          'deadline', 'start', 'end',
                           'duration', 'effort'])
 
     def __init__(self, taskId, runId, userName, data):
@@ -142,6 +179,10 @@ class WorkItem(Stateful, Track):
     def getStatesDefinition(self):
         return component.getUtility(IStatesDefinition, 
                                     name=self.statesDefinition)
+
+    def getWorkItemType(self):
+        name = self.workItemType
+        return name and workItemTypes[name] or None
 
     @property
     def party(self):
@@ -194,7 +235,6 @@ class WorkItem(Stateful, Track):
             self.state = self.state + '_x'
             self.reindex('state')
         new.doTransition(action)
-        #new.reindex('state')
         new.reindex()
         return new
 
@@ -230,17 +270,18 @@ class WorkItem(Stateful, Track):
         return new
 
     def move(self, userName, **kw):
-        moved = self.createNew('move', userName, **kw)
+        xkw = dict(kw)
+        for k in ('deadline', 'start', 'end'):
+            xkw.pop(k, None)    # do not change on source item
+        moved = self.createNew('move', userName, **xkw)
         moved.userName = self.userName
         moved.state = 'moved'
-        #moved.reindex('state')
         moved.reindex()
         task = kw.pop('task', None)
         new = moved.createNew(None, userName, taskId=task, runId=0, **kw)
         new.userName = self.userName
         new.data['source'] = moved.name
         new.state = self.state
-        #new.reindex('state')
         new.reindex()
         moved.data['target'] = new.name
         if self.state in ('planned', 'accepted', 'delegated', 'moved', 'done'):
@@ -274,7 +315,7 @@ class WorkItem(Stateful, Track):
             if party is not None:
                 self.userName = party
                 self.reindex('userName')
-        start = kw.get('start')
+        start = kw.get('start') or kw.get('deadline')   # TODO: check OK?
         if start is not None:
             self.timeStamp = start
             self.reindex('timeStamp')
@@ -293,6 +334,10 @@ class WorkItem(Stateful, Track):
         if copyData is None:
             copyData = self.initAttributes
         newData = {}
+        start = kw.get('start')
+        deadline =  kw.get('deadline')
+        if not start and deadline:
+            kw['start'] = deadline
         for k in self.initAttributes.union(set(['comment'])):
             v = kw.get(k, _not_found)
             if v is _not_found and k in copyData:
