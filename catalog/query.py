@@ -242,7 +242,7 @@ class KeywordTerm(IndexTerm):
 
     def getIndex(self):
         index = super(KeywordTerm, self).getIndex()
-        assert IKeywordIndex.providedBy(index)
+        #assert IKeywordIndex.providedBy(index)
         return index
 
 
