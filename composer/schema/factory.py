@@ -105,6 +105,7 @@ def createField(field, info=None):
               readonly=field.readonly,
               #value_type=getattr(field, 'value_type', None),
               nostore=getattr(field, 'nostore', False),
+              showEmpty=getattr(field, 'showEmpty', False),
               multiple=getattr(field, 'multiple', False),
               display_format=getattr(field, 'displayFormat', None),
               baseField=field,)

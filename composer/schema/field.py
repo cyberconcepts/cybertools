@@ -49,6 +49,7 @@ class Field(Component):
     required = False
     readonly = False
     nostore = False
+    showEmpty = False
     standardFieldName = None
     vocabulary = None
     renderFactory = None
