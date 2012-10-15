@@ -1,6 +1,6 @@
 #-*- coding: UTF-8 -*-
 #
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2012 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@
 
 """
 Interfaces for the commerce domain like products, customers, orders, ...
-
-$Id$
 """
 
 from zope import schema
@@ -381,6 +379,8 @@ class IOrder(Interface):
     shippingCost = Attribute(u'The cost to be applied for shipping.')
     additionalCost = Attribute(u'An additional value to be added to the '
                         u'net value of the order.')
+    additionalCost2 = Attribute(u'A second additional value to be added to '
+                        u'the net value of the order.')
     tax = Attribute(u'The tax value to be added to the net value of the order.')
     total = Attribute(u'The total gross value (Decimal) of the order.')
 

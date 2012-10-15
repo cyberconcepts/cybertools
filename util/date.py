@@ -27,6 +27,9 @@ from datetime import datetime
 def getTimeStamp():
     return int(time.time())
 
+def date2TimeStamp(d):
+    return int(time.mktime(d.timetuple()))
+
 
 def timeStamp2Date(ts, useGM=False):
     if ts is None:
