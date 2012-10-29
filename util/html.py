@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2012 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,18 +18,16 @@
 
 """
 Strip HTML tags and other HTML-related utilities.
-
-$Id$
 """
 
 from cybertools.text.lib.BeautifulSoup import BeautifulSoup, Comment
 from cybertools.text.lib.BeautifulSoup import Declaration, NavigableString
 
-validTags = ('a b br div em font h1 h2 h3 i li ol p pre span strong '
+validTags = ('a b br div em font h1 h2 h3 i img li ol p pre span strong '
              'table td tr u ul').split()
 
-validAttrs = ('align border cellpadding cellspacing class colspan '
-              'href rowspan style title width').split()
+validAttrs = ('align alt border cellpadding cellspacing class colspan '
+              'href rowspan src style target title width').split()
 
 validStyles = 'font-style font-weight'.split()
 validStyleParts = 'border padding'.split()
