@@ -152,9 +152,12 @@ class ResultSet(object):
                 for idx, f in enumerate(self.groupColumns):
                     value = f.getRawValue(row)
                     if value != groupValues[idx]:
+                        # TODO: loop through all lower-level fields
+                        # for j, f in enumerate(self.groupColumns)[idx:]:
+                        #     # use idx+j for correct indexing
                         groupValues[idx] = value
                         headerRows.append(self.getHeaderRow(row, (f,) + f.outputWith))
-                        if lastRow is not None:
+                        if lastRow is not None and f.getDisplayValue(lastRow):
                             subTotalsRows.append(
                                 self.getSubTotalsRow(f,
                                     lastRow,
@@ -171,6 +174,18 @@ class ResultSet(object):
                     for idx2, f in enumerate(sc):
                         subTotals[idx][idx2] += f.getValue(row)
                 lastRow = row
+            if lastRow is not None:
+                subTotalsRows = []
+                for idx, f in enumerate(self.groupColumns):
+                    if f.getDisplayValue(lastRow):
+                        subTotalsRows.append(
+                            self.getSubTotalsRow(f,
+                                lastRow,
+                                self.subTotalsColumns[idx],
+                                subTotals[idx]
+                                ))
+                for subTotalsRow in reversed(subTotalsRows):
+                    res.append(subTotalsRow)
             result = res
         if self.limits:
             start, stop = self.limits
