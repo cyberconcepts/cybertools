@@ -38,7 +38,7 @@ class ReadContainer(ReadContainer):
 
     factoryName = 'filesystem'
 
-    @Lazy
+    @property
     def filenames(self):
         return os.listdir(self.address)
 
