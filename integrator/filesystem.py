@@ -84,7 +84,7 @@ class File(File):
     data = None
 
     def getData(self, num=-1):
-        f = open(self.address, 'r')
+        f = open(self.address, 'rb')
         data = f.read(num)
         f.close()
         return data
