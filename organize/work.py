@@ -131,13 +131,16 @@ class WorkItemType(object):
     """
 
     def __init__(self, name, title, description=u'', 
-                 actions=None, fields=None, indicator=None):
+                 actions=None, fields=None, indicator=None,
+                 delegatedState='delegated', prefillDate=True):
         self.name = name
         self.title = title
         self.description = description
         self.actions = actions or list(editingRules)
         self.fields = fields or ('deadline', 'start-end', 'duration-effort')
         self.indicator = indicator
+        self.delegatedState = delegatedState
+        self.prefillDate = prefillDate
 
 workItemTypes = Jeep((
     WorkItemType('work', u'Unit of Work', indicator='work_work'),
@@ -150,7 +153,13 @@ workItemTypes = Jeep((
         actions=('plan', 'accept', 'finish', 'cancel', 
                  'modify', 'delegate', 'move', 'close', 'reopen'),
         fields =('deadline',),
-        indicator='work_deadline')
+        indicator='work_deadline'),
+    WorkItemType('checkup', u'Check-up',
+        actions=('accept', 'finish', 'cancel', 
+                 'modify', 'delegate', 'close', 'reopen'),
+        fields =('deadline', 'start-end',),
+        indicator='work_checkup',
+        delegatedState='closed', prefillDate=False),
 ))
 
 
@@ -259,7 +268,7 @@ class WorkItem(Stateful, Track):
             xkw = dict(kw)
             xkw.pop('party', None)
             delegated = self.createNew('delegate', userName, **xkw)
-        delegated.state = 'delegated'
+        delegated.state = self.getWorkItemType().delegatedState
         delegated.reindex('state')
         new = delegated.createNew('plan', userName, runId=0, **kw)
         new.data['source'] = delegated.name
