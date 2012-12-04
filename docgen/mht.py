@@ -20,14 +20,42 @@
 Working with MHT Files.
 """
 
+from email import message_from_string
+#from email.multipart import MIMEMultipart
+
+
 class MHTFile(object):
+
+    #encoding = 'UTF-8'
+    #encoding = 'ISO8859-15'
+    encoding = 'Windows-1252'
+    bodyMarker = 'lxdoc_body'
+    indexes = dict(body=2, filelist=-2)
+
 
     def __init__(self, data):
         self.data = data
+        self.msg = message_from_string(data)
+        self.boundary = self.msg.get_boundary()
+        self.parts = data.split(self.boundary)
+        #print '***', len(self.parts)
+        #for idx, part in enumerate(self.msg.walk()):
+        #    print '***', idx, part['Content-Location'], part.get_content_type()
 
     def addImage(self, imagePath):
         pass
 
     def setBody(self, body):
-        pass
+        content = body.encode(self.encoding)
+        bodyIndex = self.indexes['body']
+        baseDocument = self.parts[bodyIndex]
+        self.parts[bodyIndex] =  baseDocument.replace(self.bodyMarker, 
+                                        self.quopri(content))
+
+    def asString(self):
+        #msg = MIMEMultipart('related')
+        return self.boundary.join(self.parts)
+
+    def quopri(self, s):
+        return s.replace('="', '=3D"')
 

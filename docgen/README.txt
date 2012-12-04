@@ -26,15 +26,19 @@ Working with MHT Files
   >>> document = MHTFile(data)
   >>> document.addImage(imagePath)
 
-  >>> body = '''
+  >>> body = '''<img src="test_image.jpg" />
   ... '''
 
   >>> document.setBody(body)
 
-  >>> outPath = os.path.join(basePath, 'out_doc.mht')
-  >>> f = open(outPath, 'wt')
-  >>> f.write(document.data)
-  >>> f.close()
+  >>> output = document.asString()
+  >>> len(data), len(output)
+  (294996, 295017)
 
-  >>> os.unlink(outPath)
+  >>> outPath = os.path.join(basePath, 'out_doc.mht')
+  >>> #f = open(outPath, 'wt')
+  >>> #f.write(document.asString())
+  >>> #f.close()
+
+  >>> #os.unlink(outPath)
 
