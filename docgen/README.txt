@@ -22,18 +22,18 @@ Working with MHT Files
 
   >>> imagePath = os.path.join(basePath, 'test_image.jpg')
 
-  >>> from cybertools.docgen.mht import MHTFile
-  >>> document = MHTFile(data)
-  >>> document.addImage(imagePath)
-
   >>> body = '''<img src="test_image.jpg" />
   ... '''
 
-  >>> document.setBody(body)
+  >>> from cybertools.docgen.mht import MHTFile
+  >>> document = MHTFile(data, body)
+  >>> document.addImage(imagePath)  # TODO: provide imageData, path
+
+  >>> document.insertBody()
 
   >>> output = document.asString()
   >>> len(data), len(output)
-  (294996, 295017)
+  (294996, 295346)
 
   >>> outPath = os.path.join(basePath, 'out_doc.mht')
   >>> #f = open(outPath, 'wt')
