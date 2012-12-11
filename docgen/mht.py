@@ -22,6 +22,7 @@ Working with MHT Files.
 
 import base64
 import email
+import mimetypes
 import os
 
 
@@ -31,15 +32,18 @@ class MHTFile(object):
     #encoding = 'ISO8859-15'
     encoding = 'Windows-1252'
     bodyMarker = 'lxdoc_body'
+    foldernameSuffix = 'Dateien'
     indexes = dict(body=2, filelist=-2)
 
+    path = documentName = None
+
     imageTemplate = ('\n'
-        'Content-Location: file:///C:/AF2749EC/%(docname)s-Dateien/$(imgname)s\n'
+        'Content-Location: %(path)s/%(docname)s-%(suffix)s/%(imgname)s\n'
         'Content-Transfer-Encoding: base64\n'
         'Content-Type: %(ctype)s\n\n%(imgdata)s\n\n')
 
     filelistItemTemplate = ' <o:File HRef=3D"%s"/>\n'
-    filelistPattern ='<o:File HRef=3D"filelist.xml"/>'
+    filelistPattern =' <o:File HRef=3D"filelist.xml"/>'
 
     def __init__(self, data, body):
         self.data = data
@@ -50,23 +54,30 @@ class MHTFile(object):
         self.htmlDoc = HTMLDoc(body)
         self.lastImageNum = 0
         self.imageMappings = []
-        #print '***', len(self.parts)
         for idx, part in enumerate(self.msg.walk()):
-        #    print '***', idx, , part.get_content_type()
-            if idx == 1:
-                docPath = part['Content-Location']
-        self.documentName = docPath
-        # TODO: collect existing images to provide consistent naming
+            docPath = part['Content-Location']
+            contentType = part.get_content_type()
+            #print '***', idx, docPath, contentType 
+            if idx == self.indexes['body'] - 1:
+                self.path, docname = os.path.split(docPath)
+                self.documentName, ext = os.path.splitext(docname)
+            if contentType.startswith('image/'):
+                self.lastImageNum += 1
+        #print '###', self.path, self.documentName, self.lastImageNum
 
     def getImageRefs(self):
         return self.htmlDoc.getImageRefs()
 
-    def addImage(self, imageData, path='image001.jpg', contentType='image/jpeg'):
+    def addImage(self, imageData, path, contentType='image/jpeg'):
+        contentType, enc = mimetypes.guess_type(path)
+        bp, ext = os.path.splitext(path)
+        self.lastImageNum += 1
+        name = 'image%03i%s' % (self.lastImageNum, ext)
+        self.imageMappings.append((path, name))
         flpos = self.indexes['filelist']
-        # TODO: get contentType from path
-        # TODO: generate name, update self.imageMappings
-        name = path
-        vars = dict(docname=self.documentName, imgname=name, ctype=contentType,
+        vars = dict(path=self.path, docname=self.documentName,  
+                    suffix=self.foldernameSuffix,
+                    imgname=name, ctype=contentType,
                     imgdata=base64.encodestring(imageData))
         content = self. imageTemplate % vars
         self.parts.insert(flpos, content)
@@ -76,7 +87,7 @@ class MHTFile(object):
 
 
     def insertBody(self):
-        # self.htmlDoc.updateImageRefs(self.imageMappings)
+        self.htmlDoc.updateImageRefs(self.imageMappings)
         # TODO: convert changed self.htmlDoc to new body
         content = self.body.encode(self.encoding)
         bodyIndex = self.indexes['body']
