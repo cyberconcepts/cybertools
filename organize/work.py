@@ -80,6 +80,7 @@ def workItemStates():
         State('planned_x', 'planned', (), color='red'),
         State('accepted_x', 'accepted', (), color='yellow'),
         State('done_x', 'done', (), color='lightgreen'),
+        State('finished_x', 'finished', (), color='green'),
         # transitions:
         Transition('plan', 'plan', 'planned'),
         Transition('accept', 'accept', 'accepted'),
@@ -174,6 +175,7 @@ class WorkItem(Stateful, Track):
     typeName = 'WorkItem'
     typeInterface = IWorkItem
     statesDefinition = 'organize.workItemStates'
+    workItemType = 'work'
 
     initAttributes = set(['workItemType', 'party', 'title', 'description', 
                           'deadline', 'start', 'end',
@@ -293,7 +295,8 @@ class WorkItem(Stateful, Track):
         new.state = self.state
         new.reindex()
         moved.data['target'] = new.name
-        if self.state in ('planned', 'accepted', 'delegated', 'moved', 'done'):
+        if self.state in ('planned', 'accepted', 'delegated', 'moved', 
+                          'done', 'finished'):
             self.state = self.state + '_x'
             self.reindex('state')
         return new
