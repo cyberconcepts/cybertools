@@ -175,7 +175,6 @@ class WorkItem(Stateful, Track):
     typeName = 'WorkItem'
     typeInterface = IWorkItem
     statesDefinition = 'organize.workItemStates'
-    workItemType = 'work'
 
     initAttributes = set(['workItemType', 'party', 'title', 'description', 
                           'deadline', 'start', 'end',
@@ -193,7 +192,7 @@ class WorkItem(Stateful, Track):
 
     def getWorkItemType(self):
         name = self.workItemType
-        return name and workItemTypes[name] or None
+        return name and workItemTypes[name] or workItemTypes['work']
 
     @property
     def party(self):
