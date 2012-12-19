@@ -21,9 +21,13 @@ Working with MHT Files.
 """
 
 import base64
+from cStringIO import StringIO
 import email
+import Image
 import mimetypes
 import os
+
+from cybertools.text.lib.BeautifulSoup import BeautifulSoup, Tag
 
 
 class MHTFile(object):
@@ -53,7 +57,7 @@ class MHTFile(object):
         self.body = body
         self.htmlDoc = HTMLDoc(body)
         self.lastImageNum = 0
-        self.imageMappings = []
+        self.imageMappings = {}
         for idx, part in enumerate(self.msg.walk()):
             docPath = part['Content-Location']
             contentType = part.get_content_type()
@@ -68,28 +72,30 @@ class MHTFile(object):
     def getImageRefs(self):
         return self.htmlDoc.getImageRefs()
 
-    def addImage(self, imageData, path, contentType='image/jpeg'):
+    def addImage(self, imageData, path):
+        image = Image.open(StringIO(imageData))
+        width, height = image.size
         contentType, enc = mimetypes.guess_type(path)
         bp, ext = os.path.splitext(path)
         self.lastImageNum += 1
         name = 'image%03i%s' % (self.lastImageNum, ext)
-        self.imageMappings.append((path, name))
+        self.imageMappings[path] = (name, width, height)
         flpos = self.indexes['filelist']
         vars = dict(path=self.path, docname=self.documentName,  
                     suffix=self.foldernameSuffix,
                     imgname=name, ctype=contentType,
                     imgdata=base64.encodestring(imageData))
         content = self. imageTemplate % vars
-        self.parts.insert(flpos, content)
+        self.parts.insert(flpos, str(content))
         filelistRep = (self.filelistItemTemplate % name) + self.filelistPattern
         filelist = self.parts[flpos]
-        self.parts[flpos] = filelist.replace(self.filelistPattern, filelistRep)
+        self.parts[flpos] = str(filelist.replace(self.filelistPattern, filelistRep))
 
 
     def insertBody(self):
-        self.htmlDoc.updateImageRefs(self.imageMappings)
-        # TODO: convert changed self.htmlDoc to new body
-        content = self.body.encode(self.encoding)
+        path = '-'.join((self.documentName, self.foldernameSuffix))
+        self.htmlDoc.updateImageRefs(self.imageMappings, path)
+        content = self.htmlDoc.doc.renderContents(self.encoding)
         bodyIndex = self.indexes['body']
         baseDocument = self.parts[bodyIndex]
         self.parts[bodyIndex] =  baseDocument.replace(self.bodyMarker, 
@@ -106,11 +112,20 @@ class HTMLDoc(object):
 
     def __init__(self, data):
         self.data = data
+        self.doc = BeautifulSoup(data)
 
     def getImageRefs(self):
-        return []
+        return [img['src'] for img in self.doc('img')]
 
-    def updateImageRefs(self, mappings):
-        for old, new in mappings:
-            pass
+    def updateImageRefs(self, mappings, path=''):
+        for img in self.doc('img'):
+            name, width, height = mappings[img['src']]
+            imgdata = Tag(self.doc, 'v:imagedata')
+            imgdata['src'] = '/'.join((path, name))
+            imgdata.isSelfClosing = True
+            img.append(imgdata)
+            del img['src']
+            img['style'] = 'width:%spt;height:%spt' % (width, height)
+            img.isSelfClosing = False
+            img.name='v:shape'
 

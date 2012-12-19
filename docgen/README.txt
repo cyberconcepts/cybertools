@@ -20,12 +20,7 @@ Working with MHT Files
   >>> data = f.read()
   >>> f.close()
 
-  >>> imagePath = os.path.join(basePath, 'test_image.jpg')
-  >>> f = open(imagePath, 'rt')
-  >>> imageData = f.read()
-  >>> f.close()
-
-  >>> body = '''<div class="WordSection1">
+  >>> xbody = '''<div class="WordSection1">
   ... <v:shape id="Grafik_x0020_2" o:spid="_x0000_i1025" type="#_x0000_t75"
   ...     style="width:320pt;height:240pt;visibility:visible;mso-wrap-style:square">
   ...   <v:imagedata src="FB-Besprechungsprotokoll-Dateien/image002.jpg" o:title=""/>
@@ -33,15 +28,27 @@ Working with MHT Files
   ... </div>
   ... '''
 
+  >>> body = '''<div class="WordSection1">
+  ... <img src="files/test_image.jpg" />
+  ... </div>
+  ... '''
+
   >>> from cybertools.docgen.mht import MHTFile
   >>> document = MHTFile(data, body)
-  >>> document.addImage(imageData, 'files/test_image.jpg')
+
+  >>> imageRefs = document.htmlDoc.getImageRefs()
+  >>> for path in imageRefs:
+  ...     imagePath = os.path.join(basePath, os.path.basename(path))
+  ...     f = open(imagePath, 'rt')
+  ...     imageData = f.read()
+  ...     f.close()
+  ...     document.addImage(imageData, path)
 
   >>> document.insertBody()
 
   >>> output = document.asString()
   >>> len(data), len(output)
-  (294996, 336268)
+  (294996, 336140)
 
   >>> outPath = os.path.join(basePath, 'out_doc.mht')
   >>> #f = open(outPath, 'wt')
