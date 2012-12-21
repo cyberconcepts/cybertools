@@ -80,6 +80,7 @@ def workItemStates():
         State('planned_x', 'planned', (), color='red'),
         State('accepted_x', 'accepted', (), color='yellow'),
         State('done_x', 'done', (), color='lightgreen'),
+        State('finished_x', 'finished', (), color='green'),
         # transitions:
         Transition('plan', 'plan', 'planned'),
         Transition('accept', 'accept', 'accepted'),
@@ -131,13 +132,16 @@ class WorkItemType(object):
     """
 
     def __init__(self, name, title, description=u'', 
-                 actions=None, fields=None, indicator=None):
+                 actions=None, fields=None, indicator=None,
+                 delegatedState='delegated', prefillDate=True):
         self.name = name
         self.title = title
         self.description = description
         self.actions = actions or list(editingRules)
         self.fields = fields or ('deadline', 'start-end', 'duration-effort')
         self.indicator = indicator
+        self.delegatedState = delegatedState
+        self.prefillDate = prefillDate
 
 workItemTypes = Jeep((
     WorkItemType('work', u'Unit of Work', indicator='work_work'),
@@ -150,7 +154,13 @@ workItemTypes = Jeep((
         actions=('plan', 'accept', 'finish', 'cancel', 
                  'modify', 'delegate', 'move', 'close', 'reopen'),
         fields =('deadline',),
-        indicator='work_deadline')
+        indicator='work_deadline'),
+    WorkItemType('checkup', u'Check-up',
+        actions=('accept', 'finish', 'cancel', 
+                 'modify', 'delegate', 'close', 'reopen'),
+        fields =('deadline', 'start-end',),
+        indicator='work_checkup',
+        delegatedState='closed', prefillDate=False),
 ))
 
 
@@ -182,7 +192,7 @@ class WorkItem(Stateful, Track):
 
     def getWorkItemType(self):
         name = self.workItemType
-        return name and workItemTypes[name] or None
+        return name and workItemTypes[name] or workItemTypes['work']
 
     @property
     def party(self):
@@ -259,7 +269,7 @@ class WorkItem(Stateful, Track):
             xkw = dict(kw)
             xkw.pop('party', None)
             delegated = self.createNew('delegate', userName, **xkw)
-        delegated.state = 'delegated'
+        delegated.state = self.getWorkItemType().delegatedState
         delegated.reindex('state')
         new = delegated.createNew('plan', userName, runId=0, **kw)
         new.data['source'] = delegated.name
@@ -284,7 +294,8 @@ class WorkItem(Stateful, Track):
         new.state = self.state
         new.reindex()
         moved.data['target'] = new.name
-        if self.state in ('planned', 'accepted', 'delegated', 'moved', 'done'):
+        if self.state in ('planned', 'accepted', 'delegated', 'moved', 
+                          'done', 'finished'):
             self.state = self.state + '_x'
             self.reindex('state')
         return new

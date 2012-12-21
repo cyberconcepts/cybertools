@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2012 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 Access to objects in the file system.
-
-$Id$
 """
 
 import os, stat
@@ -40,7 +38,7 @@ class ReadContainer(ReadContainer):
 
     factoryName = 'filesystem'
 
-    @Lazy
+    @property
     def filenames(self):
         return os.listdir(self.address)
 
@@ -86,7 +84,7 @@ class File(File):
     data = None
 
     def getData(self, num=-1):
-        f = open(self.address, 'r')
+        f = open(self.address, 'rb')
         data = f.read(num)
         f.close()
         return data
@@ -115,10 +113,13 @@ class ContainerFactory(ContainerFactory):
 
 class FileFactory(FileFactory):
 
+    proxyClass = File
+    imageClass = Image
+
     def __call__(self, address, **kw):
         contentType = kw.pop('contentType', None)
         width = height = 0
-        obj = File(address, contentType, **kw)
+        obj = self.proxyClass(address, contentType, **kw)
         if not contentType:
             data = obj.getData(50)
             contentType, width, height = getImageInfo(data)
@@ -126,7 +127,7 @@ class FileFactory(FileFactory):
             name = os.path.basename(address)
             contentType, encoding = guess_content_type(name, data, '')
         if contentType.startswith('image/'):
-            return Image(address, contentType=contentType,
+            return self.imageClass(address, contentType=contentType,
                          width=width, height=height, **kw)
         else:
             obj.contentType = contentType
