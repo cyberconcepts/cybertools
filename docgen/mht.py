@@ -23,7 +23,7 @@ Working with MHT Files.
 import base64
 from cStringIO import StringIO
 import email
-import Image
+from PIL import Image
 import mimetypes
 import os
 
