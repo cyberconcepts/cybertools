@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -366,3 +366,4 @@ class IFormManager(IClientManager):
                 description=_(u'Email address that will be used as sender '
                         'address of confirmation and feedback messages.'),
                 required=False,)
+
