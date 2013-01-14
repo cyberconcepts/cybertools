@@ -65,3 +65,14 @@ def year(d=None):
     if d is None:
         d = datetime.today()
     return d.year
+
+def month(d=None):
+    if d is None:
+        d = datetime.today()
+    return d.month
+
+def day(d=None):
+    if d is None:
+        d = datetime.today()
+    return d.day
+

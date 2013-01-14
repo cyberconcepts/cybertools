@@ -334,7 +334,7 @@ class EmailFieldInstance(FieldInstance):
 class BooleanFieldInstance(FieldInstance):
 
     def marshall(self, value):
-        return value
+        return bool(value)
 
     def display(self, value):
         #return value and _(u'Yes') or _(u'No')
