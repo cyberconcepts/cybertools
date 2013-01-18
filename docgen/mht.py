@@ -37,7 +37,7 @@ class MHTFile(object):
     encoding = 'Windows-1252'
     bodyMarker = 'lxdoc_body'
     foldernameSuffix = 'Dateien'
-    indexes = dict(body=2, filelist=-2)
+    indexes = dict(body=1, filelist=-2)
 
     path = documentName = None
 
@@ -52,7 +52,7 @@ class MHTFile(object):
     def __init__(self, data, body):
         self.data = data
         self.msg = email.message_from_string(data)
-        self.boundary = self.msg.get_boundary()
+        self.boundary = '--' + self.msg.get_boundary()
         self.parts = data.split(self.boundary)
         self.body = body
         self.htmlDoc = HTMLDoc(body)
@@ -61,8 +61,7 @@ class MHTFile(object):
         for idx, part in enumerate(self.msg.walk()):
             docPath = part['Content-Location']
             contentType = part.get_content_type()
-            #print '***', idx, docPath, contentType 
-            if idx == self.indexes['body'] - 1:
+            if idx == self.indexes['body']:
                 self.path, docname = os.path.split(docPath)
                 self.documentName, ext = os.path.splitext(docname)
             if contentType.startswith('image/'):
