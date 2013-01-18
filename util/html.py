@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2012 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -74,6 +74,13 @@ def checkStyle(k):
         if k.startswith(name):
             return True
     return False
+
+
+def stripComments(value):
+    soup = BeautifulSoup(value)
+    for comment in soup.findAll(text=lambda text: isinstance(text, Comment)):
+        comment.extract()
+    return soup.renderContents().decode('utf8')
 
 
 def stripAll(value):
