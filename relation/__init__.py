@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 # -*- Mode: Python; py-indent-offset: 4 -*-
 #
-#  Copyright (c) 2005 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -21,8 +21,6 @@
 """
 The relation package provides all you need for setting up dyadic and
 triadic relations.
-
-$Id$
 """
 
 from persistent import Persistent
