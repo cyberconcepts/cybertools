@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 Implementation of the utilities needed for the relations package.
-
-$Id$
 """
 
 from logging import getLogger
@@ -186,7 +184,7 @@ class RelationRegistry(Catalog):
                 if value is not None:
                     criteria[attr] = intids.getId(value)
             pn = example.getPredicateName()
-            if pn:
+            if pn is not None:
                 criteria['relationship'] = pn
         for k in kw:
             # overwrite example fields with explicit values
@@ -244,10 +242,17 @@ def getRelations(first=None, second=None, third=None, relationships=None):
     if not relationships:
         return registry.query(**query)
     else:
-        result = set()
+        predicates = []
         for r in relationships:
-            query['relationship'] = r
-            result.update(registry.query(**query))
+            if hasattr(r, 'predicate'):
+                predicates.append(r.predicate)
+                r.predicate = None
+            else:
+                predicates.append(r.getPredicateName())
+        result = registry.query(**query)
+        if predicates:
+            return [r for r in result 
+                        if r.ident in predicates or r.fallback in predicates]
         return result
 
 def getRelationSingle(obj=None, relationship=None, forSecond=True):
