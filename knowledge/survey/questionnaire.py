@@ -32,25 +32,25 @@ class Questionnaire(object):
     def __init__(self):
         self.questions = []
         self.responses = []
-        self.defaultOptions = range(5)
+        self.defaultAnswerOptions = range(5)
 
 
 class Question(object):
 
     implements(IQuestion)
 
-    _options = None
+    _answerOptions = None
     
     def __init__(self, questionnaire, text=u''):
         self.questionnaire = questionnaire
         self.resultElements = {}
         self.text = text
 
-    def getOptions(self):
-        return self._options or self.questionnaire.defaultOptions
-    def setOptions(self, value):
-        self._options = value
-    options = property(getOptions, setOptions)
+    def getAnswerOptions(self):
+        return self._answerOptions or self.questionnaire.defaultAnswerOptions
+    def setAnswerOptions(self, value):
+        self._answerOptions = value
+    answerOptions = property(getAnswerOptions, setAnswerOptions)
 
 
 class ResultElement(object):
