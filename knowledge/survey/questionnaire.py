@@ -29,12 +29,13 @@ from cybertools.knowledge.survey.interfaces import IFeedbackItem, IResponse
 class Questionnaire(object):
 
     implements(IQuestionnaire)
+
+    defaultAnswerRange = 5
     
     def __init__(self):
         self.questionGroups = []
         self.questions = []
         self.responses = []
-        self.defaultAnswerOptions = range(5)
 
 
 class QuestionGroup(object):
@@ -51,8 +52,7 @@ class Question(object):
 
     implements(IQuestion)
 
-    _answerOptions = None
-
+    _answerRange = None
     revertAnswerOptions = False
     
     def __init__(self, questionnaire, text=u''):
@@ -60,14 +60,11 @@ class Question(object):
         self.feedbackItems = {}
         self.text = text
 
-    def getAnswerOptions(self):
-        result = self._answerOptions or self.questionnaire.defaultAnswerOptions
-        if self.revertAnswerOptions:
-            result.reverse()
-        return result
-    def setAnswerOptions(self, value):
-        self._answerOptions = value
-    answerOptions = property(getAnswerOptions, setAnswerOptions)
+    def getAnswerRange(self):
+        return self._answerRange or self.questionnaire.defaultAnswerRange
+    def setAnswerRange(self, value):
+        self._answerRange = value
+    answerRange = property(getAnswerRange, setAnswerRange)
 
 
 class FeedbackItem(object):
@@ -100,7 +97,7 @@ class Response(object):
             score = scoreMax = 0.0
             for qu in qugroup.questions:
                 score += self.values.get(qu, 0.0)
-                scoreMax += max(qu.answerOptions)
+                scoreMax += qu.answerRange - 1
             relScore = score / scoreMax
             wScore = relScore * (len(qugroup.feedbackItems) - 1)
             result.append((qugroup.feedbackItems[int(wScore)], wScore))

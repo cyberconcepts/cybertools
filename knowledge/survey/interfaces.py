@@ -34,7 +34,7 @@ class IQuestionnaire(Interface):
     questions = Attribute('An ordered collection of questions.')
     questionGroups = Attribute('An ordered collection of question groups (optional).')
     responses = Attribute('A set of responses.')
-    defaultAnswerOptions = Attribute('A sequence of answer options to select from. '
+    defaultAnswerRange = Attribute('The number of answer options to select from. '
                 'Default value used for questions that do not '
                 'explicitly provide the values attribute.')
 
@@ -57,7 +57,7 @@ class IQuestion(Interface):
 
     text = Attribute('The question asked.')
     questionnaire = Attribute('The questionnaire this question belongs to.')
-    answerOptions = Attribute('A sequence of answer options to select from.')
+    answerRange = Attribute('The number of answer options to select from.')
     feedbackItems = Attribute('A mapping with feedback items as keys and '
                 'corresponding relevance factors as values.')
     revertAnswerOptions = Attribute('Revert the sequence of answer '
