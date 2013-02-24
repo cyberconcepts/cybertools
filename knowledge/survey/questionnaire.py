@@ -29,13 +29,12 @@ from cybertools.knowledge.survey.interfaces import IFeedbackItem, IResponse
 class Questionnaire(object):
 
     implements(IQuestionnaire)
-
-    defaultAnswerRange = 5
     
     def __init__(self):
         self.questionGroups = []
         self.questions = []
         self.responses = []
+        self.defaultAnswerRange = 5
 
 
 class QuestionGroup(object):
@@ -53,12 +52,12 @@ class Question(object):
     implements(IQuestion)
 
     _answerRange = None
-    revertAnswerOptions = False
     
     def __init__(self, questionnaire, text=u''):
         self.questionnaire = questionnaire
         self.feedbackItems = {}
         self.text = text
+        self.revertAnswerOptions = False
 
     def getAnswerRange(self):
         return self._answerRange or self.questionnaire.defaultAnswerRange

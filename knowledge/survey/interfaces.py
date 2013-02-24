@@ -31,8 +31,8 @@ class IQuestionnaire(Interface):
     """ A collection of questions for setting up a survey.
     """
 
-    questions = Attribute('An ordered collection of questions.')
     questionGroups = Attribute('An ordered collection of question groups (optional).')
+    questions = Attribute('An ordered collection of questions.')
     responses = Attribute('A set of responses.')
     defaultAnswerRange = Attribute('The number of answer options to select from. '
                 'Default value used for questions that do not '
