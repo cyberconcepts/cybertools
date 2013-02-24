@@ -45,16 +45,16 @@ class IQuestion(Interface):
     text = Attribute('The question asked.')
     questionnaire = Attribute('The questionnaire this question belongs to.')
     answerOptions = Attribute('A sequence of answer options to select from.')
-    resultElements = Attribute('A mapping with result elements as keys and '
+    feedbackItems = Attribute('A mapping with feedback items as keys and '
             'corresponding relevance factors as values.')
 
 
-class IResultElement(Interface):
+class IFeedbackItem(Interface):
     """ Some text (e.g. a recommendation) or some other kind of information
-        that may be deduced from the res)ponses to a questionnaire.
+        that may be deduced from the responses to a questionnaire.
     """
 
-    text = Attribute('A text representing this result element.')
+    text = Attribute('A text representing this feedback item.')
 
 
 class IResponse(Interface):

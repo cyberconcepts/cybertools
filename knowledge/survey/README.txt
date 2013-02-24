@@ -13,14 +13,14 @@ Let's first set up a  questionaire.
 
 We now assign result elements with the questions of this questionnaire.
 
-  >>> from cybertools.knowledge.survey.questionnaire import ResultElement
-  >>> re01 = ResultElement('re01')
-  >>> re02 = ResultElement('re02')
-  >>> re03 = ResultElement('re03')
+  >>> from cybertools.knowledge.survey.questionnaire import FeedbackItem
+  >>> re01 = FeedbackItem('re01')
+  >>> re02 = FeedbackItem('re02')
+  >>> re03 = FeedbackItem('re03')
 
-  >>> qu01.resultElements = {re01: 0.8, re03: 0.2}
-  >>> qu02.resultElements = {re01: 0.3, re02: 0.7, re03: 0.1}
-  >>> qu03.resultElements = {re01: 0.2, re03: 0.9}
+  >>> qu01.feedbackItems = {re01: 0.8, re03: 0.2}
+  >>> qu02.feedbackItems = {re01: 0.3, re02: 0.7, re03: 0.1}
+  >>> qu03.feedbackItems = {re01: 0.2, re03: 0.9}
 
 
 Responses

@@ -22,7 +22,7 @@ Questionnaires, questions and other stuff needed for surveys.
 
 from zope.interface import implements
 from cybertools.knowledge.survey.interfaces import IQuestionnaire, IQuestion
-from cybertools.knowledge.survey.interfaces import IResultElement, IResponse
+from cybertools.knowledge.survey.interfaces import IFeedbackItem, IResponse
 
 
 class Questionnaire(object):
@@ -43,7 +43,7 @@ class Question(object):
     
     def __init__(self, questionnaire, text=u''):
         self.questionnaire = questionnaire
-        self.resultElements = {}
+        self.feedbackItems = {}
         self.text = text
 
     def getAnswerOptions(self):
@@ -53,9 +53,9 @@ class Question(object):
     answerOptions = property(getAnswerOptions, setAnswerOptions)
 
 
-class ResultElement(object):
+class FeedbackItem(object):
 
-    implements(IResultElement)
+    implements(IFeedbackItem)
     
     def __init__(self, text=u''):
         self.text = text
@@ -73,7 +73,7 @@ class Response(object):
     def getResult(self):
         result = {}
         for question, value in self.values.items():
-            for re, rf in question.resultElements.items():
-                result[re] = result.get(re, 0.0) + rf * value
+            for fi, rf in question.feedbackItems.items():
+                result[fi] = result.get(fi, 0.0) + rf * value
                 #print re.text, rf, value
         return sorted(result.items(), key=lambda x: -x[1])
