@@ -32,10 +32,23 @@ class IQuestionnaire(Interface):
     """
 
     questions = Attribute('An ordered collection of questions.')
+    questionGroups = Attribute('An ordered collection of question groups (optional).')
     responses = Attribute('A set of responses.')
     defaultAnswerOptions = Attribute('A sequence of answer options to select from. '
                 'Default value used for questions that do not '
                 'explicitly provide the values attribute.')
+
+
+class IQuestionGroup(Interface):
+    """ A group of questions within a questionnaire.
+
+        This may be used just for the presentation of questions or for 
+        grouped feedback items.
+    """
+
+    questionnaire = Attribute('The questionnaire this question belongs to.')
+    questions = Attribute('An ordered collection of questions.')
+    feedbackItems = Attribute('An ordered collection of feedback items.')
 
 
 class IQuestion(Interface):
@@ -46,7 +59,9 @@ class IQuestion(Interface):
     questionnaire = Attribute('The questionnaire this question belongs to.')
     answerOptions = Attribute('A sequence of answer options to select from.')
     feedbackItems = Attribute('A mapping with feedback items as keys and '
-            'corresponding relevance factors as values.')
+                'corresponding relevance factors as values.')
+    revertAnswerOptions = Attribute('Revert the sequence of answer '
+                'options internally so that a high selection gets a low score.')
 
 
 class IFeedbackItem(Interface):
@@ -71,3 +86,6 @@ class IResponse(Interface):
         """ Calculate the result for this response.
         """
 
+    def getGroupedResult():
+        """ Calculate the result for a questionnaire with grouped feedback items.
+        """

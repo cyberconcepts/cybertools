@@ -11,16 +11,20 @@ Let's first set up a  questionaire.
   >>> qu02 = Question(quest)
   >>> qu03 = Question(quest)
 
+
+Question-related Feedback Items
+===============================
+
 We now assign result elements with the questions of this questionnaire.
 
   >>> from cybertools.knowledge.survey.questionnaire import FeedbackItem
-  >>> re01 = FeedbackItem('re01')
-  >>> re02 = FeedbackItem('re02')
-  >>> re03 = FeedbackItem('re03')
+  >>> fi01 = FeedbackItem('fi01')
+  >>> fi02 = FeedbackItem('fi02')
+  >>> fi03 = FeedbackItem('fi03')
 
-  >>> qu01.feedbackItems = {re01: 0.8, re03: 0.2}
-  >>> qu02.feedbackItems = {re01: 0.3, re02: 0.7, re03: 0.1}
-  >>> qu03.feedbackItems = {re01: 0.2, re03: 0.9}
+  >>> qu01.feedbackItems = {fi01: 0.8, fi03: 0.2}
+  >>> qu02.feedbackItems = {fi01: 0.3, fi02: 0.7, fi03: 0.1}
+  >>> qu03.feedbackItems = {fi01: 0.2, fi03: 0.9}
 
 
 Responses
@@ -34,8 +38,23 @@ Responses
 Now let's calculate the result for resp01.
 
   >>> res = resp01.getResult()
-  >>> for re, score in res:
-  ...     print re.text, score
-  re03 4.1
-  re01 2.7
-  re02 0.7
+  >>> for fi, score in res:
+  ...     print fi.text, score
+  fi03 4.1
+  fi01 2.7
+  fi02 0.7
+
+
+Grouped Feedback Items
+======================
+
+  >>> from cybertools.knowledge.survey.questionnaire import QuestionGroup
+  >>> qugroup = QuestionGroup(quest)
+  >>> quest.questionGroups.append(qugroup)
+  >>> qugroup.questions = [qu01, qu02, qu03]
+  >>> qugroup.feedbackItems = [fi01, fi02, fi03]
+
+  >>> res = resp01.getGroupedResult()
+  >>> for fi, score in res:
+  ...     print fi.text, round(score, 2)
+  fi02 1.17

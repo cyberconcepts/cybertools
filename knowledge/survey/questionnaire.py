@@ -21,7 +21,8 @@ Questionnaires, questions and other stuff needed for surveys.
 """
 
 from zope.interface import implements
-from cybertools.knowledge.survey.interfaces import IQuestionnaire, IQuestion
+from cybertools.knowledge.survey.interfaces import IQuestionnaire
+from cybertools.knowledge.survey.interfaces import IQuestionGroup, IQuestion
 from cybertools.knowledge.survey.interfaces import IFeedbackItem, IResponse
 
 
@@ -30,9 +31,20 @@ class Questionnaire(object):
     implements(IQuestionnaire)
     
     def __init__(self):
+        self.questionGroups = []
         self.questions = []
         self.responses = []
         self.defaultAnswerOptions = range(5)
+
+
+class QuestionGroup(object):
+
+    implements(IQuestionGroup)
+
+    def __init__(self, questionnaire):
+        self.questionnaire = questionnaire
+        self.questions = []
+        self.feedbackItems = []
 
 
 class Question(object):
@@ -40,6 +52,8 @@ class Question(object):
     implements(IQuestion)
 
     _answerOptions = None
+
+    revertAnswerOptions = False
     
     def __init__(self, questionnaire, text=u''):
         self.questionnaire = questionnaire
@@ -47,7 +61,10 @@ class Question(object):
         self.text = text
 
     def getAnswerOptions(self):
-        return self._answerOptions or self.questionnaire.defaultAnswerOptions
+        result = self._answerOptions or self.questionnaire.defaultAnswerOptions
+        if self.revertAnswerOptions:
+            result.reverse()
+        return result
     def setAnswerOptions(self, value):
         self._answerOptions = value
     answerOptions = property(getAnswerOptions, setAnswerOptions)
@@ -75,5 +92,16 @@ class Response(object):
         for question, value in self.values.items():
             for fi, rf in question.feedbackItems.items():
                 result[fi] = result.get(fi, 0.0) + rf * value
-                #print re.text, rf, value
         return sorted(result.items(), key=lambda x: -x[1])
+
+    def getGroupedResult(self):
+        result = []
+        for qugroup in self.questionnaire.questionGroups:
+            score = scoreMax = 0.0
+            for qu in qugroup.questions:
+                score += self.values.get(qu, 0.0)
+                scoreMax += max(qu.answerOptions)
+            relScore = score / scoreMax
+            wScore = relScore * (len(qugroup.feedbackItems) - 1)
+            result.append((qugroup.feedbackItems[int(wScore)], wScore))
+        return result
