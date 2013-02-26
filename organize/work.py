@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2012 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -156,7 +156,7 @@ workItemTypes = Jeep((
         fields =('deadline',),
         indicator='work_deadline'),
     WorkItemType('checkup', u'Check-up',
-        actions=('accept', 'finish', 'cancel', 
+        actions=('plan', 'accept', 'finish', 'cancel', 
                  'modify', 'delegate', 'close', 'reopen'),
         fields =('deadline', 'start-end',),
         indicator='work_checkup',
