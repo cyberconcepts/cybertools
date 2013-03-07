@@ -102,7 +102,8 @@ class Response(object):
                     value = qu.answerRange - value - 1
                 score += value 
                 scoreMax += qu.answerRange - 1
-            relScore = score / scoreMax
-            wScore = relScore * (len(qugroup.feedbackItems) - 1)
-            result.append((qugroup.feedbackItems[int(wScore)], wScore))
+            if scoreMax > 0.0:
+                relScore = score / scoreMax
+                wScore = relScore * len(qugroup.feedbackItems) - 0.00001
+                result.append((qugroup, qugroup.feedbackItems[int(wScore)], wScore))
         return result
