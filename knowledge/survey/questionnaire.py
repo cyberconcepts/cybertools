@@ -87,6 +87,8 @@ class Response(object):
         result = {}
         for question, value in self.values.items():
             for fi, rf in question.feedbackItems.items():
+                if question.revertAnswerOptions:
+                    value = question.answerRange - value - 1
                 result[fi] = result.get(fi, 0.0) + rf * value
         return sorted(result.items(), key=lambda x: -x[1])
 
@@ -95,7 +97,10 @@ class Response(object):
         for qugroup in self.questionnaire.questionGroups:
             score = scoreMax = 0.0
             for qu in qugroup.questions:
-                score += self.values.get(qu, 0.0)
+                value = self.values.get(qu, 0.0)
+                if qu.revertAnswerOptions:
+                    value = qu.answerRange - value - 1
+                score += value 
                 scoreMax += qu.answerRange - 1
             relScore = score / scoreMax
             wScore = relScore * (len(qugroup.feedbackItems) - 1)

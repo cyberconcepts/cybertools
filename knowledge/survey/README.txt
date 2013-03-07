@@ -10,6 +10,7 @@ Let's first set up a  questionaire.
   >>> qu01 = Question(quest)
   >>> qu02 = Question(quest)
   >>> qu03 = Question(quest)
+  >>> qu01.revertAnswerOptions = True
 
 
 Question-related Feedback Items
