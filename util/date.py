@@ -72,7 +72,10 @@ def year(d=None):
 
 
 def toLocalTime(d):
-    if pytz is None:
+    if pytz is None or not d:
         return d
     cet = pytz.timezone('CET')
-    return d.astimezone(cet)
+    try:
+        return d.astimezone(cet)
+    except ValueError:
+        return d
