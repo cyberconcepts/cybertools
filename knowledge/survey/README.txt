@@ -58,4 +58,4 @@ Grouped Feedback Items
   >>> res = resp01.getGroupedResult()
   >>> for qugroup, fi, score in res:
   ...     print fi.text, round(score, 2)
-  fi02 1.75
+  fi02 0.58
