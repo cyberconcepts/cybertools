@@ -33,8 +33,12 @@ Responses
 
   >>> from cybertools.knowledge.survey.questionnaire import Response
   >>> resp01 = Response(quest, 'john')
-
   >>> resp01.values = {qu01: 2, qu02: 1, qu03: 4}
+
+It's possible to leave some of the questions unanswered.
+
+  >>> resp02 = Response(quest, 'john')
+  >>> resp02.values = {qu01: 2, qu03: 4}
 
 Now let's calculate the result for resp01.
 
@@ -45,6 +49,11 @@ Now let's calculate the result for resp01.
   fi01 2.7
   fi02 0.7
 
+  >>> res = resp02.getResult()
+  >>> for fi, score in res:
+  ...     print fi.text, score
+  fi03 4.0
+  fi01 2.4
 
 Grouped Feedback Items
 ======================
@@ -59,3 +68,9 @@ Grouped Feedback Items
   >>> for qugroup, fi, score in res:
   ...     print fi.text, round(score, 2)
   fi02 0.58
+
+  >>> res = resp02.getGroupedResult()
+  >>> for qugroup, fi, score in res:
+  ...     print fi.text, round(score, 2)
+  fi03 0.75
+

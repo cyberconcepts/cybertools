@@ -97,7 +97,9 @@ class Response(object):
         for qugroup in self.questionnaire.questionGroups:
             score = scoreMax = 0.0
             for qu in qugroup.questions:
-                value = self.values.get(qu, 0.0)
+                value = self.values.get(qu)
+                if value is None:
+                    continue
                 if qu.revertAnswerOptions:
                     value = qu.answerRange - value - 1
                 score += value 
