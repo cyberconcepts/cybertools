@@ -90,13 +90,16 @@ class Track(Persistent):
     #def getName(self):
     #    return self.__name__
 
-    def update(self, newData):
+    def update(self, newData, overwrite=False):
         if not newData:
             return
         self.timeStamp = getTimeStamp()
         getParent(self).indexTrack(0, self, 'timeStamp')
-        data = self.data
-        data.update(newData)
+        if overwrite:
+            data = newData
+        else:
+            data = self.data
+            data.update(newData)
         self.data = data    # record change
 
     def __repr__(self):
@@ -196,7 +199,7 @@ class TrackingStorage(BTreeContainer):
         return trackId, self.trackNum
 
     def saveUserTrack(self, taskId, runId, userName, data, update=False,
-                      timeStamp=None):
+                      timeStamp=None, overwrite=False):
         ts = timeStamp or getTimeStamp()
         if not runId:
             runId = self.currentRuns.get(taskId) or self.startRun(taskId)
@@ -208,7 +211,7 @@ class TrackingStorage(BTreeContainer):
         if update:
             track = self.getLastUserTrack(taskId, runId, userName)
             if track is not None:
-                return self.updateTrack(track, data)
+                return self.updateTrack(track, data, overwrite)
         trackId, trackNum = self.generateTrackId()
         track = self.trackFactory(taskId, runId, userName, data)
         track.__parent__ = self
@@ -219,10 +222,10 @@ class TrackingStorage(BTreeContainer):
         self.indexTrack(trackNum, track)
         return trackId
 
-    def updateTrack(self, track, data):
+    def updateTrack(self, track, data, overwrite=False):
         trackId = str(track.__name__)
         trackNum = int(trackId)
-        track.update(data)
+        track.update(data, overwrite)
         self.indexTrack(trackNum, track)
         return trackId
 
