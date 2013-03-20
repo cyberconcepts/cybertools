@@ -76,6 +76,8 @@ def toLocalTime(d):
         return d
     cet = pytz.timezone('CET')
     try:
+        if not isinstance(d, datetime):
+            d = datetime(d.year, d.month, d.day)
         return d.astimezone(cet)
     except ValueError:
         return d
