@@ -257,3 +257,16 @@ hr.space {
    apply to column that should drop below previous ones. */
 .clear { clear:both; }
 
+/* controlling vertical layout */
+.vlast {margin-bottom:0;padding-bottom:0;}
+.vspan-1, .vspan-2, .vspan-3, .vspan-4, .vspan-5, .vspan-6, .vspan-7, .vspan-8 {
+  margin-bottom: 20px;
+}
+.vspan-1 {height: 105px;}
+.vspan-2 {height: 230px;}
+.vspan-3 {height: 355px;}
+.vspan-4 {height: 480px;}
+.vspan-5 {height: 605px;}
+.vspan-6 {height: 730px;}
+.vspan-7 {height: 855px;}
+.vspan-8 {height: 980px;}

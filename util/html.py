@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2012 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 Strip HTML tags and other HTML-related utilities.
 """
 
+import re
+
 from cybertools.text.lib.BeautifulSoup import BeautifulSoup, Comment
 from cybertools.text.lib.BeautifulSoup import Declaration, NavigableString
 
@@ -32,9 +34,11 @@ validAttrs = ('align alt border cellpadding cellspacing class colspan '
 validStyles = 'font-style font-weight'.split()
 validStyleParts = 'border padding'.split()
 
+escCommPattern = re.compile(r'&lt;\!--\[if .*?\!\[endif\]--&gt;', re.DOTALL)
+
 
 def sanitize(value, validTags=validTags, validAttrs=validAttrs,
-                    validStyles=validStyles):
+                    validStyles=validStyles, stripEscapedComments=True):
     soup = BeautifulSoup(value)
     for comment in soup.findAll(text=lambda text: isinstance(text, Comment)):
         comment.extract()
@@ -51,7 +55,10 @@ def sanitize(value, validTags=validTags, validAttrs=validAttrs,
             if val:
                 attrs.append((attr, val))
         tag.attrs = attrs
-    return soup.renderContents().decode('utf8')
+    result = soup.renderContents()
+    if stripEscapedComments:
+        result = escCommPattern.sub(u'', result)
+    return result.decode('utf8')
 
 
 def sanitizeStyle(value, validStyles=validStyles):
@@ -74,6 +81,13 @@ def checkStyle(k):
         if k.startswith(name):
             return True
     return False
+
+
+def stripComments(value):
+    soup = BeautifulSoup(value)
+    for comment in soup.findAll(text=lambda text: isinstance(text, Comment)):
+        comment.extract()
+    return soup.renderContents().decode('utf8')
 
 
 def stripAll(value):

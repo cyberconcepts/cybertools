@@ -2,9 +2,7 @@
 Tweaking HTML text
 ==================
 
-$Id$
-
-  >>> from cybertools.util.html import sanitize
+  >>> from cybertools.util.html import sanitize, stripComments
 
   >>> input = """<html>
   ... <p class="standard" style="font-size: 200%; font-weight: bold">
@@ -27,6 +25,11 @@ All comments are stripped from the HTML input.
 
   >>> sanitize(input2)
   u'\n<p>text</p>\n\n<p>text</p>'
+
+It's also possible to remove only the comments from the HTML input.
+
+  >>> stripComments(input2)
+  u'<html>\n<p>text</p>\n\n<p>text</p></html>'
 
 It is also possible to strip all HTML tags from the input string.
 

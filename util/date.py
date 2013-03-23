@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,10 @@ Date and time utilities.
 
 import time
 from datetime import datetime
+try:
+    import pytz
+except ImportError:
+    pytz = None
 
 
 def getTimeStamp():
@@ -65,3 +69,15 @@ def year(d=None):
     if d is None:
         d = datetime.today()
     return d.year
+
+
+def toLocalTime(d):
+    if pytz is None or not d:
+        return d
+    cet = pytz.timezone('CET')
+    try:
+        if not isinstance(d, datetime):
+            d = datetime(d.year, d.month, d.day)
+        return d.astimezone(cet)
+    except ValueError:
+        return d
