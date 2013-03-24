@@ -76,11 +76,13 @@ class StatesDefinition(object):
     implements(IStatesDefinition)
 
     initialState = 'started'
+    msgFactory = None
 
     def __init__(self, name, *details, **kw):
         self.name = self.__name__ = name
         self.states = Jeep()
         self.transitions = Jeep()
+        msgFactory = kw.get('msgFactory')
         for d in details:
             if ITransition.providedBy(d):
                 self.transitions.append(d)
@@ -89,6 +91,8 @@ class StatesDefinition(object):
             else:
                 raise TypeError('Only states or transitions are allowed here, '
                                 'got %s instead.' % repr(d))
+            if msgFactory:
+                d.title = msgFactory(d.title)
         for k, v in kw.items():
             setattr(self, k, v)
 
