@@ -14,4 +14,4 @@ Basic Formatting Functions
   u'21.08.2006 17:37:13'
 
   >>> format.formatNumber(17.2)
-  u'17,2'
+  u'17,20'

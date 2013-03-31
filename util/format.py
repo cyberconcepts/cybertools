@@ -56,7 +56,6 @@ def formatNumber(num, type='decimal', lang='de', pattern=u'#,##0.00;-#,##0.00'):
     return fmt.format(num, pattern=pattern)
 
 
-
 def toStr(value, encoding='UTF-8'):
     if isinstance(value, unicode):
         return value.encode(encoding)
