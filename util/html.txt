@@ -10,6 +10,9 @@ Tweaking HTML text
   ... </p>
   ... </html>"""
 
+Sanitize HTML
+-------------
+
   >>> sanitize(input, validAttrs=['style'])
   u'\n<p style="font-weight: bold">\n<a><b>Text</b>, and more</a>\n</p>\n'
 
@@ -36,3 +39,14 @@ It is also possible to strip all HTML tags from the input string.
   >>> from cybertools.util.html import stripAll
   >>> stripAll(input)
   u'Text, and more'
+
+Extract first part of an HTML text
+----------------------------------
+
+  >>> from cybertools.util.html import extractFirstPart
+
+  >>> extractFirstPart(input)
+  u'<p>\n<a href="blubb"><b>Text</b>, and more</a>\n</p>'
+
+  >>> extractFirstPart(input2)
+  u'<p>text</p>'

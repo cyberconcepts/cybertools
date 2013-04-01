@@ -36,6 +36,7 @@ validStyleParts = 'border padding'.split()
 
 escCommPattern = re.compile(r'&lt;\!--\[if .*?\!\[endif\]--&gt;', re.DOTALL)
 
+sentencePattern = re.compile(r'[:.\?\!]')
 
 def sanitize(value, validTags=validTags, validAttrs=validAttrs,
                     validStyles=validStyles, stripEscapedComments=True):
@@ -104,3 +105,14 @@ def stripAll(value):
     text = u''.join(data).replace(u'\n', u'').replace(u'&nbsp;', u' ')
     return text
 
+
+def extractFirstPart(value):
+    soup = BeautifulSoup(value)
+    for tag in soup.findAll(True):
+        if tag.name in ('p',):
+            part = tag.renderContents()
+            break
+    else:
+        text = stripAll(value)
+        part = sentencePattern.split(text)[0]
+    return ('<p>%s</p>' % part).decode('utf8')
