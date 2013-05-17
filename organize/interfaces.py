@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 Interfaces for organizational stuff like persons, addresses, tasks, services...
-
-$Id$
 """
 
 from zope import schema
@@ -30,6 +28,7 @@ from zope.i18nmessageid import MessageFactory
 from cybertools.composer.schema.factory import Email
 from cybertools.tracking.interfaces import ITrack
 from cybertools.util.jeep import Jeep, Term
+from cybertools.util import KeywordVocabulary
 
 _ = MessageFactory('cybertools.organize')
 
@@ -43,31 +42,48 @@ class LinesList(schema.List): pass
 
 # persons, addresses, ...
 
+salutations = ((None, u''),
+               ('m', _(u'Mr')),
+               ('f', _(u'Mrs')))
+
+
 class IPerson(Interface):
     """ Resembles a human being with a name (first and last name),
         a birth date, and a set of addresses.
     """
 
+    salutation = schema.Choice(
+                    title=_(u'Salutation'),
+                    description=_(u'Salutation in letter.'),
+                    vocabulary=KeywordVocabulary(salutations),
+                    default=None,
+                    required=False)
+
+    academicTitle = schema.TextLine(
+                    title=_(u'Academic Title'),
+                    description=_(u'Academic title or name affix.'),
+                    required=False)
+
     firstName = schema.TextLine(
-                    title=_(u'First name'),
-                    description=_(u'The first name'),
+                    title=_(u'First Name'),
+                    description=_(u'The first name.'),
                     required=False,)
     lastName = schema.TextLine(
-                    title=_(u'Last name'),
-                    description=_(u'The last name or surname'),)
-    email = Email(title=_(u'E-Mail address'),
-                    description=_(u'The standard email address of the person'),)
+                    title=_(u'Last Name'),
+                    description=_(u'The last name or surname.'),)
+    email = Email(title=_(u'E-Mail Address'),
+                    description=_(u'The standard email address of the person.'),)
     #phoneNumbers = SimpleList(
     phoneNumbers = schema.List(
                     value_type=schema.TextLine(),
                     default=[],
-                    title=_(u'Phone numbers'),
-                    description=_(u'Note one or more phone numbers here'),
+                    title=_(u'Phone Numbers'),
+                    description=_(u'Note one or more phone numbers here.'),
                     required=False,)
     birthDate = schema.Date(
-                    title=_(u'Date of birth'),
+                    title=_(u'Date of Birth'),
                     description=_(u'The date of birth - should be a '
-                                   'datetime.date object'),
+                                   'datetime.date object.'),
                     required=False,)
 
     age = schema.Int(
