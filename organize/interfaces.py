@@ -28,7 +28,7 @@ from zope.i18nmessageid import MessageFactory
 from cybertools.composer.schema.factory import Email
 from cybertools.tracking.interfaces import ITrack
 from cybertools.util.jeep import Jeep, Term
-from cybertools.util import KeywordVocabulary
+from cybertools.util.util import KeywordVocabulary
 
 _ = MessageFactory('cybertools.organize')
 
