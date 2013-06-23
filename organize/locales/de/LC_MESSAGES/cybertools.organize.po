@@ -3,39 +3,57 @@ msgstr ""
 
 "Project-Id-Version: $Id$\n"
 "POT-Creation-Date: 2008-12-01 12:00 CET\n"
-"PO-Revision-Date: 2011-11-15 12:00 CET\n"
-"Last-Translator: Hannes Plattner <helmutm@cy55.de>\n"
+"PO-Revision-Date: 2013-05-17 12:00 CET\n"
+"Last-Translator: Helmut Merz <helmutm@cy55.de>\n"
 "Language-Team: loops developers <helmutm@cy55.de>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: kwrite\n"
 
-msgid "First name"
+msgid "Salutation"
+msgstr "Anrede"
+
+msgid "Salutation in letter."
+msgstr "Bitte Anrede auswählen."
+
+msgid "Academic Title"
+msgstr "Titel/Namenszusatz"
+
+msgid "Academic title or name affix."
+msgstr "Akademischer Titel oder Namenszusatz."
+
+msgid "Mr"
+msgstr "Herr"
+
+msgid "Mrs"
+msgstr "Frau"
+
+msgid "First Name"
 msgstr "Vorname"
 
-msgid "The first name"
-msgstr "Bitte den oder die Vornamen eingeben"
+msgid "The first name."
+msgstr "Bitte den Vornamen eingeben."
 
-msgid "Last name"
+msgid "Last Name"
 msgstr "Nachname"
 
-msgid "The last name or surname"
-msgstr "Bitte den Nachnamen eingeben"
+msgid "The last name or surname."
+msgstr "Bitte den Nachnamen eingeben."
 
-msgid "E-Mail address"
+msgid "E-Mail Address"
 msgstr "E-Mail-Adresse"
 
-msgid "The standard email address of the person"
-msgstr "Bitte eine gültige E-Mail-Adresse eingeben"
+msgid "The standard email address of the person."
+msgstr "Bitte eine gültige E-Mail-Adresse eingeben."
 
-msgid "Phone numbers"
+msgid "Phone Numbers"
 msgstr "Telefonnummern"
 
-msgid "Note one or more phone numbers here"
-msgstr "Bitte eine oder mehrere Telefonnummern (je Zeile eine) eingeben"
+msgid "Note one or more phone numbers here."
+msgstr "Bitte eine oder mehrere Telefonnummern (je Zeile eine) eingeben."
 
-msgid "Date of birth"
+msgid "Date of Birth"
 msgstr "Geburtsdatum"
 
 msgid "Age"

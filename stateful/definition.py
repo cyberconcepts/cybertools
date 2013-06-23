@@ -43,6 +43,10 @@ class State(object):
         for k, v in kw.items():
             setattr(self, k, v)
 
+    @property
+    def stateIcon(self):
+        return 'cybertools.icons/' + (self.icon or 'led%s.png' % self.color)
+
 
 class Action(object):
 
