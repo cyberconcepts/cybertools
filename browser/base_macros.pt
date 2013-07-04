@@ -53,7 +53,8 @@
 <metal:portlet define-macro="portlet">
     <div class="box"
          tal:define="icon macro/icon|nothing;
-                     url macro/url|nothing">
+                     url macro/url|nothing"
+         tal:attributes="id string:portlet_${macro/identifier}">
       <h4>
         <a tal:omit-tag="not:url"
            tal:attributes="href url"
