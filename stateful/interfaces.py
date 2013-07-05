@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 Interfaces for the `stateful` package.
-
-$Id$
 """
 
 try:
@@ -52,6 +50,9 @@ class IAction(Interface):
                     'to execute this action; no check when empty.')
     permission = Attribute('The name of a permission that is needed for '
                     'executing this action; no check when empty.')
+    schema = Attribute('An optional schema (a sequence of field specifications) '
+                    'that provides information on fields to be shown in a '
+                    'form used for executing the action.')
 
 
 class ITransition(IAction):
