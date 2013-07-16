@@ -56,6 +56,7 @@ class Action(object):
     permission = None
     roles = []
     doBefore = []
+    schema = None
 
     def __init__(self, name, title=None, **kw):
         self.name = self.__name__ = name
