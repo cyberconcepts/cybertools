@@ -50,6 +50,12 @@ class IAction(Interface):
                     'to execute this action; no check when empty.')
     permission = Attribute('The name of a permission that is needed for '
                     'executing this action; no check when empty.')
+    actors = Attribute('A collection of names of actors or groups that should be '
+                    'able to execute this action; no check when empty. '
+                    'See the IStateful.getActors().')
+    condition = Attribute('A boolean function with a stateful object as '
+                    'parameter. The action is only allowed if return value '
+                    'is True. No check when condition is None.')
     schema = Attribute('An optional schema (a sequence of field specifications) '
                     'that provides information on fields to be shown in a '
                     'form used for executing the action.')
@@ -96,6 +102,17 @@ class IStateful(Interface):
             the current user. This is a subset of all available transitions
             for the current state.
         """
+
+    def getActors():
+        """ Return a collection of names of actors or groups that will be
+            used for checking if a certain transition is allowed. May be 
+            None in which case not checking should be applied.
+        """
+
+    def notify(transition, previousState):
+        """ This method will be called upon completion of a transition.
+        """
+
 
     request = Attribute('Optional publication request.')
 

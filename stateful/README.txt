@@ -2,8 +2,6 @@
 Stateful Objects
 ================
 
-  ($Id$)
-
   >>> from cybertools.stateful.definition import StatesDefinition
   >>> from cybertools.stateful.definition import State, Transition
   >>> from cybertools.stateful.definition import registerStatesDefinition
@@ -13,7 +11,9 @@ We start with a simple demonstration class that provides stateful
 behaviour directly.
 
   >>> class Demo(Stateful):
-  ...     pass
+  ...     currentActors = None
+  ...     def getActors(self):
+  ...         return self.currentActors
 
   >>> demo = Demo()
 
@@ -57,6 +57,43 @@ of the current state we get an error.
   >>> demo.getState()
   'draft'
 
+Check condition
+---------------
+
+  >>> def checkIfEmpty(obj):
+  ...     return getattr(obj, 'empty', True)
+
+  >>> removeAction = demo.getStatesDefinition().transitions.remove
+  >>> removeAction.condition = checkIfEmpty
+  >>> removeAction in demo.getAvailableTransitions()
+  True
+
+  >>> demo.empty = False
+  >>> removeAction in demo.getAvailableTransitions()
+  False
+
+Check actors
+------------
+
+  >>> removeAction.actors = ['master']
+
+  >>> demo.getActors()
+
+  >>> demo.empty = True
+  >>> removeAction in demo.getAvailableTransitionsForUser()
+  True
+
+  >>> demo.currentActors = ['dummy']
+  >>> demo.getActors()
+  ['dummy']
+
+  >>> removeAction in demo.getAvailableTransitionsForUser()
+  False
+
+  >>> demo.currentActors = ['master']
+  >>> removeAction in demo.getAvailableTransitionsForUser()
+  True
+
 
 Stateful Adapters
 =================
@@ -94,3 +131,4 @@ back the state that is stored with the object.
   >>> statefulDemo = IStateful(demo)
   >>> statefulDemo.getState()
   'finished'
+

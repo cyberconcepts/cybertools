@@ -55,6 +55,8 @@ class Action(object):
     allowed = True
     permission = None
     roles = []
+    actors = []
+    condition = None
     doBefore = []
     schema = None
 
@@ -68,8 +70,6 @@ class Action(object):
 class Transition(Action):
 
     implements(ITransition)
-
-    actors = None
 
     def __init__(self, name, title, targetState, **kw):
         super(Transition, self).__init__(name, title, **kw)
@@ -123,11 +123,24 @@ class StatesDefinition(object):
     def isAllowed(self, action, obj):
         if not action.allowed:
             return False
+        if action.condition and not action.condition(obj):
+            return False
+        if not self.checkActors(action.actors, obj):
+            return False
         if not self.checkRoles(action.roles, obj):
             return False
         if not self.checkPermission(action.permission, obj):
             return False
         return True
+
+    def checkActors(self, actors, obj):
+        stfActors = obj.getActors()
+        if stfActors is None:
+            return True
+        for actor in actors:
+            if actor in stfActors:
+                return True
+        return False
 
     def checkRoles(self, roles, obj):
         return True
