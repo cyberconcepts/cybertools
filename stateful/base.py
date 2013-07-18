@@ -80,6 +80,9 @@ class Stateful(object):
     def getStatesDefinition(self):
         return statesDefinitions.get(self.statesDefinition, None)
 
+    def getActors(self):
+        return None
+
     def notify(self, transition, previousState):
         """ To be implemented by subclass.
         """
