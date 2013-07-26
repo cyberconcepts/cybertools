@@ -78,6 +78,8 @@ Check actors
   >>> removeAction.actors = ['master']
 
   >>> demo.getActors()
+  >>> demo.checkActors(['master'])
+  True
 
   >>> demo.empty = True
   >>> removeAction in demo.getAvailableTransitionsForUser()

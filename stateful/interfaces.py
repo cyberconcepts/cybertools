@@ -103,10 +103,9 @@ class IStateful(Interface):
             for the current state.
         """
 
-    def getActors():
-        """ Return a collection of names of actors or groups that will be
-            used for checking if a certain transition is allowed. May be 
-            None in which case not checking should be applied.
+    def checkActors(actors):
+        """ Return True if this stateful object is associated with the 
+            actors given.
         """
 
     def notify(transition, previousState):

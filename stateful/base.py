@@ -82,6 +82,17 @@ class Stateful(object):
     def getStatesDefinition(self):
         return statesDefinitions.get(self.statesDefinition, None)
 
+    def checkActors(self, actors):
+        if not actors:
+            return True
+        stfActors = self.getActors()
+        if stfActors is None:
+            return True
+        for actor in actors:
+            if actor in stfActors:
+                return True
+        return False
+
     def getActors(self):
         return None
 
