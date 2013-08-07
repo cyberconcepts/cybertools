@@ -123,7 +123,7 @@ class ResultSet(object):
         return headerRow
 
     def getSubTotalsRow(self, gf, row, columns, values):
-        if not gf.name in [','.join(c.totals) for c in columns]:
+        if not gf.name in ','.join([','.join(c.totals) for c in columns]).split(','):
             return None
         subTotalsRow = SubTotalsRow(None, self)
         subTotalsRow.cssClass = 'subTotalsRow'
