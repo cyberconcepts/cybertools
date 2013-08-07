@@ -129,22 +129,13 @@ class StatesDefinition(object):
             return False
         if action.condition and not action.condition(obj):
             return False
-        if not self.checkActors(action.actors, obj):
+        if not obj.checkActors(action.actors):
             return False
         if not self.checkRoles(action.roles, obj):
             return False
         if not self.checkPermission(action.permission, obj):
             return False
         return True
-
-    def checkActors(self, actors, obj):
-        stfActors = obj.getActors()
-        if stfActors is None:
-            return True
-        for actor in actors:
-            if actor in stfActors:
-                return True
-        return False
 
     def checkRoles(self, roles, obj):
         return True
