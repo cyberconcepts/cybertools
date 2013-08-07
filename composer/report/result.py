@@ -131,7 +131,10 @@ class ResultSet(object):
             subTotalsRow.data[c.name] = values[idx]
         if gf in self.subTotalsGroupColumns:
             if gf.totalsDescription is None:
-                subTotalsRow.data[gf.output] = u'SUMME: ' + gf.getDisplayValue(row)
+                display = gf.getDisplayValue(row)
+                if isinstance(display, dict):
+                    display = display.get('title')
+                subTotalsRow.data[gf.output] = u'SUMME: ' + display
             else:
                 v = gf.totalsDescription.getDisplayValue(row)
                 if v is None:
@@ -190,8 +193,11 @@ class ResultSet(object):
         if self.limits:
             start, stop = self.limits
             result = result[start:stop]
+        number = 0
         for idx, row in enumerate(result):
-            row.sequenceNumber = idx + 1
+            if not isinstance(row, (GroupHeaderRow, SubTotalsRow)):
+                row.sequenceNumber = number + 1
+                number += 1
         return result
 
     @Lazy
