@@ -2,3 +2,5 @@
 ajax/dojo/*
 *.project
 *.pydevproject
+*.sublime-project
+*.sublime-workspace

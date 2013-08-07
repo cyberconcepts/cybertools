@@ -61,7 +61,7 @@ class Row(BaseRow):
     @Lazy
     def displayedColumns(self):
         return self.parent.context.getActiveOutputFields()
-    
+
     @Lazy
     def allColumns(self):
         return self.parent.context.getAllFields()
@@ -121,8 +121,10 @@ class ResultSet(object):
                 headerColumn.cssClass = c.cssClass
                 headerRow.headerColumns.append(headerColumn)
         return headerRow
-    
+
     def getSubTotalsRow(self, gf, row, columns, values):
+        if not gf.name in [','.join(c.totals) for c in columns]:
+            return None
         subTotalsRow = SubTotalsRow(None, self)
         subTotalsRow.cssClass = 'subTotalsRow'
         for idx, c in enumerate(columns):
@@ -131,8 +133,10 @@ class ResultSet(object):
             if gf.totalsDescription is None:
                 subTotalsRow.data[gf.output] = u'SUMME: ' + gf.getDisplayValue(row)
             else:
-                subTotalsRow.data[gf.totalsDescription.output] = u'SUMME: ' + \
-                                            gf.totalsDescription.getDisplayValue(row)
+                v = gf.totalsDescription.getDisplayValue(row)
+                if v is None:
+                    v = u''
+                subTotalsRow.data[gf.totalsDescription.output] = u'SUMME: ' + v
         return subTotalsRow
             
     def getResult(self):
@@ -158,12 +162,10 @@ class ResultSet(object):
                         groupValues[idx] = value
                         headerRows.append(self.getHeaderRow(row, (f,) + f.outputWith))
                         if lastRow is not None and f.getDisplayValue(lastRow):
-                            subTotalsRows.append(
-                                self.getSubTotalsRow(f,
-                                    lastRow,
-                                    self.subTotalsColumns[idx],
-                                    subTotals[idx]
-                                    ))
+                            subTr = self.getSubTotalsRow(f, lastRow,
+                                self.subTotalsColumns[idx], subTotals[idx])
+                            if subTr is not None:
+                                subTotalsRows.append(subTr)
                             subTotals[idx] = [0.0 for f in self.subTotalsColumns[idx]]
                 for subTotalsRow in reversed(subTotalsRows):
                     res.append(subTotalsRow)
@@ -178,12 +180,10 @@ class ResultSet(object):
                 subTotalsRows = []
                 for idx, f in enumerate(self.groupColumns):
                     if f.getDisplayValue(lastRow):
-                        subTotalsRows.append(
-                            self.getSubTotalsRow(f,
-                                lastRow,
-                                self.subTotalsColumns[idx],
-                                subTotals[idx]
-                                ))
+                        subTr = self.getSubTotalsRow(f, lastRow,
+                            self.subTotalsColumns[idx], subTotals[idx])
+                        if subTr is not None:
+                            subTotalsRows.append(subTr)
                 for subTotalsRow in reversed(subTotalsRows):
                     res.append(subTotalsRow)
             result = res
