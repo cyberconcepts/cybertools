@@ -115,4 +115,6 @@ def extractFirstPart(value):
     else:
         text = stripAll(value)
         part = sentencePattern.split(text)[0]
+    if isinstance(part, unicode):
+        part = part.encode('UTF-8')
     return ('<p>%s</p>' % part).decode('utf8')
