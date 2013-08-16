@@ -50,8 +50,11 @@ class GridFieldInstance(ListFieldInstance):
         for f in self.columnTypes:
             instanceName = (f.instance_name or
                             f.getFieldTypeInfo().instanceName)
-            result.append(component.getAdapter(f, IFieldInstance,
-                                               name=instanceName))
+            fi = component.getAdapter(f, IFieldInstance, name=instanceName)
+            fi.clientInstance = self.clientInstance
+            fi.clientContext = self.clientContext
+            fi.request = self.request
+            result.append(fi)
         return result
 
     def marshall(self, value):
@@ -89,8 +92,8 @@ class GridFieldInstance(ListFieldInstance):
             return []
         result = []
         rows = json.loads(value)['items']
-        for row in rows:
-            item = self.unmarshallRow(row)
+        for idx, row in enumerate(rows):
+            item = self.unmarshallRow(row, idx)
             if item:
                 result.append(item)
         return result
@@ -111,9 +114,11 @@ class GridFieldInstance(ListFieldInstance):
                 result.append(item)
         return result
 
-    def unmarshallRow(self, row):
+    def unmarshallRow(self, row, idx=None):
         item = {}
         for fi in self.columnFieldInstances:
+            if idx is not None:
+                fi.index = idx
             value = fi.unmarshall(row.get(fi.name) or u'')
             if isinstance(value, basestring):
                 value = value.strip()
@@ -143,8 +148,8 @@ class RecordsFieldInstance(GridFieldInstance):
         if not value:
             value = []
         result = []
-        for row in value:
-            item = self.unmarshallRow(row)
+        for idx, row in enumerate(value):
+            item = self.unmarshallRow(row, idx)
             if item:
                 result.append(item)
         return result
@@ -187,8 +192,8 @@ class KeyTableFieldInstance(RecordsFieldInstance):
         if not value:
             value = {}
         result = {}
-        for row in value:
-            item = self.unmarshallRow(row)
+        for idx, row in enumerate(value):
+            item = self.unmarshallRow(row, idx)
             if item:
                 result[item.pop(self.keyName)] = [item.get(name) or u''
                                                   for name in self.dataNames]
