@@ -148,10 +148,25 @@ class RecordsFieldInstance(GridFieldInstance):
         if not value:
             value = []
         result = []
+        oldValue = getattr(self.clientContext, self.name, [])
         for idx, row in enumerate(value):
             item = self.unmarshallRow(row, idx)
             if item:
-                result.append(item)
+                if len(oldValue) > idx:
+                    oldItem = oldValue[idx]
+                    for k, v in item.items():
+                        if v != '__no_change__':
+                            oldItem[k] = v
+                        #if oldItem.get(k) == '__no_change__':
+                        #    del oldItem[k]
+                    #if oldItem:
+                    result.append(oldItem)
+                else:
+                    for k, v in item.items():
+                        if v == '__no_change__':
+                            del item[k]
+                    if item:
+                        result.append(item)
         return result
 
 

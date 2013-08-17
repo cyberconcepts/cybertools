@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 Instance adapter classes for schemas.
-
-$Id$
 """
 
 from BTrees.OOBTree import OOBTree
@@ -110,7 +108,7 @@ class Editor(BaseInstance):
                 fieldHandlers[ftype](context, value, fi, formState)
             else:
                 oldValue = getattr(context, name, None)
-                if value != oldValue:
+                if value not in ('__no_change__', oldValue):
                     setattr(context, name, value)
                     fi.change = (oldValue, value)
                     formState.changed = True
