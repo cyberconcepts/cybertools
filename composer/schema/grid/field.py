@@ -127,7 +127,11 @@ class GridFieldInstance(ListFieldInstance):
                     continue
             if value:
                 item[fi.name] = value
-        return item
+        ignoreInCheckOnEmpty = getattr(self.context, 'ignoreInCheckOnEmpty', [])
+        for k, v in item.items():
+            if k not in ignoreInCheckOnEmpty and v != '__no_change__':
+                return item
+        return {}
 
 
 class RecordsFieldInstance(GridFieldInstance):
