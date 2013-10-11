@@ -79,11 +79,15 @@ class GridFieldInstance(ListFieldInstance):
     def display(self, value):
         headers = [fi.context.title for fi in self.columnFieldInstances]
         rows = []
-        for item in value or []:
-            row = []
-            for fi in self.columnFieldInstances:
-                row.append(fi.display(item.get(fi.name)))
-            rows.append(row)
+        value = value or []
+        cardinality = getattr(self.context, 'cardinality', None)
+        for item in value:
+            rows.append([fi.display(item.get(fi.name))
+                            for fi in self.columnFieldInstances])
+        if cardinality > len(value):
+            for item in range(len(value), self.context.cardinality):
+                rows.append([fi.display(fi.default) 
+                                for fi in self.columnFieldInstances])
         return dict(headers=headers, rows=rows)
 
     def unmarshall(self, value):
@@ -116,17 +120,21 @@ class GridFieldInstance(ListFieldInstance):
 
     def unmarshallRow(self, row, idx=None):
         item = {}
+        cardinality = getattr(self.context, 'cardinality', None)
         for fi in self.columnFieldInstances:
             if idx is not None:
                 fi.index = idx
             value = fi.unmarshall(row.get(fi.name) or u'')
             if isinstance(value, basestring):
                 value = value.strip()
-            if fi.default is not None:
-                if value == fi.default:
-                    continue
-            if value:
+            if idx < cardinality:
                 item[fi.name] = value
+            else:
+                if fi.default is not None:
+                    if value == fi.default:
+                        continue
+                if value:
+                    item[fi.name] = value
         ignoreInCheckOnEmpty = getattr(self.context, 'ignoreInCheckOnEmpty', [])
         for k, v in item.items():
             if k not in ignoreInCheckOnEmpty and v != '__no_change__':
@@ -141,11 +149,19 @@ class RecordsFieldInstance(GridFieldInstance):
 
     def marshall(self, value):
         result = []
-        for row in value or []:
+        value = value or []
+        cardinality = getattr(self.context, 'cardinality', None)
+        for row in value:
             item = {}
             for fi in self.columnFieldInstances:
                 item[fi.name] = fi.marshall(row.get(fi.name))
             result.append(item)
+        if cardinality > len(value):
+            for row in range(len(value), cardinality):
+                item = {}
+                for fi in self.columnFieldInstances:
+                    item[fi.name] = fi.marshall(fi.default)
+                result.append(item)
         return result
 
     def unmarshall(self, value):
@@ -156,22 +172,28 @@ class RecordsFieldInstance(GridFieldInstance):
         for idx, row in enumerate(value):
             item = self.unmarshallRow(row, idx)
             if item:
+                oldItem = {}
                 if len(oldValue) > idx:
                     oldItem = oldValue[idx]
-                    for k, v in item.items():
-                        if v != '__no_change__':
-                            oldItem[k] = v
-                        #if oldItem.get(k) == '__no_change__':
-                        #    del oldItem[k]
-                    #if oldItem:
-                    result.append(oldItem)
-                else:
-                    for k, v in item.items():
-                        if v == '__no_change__':
+                for k, v in item.items():
+                    if v == '__no_change__':
+                        if k in oldItem:
+                            item[k] = oldItem[k]
+                        else:
                             del item[k]
-                    if item:
-                        result.append(item)
+                if item:
+                    result.append(item)
         return result
+
+    def validate(self, value, data=None):
+        if not value:
+            if self.context.required:
+                self.setError('required_missing')
+            else:
+                return
+        for row in value:
+            for fi in self.columnFieldInstances:
+                fi.validate(row.get(fi.name) or u'')
 
 
 class KeyTableFieldInstance(RecordsFieldInstance):
