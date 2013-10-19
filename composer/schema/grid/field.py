@@ -88,7 +88,8 @@ class GridFieldInstance(ListFieldInstance):
             for item in range(len(value), self.context.cardinality):
                 rows.append([fi.display(fi.default) 
                                 for fi in self.columnFieldInstances])
-        return dict(headers=headers, rows=rows)
+        empty = not rows or (len(rows) == 1 and not [v for v in rows[0] if v])
+        return dict(headers=headers, rows=rows, empty=empty)
 
     def unmarshall(self, value):
         value = toUnicode(value.strip())
