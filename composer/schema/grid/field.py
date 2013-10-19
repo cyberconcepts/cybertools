@@ -138,7 +138,7 @@ class GridFieldInstance(ListFieldInstance):
                     item[fi.name] = value
         ignoreInCheckOnEmpty = getattr(self.context, 'ignoreInCheckOnEmpty', [])
         for k, v in item.items():
-            if k not in ignoreInCheckOnEmpty and v != '__no_change__':
+            if k not in ignoreInCheckOnEmpty: #and v != '__no_change__':
                 return item
         return {}
 
