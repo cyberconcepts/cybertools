@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2012 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -186,9 +186,11 @@ class FieldInstance(object):
     implements(IFieldInstance)
     adapts(IField)
 
-    clientInstance = clientContext = request = None
+    clientInstance = None
+    clientContext = None
     value = undefined
     request = None
+    index = None
 
     def __init__(self, context):
         self.context = context

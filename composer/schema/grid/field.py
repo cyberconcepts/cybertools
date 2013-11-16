@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -50,8 +50,11 @@ class GridFieldInstance(ListFieldInstance):
         for f in self.columnTypes:
             instanceName = (f.instance_name or
                             f.getFieldTypeInfo().instanceName)
-            result.append(component.getAdapter(f, IFieldInstance,
-                                               name=instanceName))
+            fi = component.getAdapter(f, IFieldInstance, name=instanceName)
+            fi.clientInstance = self.clientInstance
+            fi.clientContext = self.clientContext
+            fi.request = self.request
+            result.append(fi)
         return result
 
     def marshall(self, value):
@@ -76,12 +79,17 @@ class GridFieldInstance(ListFieldInstance):
     def display(self, value):
         headers = [fi.context.title for fi in self.columnFieldInstances]
         rows = []
-        for item in value or []:
-            row = []
-            for fi in self.columnFieldInstances:
-                row.append(fi.display(item.get(fi.name)))
-            rows.append(row)
-        return dict(headers=headers, rows=rows)
+        value = value or []
+        cardinality = getattr(self.context, 'cardinality', None)
+        for item in value:
+            rows.append([fi.display(item.get(fi.name))
+                            for fi in self.columnFieldInstances])
+        if cardinality > len(value):
+            for item in range(len(value), self.context.cardinality):
+                rows.append([fi.display(fi.default) 
+                                for fi in self.columnFieldInstances])
+        empty = not rows or (len(rows) == 1 and not [v for v in rows[0] if v])
+        return dict(headers=headers, rows=rows, empty=empty)
 
     def unmarshall(self, value):
         value = toUnicode(value.strip())
@@ -89,8 +97,8 @@ class GridFieldInstance(ListFieldInstance):
             return []
         result = []
         rows = json.loads(value)['items']
-        for row in rows:
-            item = self.unmarshallRow(row)
+        for idx, row in enumerate(rows):
+            item = self.unmarshallRow(row, idx)
             if item:
                 result.append(item)
         return result
@@ -111,18 +119,28 @@ class GridFieldInstance(ListFieldInstance):
                 result.append(item)
         return result
 
-    def unmarshallRow(self, row):
+    def unmarshallRow(self, row, idx=None):
         item = {}
+        cardinality = getattr(self.context, 'cardinality', None)
         for fi in self.columnFieldInstances:
+            if idx is not None:
+                fi.index = idx
             value = fi.unmarshall(row.get(fi.name) or u'')
             if isinstance(value, basestring):
                 value = value.strip()
-            if fi.default is not None:
-                if value == fi.default:
-                    continue
-            if value:
+            if idx < cardinality:
                 item[fi.name] = value
-        return item
+            else:
+                if fi.default is not None:
+                    if value == fi.default:
+                        continue
+                if value:
+                    item[fi.name] = value
+        ignoreInCheckOnEmpty = getattr(self.context, 'ignoreInCheckOnEmpty', [])
+        for k, v in item.items():
+            if k not in ignoreInCheckOnEmpty: #and v != '__no_change__':
+                return item
+        return {}
 
 
 class RecordsFieldInstance(GridFieldInstance):
@@ -132,22 +150,51 @@ class RecordsFieldInstance(GridFieldInstance):
 
     def marshall(self, value):
         result = []
-        for row in value or []:
+        value = value or []
+        cardinality = getattr(self.context, 'cardinality', None)
+        for row in value:
             item = {}
             for fi in self.columnFieldInstances:
                 item[fi.name] = fi.marshall(row.get(fi.name))
             result.append(item)
+        if cardinality > len(value):
+            for row in range(len(value), cardinality):
+                item = {}
+                for fi in self.columnFieldInstances:
+                    item[fi.name] = fi.marshall(fi.default)
+                result.append(item)
         return result
 
     def unmarshall(self, value):
         if not value:
             value = []
         result = []
-        for row in value:
-            item = self.unmarshallRow(row)
+        oldValue = getattr(self.clientContext, self.name, None) or []
+        for idx, row in enumerate(value):
+            item = self.unmarshallRow(row, idx)
             if item:
-                result.append(item)
+                oldItem = {}
+                if len(oldValue) > idx:
+                    oldItem = oldValue[idx]
+                for k, v in item.items():
+                    if v == '__no_change__':
+                        if k in oldItem:
+                            item[k] = oldItem[k]
+                        else:
+                            del item[k]
+                if item:
+                    result.append(item)
         return result
+
+    def validate(self, value, data=None):
+        if not value:
+            if self.context.required:
+                self.setError('required_missing')
+            else:
+                return
+        for row in value:
+            for fi in self.columnFieldInstances:
+                fi.validate(row.get(fi.name) or u'')
 
 
 class KeyTableFieldInstance(RecordsFieldInstance):
@@ -187,8 +234,8 @@ class KeyTableFieldInstance(RecordsFieldInstance):
         if not value:
             value = {}
         result = {}
-        for row in value:
-            item = self.unmarshallRow(row)
+        for idx, row in enumerate(value):
+            item = self.unmarshallRow(row, idx)
             if item:
                 result[item.pop(self.keyName)] = [item.get(name) or u''
                                                   for name in self.dataNames]
