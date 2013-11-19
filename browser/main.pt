@@ -13,6 +13,7 @@
       Powered by Zope 3
     </title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
 
     <tal:meta repeat="macro controller/macros/meta">
       <metal:css use-macro="macro" />
