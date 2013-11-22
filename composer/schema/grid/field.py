@@ -241,6 +241,9 @@ class KeyTableFieldInstance(RecordsFieldInstance):
                                                   for name in self.dataNames]
         return result
 
+    def validate(self, value, data=None):
+        pass
+
 
 class ContextBasedKeyTableFieldInstance(KeyTableFieldInstance):
 
