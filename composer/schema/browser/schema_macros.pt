@@ -90,7 +90,7 @@
            tal:define="width field/width|nothing"
            tal:attributes="name name; id name;
                            style python:
-                                ('width: %s;;' % (width and str(width)+'px' or '600px')) +
+                                ('width: %s;;' % (width and str(width)+'px' or '570px')) +
                                 'height: 1.5em;;';
                            value data/?name|string:;
                            xxrequired field/required_js;" />
