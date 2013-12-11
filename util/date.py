@@ -51,13 +51,14 @@ def formatTimeStamp(ts, useGM=False, format='%Y-%m-%d %H:%M'):
 
 
 def str2timeStamp(s):
+    s = s.replace('T', ' ')
     try:
-        t = time.strptime(s, '%Y-%m-%d %H:%M:%S')
+        t = time.strptime(s[:19], '%Y-%m-%d %H:%M:%S')
     except ValueError:
         try:
-            t = time.strptime(s, '%Y-%m-%d %H:%M')
+            t = time.strptime(s[:16], '%Y-%m-%d %H:%M')
         except ValueError:
-            t = time.strptime(s, '%Y-%m-%d')
+            t = time.strptime(s[:10], '%Y-%m-%d')
     return int(time.mktime(t))
 
 
