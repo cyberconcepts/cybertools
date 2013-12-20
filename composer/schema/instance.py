@@ -53,7 +53,7 @@ class Instance(BaseInstance):
                 fi = f.getFieldInstance(self, context=kw.get('context'),
                                               request=kw.get('request'))
                 name = f.name
-                value = getattr(self.context, name) or fi.default
+                value = getattr(self.context, name, fi.default)
                 if mode in ('view', 'preview'):
                     value = fi.display(value)
                 else:
