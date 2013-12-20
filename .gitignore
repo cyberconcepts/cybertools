@@ -4,3 +4,4 @@ ajax/dojo/*
 *.pydevproject
 *.sublime-project
 *.sublime-workspace
+.settings
