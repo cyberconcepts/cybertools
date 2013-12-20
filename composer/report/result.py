@@ -83,8 +83,8 @@ class GroupHeaderRow(BaseRow):
                 if f.name == col.name:
                     fields[idx] = col
         return fields
-    
-    
+
+
 class SubTotalsRow(BaseRow):
 
     def getRawValue(self, attr):
@@ -141,12 +141,12 @@ class ResultSet(object):
                     v = u''
                 subTotalsRow.data[gf.totalsDescription.output] = u'SUMME: ' + v
         return subTotalsRow
-            
+
     def getResult(self):
         result = [self.rowFactory(item, self) for item in self.data]
         result = [row for row in result if self.queryCriteria.check(row)]
         if self.sortCriteria:
-            result.sort(key=lambda x: 
+            result.sort(key=lambda x:
                         [f.getSortValue(x) for f in self.sortCriteria])
         if self.groupColumns:
             res = []
@@ -177,7 +177,8 @@ class ResultSet(object):
                 res.append(row)
                 for idx, sc in enumerate(self.subTotalsColumns):
                     for idx2, f in enumerate(sc):
-                        subTotals[idx][idx2] += f.getValue(row)
+                        subTotals[idx][idx2] += f.getValue(row,
+                                                           ignoreTotals=True)
                 lastRow = row
             if lastRow is not None:
                 subTotalsRows = []
@@ -219,16 +220,16 @@ class ResultSet(object):
     @Lazy
     def groupColumns(self):
         return self.context.getGroupFields()
-    
+
     @Lazy
     def subTotalsColumns(self):
         return self.context.getSubTotalsFields()
-    
+
     @Lazy
     def subTotalsGroupColumns(self):
         return self.context.getSubTotalsGroupFields()
-    
-    
+
+
     def getOutputColumnsForField(self, f):
         return self.context.getOutputFieldsForField(f)
-    
+

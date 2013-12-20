@@ -138,28 +138,28 @@ class Report(Template):
 
     def getPresentationFormats(self):
         return [dict(renderer='default', title='Default')]
-    
+
     def getGroupFields(self):
         return [f for f in self.fields if 'group' in f.executionSteps]
-    
+
     def getTotalsFields(self):
         return [f for f in self.fields if 'totals' in f.executionSteps]
-    
+
     def getSubTotalsFields(self):
         result = []
         for gf in self.getGroupFields():
             result.append([f for f in self.fields if gf.name in f.totals])
         return result
-    
+
     def getSubTotalsGroupFields(self):
         result = []
         for f in self.fields:
             result.extend(gf for gf in self.getGroupFields() if gf.name in f.totals)
         return result
-    
+
     def getOutputFieldsForField(self, field):
         return [f for f in self.fields if f.name == field.output]
-        
+
 
 class BaseQueryCriteria(Component):
 
