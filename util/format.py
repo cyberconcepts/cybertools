@@ -50,9 +50,12 @@ def formatDate(dt=None, type='date', variant='medium', lang='de'):
     return fmt.format(dt or datetime.now())
 
 
-def formatNumber(num, type='decimal', lang='de', pattern=u'#,##0.00;-#,##0.00'):
+def formatNumber(num, type='decimal', lang='de', 
+                 pattern=u'#,##0.00;-#,##0.00', precision=2):
     loc = locales.getLocale(lang)
     fmt = loc.numbers.getFormatter(type)
+    if precision:
+        num = round(num, precision)     # avoid zope.i18n formatting bug
     return fmt.format(num, pattern=pattern)
 
 

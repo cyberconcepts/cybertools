@@ -15,3 +15,5 @@ Basic Formatting Functions
 
   >>> format.formatNumber(17.2)
   u'17,20'
+  >>> format.formatNumber(13399.99999997)
+  u'13.400,00'

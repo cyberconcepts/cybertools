@@ -71,7 +71,6 @@ def year(d=None):
         d = datetime.today()
     return d.year
 
-
 def toLocalTime(d):
     if pytz is None or not d:
         return d
@@ -82,3 +81,13 @@ def toLocalTime(d):
         return d.astimezone(cet)
     except ValueError:
         return d
+
+def month(d=None):
+    if d is None:
+        d = datetime.today()
+    return d.month
+
+def day(d=None):
+    if d is None:
+        d = datetime.today()
+    return d.day
