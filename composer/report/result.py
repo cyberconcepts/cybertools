@@ -41,6 +41,11 @@ class BaseRow(object):
         return self.data.get(attr)
 
 
+class TotalsRow(BaseRow):
+
+    pass
+
+
 class Row(BaseRow):
 
     attributeHandlers = {}
@@ -108,7 +113,7 @@ class ResultSet(object):
         self.sortCriteria = sortCriteria
         self.queryCriteria = queryCriteria
         self.limits = limits
-        self.totals = BaseRow(None, self)
+        self.totals = TotalsRow(None, self)
 
     def getHeaderRow(self, row, columns):
         headerRow = self.headerRowFactory(None, self)

@@ -66,7 +66,7 @@ class Instance(BaseInstance):
         template = self.template
         if template is not None:
             for f in template.components:
-                fieldInstances[f.name] = f.getFieldInstance(self, 
+                fieldInstances[f.name] = f.getFieldInstance(self,
                                                         context=self.context)
         return fieldInstances
 
