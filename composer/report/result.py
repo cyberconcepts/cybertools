@@ -144,7 +144,7 @@ class ResultSet(object):
                 v = gf.totalsDescription.getDisplayValue(row)
                 if v is None:
                     v = u''
-                subTotalsRow.data[gf.totalsDescription.output] = u'SUMME: ' + v
+                subTotalsRow.data[gf.totalsDescription.output] = v
         return subTotalsRow
 
     def getResult(self):
