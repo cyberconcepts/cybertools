@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2012 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2014 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -71,6 +71,8 @@ class Field(Component):
     vocabulary = None
     default = defaultComparisonValue = None
     instance_name = None
+    dbtype = 'string'
+    dbsize = None
     storeData = True
     renderer = 'standard'
     operator = 'in'
