@@ -72,7 +72,8 @@ class IPerson(Interface):
                     title=_(u'Last Name'),
                     description=_(u'The last name or surname.'),)
     email = Email(title=_(u'E-Mail Address'),
-                    description=_(u'The standard email address of the person.'),)
+                    description=_(u'The standard email address of the person.'),
+                    required=False)
     #phoneNumbers = SimpleList(
     phoneNumbers = schema.List(
                     value_type=schema.TextLine(),
