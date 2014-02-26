@@ -125,6 +125,14 @@ class ResultSet(object):
                 headerColumn.__name__ = c.output
                 headerColumn.cssClass = c.cssClass
                 headerRow.headerColumns.append(headerColumn)
+                if headerColumn.groupHeaderColspan is not None:
+                    colNames = [col.name for col in self.displayedColumns]
+                    nextColumns = [col for col in self.displayedColumns
+                                   if colNames.index(col.name) > colNames.index(c.output)]
+                    for i in range(headerColumn.groupHeaderColspan - 1):
+                        nextColumn = copy(nextColumns[i])
+                        nextColumn.groupHeaderHidden = True
+                        headerRow.headerColumns.append(nextColumn)
         return headerRow
 
     def getSubTotalsRow(self, gf, row, columns, values):

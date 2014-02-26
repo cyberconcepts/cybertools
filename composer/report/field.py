@@ -82,6 +82,8 @@ class Field(Component):
     style = TableCellStyle()
     cssClass = ''
     totals = []
+    groupHeaderColspan = None
+    groupHeaderHidden = False
 
     executionSteps = ['query', 'sort', 'output']    # , 'totals']
 
@@ -127,7 +129,6 @@ class Field(Component):
     def getSortValue(self, row):
         # TODO: consider 'descending' flag
         return self.getValue(row)
-
 
 class CalculatedField(Field):
 
