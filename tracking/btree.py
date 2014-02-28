@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2014 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 ZODB-/BTree-based implementation of user interaction tracking.
-
-$Id$
 """
 
 import time
@@ -237,6 +235,7 @@ class TrackingStorage(BTreeContainer):
         self.unindexTrack(trackNum, track)
 
     def indexTrack(self, trackNum, track, idx=None):
+        #self.setupIndexes()
         if not trackNum:
             trackNum = int(track.__name__)
         data = track.indexdata
