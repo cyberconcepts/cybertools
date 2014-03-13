@@ -97,7 +97,14 @@ class SubTotalsRow(BaseRow):
 
     @Lazy
     def displayedColumns(self):
-        return self.parent.context.getActiveOutputFields()
+        fields = self.parent.context.getActiveOutputFields()
+        if not self.subTotalsGroupColumns:
+            return fields
+        for col in self.subTotalsGroupColumns:
+            for idx, f in enumerate(fields):
+                if f.name == col.name:
+                    fields[idx] = col
+        return fields
 
 
 class ResultSet(object):
@@ -139,6 +146,7 @@ class ResultSet(object):
         if not gf.name in ','.join([','.join(c.totals) for c in columns]).split(','):
             return None
         subTotalsRow = SubTotalsRow(None, self)
+        subTotalsRow.subTotalsGroupColumns = []
         subTotalsRow.cssClass = 'subTotalsRow'
         for idx, c in enumerate(columns):
             subTotalsRow.data[c.name] = values[idx]
@@ -153,6 +161,16 @@ class ResultSet(object):
                 if v is None:
                     v = u''
                 subTotalsRow.data[gf.totalsDescription.output] = v
+            if gf.groupHeaderColspan is not None:
+                colNames = [col.name for col in self.displayedColumns]
+                for col in self.displayedColumns:
+                    sCol = copy(col)
+                    if colNames.index(col.name) > colNames.index(gf.output):
+                        if colNames.index(col.name) < colNames.index(gf.output) + gf.groupHeaderColspan:
+                            sCol.groupHeaderHidden = True
+                    if col.name == gf.output:
+                        sCol.groupHeaderColspan = gf.groupHeaderColspan
+                    subTotalsRow.subTotalsGroupColumns.append(sCol)
         return subTotalsRow
 
     def getResult(self):
