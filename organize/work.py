@@ -59,7 +59,7 @@ def workItemStates():
                'move', 'cancel', 'modify'), color='lightgreen'),
         State('finished', 'finished',
               ('plan', 'accept', 'start', 'work', 'finish',
-               'move', 'modify', 'close'),
+               'move', 'modify', 'close', 'cancel'),
               color='green'),
         State('cancelled', 'cancelled',
               ('plan', 'accept', 'start', 'work', 'move', 'modify', 'close'),
@@ -242,6 +242,9 @@ class WorkItem(Stateful, Track):
         if self.state == 'running':
             new.replace(self)
         elif self.state in ('planned', 'accepted', 'done'):
+            self.state = self.state + '_x'
+            self.reindex('state')
+        elif self.state in ('finished',) and action == 'cancel':
             self.state = self.state + '_x'
             self.reindex('state')
         new.doTransition(action)
