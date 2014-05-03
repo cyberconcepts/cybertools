@@ -225,8 +225,8 @@ class WorkItem(Stateful, Track):
         return list(getParent(self).query(runId=self.runId))
 
     def doAction(self, action, userName, **kw):
-        if self != self.currentWorkItems[-1]:
-            raise ValueError("Actions are only allowed on the last item of a run.")
+        #if self != self.currentWorkItems[-1]:
+        #    raise ValueError("Actions are only allowed on the last item of a run.")
         if action not in [t.name for t in self.getAvailableTransitions()]:
             raise ValueError("Action '%s' not allowed in state '%s'" %
                              (action, self.state))
