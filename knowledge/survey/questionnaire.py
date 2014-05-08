@@ -110,18 +110,16 @@ class Response(object):
                 result.append((qugroup, qugroup.feedbackItems[int(wScore)], relScore))
         return result
 
-    def getTeamResult(self, teamData):
-        mine = self.getGroupedResult()
-        all = [d.getGroupedResult() for d in teamData]
+    def getTeamResult(self, mine, teamData):
         averages = []
         ranks = []
         for idx, qgdata in enumerate(mine):
             total = 0.0
-            pos = len(teamData)
-            for j, data in enumerate(all):
-                total += data[idx][2]
-                if qgdata[2] >= data[idx][2]:
+            values = sorted([data.values[qgdata[0]] for data in teamData])
+            for j, value in enumerate(values):
+                total += value
+                if qgdata[2] >= value:
                     pos = len(teamData) - j
             ranks.append(pos)
             averages.append(total / len(teamData))
-        return mine, ranks, averages
+        return ranks, averages

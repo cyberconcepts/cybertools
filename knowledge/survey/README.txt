@@ -84,7 +84,11 @@ Team evaluation
   >>> resp03 = Response(quest, 'mary')
   >>> resp03.values = {qu01: 1, qu02: 2, qu03: 4}
 
-  >>> res, ranks, averages = resp01.getTeamResult([resp01, resp03])
+  >>> resp01.values[qugroup] = resp01.getGroupedResult()[0][2]
+  >>> resp03.values[qugroup] = resp03.getGroupedResult()[0][2]
+
+  >>> ranks, averages = resp01.getTeamResult(resp03.getGroupedResult(), 
+  ...                                        [resp01, resp03])
   >>> ranks, averages
-  ([2], [0.6666...])
+  ([1], [0.6666...])
 
