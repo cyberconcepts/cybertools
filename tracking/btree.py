@@ -236,7 +236,7 @@ class TrackingStorage(BTreeContainer):
         self.unindexTrack(trackNum, track)
 
     def indexTrack(self, trackNum, track, idx=None):
-        self.setupIndexes()
+        #self.setupIndexes()
         if not trackNum:
             trackNum = int(track.__name__)
         data = track.indexdata
