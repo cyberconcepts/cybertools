@@ -69,14 +69,14 @@ Grouped feedback items
   >>> qugroup.feedbackItems = [fi01, fi02, fi03]
 
   >>> res = resp01.getGroupedResult()
-  >>> for qugroup, fi, score in res:
-  ...     print fi.text, round(score, 2)
-  fi02 0.58
+  >>> for r in res:
+  ...     print r['feedback'].text, round(r['score'], 2), r['rank']
+  fi02 0.58 1
 
   >>> res = resp02.getGroupedResult()
-  >>> for qugroup, fi, score in res:
-  ...     print fi.text, round(score, 2)
-  fi03 0.75
+  >>> for r in res:
+  ...     print r['feedback'].text, round(r['score'], 2), r['rank']
+  fi03 0.75 1
 
 Team evaluation
 ---------------
@@ -84,11 +84,11 @@ Team evaluation
   >>> resp03 = Response(quest, 'mary')
   >>> resp03.values = {qu01: 1, qu02: 2, qu03: 4}
 
-  >>> resp01.values[qugroup] = resp01.getGroupedResult()[0][2]
-  >>> resp03.values[qugroup] = resp03.getGroupedResult()[0][2]
+  >>> resp01.values[qugroup] = resp01.getGroupedResult()[0]['score']
+  >>> resp03.values[qugroup] = resp03.getGroupedResult()[0]['score']
 
-  >>> ranks, averages = resp01.getTeamResult(resp03.getGroupedResult(), 
+  >>> teamData = resp01.getTeamResult(resp03.getGroupedResult(), 
   ...                                        [resp01, resp03])
-  >>> ranks, averages
-  ([1], [0.6666...])
+  >>> teamData
+  [{'average': 0.6666...}]
 

@@ -107,19 +107,26 @@ class Response(object):
             if scoreMax > 0.0:
                 relScore = score / scoreMax
                 wScore = relScore * len(qugroup.feedbackItems) - 0.00001
-                result.append((qugroup, qugroup.feedbackItems[int(wScore)], relScore))
+                result.append(dict(
+                        group=qugroup,
+                        feedback=qugroup.feedbackItems[int(wScore)],
+                        score=relScore))
+        ranks = getRanks([r['score'] for r in result])
+        for idx, r in enumerate(result):
+            r['rank'] = ranks[idx]
         return result
 
     def getTeamResult(self, mine, teamData):
-        averages = []
-        ranks = []
+        result = []
         for idx, qgdata in enumerate(mine):
-            total = 0.0
-            values = sorted([data.values[qgdata[0]] for data in teamData])
-            for j, value in enumerate(values):
-                total += value
-                if qgdata[2] >= value:
-                    pos = len(teamData) - j
-            ranks.append(pos)
-            averages.append(total / len(teamData))
-        return ranks, averages
+            values = [data.values[qgdata['group']] for data in teamData]
+            avg = sum(values) / len(teamData)
+            result.append(dict(group=qgdata['group'], average=avg))
+        ranks = getRanks([r['average'] for r in result])
+        for idx, r in enumerate(result):
+            r['rank'] = ranks[idx]
+        return result
+
+def getRanks(values):
+    ordered = list(reversed(sorted(values)))
+    return [ordered.index(v) + 1 for v in values]
