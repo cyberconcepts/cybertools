@@ -98,7 +98,7 @@ class Response(object):
             score = scoreMax = 0.0
             for qu in qugroup.questions:
                 value = self.values.get(qu)
-                if value is None:
+                if value is None or isinstance(value, basestring):
                     continue
                 if qu.revertAnswerOptions:
                     value = qu.answerRange - value - 1
