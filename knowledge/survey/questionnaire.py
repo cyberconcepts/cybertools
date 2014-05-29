@@ -119,8 +119,10 @@ class Response(object):
     def getTeamResult(self, mine, teamData):
         result = []
         for idx, qgdata in enumerate(mine):
-            values = [data.values[qgdata['group']] for data in teamData]
-            avg = sum(values) / len(teamData)
+            values = [data.values.get(qgdata['group']) for data in teamData]
+            values = [v for v in values if v is not None]
+            #avg = sum(values) / len(teamData)
+            avg = sum(values) / len(values)
             result.append(dict(group=qgdata['group'], average=avg))
         ranks = getRanks([r['average'] for r in result])
         for idx, r in enumerate(result):
