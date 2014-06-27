@@ -35,7 +35,7 @@ class BaseRow(object):
         self.parent = parent
         self.data = {}
         self.sequenceNumber = 0
-        self.cssClass = ''
+        self.cssClass = 'row'
 
     def getRawValue(self, attr):
         return self.data.get(attr)
@@ -124,6 +124,7 @@ class ResultSet(object):
 
     def getHeaderRow(self, row, columns):
         headerRow = self.headerRowFactory(None, self)
+        headerRow.cssClass = 'headerRow'
         headerRow.headerColumns = []
         for c in columns:
             if c.output:
