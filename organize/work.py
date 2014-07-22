@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2014 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -156,9 +156,10 @@ workItemTypes = Jeep((
         fields =('deadline',),
         indicator='work_deadline'),
     WorkItemType('checkup', u'Check-up',
-        actions=('plan', 'accept', 'finish', 'cancel', 
+        actions=('plan', 'accept', 'start', 'finish', 'cancel', 
                  'modify', 'delegate', 'close', 'reopen'),
-        fields =('deadline', 'start-end',),
+        #fields =('deadline', 'start-end',),
+        fields =('deadline', 'daterange',),
         indicator='work_checkup',
         delegatedState='closed', prefillDate=False),
 ))
@@ -331,7 +332,7 @@ class WorkItem(Stateful, Track):
                 self.reindex('userName')
         start = kw.get('start') or kw.get('deadline')   # TODO: check OK?
         if start is not None:
-            self.timeStamp = start
+            self.timeStamp = start  # TODO: better use end
             self.reindex('timeStamp')
         data = self.data
         for k, v in kw.items():
