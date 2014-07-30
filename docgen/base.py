@@ -47,6 +47,7 @@ class WordDocument(Base):
     index = word_template
     bodyTemplate = body_template
     showLinks = False
+    encoding = 'Windows-1252'
 
     def embed(self, *args, **kw):
         self.encoding = 'Windows-1252'
