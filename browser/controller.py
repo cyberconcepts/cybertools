@@ -40,10 +40,10 @@ class Controller(object):
         self.context = context.context
         self.request = request
         self.params = Jeep()
+        self.templates = {}
         self.configure()
         #self.view.setupController()
         self.view.controller = self   # notify the view
-        self.templates = {}
 
     skin = None         # may be overwritten by the view
 
@@ -82,6 +82,15 @@ class Controller(object):
         if template is None:
             template = default
         return template.macros
+
+    def mergeTemplateMacros(self, name, *bases):
+        result = {}
+        for base in bases:
+            result.update(base.macros)
+        template = self.templates.get(name)
+        if template is not None:
+            result.update(template.macros)
+        return result
 
 
 class Macros(dict):
