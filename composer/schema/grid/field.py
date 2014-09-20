@@ -42,7 +42,30 @@ class GridFieldInstance(ListFieldInstance):
 
     @Lazy
     def columnTypes(self):
-        return [createField(t) for t in self.context.column_types]
+        fields = [createField(t) for t in self.context.column_types]
+        for f in fields:
+            f.linkedFields = [createField(sf) 
+                    for sf in getattr(f.baseField, 'linkedFields', [])]
+        return fields
+
+    #@Lazy
+    def columnTypesForLayout(self):
+        result = []
+        groups = {}
+        for f in self.columnTypes:
+            group = getattr(f.baseField, 'group', None)
+            if group is None:
+                result.append(dict(name=f.name, 
+                        label=(f.description or f.title), fields=[f]))
+            else:
+                g = groups.get(group.name)
+                if g is None:
+                    g = dict(name=group.name, label=group.label, fields=[f])
+                    groups[group.name] = g
+                    result.append(g)
+                else:
+                    g['fields'].append(f)
+        return result
 
     @Lazy
     def columnFieldInstances(self):
