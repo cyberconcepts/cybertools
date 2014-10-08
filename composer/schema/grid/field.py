@@ -52,19 +52,22 @@ class GridFieldInstance(ListFieldInstance):
     def columnTypesForLayout(self):
         result = []
         groups = {}
-        for f in self.columnTypes:
+        for idx, f in enumerate(self.columnTypes):
             group = getattr(f.baseField, 'group', None)
             if group is None:
-                result.append(dict(name=f.name, 
-                        label=(f.description or f.title), fields=[f]))
+                result.append(dict(name=f.name,
+                        label=(f.description or f.title), 
+                        fields=[f], indexes=[idx]))
             else:
                 g = groups.get(group.name)
                 if g is None:
-                    g = dict(name=group.name, label=group.label, fields=[f])
+                    g = dict(name=group.name, label=group.label, 
+                                fields=[f], indexes=[idx])
                     groups[group.name] = g
                     result.append(g)
                 else:
                     g['fields'].append(f)
+                    g['indexes'].append(idx)
         return result
 
     @Lazy
