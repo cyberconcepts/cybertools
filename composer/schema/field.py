@@ -43,9 +43,10 @@ from cybertools.util.format import toStr, toUnicode
 
 class FieldGroup(object):
 
-    def __init__(self, name, label):
+    def __init__(self, name, label, sublabels=[]):
         self.name = name
         self.label = label
+        self.sublabels = sublabels
 
 
 class Field(Component):

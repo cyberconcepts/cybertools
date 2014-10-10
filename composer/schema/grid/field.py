@@ -57,12 +57,12 @@ class GridFieldInstance(ListFieldInstance):
             if group is None:
                 result.append(dict(name=f.name,
                         label=(f.description or f.title), 
-                        fields=[f], indexes=[idx]))
+                        fields=[f], indexes=[idx], group=None))
             else:
                 g = groups.get(group.name)
                 if g is None:
                     g = dict(name=group.name, label=group.label, 
-                                fields=[f], indexes=[idx])
+                                fields=[f], indexes=[idx], group=group)
                     groups[group.name] = g
                     result.append(g)
                 else:
