@@ -254,7 +254,8 @@ class KeyTableFieldInstance(RecordsFieldInstance):
         for k, v in value.items():
             item = {self.keyName: k}
             for idx, name in enumerate(self.dataNames):
-                item[name] = v[idx]
+                if idx < len(v):
+                    item[name] = v[idx]
             result.append(item)
         return result
 
