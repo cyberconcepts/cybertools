@@ -242,7 +242,8 @@ class KeyTableFieldInstance(RecordsFieldInstance):
         for k, v in value.items():
             row = [k]
             for idx, fi in enumerate(self.columnFieldInstances[1:]):
-                row.append(fi.display(v[idx]))
+                if idx < len(v):
+                    row.append(fi.display(v[idx]))
             rows.append(row)
         return dict(headers=headers, rows=rows)
 
