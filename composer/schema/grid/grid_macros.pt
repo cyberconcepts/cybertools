@@ -57,7 +57,7 @@
               tal:attributes="class string:${column/baseField/cssClass|string:}">
             <input type="text" style="width: auto"
                    tal:define="cname column/name"
-                   tal:attributes="value row/?cname;
+                   tal:attributes="value row/?cname|nothing;
                                    name string:$name.$cname:records;
                                    style string:width: ${column/baseField/width|string:auto};" /></td>
         </tr>
