@@ -233,6 +233,9 @@ class WorkItem(Stateful, Track):
                              (action, self.state))
         if action in self.specialActions:
             return self.specialActions[action](self, userName, **kw)
+        return self.doStandardAction(action, userName, **kw)
+
+    def doStandardAction(self, action, userName, **kw):
         if self.state == 'new':
             self.setData(**kw)
             self.doTransition(action)
@@ -283,6 +286,22 @@ class WorkItem(Stateful, Track):
         delegated.data['target'] = new.name
         return new
 
+    def doStart(self, userName, **kw):
+        action = 'start'
+        # stop any running work item of user:
+        if self.state != 'running':
+            running = getParent(self).query(
+                            party=userName, state='running')
+            for wi in running:
+                wi.doAction('work', userName, 
+                            end=(kw.get('start') or getTimeStamp()))
+        # standard creation of new work item:
+        if not kw.get('start'):
+            kw['start'] = getTimeStamp()
+        kw['end'] = None
+        kw['duration'] = kw['effort'] = 0
+        return self.doStandardAction(action, userName, **kw)
+
     def move(self, userName, **kw):
         xkw = dict(kw)
         for k in ('deadline', 'start', 'end'):
@@ -319,7 +338,8 @@ class WorkItem(Stateful, Track):
                 item.reindex('state')
         return new
 
-    specialActions = dict(modify=modify, delegate=delegate, move=move,
+    specialActions = dict(modify=modify, delegate=delegate, 
+                          start=doStart, move=move,
                           close=close)
 
     def setData(self, ignoreParty=False, **kw):

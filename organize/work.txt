@@ -100,7 +100,7 @@ but may also be specified explicitly.
   >>> wi03 = wi02.doAction('start', 'jim', start=1229958000)
   >>> wi03
   <WorkItem ['001', 1, 'jim', '2008-12-22 16:00', 'running']:
-   {'duration': 700, 'start': 1229958000, 'created': ..., 'creator': 'jim'}>
+   {'duration': 0, 'start': 1229958000, 'created': ..., 'creator': 'jim'}>
 
 Stopping and finishing work
 ---------------------------
@@ -113,7 +113,7 @@ as "running" will be replaced by a new one.
 
   >>> wi03
   <WorkItem ['001', 1, 'jim', '2008-12-22 16:00', 'replaced']:
-   {'duration': 700, 'start': 1229958000, 'created': ..., 'creator': 'jim'}>
+   {'duration': 0, 'start': 1229958000, 'created': ..., 'creator': 'jim'}>
   >>> wi04
   <WorkItem ['001', 1, 'jim', '2008-12-22 16:00', 'done']:
    {'start': 1229958000, 'created': ..., 'end': 1229958300, 'creator': 'jim'}>
