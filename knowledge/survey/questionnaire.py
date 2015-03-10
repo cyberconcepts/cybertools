@@ -107,9 +107,13 @@ class Response(object):
             if scoreMax > 0.0:
                 relScore = score / scoreMax
                 wScore = relScore * len(qugroup.feedbackItems) - 0.00001
+                if qugroup.feedbackItems:
+                    feedback = qugroup.feedbackItems[int(wScore)]
+                else:
+                    feedback = u''
                 result.append(dict(
                         group=qugroup,
-                        feedback=qugroup.feedbackItems[int(wScore)],
+                        feedback=feedback,
                         score=relScore))
         ranks = getRanks([r['score'] for r in result])
         for idx, r in enumerate(result):
