@@ -110,7 +110,7 @@ class Response(object):
                 if qugroup.feedbackItems:
                     feedback = qugroup.feedbackItems[int(wScore)]
                 else:
-                    feedback = u''
+                    feedback = FeedbackItem()
                 result.append(dict(
                         group=qugroup,
                         feedback=feedback,
