@@ -42,7 +42,7 @@ def workItemStates():
     return StatesDefinition('workItemStates',
         State('new', 'new',
               ('plan', 'accept', 'start', 'work', 'finish', 'delegate', 
-               'cancel', 'reopen'),
+               'cancel', 'reopen'),     # 'move', # ?
               color='red'),
         State('planned', 'planned',
               ('plan', 'accept', 'start', 'work', 'finish', 'delegate',
@@ -79,8 +79,12 @@ def workItemStates():
         State('replaced', 'replaced', (), color='grey'),
         State('planned_x', 'planned', (), color='red'),
         State('accepted_x', 'accepted', (), color='yellow'),
-        State('done_x', 'done', (), color='lightgreen'),
-        State('finished_x', 'finished', (), color='green'),
+        State('done_x', 'done', 
+              ('modify', 'move', 'cancel'), color='lightgreen'),
+        State('finished_x', 'finished', 
+              ('modify','move', 'cancel'), color='green'),
+        #State('done_y', 'done', (), color='grey'),
+        #State('finished_y', 'finished', (), color='grey'),
         # transitions:
         Transition('plan', 'plan', 'planned'),
         Transition('accept', 'accept', 'accepted'),
@@ -306,10 +310,14 @@ class WorkItem(Stateful, Track):
         xkw = dict(kw)
         for k in ('deadline', 'start', 'end'):
             xkw.pop(k, None)    # do not change on source item
-        moved = self.createNew('move', userName, **xkw)
-        moved.userName = self.userName
-        moved.state = 'moved'
-        moved.reindex()
+        if self.state == 'new': # should this be possible?
+            moved = self
+            self.setData(kw)
+        if self.state in ('done', 'finished', 'running'):
+            moved = self        # is this OK? or better new state ..._y?
+        else:
+            moved = self.createNew('move', userName, **xkw)
+            moved.userName = self.userName
         task = kw.pop('task', None)
         new = moved.createNew(None, userName, taskId=task, runId=0, **kw)
         new.userName = self.userName
@@ -317,10 +325,15 @@ class WorkItem(Stateful, Track):
         new.state = self.state
         new.reindex()
         moved.data['target'] = new.name
-        if self.state in ('planned', 'accepted', 'delegated', 'moved', 
-                          'done', 'finished'):
+        moved.state = 'moved'
+        moved.reindex()
+        if self.state in ('planned', 'accepted', 'delegated', 'moved'):
+                          #'done', 'finished'):
             self.state = self.state + '_x'
             self.reindex('state')
+        #elif self.state in ('done', 'finished'):
+        #    self.state = self.state + '_y'
+        #    self.reindex('state')
         return new
 
     def close(self, userName, **kw):
