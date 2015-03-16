@@ -100,7 +100,8 @@ def workItemStates():
         initialState='new')
 
 
-fieldNames = ['title', 'description', 'deadline', 'start', 'end', 
+fieldNames = ['title', 'description', 'deadline', 'priority', 'activity',
+              'start', 'end', 
               'duration', 'effort',
               'comment', 'party']   # for use in editingRules
 
@@ -142,7 +143,8 @@ class WorkItemType(object):
         self.title = title
         self.description = description
         self.actions = actions or list(editingRules)
-        self.fields = fields or ('deadline', 'start-end', 'duration-effort')
+        self.fields = fields or ('deadline', 'priority', 'activity', 
+                                 'start-end', 'duration-effort')
         self.indicator = indicator
         self.delegatedState = delegatedState
         self.prefillDate = prefillDate
@@ -182,7 +184,7 @@ class WorkItem(Stateful, Track):
     statesDefinition = 'organize.workItemStates'
 
     initAttributes = set(['workItemType', 'party', 'title', 'description', 
-                          'deadline', 'start', 'end',
+                          'deadline', 'priority', 'activity', 'start', 'end',
                           'duration', 'effort'])
 
     def __init__(self, taskId, runId, userName, data):
