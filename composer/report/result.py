@@ -81,12 +81,14 @@ class GroupHeaderRow(BaseRow):
 class ResultSet(object):
 
     def __init__(self, context, data, rowFactory=Row,
-                 sortCriteria=None, queryCriteria=BaseQueryCriteria(),
+                 sortCriteria=None, sortDescending=False,
+                 queryCriteria=BaseQueryCriteria(),
                  limits=None):
         self.context = context  # the report or report instance
         self.data = data
         self.rowFactory = rowFactory
         self.sortCriteria = sortCriteria
+        self.sortDescending = sortDescending
         self.queryCriteria = queryCriteria
         self.limits = limits
         self.totals = BaseRow(None, self)
@@ -95,7 +97,9 @@ class ResultSet(object):
         result = [self.rowFactory(item, self) for item in self.data]
         result = [row for row in result if self.queryCriteria.check(row)]
         if self.sortCriteria:
-            result.sort(key=lambda x: [f.getSortValue(x) for f in self.sortCriteria])
+            result.sort(key=lambda x: 
+                            [f.getSortValue(x) for f in self.sortCriteria],
+                        reverse=self.sortDescending)
         if self.limits:
             start, stop = self.limits
             result = result[start:stop]
