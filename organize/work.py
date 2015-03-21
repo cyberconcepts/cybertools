@@ -295,12 +295,16 @@ class WorkItem(Stateful, Track):
     def doStart(self, userName, **kw):
         action = 'start'
         # stop any running work item of user:
-        if self.state != 'running':
+        # TODO: check: party query OK?
+        if (userName == self.userName and 
+                self.workItemType == 'work' and 
+                self.state != 'running'):
             running = getParent(self).query(
                             party=userName, state='running')
             for wi in running:
-                wi.doAction('work', userName, 
-                            end=(kw.get('start') or getTimeStamp()))
+                if wi.workItemType == 'work':
+                    wi.doAction('work', userName, 
+                                end=(kw.get('start') or getTimeStamp()))
         # standard creation of new work item:
         if not kw.get('start'):
             kw['start'] = getTimeStamp()
