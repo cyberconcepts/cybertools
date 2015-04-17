@@ -58,6 +58,7 @@ class Question(object):
         self.feedbackItems = {}
         self.text = text
         self.revertAnswerOptions = False
+        self.questionType = 'value_selection'
 
     def getAnswerRange(self):
         return self._answerRange or self.questionnaire.defaultAnswerRange
@@ -86,6 +87,8 @@ class Response(object):
     def getResult(self):
         result = {}
         for question, value in self.values.items():
+            if question.questionType != 'value_selection':
+                continue
             for fi, rf in question.feedbackItems.items():
                 if question.revertAnswerOptions:
                     value = question.answerRange - value - 1
@@ -97,6 +100,8 @@ class Response(object):
         for qugroup in self.questionnaire.questionGroups:
             score = scoreMax = 0.0
             for qu in qugroup.questions:
+                if qu.questionType != 'value_selection':
+                    continue
                 value = self.values.get(qu)
                 if value is None or isinstance(value, basestring):
                     continue
