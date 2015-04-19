@@ -100,7 +100,7 @@ class Response(object):
         for qugroup in self.questionnaire.questionGroups:
             score = scoreMax = 0.0
             for qu in qugroup.questions:
-                if qu.questionType != 'value_selection':
+                if qu.questionType not in (None, 'value_selection'):
                     continue
                 value = self.values.get(qu)
                 if value is None or isinstance(value, basestring):
