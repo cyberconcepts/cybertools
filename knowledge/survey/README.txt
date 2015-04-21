@@ -87,8 +87,7 @@ Team evaluation
   >>> resp01.values[qugroup] = resp01.getGroupedResult()[0]['score']
   >>> resp03.values[qugroup] = resp03.getGroupedResult()[0]['score']
 
-  >>> teamData = resp01.getTeamResult(resp03.getGroupedResult(), 
-  ...                                        [resp01, resp03])
+  >>> teamData = resp01.getTeamResult([qugroup], [resp01, resp03])
   >>> teamData
   [{'average': 0.6666...}]
 
