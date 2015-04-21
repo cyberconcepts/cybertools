@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2015 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -83,6 +83,7 @@ class Response(object):
         self.questionnaire = questionnaire
         self.party = party
         self.values = {}
+        self.texts = {}
 
     def getResult(self):
         result = {}
