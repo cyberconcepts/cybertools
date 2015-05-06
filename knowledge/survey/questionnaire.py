@@ -59,12 +59,7 @@ class Question(object):
         self.text = text
         self.revertAnswerOptions = False
         self.questionType = 'value_selection'
-
-    def getAnswerRange(self):
-        return self._answerRange or self.questionnaire.defaultAnswerRange
-    def setAnswerRange(self, value):
-        self._answerRange = value
-    answerRange = property(getAnswerRange, setAnswerRange)
+        self.answerRange = None
 
 
 class FeedbackItem(object):
@@ -92,7 +87,9 @@ class Response(object):
                 continue
             for fi, rf in question.feedbackItems.items():
                 if question.revertAnswerOptions:
-                    value = question.answerRange - value - 1
+                    answerRange = (question.answerRange or 
+                            self.questionnaire.defaultAnswerRange)
+                    value = answerRange - value - 1
                 result[fi] = result.get(fi, 0.0) + rf * value
         return sorted(result.items(), key=lambda x: -x[1])
 
@@ -106,10 +103,12 @@ class Response(object):
                 value = self.values.get(qu)
                 if value is None or isinstance(value, basestring):
                     continue
+                answerRange = (qu.answerRange or 
+                               self.questionnaire.defaultAnswerRange)
                 if qu.revertAnswerOptions:
-                    value = qu.answerRange - value - 1
+                    value = answerRange - value - 1
                 score += value 
-                scoreMax += qu.answerRange - 1
+                scoreMax += answerRange - 1
             if scoreMax > 0.0:
                 relScore = score / scoreMax
                 wScore = relScore * len(qugroup.feedbackItems) - 0.00001
