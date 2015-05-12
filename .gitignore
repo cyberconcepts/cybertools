@@ -5,3 +5,4 @@ ajax/dojo/*
 *.sublime-project
 *.sublime-workspace
 .settings
+*.ropeproject

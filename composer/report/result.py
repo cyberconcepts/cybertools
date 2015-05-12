@@ -35,6 +35,8 @@ class BaseRow(object):
         self.parent = parent
         self.data = {}
         self.sequenceNumber = 0
+        self.groupNumbers = dict()
+        self.groupSequenceNumber = 0
         self.cssClass = 'row'
 
     def getRawValue(self, attr):
@@ -76,6 +78,8 @@ class Row(BaseRow):
 
 
 class GroupHeaderRow(BaseRow):
+
+    sourceField = ''
 
     def getRawValue(self, attr):
         return self.data.get(attr, u'')
@@ -129,6 +133,7 @@ class ResultSet(object):
         for c in columns:
             if c.output:
                 headerRow.data[c.output] = c.getRawValue(row)
+                headerRow.sourceField = c.name
                 headerColumn = copy(c)
                 headerColumn.__name__ = c.output
                 headerColumn.cssClass = c.cssClass
@@ -227,10 +232,20 @@ class ResultSet(object):
             start, stop = self.limits
             result = result[start:stop]
         number = 0
+        groupNumbers = dict()
+        groupSequenceNumber = 0
         for idx, row in enumerate(result):
             if not isinstance(row, (GroupHeaderRow, SubTotalsRow)):
                 row.sequenceNumber = number + 1
                 number += 1
+                row.groupNumbers = copy(groupNumbers)
+                row.groupSequenceNumber = copy(groupSequenceNumber)
+                groupSequenceNumber = groupSequenceNumber + 1
+            elif isinstance(row, GroupHeaderRow):
+                sourceField = row.sourceField
+                groupNumbers[sourceField] = \
+                    groupNumbers.get(sourceField, 0) + 1
+                groupSequenceNumber = 0
         return result
 
     @Lazy
