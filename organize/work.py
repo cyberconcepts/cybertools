@@ -41,7 +41,7 @@ _not_found = object()
 def workItemStates():
     return StatesDefinition('workItemStates',
         State('new', 'new',
-              ('plan', 'accept', 'start', 'work', 'finish', 'delegate', 
+              ('plan', 'accept', 'start', 'work', 'finish', 'delegate',
                'cancel', 'reopen'),     # 'move', # ?
               color='red'),
         State('planned', 'planned',
@@ -297,12 +297,12 @@ class WorkItem(Stateful, Track):
         # stop any running work item of user:
         # TODO: check: party query OK?
         if (userName == self.userName and 
-                self.workItemType == 'work' and 
+                self.workItemType in (None, 'work') and 
                 self.state != 'running'):
             running = getParent(self).query(
                             party=userName, state='running')
             for wi in running:
-                if wi.workItemType == 'work':
+                if wi.workItemType in 'work':
                     wi.doAction('work', userName, 
                                 end=(kw.get('start') or getTimeStamp()))
         # standard creation of new work item:
@@ -328,7 +328,10 @@ class WorkItem(Stateful, Track):
         new = moved.createNew(None, userName, taskId=task, runId=0, **kw)
         new.userName = self.userName
         new.data['source'] = moved.name
-        new.state = self.state
+        if self.state == 'new':
+            new.state = 'planned'
+        else:
+            new.state = self.state
         new.reindex()
         moved.data['target'] = new.name
         moved.state = 'moved'
