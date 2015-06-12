@@ -20,7 +20,7 @@ setup(name='cybertools',
       install_requires=[
             # -*- Extra requirements: -*-
             'lxml',
-            'PIL',
+            #'PIL',
             'zope.app.catalog',
             'zope.app.file',
             'zope.app.intid',
