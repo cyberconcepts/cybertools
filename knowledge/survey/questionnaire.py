@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2015 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -58,12 +58,8 @@ class Question(object):
         self.feedbackItems = {}
         self.text = text
         self.revertAnswerOptions = False
-
-    def getAnswerRange(self):
-        return self._answerRange or self.questionnaire.defaultAnswerRange
-    def setAnswerRange(self, value):
-        self._answerRange = value
-    answerRange = property(getAnswerRange, setAnswerRange)
+        self.questionType = 'value_selection'
+        self.answerRange = None
 
 
 class FeedbackItem(object):
@@ -82,13 +78,18 @@ class Response(object):
         self.questionnaire = questionnaire
         self.party = party
         self.values = {}
+        self.texts = {}
 
     def getResult(self):
         result = {}
         for question, value in self.values.items():
+            if question.questionType != 'value_selection':
+                continue
             for fi, rf in question.feedbackItems.items():
                 if question.revertAnswerOptions:
-                    value = question.answerRange - value - 1
+                    answerRange = (question.answerRange or 
+                            self.questionnaire.defaultAnswerRange)
+                    value = answerRange - value - 1
                 result[fi] = result.get(fi, 0.0) + rf * value
         return sorted(result.items(), key=lambda x: -x[1])
 
@@ -97,15 +98,46 @@ class Response(object):
         for qugroup in self.questionnaire.questionGroups:
             score = scoreMax = 0.0
             for qu in qugroup.questions:
-                value = self.values.get(qu)
-                if value is None:
+                if qu.questionType not in (None, 'value_selection'):
                     continue
+                value = self.values.get(qu)
+                if value is None or isinstance(value, basestring):
+                    continue
+                answerRange = (qu.answerRange or 
+                               self.questionnaire.defaultAnswerRange)
                 if qu.revertAnswerOptions:
-                    value = qu.answerRange - value - 1
+                    value = answerRange - value - 1
                 score += value 
-                scoreMax += qu.answerRange - 1
+                scoreMax += answerRange - 1
             if scoreMax > 0.0:
                 relScore = score / scoreMax
                 wScore = relScore * len(qugroup.feedbackItems) - 0.00001
-                result.append((qugroup, qugroup.feedbackItems[int(wScore)], relScore))
+                if qugroup.feedbackItems:
+                    feedback = qugroup.feedbackItems[int(wScore)]
+                else:
+                    feedback = FeedbackItem()
+                result.append(dict(
+                        group=qugroup,
+                        feedback=feedback,
+                        score=relScore))
+        ranks = getRanks([r['score'] for r in result])
+        for idx, r in enumerate(result):
+            r['rank'] = ranks[idx]
         return result
+
+    def getTeamResult(self, groups, teamData):
+        result = []
+        for idx, group in enumerate(groups):
+            values = [data.values.get(group) for data in teamData]
+            values = [v for v in values if v is not None]
+            #avg = sum(values) / len(teamData)
+            avg = sum(values) / len(values)
+            result.append(dict(group=group, average=avg))
+        ranks = getRanks([r['average'] for r in result])
+        for idx, r in enumerate(result):
+            r['rank'] = ranks[idx]
+        return result
+
+def getRanks(values):
+    ordered = list(reversed(sorted(values)))
+    return [ordered.index(v) + 1 for v in values]

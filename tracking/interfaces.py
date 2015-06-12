@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2014 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 Interface definitions for tracking of user interactions.
-
-$Id$
 """
 
 from zope.interface import Interface, Attribute
@@ -49,6 +47,12 @@ class ITrack(Interface):
     #def getName():
     #    """ Return the internal name (ID) of the track.
     #    """
+
+    def update(newData, overwrite=False):
+        """ Update the track with new data, by default creating a new
+            track. Overwrite the existing track if the corresponding
+            flag is set.
+        """
 
 
 class ITrackingStorage(Interface):

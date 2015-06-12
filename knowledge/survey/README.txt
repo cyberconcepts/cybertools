@@ -40,6 +40,10 @@ It's possible to leave some of the questions unanswered.
   >>> resp02 = Response(quest, 'john')
   >>> resp02.values = {qu01: 2, qu03: 4}
 
+
+Evaluation
+==========
+
 Now let's calculate the result for resp01.
 
   >>> res = resp01.getResult()
@@ -55,8 +59,8 @@ Now let's calculate the result for resp01.
   fi03 4.0
   fi01 2.4
 
-Grouped Feedback Items
-======================
+Grouped feedback items
+----------------------
 
   >>> from cybertools.knowledge.survey.questionnaire import QuestionGroup
   >>> qugroup = QuestionGroup(quest)
@@ -65,12 +69,25 @@ Grouped Feedback Items
   >>> qugroup.feedbackItems = [fi01, fi02, fi03]
 
   >>> res = resp01.getGroupedResult()
-  >>> for qugroup, fi, score in res:
-  ...     print fi.text, round(score, 2)
-  fi02 0.58
+  >>> for r in res:
+  ...     print r['feedback'].text, round(r['score'], 2), r['rank']
+  fi02 0.58 1
 
   >>> res = resp02.getGroupedResult()
-  >>> for qugroup, fi, score in res:
-  ...     print fi.text, round(score, 2)
-  fi03 0.75
+  >>> for r in res:
+  ...     print r['feedback'].text, round(r['score'], 2), r['rank']
+  fi03 0.75 1
+
+Team evaluation
+---------------
+
+  >>> resp03 = Response(quest, 'mary')
+  >>> resp03.values = {qu01: 1, qu02: 2, qu03: 4}
+
+  >>> resp01.values[qugroup] = resp01.getGroupedResult()[0]['score']
+  >>> resp03.values[qugroup] = resp03.getGroupedResult()[0]['score']
+
+  >>> teamData = resp01.getTeamResult([qugroup], [resp01, resp03])
+  >>> teamData
+  [{'average': 0.6666...}]
 

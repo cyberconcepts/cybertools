@@ -144,7 +144,11 @@
 
 <metal:upload define-macro="input_fileupload">
     <input type="file" name="field"
-           tal:attributes="name name;" />
+           tal:attributes="name name;"
+           onchange="if (this.form.title.value == '') {
+                         var value = this.value.split('\\');
+                         this.form.title.value = value[value.length-1];
+                     }" />
 </metal:upload>
 
 
