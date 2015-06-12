@@ -58,6 +58,7 @@ class ExternalEditorView(object):
             r.append('cookie:' + cookie)
         r.append('')
         r.append(fromUnicode(data))
+        r = [str(item) for item in r]
         result = '\n'.join(r)
         self.setHeaders(len(result))
         return result

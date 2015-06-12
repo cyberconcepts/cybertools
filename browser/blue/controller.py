@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2014 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -37,9 +37,9 @@ class Controller(BaseController):
         macros = self.macros
         presentationMode = self.request.get('liquid.viewmode') == 'presentation'
         params = [('blue/blue8.css', 'all', 20, False),
-                  ('print.css', 'print', 25, False),
                   ('blue/ie.css', 'all', 30, True),
-                  ('custom.css', 'all', 100, False)]
+                  ('custom.css', 'all', 100, False),
+                  ('print.css', 'print', 200, False),]
         #if presentationMode:
         #    params.append(('presentation.css', 'all', 30, False))
         for id, media, prio, ie in params:

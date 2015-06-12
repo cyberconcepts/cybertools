@@ -85,6 +85,7 @@ class IPerson(Interface):
                     description=_(u'The date of birth - should be a '
                                    'datetime.date object.'),
                     required=False,)
+    birthDate.hideTime = True
 
     age = schema.Int(
                     title=_(u'Age'),

@@ -52,7 +52,7 @@ class Stateful(object):
 
     def getStateObject(self):
         states = self.getStatesDefinition().states
-        if self.state not in states:
+        if self.getState() not in states:
             self.state = self.getStatesDefinition().initialState
         return states[self.state]
 

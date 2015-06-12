@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2014 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -42,7 +42,33 @@ class GridFieldInstance(ListFieldInstance):
 
     @Lazy
     def columnTypes(self):
-        return [createField(t) for t in self.context.column_types]
+        fields = [createField(t) for t in self.context.column_types]
+        for f in fields:
+            f.linkedFields = [createField(sf) 
+                    for sf in getattr(f.baseField, 'linkedFields', [])]
+        return fields
+
+    #@Lazy
+    def columnTypesForLayout(self):
+        result = []
+        groups = {}
+        for idx, f in enumerate(self.columnTypes):
+            group = getattr(f.baseField, 'group', None)
+            if group is None:
+                result.append(dict(name=f.name,
+                        label=(f.description or f.title), 
+                        fields=[f], indexes=[idx], group=None))
+            else:
+                g = groups.get(group.name)
+                if g is None:
+                    g = dict(name=group.name, label=group.label, 
+                                fields=[f], indexes=[idx], group=group)
+                    groups[group.name] = g
+                    result.append(g)
+                else:
+                    g['fields'].append(f)
+                    g['indexes'].append(idx)
+        return result
 
     @Lazy
     def columnFieldInstances(self):
@@ -122,6 +148,8 @@ class GridFieldInstance(ListFieldInstance):
     def unmarshallRow(self, row, idx=None):
         item = {}
         cardinality = getattr(self.context, 'cardinality', None)
+        ignoreInCheckOnEmpty = list(
+                        getattr(self.context, 'ignoreInCheckOnEmpty', []))
         for fi in self.columnFieldInstances:
             if idx is not None:
                 fi.index = idx
@@ -133,10 +161,9 @@ class GridFieldInstance(ListFieldInstance):
             else:
                 if fi.default is not None:
                     if value == fi.default:
-                        continue
+                        ignoreInCheckOnEmpty.append(fi.name)
                 if value:
                     item[fi.name] = value
-        ignoreInCheckOnEmpty = getattr(self.context, 'ignoreInCheckOnEmpty', [])
         for k, v in item.items():
             if k not in ignoreInCheckOnEmpty: #and v != '__no_change__':
                 return item
@@ -215,7 +242,8 @@ class KeyTableFieldInstance(RecordsFieldInstance):
         for k, v in value.items():
             row = [k]
             for idx, fi in enumerate(self.columnFieldInstances[1:]):
-                row.append(fi.display(v[idx]))
+                if idx < len(v):
+                    row.append(fi.display(v[idx]))
             rows.append(row)
         return dict(headers=headers, rows=rows)
 
@@ -226,7 +254,8 @@ class KeyTableFieldInstance(RecordsFieldInstance):
         for k, v in value.items():
             item = {self.keyName: k}
             for idx, name in enumerate(self.dataNames):
-                item[name] = v[idx]
+                if idx < len(v):
+                    item[name] = v[idx]
             result.append(item)
         return result
 

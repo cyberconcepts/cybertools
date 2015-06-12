@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2014 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -41,8 +41,8 @@ _not_found = object()
 def workItemStates():
     return StatesDefinition('workItemStates',
         State('new', 'new',
-              ('plan', 'accept', 'start', 'work', 'finish', 'delegate', 
-               'cancel', 'reopen'),
+              ('plan', 'accept', 'start', 'work', 'finish', 'delegate',
+               'cancel', 'reopen'),     # 'move', # ?
               color='red'),
         State('planned', 'planned',
               ('plan', 'accept', 'start', 'work', 'finish', 'delegate',
@@ -59,7 +59,7 @@ def workItemStates():
                'move', 'cancel', 'modify'), color='lightgreen'),
         State('finished', 'finished',
               ('plan', 'accept', 'start', 'work', 'finish',
-               'move', 'modify', 'close'),
+               'move', 'modify', 'close', 'cancel'),
               color='green'),
         State('cancelled', 'cancelled',
               ('plan', 'accept', 'start', 'work', 'move', 'modify', 'close'),
@@ -79,8 +79,12 @@ def workItemStates():
         State('replaced', 'replaced', (), color='grey'),
         State('planned_x', 'planned', (), color='red'),
         State('accepted_x', 'accepted', (), color='yellow'),
-        State('done_x', 'done', (), color='lightgreen'),
-        State('finished_x', 'finished', (), color='green'),
+        State('done_x', 'done', 
+              ('modify', 'move', 'cancel'), color='lightgreen'),
+        State('finished_x', 'finished', 
+              ('modify','move', 'cancel'), color='green'),
+        #State('done_y', 'done', (), color='grey'),
+        #State('finished_y', 'finished', (), color='grey'),
         # transitions:
         Transition('plan', 'plan', 'planned'),
         Transition('accept', 'accept', 'accepted'),
@@ -96,7 +100,8 @@ def workItemStates():
         initialState='new')
 
 
-fieldNames = ['title', 'description', 'deadline', 'start', 'end', 
+fieldNames = ['title', 'description', 'deadline', 'priority', 'activity',
+              'start', 'end', 
               'duration', 'effort',
               'comment', 'party']   # for use in editingRules
 
@@ -138,7 +143,8 @@ class WorkItemType(object):
         self.title = title
         self.description = description
         self.actions = actions or list(editingRules)
-        self.fields = fields or ('deadline', 'start-end', 'duration-effort')
+        self.fields = fields or ('deadline', 'priority', 'activity', 
+                                 'start-end', 'duration-effort')
         self.indicator = indicator
         self.delegatedState = delegatedState
         self.prefillDate = prefillDate
@@ -156,9 +162,10 @@ workItemTypes = Jeep((
         fields =('deadline',),
         indicator='work_deadline'),
     WorkItemType('checkup', u'Check-up',
-        actions=('plan', 'accept', 'finish', 'cancel', 
+        actions=('plan', 'accept', 'start', 'finish', 'cancel', 
                  'modify', 'delegate', 'close', 'reopen'),
-        fields =('deadline', 'start-end',),
+        #fields =('deadline', 'start-end',),
+        fields =('deadline', 'daterange',),
         indicator='work_checkup',
         delegatedState='closed', prefillDate=False),
 ))
@@ -177,7 +184,7 @@ class WorkItem(Stateful, Track):
     statesDefinition = 'organize.workItemStates'
 
     initAttributes = set(['workItemType', 'party', 'title', 'description', 
-                          'deadline', 'start', 'end',
+                          'deadline', 'priority', 'activity', 'start', 'end',
                           'duration', 'effort'])
 
     def __init__(self, taskId, runId, userName, data):
@@ -225,13 +232,16 @@ class WorkItem(Stateful, Track):
         return list(getParent(self).query(runId=self.runId))
 
     def doAction(self, action, userName, **kw):
-        if self != self.currentWorkItems[-1]:
-            raise ValueError("Actions are only allowed on the last item of a run.")
+        #if self != self.currentWorkItems[-1]:
+        #    raise ValueError("Actions are only allowed on the last item of a run.")
         if action not in [t.name for t in self.getAvailableTransitions()]:
             raise ValueError("Action '%s' not allowed in state '%s'" %
                              (action, self.state))
         if action in self.specialActions:
             return self.specialActions[action](self, userName, **kw)
+        return self.doStandardAction(action, userName, **kw)
+
+    def doStandardAction(self, action, userName, **kw):
         if self.state == 'new':
             self.setData(**kw)
             self.doTransition(action)
@@ -242,6 +252,9 @@ class WorkItem(Stateful, Track):
         if self.state == 'running':
             new.replace(self)
         elif self.state in ('planned', 'accepted', 'done'):
+            self.state = self.state + '_x'
+            self.reindex('state')
+        elif self.state in ('finished',) and action == 'cancel':
             self.state = self.state + '_x'
             self.reindex('state')
         new.doTransition(action)
@@ -279,25 +292,57 @@ class WorkItem(Stateful, Track):
         delegated.data['target'] = new.name
         return new
 
+    def doStart(self, userName, **kw):
+        action = 'start'
+        # stop any running work item of user:
+        # TODO: check: party query OK?
+        if (userName == self.userName and 
+                self.workItemType in (None, 'work') and 
+                self.state != 'running'):
+            running = getParent(self).query(
+                            party=userName, state='running')
+            for wi in running:
+                if wi.workItemType in 'work':
+                    wi.doAction('work', userName, 
+                                end=(kw.get('start') or getTimeStamp()))
+        # standard creation of new work item:
+        if not kw.get('start'):
+            kw['start'] = getTimeStamp()
+        kw['end'] = None
+        kw['duration'] = kw['effort'] = 0
+        return self.doStandardAction(action, userName, **kw)
+
     def move(self, userName, **kw):
         xkw = dict(kw)
         for k in ('deadline', 'start', 'end'):
             xkw.pop(k, None)    # do not change on source item
-        moved = self.createNew('move', userName, **xkw)
-        moved.userName = self.userName
-        moved.state = 'moved'
-        moved.reindex()
+        if self.state == 'new': # should this be possible?
+            moved = self
+            self.setData(kw)
+        if self.state in ('done', 'finished', 'running'):
+            moved = self        # is this OK? or better new state ..._y?
+        else:
+            moved = self.createNew('move', userName, **xkw)
+            moved.userName = self.userName
         task = kw.pop('task', None)
         new = moved.createNew(None, userName, taskId=task, runId=0, **kw)
         new.userName = self.userName
         new.data['source'] = moved.name
-        new.state = self.state
+        if self.state == 'new':
+            new.state = 'planned'
+        else:
+            new.state = self.state
         new.reindex()
         moved.data['target'] = new.name
-        if self.state in ('planned', 'accepted', 'delegated', 'moved', 
-                          'done', 'finished'):
+        moved.state = 'moved'
+        moved.reindex()
+        if self.state in ('planned', 'accepted', 'delegated', 'moved'):
+                          #'done', 'finished'):
             self.state = self.state + '_x'
             self.reindex('state')
+        #elif self.state in ('done', 'finished'):
+        #    self.state = self.state + '_y'
+        #    self.reindex('state')
         return new
 
     def close(self, userName, **kw):
@@ -315,7 +360,8 @@ class WorkItem(Stateful, Track):
                 item.reindex('state')
         return new
 
-    specialActions = dict(modify=modify, delegate=delegate, move=move,
+    specialActions = dict(modify=modify, delegate=delegate, 
+                          start=doStart, move=move,
                           close=close)
 
     def setData(self, ignoreParty=False, **kw):
@@ -328,7 +374,7 @@ class WorkItem(Stateful, Track):
                 self.reindex('userName')
         start = kw.get('start') or kw.get('deadline')   # TODO: check OK?
         if start is not None:
-            self.timeStamp = start
+            self.timeStamp = start  # TODO: better use end
             self.reindex('timeStamp')
         data = self.data
         for k, v in kw.items():

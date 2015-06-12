@@ -90,7 +90,7 @@
            tal:define="width field/width|nothing"
            tal:attributes="name name; id name;
                            style python:
-                                ('width: %s;;' % (width and str(width)+'px' or '570px')) +
+                                ('width: %s;;' % (width and str(width)+'px' or '555px')) +
                                 'height: 1.5em;;';
                            value data/?name|string:;
                            xxrequired field/required_js;" />
@@ -144,7 +144,11 @@
 
 <metal:upload define-macro="input_fileupload">
     <input type="file" name="field"
-           tal:attributes="name name;" />
+           tal:attributes="name name;"
+           onchange="if (this.form.title.value == '') {
+                         var value = this.value.split('\\');
+                         this.form.title.value = value[value.length-1];
+                     }" />
 </metal:upload>
 
 
