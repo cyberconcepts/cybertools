@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2015 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 Order and order item classes.
-
-$Id$
 """
 
 from zope.app.intid.interfaces import IIntIds
@@ -118,7 +116,10 @@ class OrderItems(object):
 
     def add(self, product, party, shop, order='???', run=0, **kw):
         kw['shop'] = self.getUid(shop)
+        options = kw.get('options', [])
         existing = self.getCart(party, order, shop, run, product=product)
+        existing = [item for item in existing 
+                         if (item.data.get('options') or []) == options]
         if existing:
             track = existing[-1]
             track.modify(track.quantity + kw.get('quantity', 1))
