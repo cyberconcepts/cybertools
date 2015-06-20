@@ -116,10 +116,11 @@ class OrderItems(object):
 
     def add(self, product, party, shop, order='???', run=0, **kw):
         kw['shop'] = self.getUid(shop)
-        options = kw.get('options', [])
         existing = self.getCart(party, order, shop, run, product=product)
-        existing = [item for item in existing 
-                         if (item.data.get('options') or []) == options]
+        options = kw.get('options')
+        if options is not None:
+            existing = [item for item in existing 
+                             if (item.data.get('options') or []) == options]
         if existing:
             track = existing[-1]
             track.modify(track.quantity + kw.get('quantity', 1))
