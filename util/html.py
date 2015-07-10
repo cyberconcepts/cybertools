@@ -70,11 +70,11 @@ def sanitizeStyle(value, validStyles=validStyles):
             parts = item.split(':')
             if len(parts) == 2:
                 k, v = parts
-                if checkStyle(k):
+                if checkStyle(k, validStyles):
                     result.append(item.strip())
     return '; '.join(result)
 
-def checkStyle(k):
+def checkStyle(k, validStyles=validStyles):
     k = k.strip().lower()
     if k in validStyles:
         return True
