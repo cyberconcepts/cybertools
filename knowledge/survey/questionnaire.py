@@ -36,6 +36,9 @@ class Questionnaire(object):
         self.responses = []
         self.defaultAnswerRange = 5
 
+    def getQuestionGroups(self, party):
+        return self.questionGroups
+
 
 class QuestionGroup(object):
 
@@ -95,7 +98,7 @@ class Response(object):
 
     def getGroupedResult(self):
         result = []
-        for qugroup in self.questionnaire.questionGroups:
+        for qugroup in self.questionnaire.getQuestionGroups(self.party):
             score = scoreMax = 0.0
             for qu in qugroup.questions:
                 if qu.questionType not in (None, 'value_selection'):
