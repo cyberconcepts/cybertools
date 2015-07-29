@@ -1,5 +1,7 @@
 *.pyc
+*.pyo
 ajax/dojo/*
+*.egg-info
 *.project
 *.pydevproject
 *.sublime-project
