@@ -134,6 +134,8 @@ class Response(object):
             values = [data.values.get(group) for data in teamData]
             values = [v for v in values if v is not None]
             #avg = sum(values) / len(teamData)
+            if not values:
+                continue
             avg = sum(values) / len(values)
             result.append(dict(group=group, average=avg))
         ranks = getRanks([r['average'] for r in result])
