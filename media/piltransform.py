@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2015 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,8 +20,6 @@
 Views for displaying media assets.
 
 Authors: Johann Schimpf, Erich Seifert.
-
-$Id$
 """
 
 from logging import getLogger
@@ -34,6 +32,8 @@ from zope.interface import implements
 
 from cybertools.media.interfaces import IMediaAsset, IFileTransform
 from cybertools.storage.filesystem import FileSystemStorage
+
+logger = getLogger('cybertools.media.piltransform.PILTransform')
 
 
 def mimetypeToPIL(mimetype):
@@ -51,8 +51,7 @@ class PILTransform(object):
         try:
             self.im = Image.open(path)
         except IOError, e:
-            from logging import getLogger
-            getLogger('cybertools.media.piltransform.PILTransform').warn(e)
+            logger.warn(e)
             self.im = None
 
     def rotate(self, angle, resize):
@@ -101,10 +100,17 @@ class PILTransform(object):
             ratio = float(ow) / float(oh)
             height = int(round(float(width) / ratio))
         dims = (width, height)
-        self.im.thumbnail(dims, Image.ANTIALIAS)
+        try:
+            self.im.thumbnail(dims, Image.ANTIALIAS)
+        except IOError, e:
+            logger.warn(e)
+
 
     def save(self, path, mimetype):
         if self.im is None:
             return
         format = mimetypeToPIL(mimetype)
-        self.im.save(path)
+        try:
+            self.im.save(path)
+        except IOError, e:
+            logger.warn(e)
