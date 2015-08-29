@@ -270,6 +270,8 @@ class TrackingStorage(BTreeContainer):
     def getUserTracks(self, taskId, runId, userName):
         if not runId:
             runId = self.currentRuns.get(taskId)
+            if runId is None:
+                return []
         return self.query(taskId=taskId, runId=runId, userName=userName)
 
     def getLastUserTrack(self, taskId, runId, userName):
@@ -283,6 +285,8 @@ class TrackingStorage(BTreeContainer):
         result = None
         for idx in kw:
             value = kw[idx]
+            if idx == 'runId' and value is None:
+                continue
             if idx in self.indexAttributes:
                 if type(value) not in (list, tuple):
                     value = [value]
