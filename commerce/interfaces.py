@@ -1,6 +1,6 @@
 #-*- coding: UTF-8 -*-
 #
-#  Copyright (c) 2012 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2015 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -408,12 +408,13 @@ class IOrderItem(ITrack):
     shop = Attribute(u'The shop from which the product is ordered.')
     order = Attribute(u'The order this order item belongs to.')
     unitPrice = Attribute(u'The basic unit price for one of the product '
-                    u'items ordered.')
+                    u'ites ordered.')
     fullPrice = Attribute(u'The full price for the quantity ordered.')
     quantityShipped = Attribute(u'The total quantity that has been shipped '
                     u'already.')
     shippingInfo = Attribute(u'A list of mappings, with fields like: '
                     u'shippingId, shippingDate, quantity, packageId')
+    options = Attribute(u'Product options associated with this order item.')
 
     def remove():
         """ Remove the order item from the order or cart.

@@ -52,7 +52,7 @@ def workItemStates():
                'move', 'cancel', 'modify'),
               color='yellow'),
         State('running', 'running',
-              ('work', 'finish', 'move', 'cancel', 'modify'),
+              ('work', 'finish', 'move', 'cancel', 'modify'),   # 'delegate', # ?
               color='orange'),
         State('done', 'done',
               ('plan', 'accept', 'start', 'work', 'finish', 'delegate',
@@ -279,6 +279,9 @@ class WorkItem(Stateful, Track):
             if self.state in ('planned', 'accepted', 'delegated', 'moved', 'done'):
                 self.state = self.state + '_x'
                 self.reindex('state')
+            #elif self.state == 'running':
+            #    self.doAction('work', userName, 
+            #                  end=(kw.get('end') or getTimeStamp()))
             xkw = dict(kw)
             xkw.pop('party', None)
             delegated = self.createNew('delegate', userName, **xkw)

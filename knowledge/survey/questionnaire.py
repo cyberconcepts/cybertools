@@ -36,6 +36,9 @@ class Questionnaire(object):
         self.responses = []
         self.defaultAnswerRange = 5
 
+    def getQuestionGroups(self, party):
+        return self.questionGroups
+
 
 class QuestionGroup(object):
 
@@ -95,7 +98,7 @@ class Response(object):
 
     def getGroupedResult(self):
         result = []
-        for qugroup in self.questionnaire.questionGroups:
+        for qugroup in self.questionnaire.getQuestionGroups(self.party):
             score = scoreMax = 0.0
             for qu in qugroup.questions:
                 if qu.questionType not in (None, 'value_selection'):
@@ -131,6 +134,8 @@ class Response(object):
             values = [data.values.get(group) for data in teamData]
             values = [v for v in values if v is not None]
             #avg = sum(values) / len(teamData)
+            if not values:
+                continue
             avg = sum(values) / len(values)
             result.append(dict(group=group, average=avg))
         ranks = getRanks([r['average'] for r in result])
