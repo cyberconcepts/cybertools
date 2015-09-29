@@ -29,11 +29,9 @@ from logging import getLogger
 import mimetypes
 import os, re, sys
 
-from zope import component
 from zope.interface import implements
-from cybertools.media.interfaces import IMediaAsset, IFileTransform
+from cybertools.media.interfaces import IMediaAsset
 from cybertools.media.piltransform import PILTransform
-from cybertools.storage.filesystem import FileSystemStorage
 
 TRANSFORM_STATEMENT = re.compile(r"\s*(\+?)([\w]+[\w\d]*)\(([^\)]*)\)\s*")
 
@@ -41,13 +39,16 @@ DEFAULT_FORMATS = {
     "image": "image/jpeg"
 }
 
+
 def parseTransformStatements(txStr):
     """ Parse statements in transform chain strings."""
     statements = TRANSFORM_STATEMENT.findall(txStr)
     return statements
 
+
 def getMimeBasetype(mimetype):
-    return mimetype.split("/",1)[0]
+    return mimetype.split("/", 1)[0]
+
 
 def getMimetypeExt(mimetype):
     exts = mimetypes.guess_all_extensions(mimetype)
@@ -74,9 +75,9 @@ class MediaAssetFile(object):
             getLogger('cybertools.media.asset.MediaAssetFile').warn(
                 'Media asset directory %r not found.' % path)
             self.transform()
-            #return self.getOriginalData()
+            # return self.getOriginalData()
         f = open(path, 'rb')
-        data =f.read()
+        data = f.read()
         f.close()
         return data
 
