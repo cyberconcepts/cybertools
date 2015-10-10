@@ -92,7 +92,7 @@ class PILTransform(object):
         box = (left, upper, right, lower)
         self.im = self.im.crop(box)
 
-    def resize(self, width, height=None):
+    def resize(self, width, height=None, fill=False):
         if self.im is None:
             return
         if not height:
@@ -100,11 +100,15 @@ class PILTransform(object):
             ratio = float(ow) / float(oh)
             height = int(round(float(width) / ratio))
         dims = (width, height)
-        try:
-            self.im.thumbnail(dims, Image.ANTIALIAS)
-        except IOError, e:
-            logger.warn(e)
-
+        if fill:
+            image = self.im
+            image.thumbnail(dims, Image.ANTIALIAS)
+            new = Image.new('RGBA', dims, (255, 255, 255, 0))  #with alpha
+            new.paste(image,((dims[0] - image.size[0]) / 2,
+                               (dims[1] - image.size[1]) / 2))
+            self.im = new
+            return new
+        return self.im.thumbnail(dims, Image.ANTIALIAS)
 
     def save(self, path, mimetype):
         if self.im is None:
