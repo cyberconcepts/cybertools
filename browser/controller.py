@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2016 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 Controller for views, templates, macros.
-
-$Id$
 """
 
 from zope import component
@@ -76,6 +74,10 @@ class Controller(object):
         provider = component.queryMultiAdapter((self.context, self.request),
                                           IMemberInfoProvider)
         return provider is not None and provider.data or None
+
+    def setMainPage(self):
+        # May be overridden by subclasse for setting special main index template
+        pass
 
     def getTemplateMacros(self, name, default):
         template = self.templates.get(name)
