@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2014 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2016 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -124,6 +124,9 @@ class Field(Component):
         return getattr(value, 'title', str(value))
 
     def getDisplayValue(self, row):
+        return self.getValue(row)
+
+    def getExportValue(self, row, format=None, lang=None):
         return self.getValue(row)
 
     def getSortValue(self, row):
