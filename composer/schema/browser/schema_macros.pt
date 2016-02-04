@@ -5,7 +5,7 @@
 
 <metal:form define-macro="form">
   <h1 i18n:translate=""
-      tal:content="view/label | default">Edit</h1>
+      tal:content="view/label|default">Edit</h1>
   <div>
     <form method="post">
       <input type="hidden" name="action" value="update" />
@@ -14,7 +14,7 @@
       <br />
       <input type="submit" name="submit" value="Save"
              i18n:attributes="value"
-             tal:attributes="value view/label_submit | string:Save" />
+             tal:attributes="value view/label_submit|string:Save" />
     </form>
   </div>
 </metal:form>

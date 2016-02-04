@@ -77,6 +77,10 @@ class Controller(object):
                                           IMemberInfoProvider)
         return provider is not None and provider.data or None
 
+    def setMainPage(self):
+        # May be overridden by subclasse for setting special main index template
+        pass
+
     def getTemplateMacros(self, name, default):
         template = self.templates.get(name)
         if template is None:
