@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2014 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2016 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -111,21 +111,21 @@ fieldNames = ['title', 'description', 'deadline', 'priority', 'activity',
 #           . default (may be empty)
 
 editingRules = dict(
-    plan    = {'*':         '+++.....+'},
-    accept  = {'*':         '+++.....-',
-               'planned':   '+++++++.-',
-               'accepted':  '+++++++.-'},
-    start   = {'*':         '+++./...-'},
-    work    = {'*':         '+++.....-',
-               'running':   '++++....-'},
-    finish  = {'*':         '+++.....-',
-               'running':   '++++....-'},
-    cancel  = {'*':         '+++////./'},
-    modify  = {'*':         '+++++++++'},
-    delegate= {'*':         '+++++++.+'},
-    move    = {'*':         '+++++++.-'},
-    close   = {'*':         '+++////./'},
-    reopen  = {'*':         '+++////./'},
+    plan    = {'*':         '+++++.....+'},
+    accept  = {'*':         '+++++.....-',
+               'planned':   '+++++++++.-',
+               'accepted':  '+++++++++.-'},
+    start   = {'*':         '+++++./...-'},
+    work    = {'*':         '+++++.....-',
+               'running':   '++++++....-'},
+    finish  = {'*':         '+++++.....-',
+               'running':   '++++++....-'},
+    cancel  = {'*':         '+++++////./'},
+    modify  = {'*':         '+++++++++++'},
+    delegate= {'*':         '+++++++++.+'},
+    move    = {'*':         '+++++++++.-'},
+    close   = {'*':         '+++++////./'},
+    reopen  = {'*':         '+++++////./'},
 )
 
 
