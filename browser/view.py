@@ -87,8 +87,8 @@ class GenericView(object):
         cont = viewAnnotations.get('controller', None)
         if cont is None:
             cont = component.queryMultiAdapter((self, self.request), name='controller')
-            if cont is not None:
-                self.setController(cont)
+            #if cont is not None:
+            #    self.setController(cont)
         return cont
     controller = property(getController, setController)
 
