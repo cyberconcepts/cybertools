@@ -27,8 +27,12 @@ $Id$
 from logging import getLogger
 try:
     import Image
-except ImportError:
-    getLogger('Asset Manager').warn('Python Imaging Library could not be found.')
+except:
+    try:
+        from PIL import Image
+    except:
+        getLogger('Asset Manager').warn('Python Imaging Library '
+                                        'could not be found.')
 
 from zope.interface import implements
 
