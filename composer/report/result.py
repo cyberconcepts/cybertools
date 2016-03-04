@@ -164,6 +164,8 @@ class ResultSet(object):
                 subTotalsRow.data[gf.output] = u'SUMME: ' + display
             else:
                 v = gf.totalsDescription.getDisplayValue(row)
+                if isinstance(v, dict):
+                    v = v.get('title', '')
                 if v is None:
                     v = u''
                 subTotalsRow.data[gf.totalsDescription.output] = v
