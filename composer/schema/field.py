@@ -304,7 +304,10 @@ class DateFieldInstance(NumberFieldInstance):
             return ''
         if isinstance(value, basestring):
             return value
-        return strftime('%Y-%m-%dT%H:%M', value.timetuple())
+        try:
+            return strftime('%Y-%m-%dT%H:%M', value.timetuple())
+        except ValueError:
+            return ''
 
     def display(self, value):
         if value is None:
