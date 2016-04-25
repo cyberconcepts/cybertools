@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2014 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2016 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -292,7 +292,11 @@ class TrackingStorage(BTreeContainer):
                     value = [value]
                 resultx = None
                 for v in value:
-                    resultx = self.union(resultx, self.indexes[idx].apply((v, v)))
+                    v2 = v
+                    if isinstance(v, basestring) and v.endswith('*'):
+                        v = v[:-1]
+                        v2 = v + 'z'
+                    resultx = self.union(resultx, self.indexes[idx].apply((v, v2)))
                 result = self.intersect(result, resultx)
             elif idx == 'timeFrom':
                 result = self.intersect(result,
