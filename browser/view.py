@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2016 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ from zope.interface import Interface, implements
 from zope.cachedescriptors.property import Lazy
 from zope import component
 from zope.event import notify
+from zope.publisher.http import URLGetter as BaseURLGetter
 from zope.publisher.interfaces.browser import IBrowserSkinType
 
 from cybertools.browser.renderer import CachableRenderer
@@ -61,6 +62,12 @@ class BodyTemplateView(object):
     """
 
     bodyTemplate = UnboundTemplateFile('liquid/body.pt')
+
+
+class URLGetter(BaseURLGetter):
+
+    def __str__(self):
+        return self.__request.getURL().rstrip('/@@index.html')
 
 
 class GenericView(object):
@@ -102,6 +109,10 @@ class GenericView(object):
     def __call__(self, *args, **kw):
         # this is useful for a top-level page only
         return self.index(*args, **kw)
+
+    @property
+    def requestUrl(self):
+        return URLGetter(self.request)
 
     @Lazy
     def isAuthenticated(self):
