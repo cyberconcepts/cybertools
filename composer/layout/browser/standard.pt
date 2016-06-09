@@ -20,7 +20,7 @@
       </tal:js>
       <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"
             tal:attributes="href string:${view/page/resourceBase}${layout/favicon}" />
-      <base href="." tal:attributes="href request/URL">
+      <base href="." tal:attributes="href view/requestUrl">
     </head>
     <body tal:replace="structure body" />
   </html>

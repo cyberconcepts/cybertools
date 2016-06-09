@@ -24,7 +24,7 @@
       You are not authorized to perform this action. However, you may login as a
       different user who is authorized.</p>
     <form action="." method="post"
-          tal:attributes="action request/URL">
+          tal:attributes="action view/requestUrl">
         <div tal:omit-tag=""
              tal:condition="python:principal != 'zope.anybody' and 'SUBMIT' in request">
             <span tal:define="dummy python:
