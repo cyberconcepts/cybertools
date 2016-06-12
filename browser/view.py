@@ -67,7 +67,10 @@ class BodyTemplateView(object):
 class URLGetter(BaseURLGetter):
 
     def __str__(self):
-        return self.__request.getURL().rstrip('/@@index.html')
+        url = self.__request.getURL()
+        if url.endswith('/@@index.html'):
+            url = url[-len('/@@index.html')]
+        return url
 
 
 class GenericView(object):
