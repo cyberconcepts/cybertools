@@ -69,7 +69,7 @@ class URLGetter(BaseURLGetter):
     def __str__(self):
         url = self.__request.getURL()
         if url.endswith('/@@index.html'):
-            url = url[-len('/@@index.html')]
+            url = url[:-len('/@@index.html')]
         return url
 
 
