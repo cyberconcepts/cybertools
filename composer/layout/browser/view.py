@@ -27,6 +27,7 @@ from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
 from zope.publisher.http import URLGetter as BaseURLGetter
 
+from cybertools.browser.view import URLGetter
 from cybertools.composer.layout.base import Layout
 from cybertools.composer.layout.interfaces import ILayoutManager
 from cybertools.composer.layout.interfaces import ILayout, ILayoutInstance
@@ -51,15 +52,6 @@ class CachableRenderer(object):
     @cache(getRenderMacroId, lifetime=lifetime)
     def renderMacro(self, *args):
         return rendererTemplate(self.view, view=self.view, macro=self.renderer)
-
-
-class URLGetter(BaseURLGetter):
-
-    def __str__(self):
-        url = self.__request.getURL()
-        if url.endswith('/@@index.html'):
-            url = url[:-len('/@@index.html')]
-        return url
 
 
 class BaseView(object):
