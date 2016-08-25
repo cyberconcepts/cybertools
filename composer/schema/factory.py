@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2016 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ from zope.interface import Interface
 from zope import schema
 
 from cybertools.composer.schema.field import Field
-from cybertools.composer.schema.interfaces import ISchemaFactory
+from cybertools.composer.schema.interfaces import ISchemaFactory, ISchemaProcessor
 from cybertools.composer.schema.schema import Schema
 
 
@@ -70,6 +70,7 @@ class SchemaFactory(object):
 
     def __init__(self, context):
         self.context = context
+        self.schemaProcessor = ISchemaProcessor(self, None)
 
     def __call__(self, interface, **kw):
         fieldMapping = self.fieldMapping
@@ -84,7 +85,10 @@ class SchemaFactory(object):
             field = interface[fname]
             info = fieldMapping.get(field.__class__)
             f = createField(field, info)
-            fields.append(f)
+            if self.schemaProcessor is not None:
+                f = self.schemaProcessor.process(f)
+            if f is not None:
+                fields.append(f)
         return Schema(name=interface.__name__, *fields, **kw)
 
 

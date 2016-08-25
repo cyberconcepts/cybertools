@@ -73,6 +73,17 @@ class ISchemaFactory(Interface):
         """
 
 
+class ISchemaProcessor(Interface):
+    """ Interface for schema processor adapters.
+    """
+
+    def process(field):
+        """ Process field according to specific processor data and
+            return modified field. Return None if field should not 
+            be included in schema.
+        """
+
+
 class FieldType(SimpleTerm):
 
     hidden = False
