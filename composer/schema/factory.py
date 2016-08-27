@@ -86,7 +86,7 @@ class SchemaFactory(object):
             info = fieldMapping.get(field.__class__)
             f = createField(field, info)
             if self.schemaProcessor is not None:
-                f = self.schemaProcessor.process(f)
+                f = self.schemaProcessor.process(f, **kw)
             if f is not None:
                 fields.append(f)
         return Schema(name=interface.__name__, *fields, **kw)
