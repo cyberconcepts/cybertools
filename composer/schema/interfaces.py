@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2016 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -70,6 +70,17 @@ class ISchemaFactory(Interface):
 
     def __call__(interface, **kw):
         """ Return a schema, based on the interface given.
+        """
+
+
+class ISchemaProcessor(Interface):
+    """ Interface for schema processor adapters.
+    """
+
+    def process(field):
+        """ Process field according to specific processor data and
+            return modified field. Return None if field should not 
+            be included in schema.
         """
 
 
