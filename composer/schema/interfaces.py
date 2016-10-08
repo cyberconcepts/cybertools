@@ -215,6 +215,7 @@ class IField(IComponent):
                         '(only for dropdown and other selection fields)'),
                 required=False,)
 
+    visible = Attribute('Should the field be shown in display views?')
     fieldRenderer = Attribute('Name of a renderer (i.e. a ZPT macro or '
                         'an adapter) that is responsible for rendering '
                         '(presenting) the field as a whole.')
