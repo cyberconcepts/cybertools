@@ -27,6 +27,8 @@ from cybertools.composer.interfaces import IInstance
 from cybertools.composer.report.base import BaseQueryCriteria
 from cybertools.util.jeep import Jeep
 
+from loops.common import normalizeName
+
 
 class BaseRow(object):
 
@@ -52,6 +54,8 @@ class Row(BaseRow):
 
     attributeHandlers = {}
     cssClass = u''
+    rowId = u''
+    subTotalRowIds = []
 
     def getRawValue(self, attr):
         return self.attributeHandlers.get(
@@ -153,7 +157,9 @@ class ResultSet(object):
             return None
         subTotalsRow = SubTotalsRow(None, self)
         subTotalsRow.subTotalsGroupColumns = []
-        subTotalsRow.cssClass = 'subTotalsRow'
+        rowId = '%s-%s' % (gf.name, normalizeName(gf.getRawValue(row)))
+        rowId = rowId.replace('.', '_')
+        subTotalsRow.cssClass = 'subTotalsRow ' + rowId
         for idx, c in enumerate(columns):
             subTotalsRow.data[c.name] = values[idx]
         if gf in self.subTotalsGroupColumns:
@@ -243,6 +249,12 @@ class ResultSet(object):
                 row.groupNumbers = copy(groupNumbers)
                 row.groupSequenceNumber = copy(groupSequenceNumber)
                 groupSequenceNumber = groupSequenceNumber + 1
+                for idx, f in enumerate(self.groupColumns):
+                    name = f.name
+                    value = normalizeName(f.getRawValue(row))
+                    value = value.replace('.', '_')
+                    row.subTotalRowIds = copy(row.subTotalRowIds) + ['%s-%s' % (
+                        name, value)]
             elif isinstance(row, GroupHeaderRow):
                 sourceField = row.sourceField
                 groupNumbers[sourceField] = \
