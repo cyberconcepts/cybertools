@@ -83,6 +83,8 @@ class SchemaFactory(object):
             if include and fname not in include:
                 continue
             field = interface[fname]
+            if getattr(field, 'hidden', False):
+                continue
             info = fieldMapping.get(field.__class__)
             f = createField(field, info)
             if self.schemaProcessor is not None:
