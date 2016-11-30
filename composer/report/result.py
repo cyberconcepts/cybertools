@@ -252,9 +252,10 @@ class ResultSet(object):
                 for idx, f in enumerate(self.groupColumns):
                     name = f.name
                     value = normalizeName(f.getRawValue(row))
-                    value = value.replace('.', '_')
-                    row.subTotalRowIds = copy(row.subTotalRowIds) + ['%s-%s' % (
-                        name, value)]
+                    if isinstance(value, basestring):
+                        value = value.replace('.', '_')
+                        row.subTotalRowIds = copy(row.subTotalRowIds) +\
+                            ['%s-%s' % (name, value)]
             elif isinstance(row, GroupHeaderRow):
                 sourceField = row.sourceField
                 groupNumbers[sourceField] = \
