@@ -251,8 +251,9 @@ class ResultSet(object):
                 groupSequenceNumber = groupSequenceNumber + 1
                 for idx, f in enumerate(self.groupColumns):
                     name = f.name
-                    value = normalizeName(f.getRawValue(row))
+                    value = f.getRawValue(row)
                     if isinstance(value, basestring):
+                        value = normalizeName(value)
                         value = value.replace('.', '_')
                         row.subTotalRowIds = copy(row.subTotalRowIds) +\
                             ['%s-%s' % (name, value)]
