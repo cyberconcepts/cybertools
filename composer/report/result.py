@@ -157,8 +157,11 @@ class ResultSet(object):
             return None
         subTotalsRow = SubTotalsRow(None, self)
         subTotalsRow.subTotalsGroupColumns = []
-        rowId = '%s-%s' % (gf.name, normalizeName(gf.getRawValue(row)))
-        rowId = rowId.replace('.', '_')
+        rowId = ''
+        value = gf.getRawValue(row)
+        if isinstance(value, basestring):
+            rowId = '%s-%s' % (gf.name, normalizeName(value))
+            rowId = rowId.replace('.', '_')
         subTotalsRow.cssClass = 'subTotalsRow ' + rowId
         for idx, c in enumerate(columns):
             subTotalsRow.data[c.name] = values[idx]
