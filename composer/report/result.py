@@ -39,7 +39,7 @@ class BaseRow(object):
         self.sequenceNumber = 0
         self.groupNumbers = dict()
         self.groupSequenceNumber = 0
-        self.cssClass = 'row'
+        self.cssClass = getattr(self, 'cssClass', 'row')
 
     def getRawValue(self, attr):
         return self.data.get(attr)
@@ -47,7 +47,7 @@ class BaseRow(object):
 
 class TotalsRow(BaseRow):
 
-    pass
+    cssClass = 'totalsRow'
 
 
 class Row(BaseRow):
