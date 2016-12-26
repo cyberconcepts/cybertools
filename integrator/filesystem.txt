@@ -84,7 +84,7 @@ A file object has additional attributes/methods.
   >>> file.contentType
   'application/x-tar'
   >>> file.getSize()
-  432L
+  432
 
   >>> logo = sub['loops_logo.png']
   >>> logo.internalPath

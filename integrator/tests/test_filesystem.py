@@ -1,8 +1,6 @@
-# $Id$
 
 import os
 import unittest, doctest
-from zope.testing.doctestunit import DocFileSuite
 from zope.interface.verify import verifyClass
 
 
@@ -22,7 +20,7 @@ class Test(unittest.TestCase):
 def test_suite():
     return unittest.TestSuite((
                 unittest.makeSuite(Test),
-                DocFileSuite('../filesystem.txt', optionflags=flags),
+                doctest.DocFileSuite('../filesystem.txt', optionflags=flags),
             ))
 
 if __name__ == '__main__':
