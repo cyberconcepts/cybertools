@@ -1,10 +1,8 @@
-# $Id$
 
 import unittest, doctest
 from email import message_from_string
 from zope.interface import implements
 from zope.sendmail.interfaces import IMailDelivery
-from zope.testing.doctestunit import DocFileSuite
 
 
 class TestMailer(object):
@@ -31,7 +29,7 @@ def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
     return unittest.TestSuite((
                 unittest.makeSuite(Test),
-                DocFileSuite('README.txt', optionflags=flags),
+                doctest.DocFileSuite('README.txt', optionflags=flags),
             ))
 
 if __name__ == '__main__':
