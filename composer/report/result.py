@@ -32,6 +32,8 @@ from loops.common import normalizeName
 
 class BaseRow(object):
 
+    rowId = u''
+
     def __init__(self, context, parent):
         self.context = context
         self.parent = parent
@@ -54,8 +56,7 @@ class Row(BaseRow):
 
     attributeHandlers = {}
     cssClass = u''
-    rowId = u''
-    subTotalRowIds = []
+    subTotalsRowIds = []
 
     def getRawValue(self, attr):
         return self.attributeHandlers.get(
@@ -99,6 +100,8 @@ class GroupHeaderRow(BaseRow):
 
 
 class SubTotalsRow(BaseRow):
+
+    cssClass = 'subTotalsRow'
 
     def getRawValue(self, attr):
         return self.data.get(attr, u'')
@@ -162,7 +165,8 @@ class ResultSet(object):
         if isinstance(value, basestring):
             rowId = '%s-%s' % (gf.name, normalizeName(value))
             rowId = rowId.replace('.', '_')
-        subTotalsRow.cssClass = 'subTotalsRow ' + rowId
+        subTotalsRow.cssClass = 'subTotalsRow'
+        subTotalsRow.rowId = rowId
         for idx, c in enumerate(columns):
             subTotalsRow.data[c.name] = values[idx]
         if gf in self.subTotalsGroupColumns:
@@ -258,7 +262,7 @@ class ResultSet(object):
                     if isinstance(value, basestring):
                         value = normalizeName(value)
                         value = value.replace('.', '_')
-                        row.subTotalRowIds = copy(row.subTotalRowIds) +\
+                        row.subTotalsRowIds = copy(row.subTotalsRowIds) +\
                             ['%s-%s' % (name, value)]
             elif isinstance(row, GroupHeaderRow):
                 sourceField = row.sourceField
