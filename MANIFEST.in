@@ -1,0 +1,8 @@
+recursive-include . *.cfg
+recursive-include . *.css *.js
+recursive-include . *.gif *.jpg *.png
+recursive-include . *.md *.txt
+recursive-include . *.mo *.po *.pot
+recursive-include . *.pt *.zpt
+recursive-include . *.zcml
+recursive-include . mime.types
