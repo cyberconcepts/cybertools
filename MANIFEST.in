@@ -1,8 +1,14 @@
 global-include *.cfg
 global-include *.css *.js
 global-include *.gif *.jpg *.png
+global-include *.html
 global-include *.md *.txt
+global-include *.mht
 global-include *.mo *.po *.pot
 global-include *.pt
+global-include *.xml
 global-include *.zcml
 global-include mime.types
+
+graft cybertools/integrator/tests/data
+graft cybertools/text/testfiles
