@@ -305,7 +305,7 @@ class WorkItem(Stateful, Track):
             running = IWorkItems(getParent(self)).query(
                             party=userName, state='running')
             for wi in running:
-                if wi.workItemType in 'work':
+                if wi.workItemType in (None, 'work'):
                     wi.doAction('work', userName, 
                                 end=(kw.get('start') or getTimeStamp()))
         # standard creation of new work item:
