@@ -302,7 +302,7 @@ class WorkItem(Stateful, Track):
         if (userName == self.userName and 
                 self.workItemType in (None, 'work') and 
                 self.state != 'running'):
-            running = getParent(self).query(
+            running = IWorkItems(getParent(self)).query(
                             party=userName, state='running')
             for wi in running:
                 if wi.workItemType in 'work':
