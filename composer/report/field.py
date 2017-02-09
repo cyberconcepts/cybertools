@@ -110,6 +110,9 @@ class Field(Component):
     def getRawValue(self, row):
         return row.getRawValue(self.name)
 
+    def getExportValue(self, row):
+        return self.getRawValue(row)
+
     def getSelectValue(self, row):
         return self.getValue(row)
         #return self.getRawValue(row)
