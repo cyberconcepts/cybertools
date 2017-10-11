@@ -22,12 +22,13 @@ Report result sets and related classes.
 
 from copy import copy
 from zope.cachedescriptors.property import Lazy
+from zope.traversing.api import getName
 
 from cybertools.composer.interfaces import IInstance
 from cybertools.composer.report.base import BaseQueryCriteria
 from cybertools.util.jeep import Jeep
 
-from loops.common import normalizeName
+from loops.common import baseObject, normalizeName, AdapterBase
 
 
 class BaseRow(object):
@@ -133,9 +134,9 @@ class ResultSet(object):
         self.limits = limits
         self.totals = TotalsRow(None, self)
 
-    def getHeaderRow(self, row, columns):
+    def getHeaderRow(self, row, columns, index=None):
         headerRow = self.headerRowFactory(None, self)
-        headerRow.cssClass = 'headerRow'
+        headerRow.cssClass = 'headerRow level-' + str(index and index + 1 or 1)
         headerRow.headerColumns = []
         for c in columns:
             if c.output:
@@ -163,6 +164,10 @@ class ResultSet(object):
         rowId = ''
         value = gf.getRawValue(row)
         if isinstance(value, basestring):
+            rowId = '%s-%s' % (gf.name, normalizeName(value))
+            rowId = rowId.replace('.', '_')
+        if isinstance(value, AdapterBase):
+            value = getName(baseObject(value))
             rowId = '%s-%s' % (gf.name, normalizeName(value))
             rowId = rowId.replace('.', '_')
         subTotalsRow.cssClass = 'subTotalsRow'
@@ -215,7 +220,8 @@ class ResultSet(object):
                         # for j, f in enumerate(self.groupColumns)[idx:]:
                         #     # use idx+j for correct indexing
                         groupValues[idx] = value
-                        headerRows.append(self.getHeaderRow(row, (f,) + f.outputWith))
+                        headerRows.append(self.getHeaderRow(row, (f,) + f.outputWith,
+                                                            index=idx))
                         if lastRow is not None and f.getDisplayValue(lastRow):
                             subTr = self.getSubTotalsRow(f, lastRow,
                                 self.subTotalsColumns[idx], subTotals[idx])
@@ -235,7 +241,7 @@ class ResultSet(object):
             if lastRow is not None:
                 subTotalsRows = []
                 for idx, f in enumerate(self.groupColumns):
-                    if f.getDisplayValue(lastRow):
+                    if f.getValue(lastRow):
                         subTr = self.getSubTotalsRow(f, lastRow,
                             self.subTotalsColumns[idx], subTotals[idx])
                         if subTr is not None:
@@ -260,6 +266,12 @@ class ResultSet(object):
                     name = f.name
                     value = f.getRawValue(row)
                     if isinstance(value, basestring):
+                        value = normalizeName(value)
+                        value = value.replace('.', '_')
+                        row.subTotalsRowIds = copy(row.subTotalsRowIds) +\
+                            ['%s-%s' % (name, value)]
+                    if isinstance(value, AdapterBase):
+                        value = getName(baseObject(value))
                         value = normalizeName(value)
                         value = value.replace('.', '_')
                         row.subTotalsRowIds = copy(row.subTotalsRowIds) +\
