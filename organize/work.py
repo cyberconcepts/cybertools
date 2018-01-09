@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2016 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2018 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -322,7 +322,7 @@ class WorkItem(Stateful, Track):
         if self.state == 'new': # should this be possible?
             moved = self
             self.setData(kw)
-        if self.state in ('done', 'finished', 'running'):
+        if self.state in ('done', 'finished', 'running', 'done_x', 'finished_x'):
             moved = self        # is this OK? or better new state ..._y?
         else:
             moved = self.createNew('move', userName, **xkw)
