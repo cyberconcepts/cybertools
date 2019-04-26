@@ -46,7 +46,7 @@
       <thead>
         <tr>
           <tal:header repeat="column columns">
-            <th tal:attributes="class string:${column/baseField/cssClass|string:}"
+            <th tal:attributes="class column/baseField/cssClass|string:"
                 tal:content="column/title">Column Title</th>
           </tal:header>
         </tr>
@@ -54,31 +54,34 @@
       <tbody tal:attributes="id string:tbody.$name">
         <tr tal:repeat="row rows">
           <td tal:repeat="column columns"
-              tal:attributes="class string:${column/baseField/cssClass|string:}">
+              tal:attributes="class column/baseField/cssClass|string:">
             <input type="text" style="width: auto"
-                   tal:define="cname column/name"
+                   tal:define="cname column/name;
+                               width column/baseField/width|string:auto"
                    tal:attributes="value row/?cname;
                                    name string:$name.$cname:records;
-                                   style string:width: ${column/baseField/width|string:auto};" /></td>
+                                   style string:width: $width;" /></td>
         </tr>
         <tal:empty condition="python: not field.cardinality
                                         or field.cardinality > len(rows)">
           <tr>
             <td tal:repeat="column columns"
-                tal:attributes="class string:${column/baseField/cssClass|string:}">
+                tal:attributes="class column/baseField/cssClass|string:">
               <input type="text"
-                     tal:define="cname column/name"
+                     tal:define="cname column/name;
+                                 width column/baseField/width|string:auto"
                      tal:attributes="name string:$name.$cname:records;
-                                     style string:width: ${column/baseField/width|string:auto};" /></td>
+                                     style string:width: $width;" /></td>
           </tr>
           <tr style="display: none"
               tal:attributes="id string:$name.empty">
             <td tal:repeat="column columns"
-                tal:attributes="class string:${column/baseField/cssClass|string:}">
+                tal:attributes="class column/baseField/cssClass|string:">
               <input type="text" style="width: auto"
-                     tal:define="cname column/name"
+                     tal:define="cname column/name;
+                                 width column/baseField/width|string:auto"
                      tal:attributes="name string:$name.$cname:records;
-                                     style string:width: ${column/baseField/width|string:auto};" /></td>
+                                     style string:width: $width;" /></td>
           </tr>
         </tal:empty>
       </tbody>
