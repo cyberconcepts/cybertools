@@ -2,12 +2,9 @@
 
 """
 Tests for the 'cyberdev.xml' package.
-
-$Id$
 """
 
 import unittest, doctest
-from zope.testing.doctestunit import DocFileSuite
 from cStringIO import StringIO
 
 from cybertools.xml.element import elements as e, fromXML
@@ -41,7 +38,7 @@ class TestXml(unittest.TestCase):
 def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
     return unittest.TestSuite((
-                DocFileSuite('README.txt', optionflags=flags),
+                doctest.DocFileSuite('README.txt', optionflags=flags),
                 unittest.makeSuite(TestXml),
             ))
 

@@ -2,12 +2,9 @@
 
 """
 Tests for the 'cybertools.index' package.
-
-$Id$
 """
 
 import unittest, doctest
-from zope.testing.doctestunit import DocFileSuite
 
 from cybertools.view.pac import View
 
@@ -22,7 +19,7 @@ class Test(unittest.TestCase):
 def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
     return unittest.TestSuite((
-                DocFileSuite('README.txt', optionflags=flags),
+                doctest.DocFileSuite('README.txt', optionflags=flags),
                 unittest.makeSuite(Test),
             ))
 

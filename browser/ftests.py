@@ -1,7 +1,6 @@
 # $Id$
 
 import unittest, doctest
-from zope.testing.doctestunit import DocFileSuite
 from zope.app.testing.functional import FunctionalDocFileSuite
 
 

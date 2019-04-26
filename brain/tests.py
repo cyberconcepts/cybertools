@@ -1,7 +1,5 @@
-# $Id$
 
 import unittest, doctest
-from zope.testing.doctestunit import DocFileSuite
 from zope.interface.verify import verifyClass
 
 from cybertools.brain.interfaces import INeuron, ISynapsis
@@ -21,7 +19,7 @@ def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
     return unittest.TestSuite((
                 unittest.makeSuite(TestBrain),
-                DocFileSuite('README.txt',
+                doctest.DocFileSuite('README.txt',
                              optionflags=flags,),
            ))
 

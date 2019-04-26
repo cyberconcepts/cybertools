@@ -48,7 +48,7 @@ Working with MHT Files
 
   >>> output = document.asString()
   >>> len(data), len(output)
-  (294996, 336140)
+  (294996, 336142)
 
   >>> outPath = os.path.join(basePath, 'out_doc.mht')
   >>> #f = open(outPath, 'wt')

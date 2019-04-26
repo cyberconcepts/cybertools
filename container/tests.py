@@ -1,12 +1,10 @@
-# $Id$
 
-import unittest
-from zope.testing.doctestunit import DocFileSuite
+import unittest, doctest
 
 
 def test_suite():
     return unittest.TestSuite((
-                DocFileSuite('README.txt'),
+                doctest.DocFileSuite('README.txt'),
             ))
 
 if __name__ == '__main__':

@@ -1,7 +1,5 @@
-# $Id$
 
 import unittest, doctest
-from zope.testing.doctestunit import DocFileSuite
 
 import cybertools.zutil.jeep
 
@@ -18,7 +16,7 @@ def test_suite():
     return unittest.TestSuite((
         #unittest.makeSuite(Test),  # we don't need this
         #doctest.DocTestSuite(cybertools.zutil.property, optionflags=flags),
-        DocFileSuite('jeep.txt', optionflags=flags),
+        doctest.DocFileSuite('jeep.txt', optionflags=flags),
         doctest.DocFileSuite('rcache.txt', optionflags=flags),
     ))
 

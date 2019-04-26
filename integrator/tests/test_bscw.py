@@ -1,8 +1,6 @@
-# $Id$
 
 import os
 import unittest, doctest
-from zope.testing.doctestunit import DocFileSuite
 from zope.interface.verify import verifyClass
 
 
@@ -13,7 +11,7 @@ flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
 
 def test_suite():
     return unittest.TestSuite((
-                DocFileSuite('../bscw.txt', optionflags=flags),
+                doctest.DocFileSuite('../bscw.txt', optionflags=flags),
             ))
 
 if __name__ == '__main__':

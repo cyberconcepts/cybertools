@@ -1,7 +1,5 @@
-# $Id$
 
-import unittest
-from zope.testing.doctestunit import DocFileSuite
+import unittest, doctest
 from zope.interface.verify import verifyClass
 from zope.interface import implements
 from zope.intid.interfaces import IIntIds
@@ -44,7 +42,7 @@ class TestLink(unittest.TestCase):
 def test_suite():
     return unittest.TestSuite((
                 unittest.makeSuite(TestLink),
-                DocFileSuite('README.txt'),
+                doctest.DocFileSuite('README.txt'),
             ))
 
 if __name__ == '__main__':
