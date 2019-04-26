@@ -355,7 +355,12 @@ class DateFieldInstance(NumberFieldInstance):
                 self.setError('required_missing')
         else:
             try:
-                self.unmarshall(value)
+                result = self.unmarshall(value)
+                if result and result.year < 1900:
+                    getLogger('cybertools').warn(
+                        'DateFieldInstance: year out of range: %s, %s' % 
+                            (value, e))
+                    self.setError('invalid_datetime')
             except (TypeError, ValueError, DateTimeParseError), e:
                 getLogger('cybertools').warn(
                         'DateFieldInstance: invalid datetime: %s, %s' % (value, e))
