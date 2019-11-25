@@ -215,7 +215,8 @@ class KeyTableFieldInstance(RecordsFieldInstance):
         for k, v in value.items():
             row = [k]
             for idx, fi in enumerate(self.columnFieldInstances[1:]):
-                row.append(fi.display(v[idx]))
+                if len(v) > idx:
+                    row.append(fi.display(v[idx]))
             rows.append(row)
         return dict(headers=headers, rows=rows)
 
@@ -226,7 +227,10 @@ class KeyTableFieldInstance(RecordsFieldInstance):
         for k, v in value.items():
             item = {self.keyName: k}
             for idx, name in enumerate(self.dataNames):
-                item[name] = v[idx]
+                if len(v) > idx:
+                    item[name] = v[idx]
+                else:
+                    item[name] = None
             result.append(item)
         return result
 
