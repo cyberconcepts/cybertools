@@ -3,7 +3,7 @@ msgstr ""
 
 "Project-Id-Version: $Id$\n"
 "POT-Creation-Date: 2008-12-01 12:00 CET\n"
-"PO-Revision-Date: 2013-05-17 12:00 CET\n"
+"PO-Revision-Date: 2014-05-12 12:00 CET\n"
 "Last-Translator: Helmut Merz <helmutm@cy55.de>\n"
 "Language-Team: loops developers <helmutm@cy55.de>\n"
 "MIME-Version: 1.0\n"
@@ -66,17 +66,31 @@ msgid "End date"
 msgstr "Ende"
 
 msgid "Street, number"
-msgstr "Straße, Nr."
+msgstr "Straße, Hausnummer"
 
-msgid "City"
-msgstr "Stadt"
+msgid "Street and number"
+msgstr "Straße und Hausnummer"
 
 msgid "ZIP code"
-msgstr "PLZ"
+msgstr "Postleitzahl"
+
+msgid "ZIP code, postal code"
+msgstr "Postleitzahl"
+
+msgid "City"
+msgstr "Ort"
+
+msgid "Name of the city"
+msgstr "Name der Stadt/des Orts"
+
+msgid "Country code"
+msgstr "Ländercode"
+
+msgid "International two-letter country code"
+msgstr "Aus zwei Buchstaben bestehender Ländercode"
 
 msgid "Additional lines"
-msgstr "Zusätzliche Zeilen"
+msgstr "Zusätzliche Adresszeilen"
 
 msgid "Additional address lines"
-msgstr "Zusätzliche Zeilen in Anschrift"
-
+msgstr "Zusätzliche Adresszeilen"

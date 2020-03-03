@@ -1,6 +1,9 @@
 *.pyc
 *.pyo
 ajax/dojo/*
+build/
+dist/
+*.egg-info
 *.project
 *.pydevproject
 *.sublime-project

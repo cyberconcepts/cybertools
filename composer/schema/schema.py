@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2014 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@
 """
 Basic classes for schemas, i.e. sets of fields that may be used for creating
 editing forms or display views for objects.
-
-$Id$
 """
 
 from zope.interface import implements

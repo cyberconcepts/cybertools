@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2016 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 ZODB-/BTree-based implementation of user interaction tracking.
-
-$Id$
 """
 
 import time
@@ -142,11 +140,12 @@ class TrackingStorage(BTreeContainer):
 
     def setupIndexes(self):
         changed = False
-        for idx in self.indexAttributes:
+        for idx in self.trackFactory.index_attributes:
             if idx not in self.indexes:
                 self.indexes[idx] = FieldIndex()
                 changed = True
         if changed:
+            self.indexAttributes = self.trackFactory.index_attributes
             self.reindexTracks()
 
     def idFromNum(self, num):
@@ -237,6 +236,7 @@ class TrackingStorage(BTreeContainer):
         self.unindexTrack(trackNum, track)
 
     def indexTrack(self, trackNum, track, idx=None):
+        #self.setupIndexes()
         if not trackNum:
             trackNum = int(track.__name__)
         data = track.indexdata
@@ -292,7 +292,11 @@ class TrackingStorage(BTreeContainer):
                     value = [value]
                 resultx = None
                 for v in value:
-                    resultx = self.union(resultx, self.indexes[idx].apply((v, v)))
+                    v2 = v
+                    if isinstance(v, basestring) and v.endswith('*'):
+                        v = v[:-1]
+                        v2 = v + 'z'
+                    resultx = self.union(resultx, self.indexes[idx].apply((v, v2)))
                 result = self.intersect(result, resultx)
             elif idx == 'timeFrom':
                 result = self.intersect(result,

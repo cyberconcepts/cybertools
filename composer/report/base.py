@@ -83,6 +83,7 @@ class Report(Template):
     queryCriteria = None
     outputFields = ()
     sortCriteria = ()
+    sortDescending = False
     limits = None
 
 

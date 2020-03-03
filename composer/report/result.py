@@ -123,13 +123,15 @@ class ResultSet(object):
 
     def __init__(self, context, data,
                  rowFactory=Row, headerRowFactory=GroupHeaderRow,
-                 sortCriteria=None, queryCriteria=BaseQueryCriteria(),
+                 sortCriteria=None, sortDescending=False,
+                 queryCriteria=BaseQueryCriteria(),
                  limits=None):
         self.context = context  # the report or report instance
         self.data = data
         self.rowFactory = rowFactory
         self.headerRowFactory = headerRowFactory
         self.sortCriteria = sortCriteria
+        self.sortDescending = sortDescending
         self.queryCriteria = queryCriteria
         self.limits = limits
         self.totals = TotalsRow(None, self)
@@ -204,7 +206,8 @@ class ResultSet(object):
         result = [row for row in result if self.queryCriteria.check(row)]
         if self.sortCriteria:
             result.sort(key=lambda x:
-                        [f.getSortValue(x) for f in self.sortCriteria])
+                            [f.getSortValue(x) for f in self.sortCriteria],
+                        reverse=self.sortDescending)
         if self.groupColumns:
             res = []
             groupValues = [None for f in self.groupColumns]

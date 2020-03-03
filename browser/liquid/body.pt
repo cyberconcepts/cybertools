@@ -7,7 +7,7 @@
     <div id="global" metal:define-macro="global">
       <div class="top" metal:define-slot="top">
         <a href="#" name="top" metal:define-slot="logo"
-           tal:attributes="href string:${request/URL/1}"><img class="logo"
+           tal:attributes="href string:${view/requestUrl/1}"><img class="logo"
                src="logo.gif" border="0" alt="Home"
                tal:attributes="src string:${resourceBase}logo.gif" /></a>
         <div metal:define-slot="top-actions">

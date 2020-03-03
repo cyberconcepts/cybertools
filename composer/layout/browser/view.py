@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2016 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 
 """
 Basic view classes for layout-based presentation.
-
-$Id$
 """
 
 from zope import component
@@ -27,7 +25,9 @@ from zope.interface import Interface, implements
 from zope.cachedescriptors.property import Lazy
 from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
+from zope.publisher.http import URLGetter as BaseURLGetter
 
+from cybertools.browser.view import URLGetter
 from cybertools.composer.layout.base import Layout
 from cybertools.composer.layout.interfaces import ILayoutManager
 from cybertools.composer.layout.interfaces import ILayout, ILayoutInstance
@@ -72,6 +72,10 @@ class BaseView(object):
 
     def __call__(self):
         return self.template(self)
+
+    @property
+    def requestUrl(self):
+        return URLGetter(self.request)
 
     @Lazy
     def authenticated(self):

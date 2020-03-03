@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2015 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,8 +20,6 @@
 Views for displaying media assets.
 
 Authors: Johann Schimpf, Erich Seifert.
-
-$Id$
 """
 
 from logging import getLogger
@@ -33,11 +31,13 @@ except:
     except:
         getLogger('Asset Manager').warn('Python Imaging Library '
                                         'could not be found.')
-
+                                        
 from zope.interface import implements
 
 from cybertools.media.interfaces import IMediaAsset, IFileTransform
 from cybertools.storage.filesystem import FileSystemStorage
+
+logger = getLogger('cybertools.media.piltransform.PILTransform')
 
 
 def mimetypeToPIL(mimetype):
@@ -55,8 +55,7 @@ class PILTransform(object):
         try:
             self.im = Image.open(path)
         except IOError, e:
-            from logging import getLogger
-            getLogger('cybertools.media.piltransform.PILTransform').warn(e)
+            logger.warn(e)
             self.im = None
 
     def rotate(self, angle, resize):
@@ -97,7 +96,7 @@ class PILTransform(object):
         box = (left, upper, right, lower)
         self.im = self.im.crop(box)
 
-    def resize(self, width, height=None):
+    def resize(self, width, height=None, fill=False):
         if self.im is None:
             return
         if not height:
@@ -105,10 +104,21 @@ class PILTransform(object):
             ratio = float(ow) / float(oh)
             height = int(round(float(width) / ratio))
         dims = (width, height)
-        self.im.thumbnail(dims, Image.ANTIALIAS)
+        if fill:
+            image = self.im
+            image.thumbnail(dims, Image.ANTIALIAS)
+            new = Image.new('RGBA', dims, (255, 255, 255, 0))  #with alpha
+            new.paste(image,((dims[0] - image.size[0]) / 2,
+                               (dims[1] - image.size[1]) / 2))
+            self.im = new
+            return new
+        return self.im.thumbnail(dims, Image.ANTIALIAS)
 
     def save(self, path, mimetype):
         if self.im is None:
             return
         format = mimetypeToPIL(mimetype)
-        self.im.save(path)
+        try:
+            self.im.save(path)
+        except IOError, e:
+            logger.warn(e)

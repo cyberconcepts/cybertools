@@ -85,6 +85,8 @@ class SchemaFactory(object):
             field = interface[fname]
             if getattr(field, 'suppress', False):
                 continue
+            if getattr(field, 'hidden', False):
+                continue
             info = fieldMapping.get(field.__class__)
             f = createField(field, info)
             if self.schemaProcessor is not None:

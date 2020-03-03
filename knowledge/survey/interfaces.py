@@ -80,7 +80,8 @@ class IResponse(Interface):
     questionnaire = Attribute('The questionnaire this response belongs to.')
     party = Attribute('Some identification of the party that responded '
                 'to this questionnaire.')
-    values = Attribute('A mapping associating response values with questions.')
+    values = Attribute('A mapping associating numeric response values with questions.')
+    texts = Attribute('A mapping associating text response values with questions.')
     
     def getResult():
         """ Calculate the result for this response.
