@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2020 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -24,10 +24,7 @@ from persistent.interfaces import IPersistent
 from persistent.mapping import PersistentMapping
 from zope import component
 from zope.component import adapts
-try:
-    from zope.component.interfaces import ObjectEvent
-except ImportError: # Zope 2.9
-    from zope.app.event.objectevent import ObjectEvent
+from zope.interface.interfaces import ObjectEvent
 from zope.event import notify
 from zope.interface import implements
 

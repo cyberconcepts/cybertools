@@ -2,7 +2,6 @@
 Indexed Collections for Various Purposes
 ========================================
 
-$Id$
 
 Multikey Dictionaries
 =====================
@@ -66,9 +65,9 @@ Index entries that are present in the stored dictionary must always match:
 If you don't know any more what entries we had added to the registry just
 query its items() method:
 
-  >>> registry.items()
-  ((('edit.html', 'topic', 'zope3', 'Custom'), 'very special edit.html'),
-   (('edit.html', None, None, 'Custom'), 'edit.html for Custom skin'),
+  >>> sorted(registry.items())
+  [(('edit.html', None, None, 'Custom'), 'edit.html for Custom skin'), 
+   (('edit.html', 'topic', 'zope3', 'Custom'), 'very special edit.html'),
    (('index.html', None, None, None), 'global index.html'),
    (('index.html', None, None, 'Custom'), 'Global index.html for Custom skin'),
-   (('index.html', 'topic', None, None), 'index.html for type "topic"'))
+   (('index.html', 'topic', None, None), 'index.html for type "topic"')]

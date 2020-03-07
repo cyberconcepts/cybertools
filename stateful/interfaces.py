@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2020 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,10 +20,7 @@
 Interfaces for the `stateful` package.
 """
 
-try:
-    from zope.component.interfaces import IObjectEvent
-except ImportError: # Zope 2.9
-    from zope.app.event.interfaces import IObjectEvent
+from zope.interface.interfaces import IObjectEvent
 from zope.interface import Interface, Attribute
 
 

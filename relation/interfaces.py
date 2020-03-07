@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2005 Helmut Merz helmutm@cy55.de
+#  Copyright (c) 2020 Helmut Merz helmutm@cy55.de
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,12 +18,10 @@
 
 """
 interface definitions for the Relations utility and relation objects.
-
-$Id$
 """
 
 from zope.interface import Interface, Attribute
-from zope.component.interfaces import IObjectEvent
+from zope.interface.interfaces import IObjectEvent
 
 
 # relation interfaces
