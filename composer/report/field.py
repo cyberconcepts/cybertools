@@ -110,7 +110,9 @@ class Field(Component):
     def getRawValue(self, row):
         return row.getRawValue(self.name)
 
-    def getExportValue(self, row):
+    def getExportValue(self, row, format=None, lang=None):
+        if format == 'csv':
+            return self.getValue(row)
         return self.getRawValue(row)
 
     def getSelectValue(self, row):
@@ -127,9 +129,6 @@ class Field(Component):
         return getattr(value, 'title', str(value))
 
     def getDisplayValue(self, row):
-        return self.getValue(row)
-
-    def getExportValue(self, row, format=None, lang=None):
         return self.getValue(row)
 
     def getSortValue(self, row):
