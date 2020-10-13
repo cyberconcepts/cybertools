@@ -32,7 +32,7 @@ from zope.app.catalog.field import FieldIndex
 from zope.intid.interfaces import IIntIds
 from zope.location.interfaces import ILocation
 from zope.event import notify
-from zope.component.interfaces import ObjectEvent
+from zope.interface.interfaces import ObjectEvent
 from zope.security.proxy import removeSecurityProxy
 from zope.traversing.api import getName, getParent
 
