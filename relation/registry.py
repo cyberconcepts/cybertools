@@ -227,7 +227,8 @@ class IndexableRelationAdapter(object):
 
 # convenience functions:
 
-def getRelations(first=None, second=None, third=None, relationships=None):
+def getRelations(first=None, second=None, third=None, relationships=None,
+                 usePredicateIndex=False):
     """ Return a sequence of relations matching the query specified by the
         parameters.
 
@@ -241,19 +242,21 @@ def getRelations(first=None, second=None, third=None, relationships=None):
     if third is not None: query['third'] = third
     if not relationships:
         return registry.query(**query)
-    else:
-        predicates = []
-        for r in relationships:
-            if hasattr(r, 'predicate'):
-                predicates.append(r.predicate)
-                r.predicate = None
-            else:
-                predicates.append(r.getPredicateName())
-        result = registry.query(**query)
-        if predicates:
-            return [r for r in result 
-                        if r.ident in predicates or r.fallback in predicates]
-        return result
+    if len(relationships) == 1 and usePredicateIndex:
+        query['relationship'] = relationships[0]
+        return registry.query(**query)
+    predicates = []
+    for r in relationships:
+        if hasattr(r, 'predicate'):
+            predicates.append(r.predicate)
+            r.predicate = None
+        else:
+            predicates.append(r.getPredicateName())
+    result = registry.query(**query)
+    if predicates:
+        return [r for r in result 
+                    if r.ident in predicates or r.fallback in predicates]
+    return result
 
 
 def getRelationSingle(obj=None, relationship=None, forSecond=True):
