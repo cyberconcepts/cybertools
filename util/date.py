@@ -38,6 +38,8 @@ def date2TimeStamp(d):
 def timeStamp2Date(ts, useGM=False):
     if ts is None:
         ts = getTimeStamp()
+    if not isinstance(ts, (int, float)): # seems to be a date already
+        return ts
     return datetime.fromtimestamp(ts)
 
 def timeStamp2ISO(ts, useGM=False, format='%Y-%m-%d %H:%M'):
