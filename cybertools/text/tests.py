@@ -5,7 +5,10 @@ Tests for the 'cybertools.text' package.
 """
 
 import unittest, doctest
+import warnings
 from cybertools.text import pdf
+
+warnings.filterwarnings('ignore', category=ResourceWarning)
 
 class Test(unittest.TestCase):
     "Basic tests for the text package."
@@ -17,7 +20,7 @@ class Test(unittest.TestCase):
 def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
     return unittest.TestSuite((
-        unittest.makeSuite(Test),
+        unittest.TestLoader().loadTestsFromTestCase(Test),
         doctest.DocFileSuite('README.txt', optionflags=flags),
         ))
 

@@ -27,13 +27,12 @@ $Id$
 
 import os, shutil, sys, tempfile
 import logging
-from zope.interface import implements
+from zope.interface import implementer
 from cybertools.text.interfaces import ITextTransform, IFileTransform
 
 
+@implementer(ITextTransform)
 class BaseTransform(object):
-
-    implements(ITextTransform)
 
     def __init__(self, context):
         self.context = context
@@ -45,9 +44,8 @@ class BaseTransform(object):
         return self.text
 
 
+@implementer(IFileTransform)
 class BaseFileTransform(BaseTransform):
-
-    implements(IFileTransform)
 
     extension = '.txt'
 
@@ -89,5 +87,5 @@ class BaseFileTransform(BaseTransform):
                 if os.path.isfile(fn):
                     return True
         if logMessage:
-            logging.getLogger('zope.server').warn(logMessage)
+            logging.getLogger('zope.server').warning(logMessage)
         return False

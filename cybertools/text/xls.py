@@ -17,9 +17,9 @@
 #
 
 """
-Searchable text support for MS Word (.doc) files.
+Searchable text support for MS Excel (.xls) files.
 
-This uses the wvware command to perform the extraction.
+This uses the xls2csv command to perform the extraction.
 
 Based on code provided by zc.index and TextIndexNG3.
 
@@ -30,24 +30,16 @@ import os, sys
 
 from cybertools.text import base
 
-try:
-    from Globals import package_home
-    wvConf = os.path.join(package_home(globals()), 'config', 'wvText.xml')
-except ImportError:
-    wvConf = os.path.join(os.path.dirname(__file__), 'config', 'wvText.xml')
 
+class XlsTransform(base.BaseFileTransform):
 
-class DocTransform(base.BaseFileTransform):
-
-    extension = ".doc"
+    extension = ".xls"
 
     def extract(self, directory, filename):
-        if not self.checkAvailable('wvWare', 'wvWare is not available'):
+        if not self.checkAvailable('xls2csv', 'xls2csv is not available'):
             return u''
         if sys.platform == 'win32':
-            data = self.execute('wvWare -c utf-8 --nographics -x "%s" "%s" 2> nul:'
-                                % (wvConf, filename))
+            data = self.execute('xls2csv -d 8859-1 -q 0 "%s" 2> nul:' % filename)
         else:
-            data = self.execute('wvWare -c utf-8 --nographics -x "%s" "%s" 2> /dev/null'
-                                % (wvConf, filename))
-        return data.decode('UTF-8')
+            data = self.execute('xls2csv -d 8859-1 -q 0 "%s" 2> /dev/null' % filename)
+        return data

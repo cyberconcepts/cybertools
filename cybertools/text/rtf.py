@@ -17,9 +17,9 @@
 #
 
 """
-Searchable text support for MS Excel (.xls) files.
+Searchable text support for MS Word (.doc) files.
 
-This uses the xls2csv command to perform the extraction.
+This uses the wvware command to perform the extraction.
 
 Based on code provided by zc.index and TextIndexNG3.
 
@@ -27,19 +27,37 @@ $Id$
 """
 
 import os, sys
+from xml import sax
+from io import StringIO
 
 from cybertools.text import base
 
 
-class XlsTransform(base.BaseFileTransform):
+class RtfTextHandler(sax.ContentHandler):
 
-    extension = ".xls"
+    def characters(self, text):
+        self._data.write(text)
+
+    def startDocument(self):
+        self._data = StringIO()
+
+    def startElement(self, name, attrs):
+        if name == 'para':
+            self._data.write('\n')
+
+    def getData(self):
+        return self._data.getvalue()
+
+
+class RtfTransform(base.BaseFileTransform):
+
+    extension = ".rtf"
 
     def extract(self, directory, filename):
-        if not self.checkAvailable('xls2csv', 'xls2csv is not available'):
+        if not self.checkAvailable('rtf2xml', 'rtf2xml is not available'):
             return u''
-        if sys.platform == 'win32':
-            data = self.execute('xls2csv -d 8859-1 -q 0 "%s" 2> nul:' % filename)
-        else:
-            data = self.execute('xls2csv -d 8859-1 -q 0 "%s" 2> /dev/null' % filename)
-        return data.decode('ISO8859-1')
+        #xmlstr = self.execute('cd /tmp && rtf2xml --no-dtd "%s"' % filename)
+        xmlstr = self.execute('rtf2xml --no-dtd "%s"' % filename)
+        handler = RtfTextHandler()
+        sax.parseString(xmlstr, handler)
+        return handler.getData()

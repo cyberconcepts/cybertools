@@ -17,9 +17,9 @@
 #
 
 """
-Searchable text support for MS Word (.doc) files.
+Searchable text support for Portable Document Format (PDF) files.
 
-This uses the wvware command to perform the extraction.
+This uses the pdftotext command from xpdf to perform the extraction.
 
 Based on code provided by zc.index and TextIndexNG3.
 
@@ -27,37 +27,16 @@ $Id$
 """
 
 import os, sys
-from xml import sax
-from cStringIO import StringIO
 
 from cybertools.text import base
 
 
-class RtfTextHandler(sax.ContentHandler):
+class PdfTransform(base.BaseFileTransform):
 
-    def characters(self, text):
-        self._data.write(text.encode('UTF-8'))
-
-    def startDocument(self):
-        self._data = StringIO()
-
-    def startElement(self, name, attrs):
-        if name == 'para':
-            self._data.write('\n')
-
-    def getData(self):
-        return self._data.getvalue()
-
-
-class RtfTransform(base.BaseFileTransform):
-
-    extension = ".rtf"
+    extension = ".pdf"
 
     def extract(self, directory, filename):
-        if not self.checkAvailable('rtf2xml', 'rtf2xml is not available'):
+        if not self.checkAvailable('pdftotext', 'pdftotext is not available'):
             return u''
-        #xmlstr = self.execute('cd /tmp && rtf2xml --no-dtd "%s"' % filename)
-        xmlstr = self.execute('rtf2xml --no-dtd "%s"' % filename)
-        handler = RtfTextHandler()
-        sax.parseString(xmlstr, handler)
-        return handler.getData().decode('UTF-8')
+        data = self.execute('pdftotext -enc UTF-8 "%s" -' % filename)
+        return data

@@ -21,12 +21,14 @@ HTML
 ----
 
   >>> from cybertools.text.html import htmlToText
-  >>> html = open(os.path.join(testdir, 'selfhtml.html')).read()
-  >>> text = htmlToText(html.decode('ISO8859-15'))
+  >>> f = open(os.path.join(testdir, 'selfhtml.html'), encoding='ISO8859-15')
+  >>> html = f.read()
+  >>> text = htmlToText(html)
   >>> '<p>' in html
   True
   >>> '<p>' in text
   False
+  >>> f.close()
 
 PDF Files
 ---------
@@ -35,7 +37,7 @@ Let's start with a PDF file:
 
   >>> from cybertools.text.pdf import PdfTransform
   >>> transform = PdfTransform(None)
-  >>> f = open(os.path.join(testdir, 'mary.pdf'))
+  >>> f = open(os.path.join(testdir, 'mary.pdf'), 'rb')
 
 This will be transformed to plain text:
 
@@ -43,7 +45,7 @@ This will be transformed to plain text:
 
 Let's check the log, should be empty:
 
-  >>> print log
+  >>> print(log)
 
 So what is in the plain text result?
 
@@ -52,83 +54,92 @@ So what is in the plain text result?
   89
   >>> u'lamb' in words
   True
+  >>> f.close()
 
 Word Documents
 --------------
 
   >>> from cybertools.text.doc import DocTransform
   >>> transform = DocTransform(None)
-  >>> f = open(os.path.join(testdir, 'mary.doc'))
+  >>> f = open(os.path.join(testdir, 'mary.doc'), 'rb')
   >>> result = transform(f)
-  >>> print log
+  >>> print(log)
   >>> words = result.split()
   >>> len(words)
   89
   >>> u'lamb' in words
   True
+  >>> f.close()
 
 RTF Files
 ---------
 
   >>> from cybertools.text.rtf import RtfTransform
   >>> transform = RtfTransform(None)
-  >>> f = open(os.path.join(testdir, 'mary.rtf'))
+  >>> f = open(os.path.join(testdir, 'mary.rtf'), 'rb')
   >>> result = transform(f)
-  >>> print log
+  >>> print(log)
   >>> words = result.split()
   >>> len(words)
   90
   >>> u'lamb' in words
   True
+  >>> f.close()
 
 PowerPoint Presentations
 ------------------------
 
   >>> from cybertools.text.ppt import PptTransform
   >>> transform = PptTransform(None)
-  >>> f = open(os.path.join(testdir, 'mary.ppt'))
+  >>> f = open(os.path.join(testdir, 'mary.ppt'), 'rb')
   >>> result = transform(f)
-  >>> print log
-  >>> words = result.split()
-  >>> len(words)
-  102
-  >>> u'lamb' in words
-  True
+  >>> print(log)
+  zope.server WARNING
+    ppthtml is not available
+
+>> words = result.split()
+>> len(words)
+102
+>> u'lamb' in words
+True
+
+  >>> f.close()
 
 Excel Spreadsheets
 ------------------
 
   >>> from cybertools.text.xls import XlsTransform
   >>> transform = XlsTransform(None)
-  >>> f = open(os.path.join(testdir, 'mary.xls'))
+  >>> f = open(os.path.join(testdir, 'mary.xls'), 'rb')
   >>> result = transform(f)
-  >>> print log
   >>> words = result.split()
   >>> len(words)
   89
   >>> u'lamb' in words
   True
+  >>> f.close()
 
 OpenOffice
 ----------
 
   >>> from cybertools.text.ooffice import OOTransform
   >>> transform = OOTransform(None)
-  >>> f = open(os.path.join(testdir, 'mary.odt'))
+  >>> f = open(os.path.join(testdir, 'mary.odt'), 'rb')
   >>> result = transform(f)
-  >>> print log
-  >>> words = result.split()
   >>> len(words)
   89
   >>> u'lamb' in words
   True
+  >>> f.close()
 
-  >>> f = open(os.path.join(testdir, 'mary.ods'))
+  >>> f = open(os.path.join(testdir, 'mary.ods'), 'rb')
   >>> result = transform(f)
   >>> len(result.split())
   89
+  >>> f.close()
 
-  >>> f = open(os.path.join(testdir, 'mary.odp'))
+  >>> f = open(os.path.join(testdir, 'mary.odp'), 'rb')
   >>> result = transform(f)
   >>> len(result.split())
   99
+  >>> f.close()

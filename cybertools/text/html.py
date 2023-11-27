@@ -17,11 +17,7 @@
 #
 
 """
-Searchable text support for Portable Document Format (PDF) files.
-
-This uses the pdftotext command from xpdf to perform the extraction.
-
-Based on code provided by zc.index and TextIndexNG3.
+Searchable text support for HTML files.
 
 $Id$
 """
@@ -29,14 +25,27 @@ $Id$
 import os, sys
 
 from cybertools.text import base
+from bs4 import BeautifulSoup, Declaration, Doctype, NavigableString
 
 
-class PdfTransform(base.BaseFileTransform):
+class HtmlTransform(base.BaseTransform):
 
-    extension = ".pdf"
+    def __call__(self, fr):
+        input = fr.read().decode('UTF-8')
+        return htmlToText(input)
 
-    def extract(self, directory, filename):
-        if not self.checkAvailable('pdftotext', 'pdftotext is not available'):
-            return u''
-        data = self.execute('pdftotext -enc UTF-8 "%s" -' % filename)
-        return data.decode('UTF-8')
+
+def htmlToText(input):
+    data = []
+    input = input.replace(u'<!--', u'')
+    soup = BeautifulSoup(input, features='lxml')
+    collectText(soup.contents, data)
+    text = u' '.join(data).replace(u'\n', u'').replace(u'&nbsp;', u'')
+    return text
+
+def collectText(tags, data):
+    for tag in tags:
+        if type(tag) is NavigableString:
+            data.append(tag)
+        elif tag is not None and type(tag) not in (Declaration, Doctype):
+            collectText(tag.contents, data)
