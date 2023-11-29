@@ -23,9 +23,9 @@ Storing and Retrieving Notifications
   >>> ntf01 = list(manager.query(userName='user01'))[0]
   >>> ntf01
   <Notification ['obj01', 1, 'user01', '...']:
-  {'media': ['inbox'], 'state': 'new', 'type': 'object_changed'}>
+  {'type': 'object_changed', 'state': 'new', 'media': ['inbox']}>
 
-  >>> print ntf01.state
+  >>> print(ntf01.state)
   new
-  >>> print ntf01.timingType
+  >>> print(ntf01.timingType)
   None

@@ -1,23 +1,6 @@
-#
-#  Copyright (c) 2016 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.tracking.btree
 
-"""
-ZODB-/BTree-based implementation of user interaction tracking.
+"""ZODB-/BTree-based implementation of user interaction tracking.
 """
 
 import time
@@ -25,7 +8,7 @@ from persistent import Persistent
 from BTrees import OOBTree, IOBTree
 from BTrees.IFBTree import intersection, union
 from zope.component import adapter
-from zope.interface import implements
+from zope.interface import implementer
 from zope.app.container.btree import BTreeContainer
 from zope.app.container.interfaces import IObjectRemovedEvent
 from zope.index.field import FieldIndex
@@ -36,9 +19,8 @@ from cybertools.tracking.interfaces import IRun, ITrackingStorage, ITrack
 from cybertools.util.date import getTimeStamp, timeStamp2ISO
 
 
+@implementer(IRun)
 class Run(object):
-
-    implements(IRun)
 
     id = start = end = 0
     finished = False
@@ -53,10 +35,8 @@ class Run(object):
                                        str(self.finished)))
 
 
+@implementer(ITrack)
 class Track(Persistent):
-
-    #implements(ITrack, IPhysicallyLocatable)
-    implements(ITrack)
 
     metadata_attributes = ('taskId', 'runId', 'userName', 'timeStamp')
     index_attributes = metadata_attributes
@@ -112,9 +92,8 @@ class Track(Persistent):
         return self.__name__
 
 
+@implementer(ITrackingStorage)
 class TrackingStorage(BTreeContainer):
-
-    implements(ITrackingStorage)
 
     trackFactory = Track
     indexAttributes = trackFactory.index_attributes
@@ -293,7 +272,7 @@ class TrackingStorage(BTreeContainer):
                 resultx = None
                 for v in value:
                     v2 = v
-                    if isinstance(v, basestring) and v.endswith('*'):
+                    if isinstance(v, str) and v.endswith('*'):
                         v = v[:-1]
                         v2 = v + 'z'
                     resultx = self.union(resultx, self.indexes[idx].apply((v, v2)))
