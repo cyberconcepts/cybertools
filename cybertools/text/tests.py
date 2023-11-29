@@ -10,6 +10,7 @@ from cybertools.text import pdf
 
 warnings.filterwarnings('ignore', category=ResourceWarning)
 
+
 class Test(unittest.TestCase):
     "Basic tests for the text package."
 
