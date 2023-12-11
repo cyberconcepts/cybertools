@@ -3,6 +3,7 @@
 ajax/dojo/*
 build/
 dist/
+*.swp
 *.egg-info
 *.project
 *.pydevproject
