@@ -32,6 +32,8 @@ def getTimeStamp():
     return int(time.time())
 
 def date2TimeStamp(d):
+    if isinstance(d, (int, float)):
+        return int(d)
     return int(time.mktime(d.timetuple()))
 
 
