@@ -175,6 +175,12 @@ class RecordsFieldInstance(GridFieldInstance):
     def getRenderer(self, name):
         return grid_macros.macros.get(name)
 
+    def fromKeyTable(self, value):
+        fis = self.columnFieldInstances
+        return [dict([(fis[0].name, k)] + 
+                     [(fi.name, v[i]) for i, v in enumerate(fis[1:])])
+                for k, v in value.items()]
+
     def marshall(self, value):
         result = []
         value = value or []
