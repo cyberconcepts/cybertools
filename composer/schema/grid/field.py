@@ -282,6 +282,13 @@ class KeyTableFieldInstance(RecordsFieldInstance):
         pass
 
 
+class ContextBasedRecordsFieldInstance(RecordsFieldInstance):
+
+    @Lazy
+    def columnTypes(self):
+        obj = self.clientInstance.context
+        return [Field(name) for name in obj.columnNames]
+
 class ContextBasedKeyTableFieldInstance(KeyTableFieldInstance):
 
     @Lazy
