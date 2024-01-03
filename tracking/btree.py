@@ -123,6 +123,7 @@ class TrackingStorage(BTreeContainer):
     runs = None             # currently active runs
     finishedRuns = None     # finished runs
     currentRuns = None      # the currently active run for each task
+    storage = None          # compatibility with new cco.storage
 
     def __init__(self, *args, **kw):
         trackFactory = kw.pop('trackFactory', None)
@@ -220,6 +221,9 @@ class TrackingStorage(BTreeContainer):
         self[trackId] = track
         self.indexTrack(trackNum, track)
         return trackId
+
+    def setTrackData(self, track, data):
+        track.data = data   # persistent track: data will be stored automatically
 
     def updateTrack(self, track, data, overwrite=False):
         trackId = str(track.__name__)
