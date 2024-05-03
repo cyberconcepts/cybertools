@@ -100,6 +100,11 @@ class Track(Persistent):
             data.update(newData)
         self.data = data    # record change
 
+    def updateIndex(self, **kw):
+        for k, v in kw.items():
+            setattr(self, k, v)
+            getParent(self).indexTrack(0, self, k)
+
     def __repr__(self):
         md = self.metadata
         md['timeStamp'] = timeStamp2ISO(md['timeStamp'])
