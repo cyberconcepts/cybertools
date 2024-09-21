@@ -1,37 +1,18 @@
-#
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.catalog.query
 
-"""
-Catalog query terms and their logical combinations.
+""" Catalog query terms and their logical combinations.
 
 This is mainly a simplified version of Martijn Faassen's hurry.query
 (http://cheeseshop.python.org/pypi/hurry.query).
-
-$Id$
 """
 
 from BTrees.IFBTree import weightedIntersection, weightedUnion
 from BTrees.IFBTree import difference, IFBTree, IFBucket, IFSet
 from BTrees.IIBTree import IISet, union
-from zope.app.catalog.catalog import ResultSet
-from zope.app.catalog.field import IFieldIndex
-from zope.app.catalog.text import ITextIndex
-from zope.app.catalog.interfaces import ICatalog
+from zope.catalog.catalog import ResultSet
+from zope.catalog.field import IFieldIndex
+from zope.catalog.text import ITextIndex
+from zope.catalog.interfaces import ICatalog
 from zope import component
 from zope.intid.interfaces import IIntIds
 
@@ -72,7 +53,7 @@ class And(Term):
         if not results:
             # no applicable terms at all
             return IFBucket()
-        results.sort()
+        #results.sort()
         _, result = results.pop(0)
         for _, r in results:
             w, result = weightedIntersection(result, r)
@@ -122,9 +103,8 @@ class Not(Term):
 
 class IndexTerm(Term):
 
-    def __init__(self, (catalog_name, index_name)):
-        self.catalog_name = catalog_name
-        self.index_name = index_name
+    def __init__(self, index_id):
+        self.catalog_name, self.index_name = index_id
 
     def getIndex(self):
         catalog = component.getUtility(ICatalog, self.catalog_name)

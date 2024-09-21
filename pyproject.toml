@@ -21,6 +21,7 @@ dependencies = [
 	"zope.app.testing",
 	"zope.authentication",
 	"zope.browserpage",
+	"zope.catalog",
 	"zope.component",
 	"zope.container",
 	"zope.i18nmessageid",

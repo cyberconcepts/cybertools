@@ -1,37 +1,18 @@
-# -*- coding: UTF-8 -*-
-# -*- Mode: Python; py-indent-offset: 4 -*-
-#
-#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.relation
 
-"""
-The relation package provides all you need for setting up dyadic and
+""" The relation package provides all you need for setting up dyadic and
 triadic relations.
 """
 
 from persistent import Persistent
-from zope.interface import implements
-from interfaces import IPredicate
-from interfaces import IRelation, IDyadicRelation, ITriadicRelation
-from interfaces import IRelatable
+from zope.interface import implementer
+from cybertools.relation.interfaces import IPredicate
+from cybertools.relation.interfaces import IRelation, IDyadicRelation, ITriadicRelation
+from cybertools.relation.interfaces import IRelatable
 
+
+@implementer(IPredicate, IRelation)
 class Relation(Persistent):
-
-    implements(IPredicate, IRelation)
 
     order = 0
     relevance = 1.0
@@ -55,9 +36,8 @@ class Relation(Persistent):
                         'must provide the IRelatable interface.')
 
 
+@implementer(IDyadicRelation)
 class DyadicRelation(Relation):
-
-    implements(IDyadicRelation)
 
     def __init__(self, first, second):
         self.first = first
@@ -65,9 +45,8 @@ class DyadicRelation(Relation):
         self.checkRelatable(first, second)
 
 
+@implementer(ITriadicRelation)
 class TriadicRelation(Relation):
-
-    implements(ITriadicRelation)
 
     def __init__(self, first, second, third):
         self.first = first

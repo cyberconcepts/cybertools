@@ -16,12 +16,12 @@ for testing purposes here) and a catalog with a few indexes.
   >>> intid = IntIdsStub()
   >>> component.provideUtility(intid)
 
-  >>> from zope.app.catalog.interfaces import ICatalog
-  >>> from zope.app.catalog.catalog import Catalog
+  >>> from zope.catalog.interfaces import ICatalog
+  >>> from zope.catalog.catalog import Catalog
   >>> catalog = Catalog()
   >>> component.provideUtility(catalog, ICatalog)
 
-  >>> from zope.interface import Interface, Attribute, implements
+  >>> from zope.interface import Interface, Attribute, implementer
   >>> class IContent(Interface):
   ...     f1 = Attribute('f1')
   ...     f2 = Attribute('f2')
@@ -30,8 +30,8 @@ for testing purposes here) and a catalog with a few indexes.
   ...     t2 = Attribute('t2')
   ...     k1 = Attribute('k1')
 
-  >>> from zope.app.catalog.field import FieldIndex
-  >>> from zope.app.catalog.text import TextIndex
+  >>> from zope.catalog.field import FieldIndex
+  >>> from zope.catalog.text import TextIndex
   >>> from cybertools.catalog.keyword import KeywordIndex
   >>> catalog['f1'] = FieldIndex('f1', IContent)
   >>> catalog['f2'] = FieldIndex('f2', IContent)
@@ -45,7 +45,6 @@ to index and query.
 
   >>> from zope.app.container.contained import Contained
   >>> class Content(Contained):
-  ...     implements(IContent)
   ...     def __init__(self, id, f1='', f2='', f3='', t1='', t2='', k1=[]):
   ...         self.id = id
   ...         self.f1 = f1
@@ -56,6 +55,7 @@ to index and query.
   ...         self.k1 = k1
   ...     def __cmp__(self, other):
   ...         return cmp(self.id, other.id)
+  >>> Content = implementer(IContent)(Content)
 
 The id attribute is just so we can identify objects we find again
 easily. By including the __cmp__ method we make sure search results
