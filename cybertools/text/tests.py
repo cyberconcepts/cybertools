@@ -5,21 +5,22 @@ Tests for the 'cybertools.text' package.
 """
 import sys
 #sys.path = [p for p in sys.path if p != '']
-sys.path = sys.path[2:]
-print(sys.path)
+sys.path = sys.path[2:] # avoid import cycle with bs4 when importing html
+#print(sys.path)
 
 import unittest, doctest
 import warnings
 from cybertools.text import pdf
 from cybertools.text.html import htmlToText
 
-warnings.filterwarnings('ignore', category=ResourceWarning)
 
 
 class Test(unittest.TestCase):
     "Basic tests for the text package."
 
     def testBasicStuff(self):
+        warnings.filterwarnings('ignore', category=ResourceWarning)
+        warnings.filterwarnings('ignore', category=DeprecationWarning)
         pass
 
 

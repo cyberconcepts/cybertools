@@ -2,8 +2,6 @@
 Text Transformations, e.g. for Full-text Indexing
 =================================================
 
-  ($Id$)
-
 If a converter program needed is not available we want to put a warning
 into Zope's server log; in order to be able to test this we register
 a log handler for testing:
