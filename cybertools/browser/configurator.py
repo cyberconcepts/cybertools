@@ -1,32 +1,13 @@
-#
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.browser.configurator
 
-"""
-A view configurator provides configuration data for a view controller.
-
-$Id$
+""" A view configurator provides configuration data for a view controller.
 """
 
 from zope import component
 from zope.annotation.interfaces import IAttributeAnnotatable, IAnnotations
 from zope.annotation.attribute import AttributeAnnotations
 from zope.cachedescriptors.property import Lazy
-from zope.interface import Interface, Attribute, implements
+from zope.interface import Interface, Attribute, implementer
 
 
 # interfaces
@@ -63,11 +44,10 @@ class IMacroViewProperty(IViewProperty):
 
 #default implementations
 
+@implementer(IViewConfigurator)
 class ViewConfigurator(object):
     """ An base class for adapters that allow the registration of view properties.
     """
-
-    implements(IViewConfigurator)
 
     def __init__(self, context, request):
         self.context = context
@@ -109,9 +89,8 @@ class AnnotationViewConfigurator(ViewConfigurator):
         return vp
 
 
+@implementer(IViewProperty)
 class ViewProperty(object):
-
-    implements(IViewProperty)
 
     def __init__(self, context, request):
         self.context = context
@@ -128,9 +107,8 @@ class ViewProperty(object):
         self.params = params
 
 
+@implementer(IMacroViewProperty)
 class MacroViewProperty(ViewProperty):
-
-    implements(IMacroViewProperty)
 
     template = None
 

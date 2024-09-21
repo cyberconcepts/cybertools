@@ -3,7 +3,7 @@ Browser View Tools
 ==================
 
   >>> from zope import component, interface
-  >>> from zope.interface import Interface, implements
+  >>> from zope.interface import Interface, implementer
   >>> from zope.publisher.interfaces.browser import IBrowserRequest
 
 
@@ -17,8 +17,10 @@ the common and node modules there.)
 
 Let's start with a dummy content object and create a view on it:
 
+  >>> #@implementer(Interface)
   >>> class SomeObject(object):
-  ...     implements(Interface)
+  ... 	  pass
+  >>> SomeObject = implementer(Interface)(SomeObject)
   >>> obj = SomeObject()
 
   >>> from cybertools.browser.view import GenericView
@@ -122,7 +124,7 @@ ZPT macros:
   >>> len(cssMacros)
   4
   >>> m1 = cssMacros[0]
-  >>> print m1.name, m1.media, m1.resourceName
+  >>> print(m1.name, m1.media, m1.resourceName)
   css all zope3_tablelayout.css
 
 Calling a macro provided by Controller.macros[] returns the real ZPT macro:
@@ -138,7 +140,7 @@ The pre-set collection of macros for a certain slot may be extended
   >>> len(controller.macros['css'])
   5
   >>> m5 = controller.macros['css'][4]
-  >>> print m5.name, m5.media, m5.resourceName
+  >>> print(m5.name, m5.media, m5.resourceName)
   css all node.css
 
 If an identifier is given (the second parameter) a certain macro is only
@@ -221,7 +223,7 @@ controller issues a redirect.
   >>> from cybertools.browser.form import IFormController, FormController
   >>> class MyController(FormController):
   ...     def update(self):
-  ...         print 'updating...'
+  ...         print('updating...')
   ...         return True
 
   >>> component.provideAdapter(MyController, (View, IBrowserRequest),
