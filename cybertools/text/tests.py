@@ -3,10 +3,15 @@
 """
 Tests for the 'cybertools.text' package.
 """
+import sys
+#sys.path = [p for p in sys.path if p != '']
+sys.path = sys.path[2:]
+print(sys.path)
 
 import unittest, doctest
 import warnings
 from cybertools.text import pdf
+from cybertools.text.html import htmlToText
 
 warnings.filterwarnings('ignore', category=ResourceWarning)
 
