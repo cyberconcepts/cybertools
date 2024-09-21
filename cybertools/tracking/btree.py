@@ -9,8 +9,8 @@ from BTrees import OOBTree, IOBTree
 from BTrees.IFBTree import intersection, union
 from zope.component import adapter
 from zope.interface import implementer
-from zope.app.container.btree import BTreeContainer
-from zope.app.container.interfaces import IObjectRemovedEvent
+from zope.container.btree import BTreeContainer
+from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 from zope.index.field import FieldIndex
 from zope.traversing.api import getParent
 from zope.traversing.interfaces import IPhysicallyLocatable

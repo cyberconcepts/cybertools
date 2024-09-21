@@ -13,8 +13,17 @@ authors = [{name = "Helmut Merz", email = "helmutm@cy55.de"}]
 
 dependencies = [
 	"bs4",
+	"BTrees",
 	"lxml",
+	"persistent",
+	"zope.app.container",
+	"zope.browserpage",
+	"zope.component",
+	"zope.container",
+	"zope.i18nmessageid",
+	"zope.index",
 	"zope.interface",
+	"zope.lifecycleevent",
 	"zope.testing",
 ]
 
