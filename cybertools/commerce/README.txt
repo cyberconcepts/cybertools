@@ -15,18 +15,18 @@ Shops and Products
 
 Let's start with two shops:
 
-  >>> shop1 = manager.shops.create(u'shop1', title=u'PC up Ltd')
-  >>> shop2 = manager.shops.create(u'shop2', title=u'Video up Ltd')
+  >>> shop1 = manager.shops.create('shop1', title='PC up Ltd')
+  >>> shop2 = manager.shops.create('shop2', title='Video up Ltd')
 
   >>> len(list(manager.shops))
   2
 
 Now we add products to the shops.
 
-  >>> p001 = manager.products.create(u'001', title=u'Silent Case')
-  >>> p002 = manager.products.create(u'002', title=u'Portable Projector')
-  >>> p003 = manager.products.create(u'003', title=u'HD Flatscreen Monitor')
-  >>> p004 = manager.products.create(u'004', title=u'Giga Mainboard')
+  >>> p001 = manager.products.create('001', title='Silent Case')
+  >>> p002 = manager.products.create('002', title='Portable Projector')
+  >>> p003 = manager.products.create('003', title='HD Flatscreen Monitor')
+  >>> p004 = manager.products.create('004', title='Giga Mainboard')
 
   >>> shop1.products.add(p001)
   >>> shop1.products.add(p003)
@@ -35,30 +35,30 @@ Now we add products to the shops.
   >>> shop2.products.add(p003)
 
   >>> sorted((p.productId, p.title) for p in shop1.products)
-  [(u'001', u'Silent Case'), (u'003', u'HD Flatscreen Monitor'),
-   (u'004', u'Giga Mainboard')]
+  [('001', 'Silent Case'), ('003', 'HD Flatscreen Monitor'),
+   ('004', 'Giga Mainboard')]
 
 Let's have a look at the product - it should correctly reference the shops
 it belongs to.
 
   >>> sorted((s.name, s.title) for s in p003.shops)
-  [(u'shop1', u'PC up Ltd'), (u'shop2', u'Video up Ltd')]
+  [('shop1', 'PC up Ltd'), ('shop2', 'Video up Ltd')]
 
 We can also create a manufacturer and set it for a product.
 
-  >>> mf001 = manager.manufacturers.create(u'001', title=u'Global Electronics')
+  >>> mf001 = manager.manufacturers.create('001', title='Global Electronics')
   >>> p001.manufacturer = mf001
   >>> [p.title for p in mf001.products]
-  [u'Silent Case']
+  ['Silent Case']
 
 
 Customers
 =========
 
-  >>> c001 = manager.customers.create(u'001', title=u'Your Local Computer Store')
-  >>> c002 = manager.customers.create(u'002', title=u'Speedy Gonzales')
-  >>> c003 = manager.customers.create(u'003', title=u'TeeVee')
-  >>> c004 = manager.customers.create(u'004', title=u'MacVideo')
+  >>> c001 = manager.customers.create('001', title='Your Local Computer Store')
+  >>> c002 = manager.customers.create('002', title='Speedy Gonzales')
+  >>> c003 = manager.customers.create('003', title='TeeVee')
+  >>> c004 = manager.customers.create('004', title='MacVideo')
 
   >>> shop1.customers.add(c001)
   >>> shop1.customers.add(c002)
@@ -68,11 +68,11 @@ Customers
   >>> shop2.customers.add(c004)
 
   >>> sorted((c.customerId, c.title) for c in shop1.customers)
-  [(u'001', u'Your Local Computer Store'), (u'002', u'Speedy Gonzales'),
-   (u'004', u'MacVideo')]
+  [('001', 'Your Local Computer Store'), ('002', 'Speedy Gonzales'),
+   ('004', 'MacVideo')]
 
   >>> sorted((s.name, s.title) for s in c002.shops)
-  [(u'shop1', u'PC up Ltd'), (u'shop2', u'Video up Ltd')]
+  [('shop1', 'PC up Ltd'), ('shop2', 'Video up Ltd')]
 
 
 Carts and Orders
@@ -84,16 +84,16 @@ A cart is just a collection of order items belonging to a certain customer
   >>> orderItems = manager.orderItems
 
   >>> orderItems.add(p001, c001, shop=shop1, quantity=3)
-  <OrderItem [2, 1, 7, '... ...', '???']: {'shop': 0, 'quantity': 3}>
+  <OrderItem [2, 1, 7, '... ...', -1]: {'quantity': 3, 'shop': 0}>
 
   >>> orderItems.getCart(c001)
-  [<OrderItem [2, 1, 7, '... ...', '???']: {'shop': 0, 'quantity': 3}>]
+  [<OrderItem [2, 1, 7, '... ...', -1]: {'quantity': 3, 'shop': 0}>]
   >>> item1 = orderItems.getCart(c001, shop=shop1, product=p001)[0]
   >>> item1
-  <OrderItem [2, 1, 7, '... ...', '???']: {'shop': 0, 'quantity': 3}>
+  <OrderItem [2, 1, 7, '... ...', -1]: {'quantity': 3, 'shop': 0}>
 
   >>> orderItems.add(p003, c001, shop=shop1, quantity=1)
-  <OrderItem [4, 2, 7, '... ...', '???']: {'shop': 0, 'quantity': 1}>
+  <OrderItem [4, 2, 7, '... ...', -1]: {'quantity': 1, 'shop': 0}>
 
   >>> len(orderItems.getCart(c001))
   2
@@ -102,7 +102,7 @@ If we add the same product again to the cart no new item is created but
 the quantity is added to the existing item.
 
   >>> orderItems.add(p003, c001, shop=shop1, quantity=1)
-  <OrderItem [4, 2, 7, '... ...', '???']: {'shop': 0, 'quantity': 2}>
+  <OrderItem [4, 2, 7, '... ...', -1]: {'quantity': 2, 'shop': 0}>
   >>> len(orderItems.getCart(c001))
   2
 
@@ -127,4 +127,4 @@ retrieving the order items.
   >>> orderItems.getCart(c001)
   []
   >>> orderItems.getCart(c001, ord001)
-  [<OrderItem [4, 2, 7, '... ...', 11]: {'shop': 0, 'quantity': 2}>]
+  [<OrderItem [4, 2, 7, '... ...', 11]: {'quantity': 2, 'shop': 0}>]

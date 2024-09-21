@@ -7,16 +7,16 @@ Tests for the 'cybertools.commerce' package.
 import unittest, doctest
 
 from zope import component
-from zope.interface import implements
+from zope.interface import implementer
 from zope.intid.interfaces import IIntIds
 
 from cybertools.commerce.order import OrderItems
 from cybertools.commerce.product import Product
 
 
+@implementer(IIntIds)
 class IntIdsStub(object):
     """A testing stub (mock utility) for IntIds."""
-    implements(IIntIds)
 
     def __init__(self):
         self.objs = []
@@ -37,7 +37,7 @@ class IntIdsStub(object):
         self.objs[id] = None
 
     def __iter__(self):
-        return iter(xrange(len(self.objs)))
+        return iter(range(len(self.objs)))
 
 
 def setUp(testCase):

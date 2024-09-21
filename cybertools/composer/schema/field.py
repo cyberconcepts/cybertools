@@ -1,31 +1,14 @@
-#
-#  Copyright (c) 2016 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.composer.schema.field
 
-"""
-Schema fields and related classes.
+""" Schema fields and related classes.
 """
 
 from datetime import datetime
 from logging import getLogger
 from time import strptime, strftime
-from zope.app.form.browser.interfaces import ITerms
+from zope.browser.interfaces import ITerms
 from zope.i18n.locales import locales
-from zope.interface import implements
+from zope.interface import implementer
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 from zope import component
@@ -50,9 +33,8 @@ class FieldGroup(object):
         self.sublabels = sublabels
 
 
+@implementer(IField)
 class Field(Component):
-
-    implements(IField)
 
     visible = True
     required = False
@@ -104,7 +86,7 @@ class Field(Component):
             ctx = Context(Engine, self.getContextProperties())
             try:
                 return expr(ctx)
-            except AttributeError, KeyError:
+            except (AttributeError, KeyError):
                 return u''
         return self.default
     def setDefaultValue(self, value):
@@ -190,9 +172,9 @@ class Field(Component):
         return dict(context=self, user=None)
 
 
+@implementer(IFieldInstance)
 class FieldInstance(object):
 
-    implements(IFieldInstance)
     adapts(IField)
 
     clientInstance = None
@@ -361,7 +343,7 @@ class DateFieldInstance(NumberFieldInstance):
                         'DateFieldInstance: year out of range: %s, %s' % 
                             (value, e))
                     self.setError('invalid_datetime')
-            except (TypeError, ValueError, DateTimeParseError), e:
+            except ((TypeError, ValueError, DateTimeParseError), e):
                 getLogger('cybertools').warn(
                         'DateFieldInstance: invalid datetime: %s, %s' % (value, e))
                 self.setError('invalid_datetime')

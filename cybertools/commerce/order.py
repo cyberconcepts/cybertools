@@ -1,20 +1,4 @@
-#
-#  Copyright (c) 2015 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.commerce.order
 
 """
 Order and order item classes.
@@ -23,7 +7,7 @@ Order and order item classes.
 from zope.cachedescriptors.property import Lazy
 from zope import component
 from zope.component import adapts
-from zope.interface import implements, Interface
+from zope.interface import implementer, Interface
 from zope.intid.interfaces import IIntIds
 
 from cybertools.commerce.common import getUidForObject, getObjectForUid
@@ -33,9 +17,8 @@ from cybertools.tracking.btree import Track
 from cybertools.tracking.interfaces import ITrackingStorage
 
 
+@implementer(IOrder)
 class Order(BaseObject):
-
-    implements(IOrder)
 
     customer = Relation('_customer', 'orders')
 
@@ -45,9 +28,8 @@ class Order(BaseObject):
         self.customer = customer
 
 
+@implementer(IOrderItem)
 class OrderItem(Track):
-
-    implements(IOrderItem)
 
     metadata_attributes = Track.metadata_attributes + ('order',)
     index_attributes = metadata_attributes
@@ -85,11 +67,11 @@ class OrderItem(Track):
         parent.context.indexTrack(0, self, 'order')
 
 
+@implementer(IOrderItems)
 class OrderItems(object):
     """ A tracking storage adapter managing order items.
     """
 
-    implements(IOrderItems)
     adapts(ITrackingStorage)
 
     def __init__(self, context):
@@ -114,7 +96,7 @@ class OrderItems(object):
             criteria['runId'] = criteria.pop('run')
         return self.context.query(**criteria)
 
-    def add(self, product, party, shop, order='???', run=0, **kw):
+    def add(self, product, party, shop, order=-1, run=0, **kw):
         kw['shop'] = self.getUid(shop)
         existing = self.getCart(party, order, shop, run, product=product)
         options = kw.get('options')
@@ -132,7 +114,7 @@ class OrderItems(object):
             self.context.indexTrack(0, track, 'order')
         return track
 
-    def getCart(self, party=None, order='???', shop=None, run=None, **kw):
+    def getCart(self, party=None, order=-1, shop=None, run=None, **kw):
         if run:
             kw['run'] = run
         result = self.query(party=party, order=order, **kw)
