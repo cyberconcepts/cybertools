@@ -2,8 +2,6 @@
 Python Execution in Special Dynamic Namespaces
 ==============================================
 
-$Id$
-
   >>> from cybertools.meta import namespace
 
 
@@ -15,16 +13,16 @@ A Very Restricted Basic Namespace
 We
 
   >>> code = """
-  ... print 'Hello'
+  ... print('Hello')
   ... # a comment
-  ... print dir('')
-  ... print '__builtins__:', __builtins__
+  ... print(dir(''))
+  ... print('__builtins__:', __builtins__)
   ... output('something')
   ... a = 'a is a variable'
   ... if a:
-  ...     print a
+  ...     print(a)
   ... """
-  >>> exec code in minimal
+  >>> exec(code, minimal)
   Hello
   ['__add__', ..., 'zfill']
   __builtins__: {}
@@ -40,12 +38,12 @@ of the namespace later.
 By setting the ``__builtins__`` mapping to an empty dictionary the minimal
 namespace provides a secure restricted execution environment.
 
-  >>> exec "import os" in minimal
+  >>> exec("import os", minimal)
   Traceback (most recent call last):
   ...
   ImportError: __import__ not found
 
-  >>> exec "f = open('dummy.txt', 'w')" in minimal
+  >>> exec("f = open('dummy.txt', 'w')", minimal)
   Traceback (most recent call last):
   ...
   NameError: open
@@ -68,7 +66,7 @@ Elements and sub-elements (children)
   >>> symbols['annotation'] = ElementFactory(symbols, 'annotation')
   >>> symbols['child'] = ElementFactory(symbols, 'child')
 
-  >>> exec code in symbols
+  >>> exec(code, symbols)
 
   >>> symbols.topic.instances
   [<Element 'zope3'>, <Element 'python'>]
@@ -84,7 +82,7 @@ A Namespace Automatically Generating Elements
 
   >>> auto = namespace.AutoNamespace()
 
-  >>> exec "print something" in auto
+  >>> exec("print(something)", auto)
   something
 
   >>> auto.something
@@ -112,15 +110,16 @@ value and an - hopefully empty - error string.
   (None, 'Traceback...ZeroDivisionError...')
 
 Trying to execute a statement leads to a syntax error.
+... in Python3 print is a function ...
 
-  >>> ev.evaluate('print something_else')
-  (None, 'Traceback...SyntaxError...')
+ev.evaluate('print(something_else)')
+(None, 'Traceback...SyntaxError...')
 
 But we can explicitly allow the execution of statements. The result
 of executing a statement is None.
 
   >>> ev = namespace.Evaluator(auto, allowExec=True)
-  >>> ev.evaluate('print something_else')
+  >>> ev.evaluate('print(something_else)')
   something_else
   (None, '')
   >>> ev.evaluate('25 * 25')

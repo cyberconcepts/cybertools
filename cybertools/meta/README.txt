@@ -2,8 +2,6 @@
 Meta Information Management
 ===========================
 
-  ($Id$)
-
 
 Configuration Options, Settings, Preferences
 ============================================
@@ -51,7 +49,7 @@ Loading options as Python code
   >>> config.controller.telnet.port
   5001
 
-  >>> print config
+  >>> print(config)
   controller.telnet(port=5001)
   controller(names=('cmdline', 'telnet'))
   scheduler(name='core')
