@@ -1,34 +1,15 @@
-#
-#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.util.integrator.base
 
-"""
-Base implementation for accessing external content objects.
-
-$Id$
+""" Base implementation for accessing external content objects.
 """
 
 import mimetypes
 import os
-from urllib import urlencode
+from urllib.parse import urlencode
 from zope.app.container.contained import Contained
 from zope.cachedescriptors.property import Lazy
 from zope import component
-from zope.interface import implements
+from zope.interface import implementer
 
 from cybertools.integrator.interfaces import IContainerFactory
 from cybertools.integrator.interfaces import IItemFactory, IFileFactory
@@ -61,9 +42,8 @@ class ProxyBase(object):
         return self.address.rsplit(os.path.sep, 1)[-1]
 
 
+@implementer(IReadContainer)
 class ReadContainer(ProxyBase, Contained):
-
-    implements(IReadContainer)
 
     icon = 'folder'
 
@@ -112,17 +92,15 @@ class ReadContainer(ProxyBase, Contained):
     has_key = __contains__
 
 
+@implementer(IItem)
 class Item(ProxyBase, object):
-
-    implements(IItem)
 
     icon = 'item'
     __parent__ = None
 
 
+@implementer(IFile)
 class File(Item):
-
-    implements(IFile)
 
     def __init__(self, address, contentType, **kw):
         super(File, self).__init__(address, **kw)
@@ -141,9 +119,8 @@ class File(Item):
         return (mimeTypes.get(self.contentType) or ['unknown'])[0]
 
 
+@implementer(IImage)
 class Image(File):
-
-    implements(IImage)
 
     icon = 'image'
 
@@ -174,23 +151,20 @@ class Factory(object):
         return self.proxyClass(address, **kw)
 
 
+@implementer(IContainerFactory)
 class ContainerFactory(Factory):
-
-    implements(IContainerFactory)
 
     proxyClass = ReadContainer
 
 
+@implementer(IItemFactory)
 class ItemFactory(Factory):
-
-    implements(IItemFactory)
 
     proxyClass = Item
 
 
+@implementer(IFileFactory)
 class FileFactory(Factory):
-
-    implements(IFileFactory)
 
     proxyClass = File   # real implementations should also care about images
 

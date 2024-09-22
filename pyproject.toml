@@ -18,6 +18,7 @@ dependencies = [
 	"persistent",
 	"pillow",
 	"zope.app.container",
+	"zope.app.file",
 	"zope.app.rotterdam",
 	"zope.app.testing",
 	"zope.authentication",

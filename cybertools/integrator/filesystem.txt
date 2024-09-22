@@ -4,8 +4,6 @@ Integrating objects from external systems
 
 Integration of external sources.
 
-  ($Id$)
-
 
 Getting started
 ===============
@@ -101,7 +99,7 @@ A file object has additional attributes/methods.
   'index.html'
   >>> html.contentType
   'text/html'
-  >>> print html.data
+  >>> print(html.data.decode('UTF-8'))
   <html>...
       <img src="sub/loops_logo.png" />
       <a href="sub">Subdirectory</a>
