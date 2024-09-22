@@ -1,14 +1,14 @@
+# cybertools.link.tests
 
 import unittest, doctest
 from zope.interface.verify import verifyClass
-from zope.interface import implements
+from zope.interface import implementer
 from zope.intid.interfaces import IIntIds
 
 
+@implementer(IIntIds)
 class IntIdsStub(object):
     """A testing stub (mock utility) for IntIds."""
-
-    implements(IIntIds)
 
     def __init__(self):
         self.objs = []
@@ -29,7 +29,7 @@ class IntIdsStub(object):
         self.objs[id] = None
 
     def __iter__(self):
-        return iter(xrange(len(self.objs)))
+        return iter(range(len(self.objs)))
 
 
 class TestLink(unittest.TestCase):

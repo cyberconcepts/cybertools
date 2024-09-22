@@ -43,7 +43,7 @@ of its attributes.
 
   >>> (l01.identifier, l01.source, l01.target, l01.name, l01.linkType, l01.state,
   ...  l01.relevance, l01.order)
-  (1, 0, 1, 'p2', u'link', u'valid', 1.0, 0)
+  (1, 0, 1, 'p2', 'link', 'valid', 1.0, 0)
 
 Query for links
 ---------------
