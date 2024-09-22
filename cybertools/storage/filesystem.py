@@ -1,32 +1,13 @@
-#
-#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.storage.filesystem
 
-"""
-Storing data in files in the file system.
-
-$Id$
+""" Storing data in files in the file system.
 """
 
 from datetime import datetime
 from logging import getLogger
 import os
 import shutil
-from zope.interface import implements
+from zope.interface import implementer
 import transaction
 from transaction.interfaces import IDataManager
 
@@ -39,9 +20,8 @@ DEFAULT_DIRECTORY = 'extfiles'
 logger = getLogger('cybertools.storage.filesystem')
 
 
+@implementer(IExternalStorage)
 class FileSystemStorage(object):
-
-    implements(IExternalStorage)
 
     def __init__(self, rootDir=None, subDir=None):
         self.rootDir = rootDir
@@ -80,7 +60,7 @@ class FileSystemStorage(object):
             data = f.read()
             f.close()
             return data
-        except IOError, e:
+        except(IOError, e):
             logger.warn(e)
                         #'File %r cannot be read.' % fn)
             return ''
@@ -90,7 +70,7 @@ class FileSystemStorage(object):
         fn = self.getDir(address, subDir)
         try:
             return os.path.getsize(fn)
-        except OSError, e:
+        except(OSError, e):
             logger.warn(e)
             return 0
 
@@ -101,7 +81,7 @@ class FileSystemStorage(object):
             ts = os.path.getmtime(fn)
             if ts:
                 return datetime.fromtimestamp(ts)
-        except OSError, e:
+        except(OSError, e):
             logger.warn(e)
             return None
 
@@ -119,9 +99,8 @@ class FileSystemStorage(object):
 
 
 
+@implementer(IDataManager)
 class FSSDataManager(object):
-
-    implements(IDataManager)
 
     transaction_manager = None
 

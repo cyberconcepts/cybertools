@@ -1,35 +1,16 @@
-#
-#  Copyright (c) 2009 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.media.asset
 
-"""
-Media asset file adapter.
+""" Media asset file adapter.
 
 Authors: Johann Schimpf, Erich Seifert.
-
-$Id$
 """
 
-from cStringIO import StringIO
+from io import BytesIO, StringIO
 from logging import getLogger
 import mimetypes
 import os, re, sys
 
-from zope.interface import implements
+from zope.interface import implementer
 from cybertools.media.interfaces import IMediaAsset
 from cybertools.media.piltransform import PILTransform
 
@@ -55,12 +36,11 @@ def getMimetypeExt(mimetype):
     return exts and exts[-1] or ""
 
 
+@implementer(IMediaAsset)
 class MediaAssetFile(object):
     """ Class for extracting metadata from assets and to create transformed
         variants using file representations in subdirectories.
     """
-
-    implements(IMediaAsset)
 
     def __init__(self, dataPath, rules, contentType):
         self.dataPath = dataPath
@@ -72,7 +52,7 @@ class MediaAssetFile(object):
             return self.getOriginalData()
         path = self.getPath(variant)
         if not os.path.exists(path):
-            getLogger('cybertools.media.asset.MediaAssetFile').warn(
+            getLogger('cybertools.media.asset.MediaAssetFile').warning(
                 'Media asset directory %r not found.' % path)
             self.transform()
             # return self.getOriginalData()
@@ -85,7 +65,7 @@ class MediaAssetFile(object):
         if data is None:
             data = self.getData(variant)
         pt = PILTransform()
-        pt.open(StringIO(data))
+        pt.open(BytesIO(data))
         if pt.im is None:
             return (0, 0)
         return pt.im.size
@@ -148,14 +128,15 @@ class MediaAssetFile(object):
                         mediaFile.resize(*size)
             outputFormat = self.getContentType(variant)
             mediaFile.save(path, outputFormat)
-        except Exception, e:
-            excInfo = sys.exc_info()
+        except Exception:
+            raise
+            #excInfo = sys.exc_info()
         # Handle exceptions that have occured during the transformation
         # in order to provide information on the affected asset
-        if excInfo:
-            eType, eValue, eTraceback = excInfo  # Extract exception information
-            raise eType("Error transforming asset '%s': %s" %
-                        (oldassetdir, eValue)), None, eTraceback
+        #if excInfo:
+        #    eType, eValue, eTraceback = excInfo  # Extract exception information
+        #    raise eType("Error transforming asset '%s': %s" %
+        #                (oldassetdir, eValue)), None, eTraceback)
 
     def getPath(self, variant):
         pathOrig = self.getDataPath()
