@@ -39,7 +39,7 @@ Working with MHT Files
   >>> imageRefs = document.htmlDoc.getImageRefs()
   >>> for path in imageRefs:
   ...     imagePath = os.path.join(basePath, os.path.basename(path))
-  ...     f = open(imagePath, 'rt')
+  ...     f = open(imagePath, 'rb')
   ...     imageData = f.read()
   ...     f.close()
   ...     document.addImage(imageData, path)
@@ -48,7 +48,9 @@ Working with MHT Files
 
   >>> output = document.asString()
   >>> len(data), len(output)
-  (294996, 336142)
+  (290577, 331234)
+
+was (Py2)  (294996, 336142)
 
   >>> outPath = os.path.join(basePath, 'out_doc.mht')
   >>> #f = open(outPath, 'wt')

@@ -1,33 +1,17 @@
-#
-#  Copyright (c) 2012 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.docgen.mht
 
 """
 Working with MHT Files.
 """
 
 import base64
-from cStringIO import StringIO
+from io import BytesIO, StringIO
 import email
 from PIL import Image
 import mimetypes
 import os
 
-from cybertools.text.lib.BeautifulSoup import BeautifulSoup, Tag
+from bs4 import BeautifulSoup, Tag
 
 
 class MHTFile(object):
@@ -72,7 +56,7 @@ class MHTFile(object):
         return self.htmlDoc.getImageRefs()
 
     def addImage(self, imageData, path):
-        image = Image.open(StringIO(imageData))
+        image = Image.open(BytesIO(imageData))
         width, height = image.size
         contentType, enc = mimetypes.guess_type(path)
         bp, ext = os.path.splitext(path)
@@ -83,7 +67,7 @@ class MHTFile(object):
         vars = dict(path=self.path, docname=self.documentName,  
                     suffix=self.foldernameSuffix,
                     imgname=name, ctype=contentType,
-                    imgdata=base64.encodestring(imageData))
+                    imgdata=base64.b64encode(imageData))
         content = self. imageTemplate % vars
         self.parts.insert(flpos, str(content))
         filelistRep = (self.filelistItemTemplate % name) + self.filelistPattern
@@ -94,7 +78,7 @@ class MHTFile(object):
     def insertBody(self):
         path = '-'.join((self.documentName, self.foldernameSuffix))
         self.htmlDoc.updateImageRefs(self.imageMappings, path)
-        content = self.htmlDoc.doc.renderContents(self.encoding)
+        content = self.htmlDoc.doc.renderContents(self.encoding).decode(self.encoding)
         bodyIndex = self.indexes['body']
         baseDocument = self.parts[bodyIndex]
         self.parts[bodyIndex] =  baseDocument.replace(self.bodyMarker, 
@@ -111,7 +95,7 @@ class HTMLDoc(object):
 
     def __init__(self, data):
         self.data = data
-        self.doc = BeautifulSoup(data)
+        self.doc = BeautifulSoup(data, features='lxml')
 
     def getImageRefs(self):
         return [img['src'] for img in self.doc('img')]
@@ -119,12 +103,12 @@ class HTMLDoc(object):
     def updateImageRefs(self, mappings, path=''):
         for img in self.doc('img'):
             name, width, height = mappings[img['src']]
-            imgdata = Tag(self.doc, 'v:imagedata')
+            imgdata = Tag(self.doc, name='v:imagedata')
             imgdata['src'] = '/'.join((path, name))
-            imgdata.isSelfClosing = True
+            #imgdata.isSelfClosing = True
             img.append(imgdata)
             del img['src']
             img['style'] = 'width:%spt;height:%spt' % (width, height)
-            img.isSelfClosing = False
+            #img.isSelfClosing = False
             img.name='v:shape'
 

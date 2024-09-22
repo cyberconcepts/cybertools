@@ -1,16 +1,19 @@
+# cybertools.util.docgen.tests
+
 """
 unit tests, doc tests
 """
 
 import unittest, doctest
+import warnings
 from zope.interface.verify import verifyClass
-from zope.interface import implements
 
 
 class Test(unittest.TestCase):
     "Basic tests for the docgen package."
 
     def testInterfaces(self):
+        warnings.filterwarnings('ignore', category=DeprecationWarning)
         pass
 
 

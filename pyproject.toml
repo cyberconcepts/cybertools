@@ -16,6 +16,7 @@ dependencies = [
 	"BTrees",
 	"lxml",
 	"persistent",
+	"pillow",
 	"zope.app.container",
 	"zope.app.rotterdam",
 	"zope.app.testing",
