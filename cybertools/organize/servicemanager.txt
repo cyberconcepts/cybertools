@@ -2,8 +2,6 @@
 Service Manager
 ================
 
-  ($Id$)
-
 This package does not provide functionality on its own but shows only
 how to integrate other packages into an application package.
 
@@ -111,15 +109,16 @@ Using schema views for displaying and editing data
 We need some additional setup for working with schema views - so we have to
 supply some session handling stuff in order to work with client names.
 
-  >>> from zope.interface import implements
-  >>> from zope.app.session.interfaces import IClientIdManager, ISessionDataContainer
-  >>> from zope.app.session import session
+  >>> from zope.interface import implementer
+  >>> from zope.session.interfaces import IClientIdManager, ISessionDataContainer
+  >>> from zope.session import session
   >>> component.provideAdapter(session.ClientId)
   >>> component.provideAdapter(session.Session)
   >>> component.provideUtility(session.RAMSessionDataContainer(), ISessionDataContainer)
   >>> class ClientIdManager(object):
   ...     implements(IClientIdManager)
   ...     def getClientId(self, request): return 'dummy'
+  >>> ClientIdManager = implementer(IClientIdManager)(ClientIdManager)
   >>> component.provideUtility(ClientIdManager())
 
   >>> from zope.publisher.browser import TestRequest
@@ -329,7 +328,7 @@ registered for them.
 
   >>> for svc in workshop.getServices():
   ...     for cn, reg in sorted(svc.registrations.items()):
-  ...         print 'client-%i: ' % (clientNames.index(cn)+1), reg.service.name
+  ...         print('client-%i: ' % (clientNames.index(cn)+1), reg.service.name)
   client-1: event1
   client-3: event2
 
@@ -492,7 +491,7 @@ allows a hierarchical presentation.
 
   >>> overview = wsView.overview()
   >>> for line in overview:
-  ...     print line['title'], line['isHeadline'], line['level']
+  ...     print(line['title'], line['isHeadline'], line['level'])
   Event True 0
   Event 1 False 1
   Event 2 False 1
@@ -516,9 +515,9 @@ and registration data.
 
   >>> regInfo = srvView.getRegistrationInfo(reg)
   >>> clientInfo = srvView.getDataForClient(reg)
-  >>> print srvView.formatClientInfo(clientInfo)
+  >>> print(srvView.formatClientInfo(clientInfo))
   Skywalker
-  >>> print regInfo['number'], regInfo['stateTitle']
+  >>> print(regInfo['number'], regInfo['stateTitle'])
   1 temporary
 
 The service view also provides fields that sum up the numbers of all
@@ -636,7 +635,7 @@ possible.
   False
 
   >>> for reg in sorted(event1.registrations.values(), key=lambda x: x.number):
-  ...     print reg.number, reg.numberWaiting
+  ...     print(reg.number, reg.numberWaiting)
   0 3
   1 0
 
@@ -659,7 +658,7 @@ What happens if one of the participants cancels her registration?
   >>> regView.update()
   False
   >>> for reg in sorted(event1.registrations.values(), key=lambda x: x.number):
-  ...     print reg.number, reg.numberWaiting
+  ...     print(reg.number, reg.numberWaiting)
   0 3
 
 As the participants on the waiting list get priority over newly registering
@@ -674,7 +673,7 @@ people on the waiting list.
   >>> regView.update()
   False
   >>> for reg in sorted(event1.registrations.values(), key=lambda x: x.numberWaiting):
-  ...     print reg.number, reg.numberWaiting
+  ...     print(reg.number, reg.numberWaiting)
   0 2
   0 3
 
@@ -686,7 +685,7 @@ free place.
   >>> regView.update()
   False
   >>> for reg in sorted(event1.registrations.values(), key=lambda x: x.number):
-  ...     print reg.number, reg.numberWaiting
+  ...     print(reg.number, reg.numberWaiting)
   0 2
   1 2
 
@@ -705,18 +704,18 @@ Excel Export
   >>> from cybertools.organize.browser.report import RegistrationsExportCsv
   >>> input = dict(get_data_method='getData')
   >>> csv = RegistrationsExportCsv(workshop, TestRequest(form=input))
-  >>> print csv.render()
+  >>> print(csv.render())
   "Service","Client ID","Organization","First Name","Last Name","E-Mail","Number","State"
   "Event 1","...","","Walker","","john@walker.tv",1,"submitted"
 
   >>> input = dict(get_data_method='getAllDataInColumns')
   >>> csv = RegistrationsExportCsv(workshop, TestRequest(form=input))
   >>> result = csv.render().splitlines()
-  >>> print result[0]
+  >>> print(result[0])
   "Client ID","Time Stamp","Last Name","First Name","Email Address","Age","Personal Address","Academic Titles","Street","City","Country","Event 1","WL Event 1","Event 2","WL Event 2"
   >>> len(result)
   2
-  >>> print [f.strip('"') for f in result[1].split(',')[1:]]
+  >>> print([f.strip('"') for f in result[1].split(',')[1:]])
   ['...', 'Walker', 'John', 'john@walker.tv', '', 'Mr', '', '', '', '', '1', '2', '0', '0']
 
 

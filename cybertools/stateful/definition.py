@@ -1,35 +1,17 @@
-#
-#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.stateful.definition
 
-"""
-State definition implementation.
+""" State definition implementation.
 """
 
-from zope.interface import implements
+from zope.interface import implementer
 from cybertools.util.jeep import Jeep
 
 from cybertools.stateful.interfaces import IState, IAction, ITransition
 from cybertools.stateful.interfaces import IStatesDefinition
 
 
+@implementer(IState)
 class State(object):
-
-    implements(IState)
 
     setSecurity = lambda self, context: None
     icon = None
@@ -48,9 +30,8 @@ class State(object):
         return 'cybertools.icons/' + (self.icon or 'led%s.png' % self.color)
 
 
+@implementer(IAction)
 class Action(object):
-
-    implements(IAction)
 
     allowed = True
     permission = None
@@ -67,18 +48,16 @@ class Action(object):
             setattr(self, k, v)
 
 
+@implementer(ITransition)
 class Transition(Action):
-
-    implements(ITransition)
 
     def __init__(self, name, title, targetState, **kw):
         super(Transition, self).__init__(name, title, **kw)
         self.targetState = targetState
 
 
+@implementer(IStatesDefinition)
 class StatesDefinition(object):
-
-    implements(IStatesDefinition)
 
     initialState = 'started'
     msgFactory = None

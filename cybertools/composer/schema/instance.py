@@ -1,29 +1,12 @@
-#
-#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.composer.schema.instance
 
-"""
-Instance adapter classes for schemas.
+""" Instance adapter classes for schemas.
 """
 
 from BTrees.OOBTree import OOBTree
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
-from zope.interface import implements, Interface
+from zope.interface import implementer, Interface
 
 from cybertools.composer.instance import Instance as BaseInstance
 from cybertools.composer.interfaces import IInstance
@@ -32,9 +15,9 @@ from cybertools.composer.schema.schema import FormState
 from cybertools.util.jeep import Jeep
 
 
+@implementer(IInstance)
 class Instance(BaseInstance):
 
-    implements(IInstance)
     adapts(Interface)
 
     aspect = 'schema.editor.default'
@@ -77,9 +60,9 @@ class Instance(BaseInstance):
         return self.getFieldInstances()
 
 
+@implementer(IInstance)
 class Editor(BaseInstance):
 
-    implements(IInstance)
     adapts(Interface)
 
     aspect = 'schema.editor.default'
@@ -134,9 +117,9 @@ class Editor(BaseInstance):
         return formState
 
 
+@implementer(IInstance)
 class ClientInstance(object):
 
-    implements(IInstance)
     adapts(IClient)
 
     attrsName = '__schema_attributes__'

@@ -1,21 +1,20 @@
 
 import unittest, doctest
 from email import message_from_string
-from zope.interface import implements
+from zope.interface import implementer
 from zope.sendmail.interfaces import IMailDelivery
 
 
+@implementer(IMailDelivery)
 class TestMailer(object):
 
-    implements(IMailDelivery)
-
     def send(self, sender, recipients, message):
-        print 'sender:', sender
-        print 'recipients:', recipients
+        print('sender:', sender)
+        print('recipients:', recipients)
         msg = message_from_string(message)
-        print 'subject:', msg['Subject']
-        print 'message:'
-        print msg.get_payload(decode=True)
+        print('subject:', msg['Subject'])
+        print('message:')
+        print(msg.get_payload(decode=True))
 
 
 class Test(unittest.TestCase):

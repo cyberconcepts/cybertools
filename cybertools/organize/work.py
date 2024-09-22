@@ -1,28 +1,11 @@
-#
-#  Copyright (c) 2018 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.organize.work
 
-"""
-Planning and recording activities (work items).
+""" Planning and recording activities (work items).
 """
 
 from zope import component
 from zope.component import adapts
-from zope.interface import implementer, implements
+from zope.interface import implementer
 from zope.traversing.api import getName, getParent
 
 from cybertools.organize.interfaces import IWorkItem, IWorkItems
@@ -171,11 +154,10 @@ workItemTypes = Jeep((
 ))
 
 
+@implementer(IWorkItem)
 class WorkItem(Stateful, Track):
     """ A work item that may be stored as a track in a tracking storage.
     """
-
-    implements(IWorkItem)
 
     metadata_attributes = Track.metadata_attributes + ('state',)
     index_attributes = metadata_attributes
@@ -423,11 +405,11 @@ class WorkItem(Stateful, Track):
         getParent(self).indexTrack(None, self, idx)
 
 
+@implementer(IWorkItems)
 class WorkItems(object):
     """ A tracking storage adapter managing work items.
     """
 
-    implements(IWorkItems)
     adapts(ITrackingStorage)
 
     def __init__(self, context):

@@ -127,7 +127,7 @@ class Field(Component):
         if instance is not None:
             context = instance.context
         voc = (self.vocabulary or '')
-        if isinstance(voc, basestring):
+        if isinstance(voc, str):
             terms = self.getVocabularyTerms(voc, context, request)
             if terms is not None:
                 return terms
@@ -268,7 +268,7 @@ class DecimalFieldInstance(NumberFieldInstance):
     def display(self, value, pattern=u'#,##0.00;-#,##0.00'):
         if value is None:
             return ''
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             if not value.isdigit():
                 return value
             value = float(value)
@@ -293,7 +293,7 @@ class DateFieldInstance(NumberFieldInstance):
     def marshall(self, value):
         if not value:
             return ''
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             return value
         try:
             return strftime('%Y-%m-%dT%H:%M', value.timetuple())
@@ -402,7 +402,7 @@ class ListFieldInstance(FieldInstance):
         return component.getAdapter(self.valueType, IFieldInstance, name=instanceName)
 
     def marshall(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             return value
         if value is None:
             return u''
@@ -412,12 +412,12 @@ class ListFieldInstance(FieldInstance):
     def display(self, value):
         if not value:
             return u''
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             return value
         return u' | '.join(unicode(self.valueFieldInstance.display(v)) for v in value)
 
     def unmarshall(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             value = value.split('\n')
         return [self.valueFieldInstance.unmarshall(v.strip())
                         for v in value if v.strip()]

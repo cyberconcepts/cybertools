@@ -1,23 +1,6 @@
-#
-#  Copyright (c) 2020 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.stateful.base
 
-"""
-Basic implementations for stateful objects and adapters.
+""" Basic implementations for stateful objects and adapters.
 """
 
 from persistent.interfaces import IPersistent
@@ -26,16 +9,15 @@ from zope import component
 from zope.component import adapts
 from zope.interface.interfaces import ObjectEvent
 from zope.event import notify
-from zope.interface import implements
+from zope.interface import implementer
 
 from cybertools.stateful.definition import statesDefinitions
 from cybertools.stateful.interfaces import IStateful, IStatefulIndexInfo
 from cybertools.stateful.interfaces import ITransitionEvent
 
 
+@implementer(IStateful)
 class Stateful(object):
-
-    implements(IStateful)
 
     statesDefinition = 'default'
     state = None
@@ -54,7 +36,7 @@ class Stateful(object):
     def doTransition(self, transition, historyInfo=None):
         sd = self.getStatesDefinition()
         previousState = self.getState()
-        if isinstance(transition, basestring):
+        if isinstance(transition, str):
             sd.doTransitionFor(self, transition)
             self.notify(transition, previousState)
             return
@@ -127,9 +109,8 @@ class StatefulAdapter(Stateful):
         notify(TransitionEvent(self.context, transObject, previousState, self.request))
 
 
+@implementer(IStatefulIndexInfo)
 class IndexInfo(object):
-
-    implements(IStatefulIndexInfo)
 
     availableStatesDefinitions = []     # to be overwritten by subclass!
 
@@ -145,9 +126,8 @@ class IndexInfo(object):
 
 # event
 
+@implementer(ITransitionEvent)
 class TransitionEvent(ObjectEvent):
-
-    implements(ITransitionEvent)
 
     def __init__(self, obj, transition, previousState, request=None):
         super(TransitionEvent, self).__init__(obj)

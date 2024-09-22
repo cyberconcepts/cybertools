@@ -32,6 +32,8 @@ dependencies = [
 	"zope.index",
 	"zope.interface",
 	"zope.lifecycleevent",
+	"zope.sendmail",
+	"zope.session",
 	"zope.testing",
 ]
 

@@ -60,9 +60,9 @@ def formatNumber(num, type='decimal', lang='de',
 
 
 def toStr(value, encoding='UTF-8'):
-    if isinstance(value, unicode):
+    if isinstance(value, str):
         return value.encode(encoding)
-    return str(value)
+    return bytes(value)
 
 def toUnicode(value, encoding='UTF-8', fallback='ISO8859-15'):
     # or: fallback='CP852'
