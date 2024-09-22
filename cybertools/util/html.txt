@@ -14,10 +14,10 @@ Sanitize HTML
 -------------
 
   >>> sanitize(input, validAttrs=['style'])
-  u'\n<p style="font-weight: bold">\n<a><b>Text</b>, and more</a>\n</p>\n'
+  '\n<p style="font-weight: bold">\n<a><b>Text</b>, and more</a>\n</p>\n'
 
   >>> sanitize(input, ['p', 'b'], ['class'])
-  u'\n<p class="standard">\n<b>Text</b>, and more\n</p>\n'
+  '\n<p class="standard">\n<b>Text</b>, and more\n</p>\n'
 
 All comments are stripped from the HTML input.
 
@@ -27,18 +27,18 @@ All comments are stripped from the HTML input.
   ... <p>text</p>"""
 
   >>> sanitize(input2)
-  u'\n<p>text</p>\n\n<p>text</p>'
+  '\n<p>text</p>\n\n<p>text</p>'
 
 It's also possible to remove only the comments from the HTML input.
 
   >>> stripComments(input2)
-  u'<html>\n<p>text</p>\n\n<p>text</p></html>'
+  '<html>\n<body><p>text</p>\n\n<p>text</p></body></html>' 
 
 It is also possible to strip all HTML tags from the input string.
 
   >>> from cybertools.util.html import stripAll
   >>> stripAll(input)
-  u'Text, and more'
+  'Text, and more'
 
 Extract first part of an HTML text
 ----------------------------------
@@ -46,7 +46,7 @@ Extract first part of an HTML text
   >>> from cybertools.util.html import extractFirstPart
 
   >>> extractFirstPart(input)
-  u'<p>\n<a href="blubb"><b>Text</b>, and more</a>\n</p>'
+  '<p>\n<a href="blubb"><b>Text</b>, and more</a>\n</p>'
 
   >>> extractFirstPart(input2)
-  u'<p>text</p>'
+  '<p>text</p>'

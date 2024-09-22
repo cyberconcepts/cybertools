@@ -2,8 +2,6 @@
 Smart Properties
 ================
 
-$Id$
-
 lzprop
 ======
 
@@ -21,7 +19,7 @@ by printing an informative message:
     ...     base = 6
     ...     @lzprop
     ...     def value(self):
-    ...         print 'calculating'
+    ...         print('calculating')
     ...         return self.base * 7
 
     >>> demo = Demo()

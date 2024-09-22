@@ -2,8 +2,6 @@
 Composer - Building Complex Structures with Templates or Schemas
 ================================================================
 
-  ($Id$)
-
   >>> from cybertools.composer.base import Element, Compound, Template
   >>> from cybertools.composer.instance import Instance
 
@@ -46,7 +44,7 @@ with the template.
   >>> class ConfigurationAdapter(Instance):
   ...     def applyTemplate(self):
   ...         for c in self.template.components:
-  ...             print c, self.context.parts.get(c.name, '-')
+  ...             print(c, self.context.parts.get(c.name, '-'))
 
   >>> inst = ConfigurationAdapter(c001)
   >>> inst.template = desktop

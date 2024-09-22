@@ -2,14 +2,12 @@
 Data Caching
 ============
 
-$Id$
-
   >>> from cybertools.util import cache
   >>> cache = cache.internalCache
 
   >>> @cache(lambda *args: 'calc')
   ... def calculate():
-  ...     print 'calculating'
+  ...     print('calculating')
   ...     return 42
 
   >>> calculate()
@@ -24,7 +22,7 @@ $Id$
   ...         return self.id
   ...     @cache(getId)
   ...     def calculate(self):
-  ...         print 'calculating'
+  ...         print('calculating')
   ...         return 42
 
   >>> demo = Demo()

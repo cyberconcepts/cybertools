@@ -2,8 +2,6 @@
 Deferred Execution
 ==================
 
-$Id$
-
   >>> from cybertools.util.defer import Deferred
 
 To show what deferreds are about we need two classes.
@@ -21,7 +19,7 @@ method will be called, thus notifying the client.
   ...
   ...     def work(self):
   ...         self.deferred = Deferred()
-  ...         print 'Worker: work started'
+  ...         print('Worker: work started')
   ...         return self.deferred
   ...
   ...     def nowItsTime(self):
@@ -37,10 +35,10 @@ callback method with the deferred object coming back from the
   ...     def run(self, worker):
   ...         deferred = worker.work()
   ...         deferred.addCallback(self.showResult)
-  ...         print 'Client: The worker seems to be working now...'
+  ...         print('Client: The worker seems to be working now...')
   ...
   ...     def showResult(self, result):
-  ...         print 'Result:', result
+  ...         print('Result:', result)
 
 So we now create a worker and a client, and let the client run:
 

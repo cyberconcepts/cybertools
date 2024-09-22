@@ -49,7 +49,7 @@ it with a default if not found, in one statement.
 We can output a configuration in a form that is ready for loading
 just by converting it to a string representation.
 
-  >>> print config
+  >>> print(config)
   crawl[0].directory = 'documents/projects'
   crawl[0].type = 'filesystem'
   transport.serverURL = 'http://demo.cy55.de'
@@ -69,7 +69,7 @@ for storage; normally it would be stored in the users home directory.
   >>> fn
   '....cybertools.cfg'
 
-  >>> print open(fn).read()
+  >>> print(open(fn).read())
   crawl[0].directory = 'documents/projects'
   crawl[0].type = 'filesystem'
   transport.serverURL = 'http://demo.cy55.de'

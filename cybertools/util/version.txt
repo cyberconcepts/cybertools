@@ -2,8 +2,6 @@
 Collect Version Information from Different Packages
 ===================================================
 
-$Id$
-
   >>> from cybertools.util.version import versions
 
   >>> versions.add()
@@ -11,7 +9,7 @@ $Id$
   >>> v = versions.get('cybertools.util.version')
   >>> v
   cybertools.util.version 0.4-3014
-  >>> print v
+  >>> print(v)
   0.4-3014
   >>> v.short
   '0.4'

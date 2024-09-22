@@ -2,8 +2,6 @@
 Jeep - a General Purpose Class
 ==============================
 
-$Id$
-
   >>> from cybertools.util.jeep import Jeep
   >>> jeep = Jeep()
 
@@ -76,7 +74,7 @@ More Dictionary Methods
   KeyError: 'fourth'
 
   >>> dict(jeep)
-  {'second': 'new second value', 'third': 'third value', 'first': 'first value'}
+  {'first': 'first value', 'second': 'new second value', 'third': 'third value'}
 
   >>> jeep.setdefault('first', 'new first value')
   'first value'

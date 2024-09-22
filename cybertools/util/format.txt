@@ -8,12 +8,12 @@ Basic Formatting Functions
   >>> time = datetime(2006, 8, 21, 17, 37, 13)
 
   >>> format.formatDate(time, type='time', variant='medium')
-  u'17:37:13'
+  '17:37:13'
 
   >>> format.formatDate(time, type='dateTime', variant='medium')
-  u'21.08.2006 17:37:13'
+  '21.08.2006 17:37:13'
 
   >>> format.formatNumber(17.2)
-  u'17,20'
+  '17,20'
   >>> format.formatNumber(13399.99999997)
-  u'13.400,00'
+  '13.400,00'
