@@ -1,8 +1,6 @@
 A Basic API for Dynamic Typing
 ==============================
 
-  ($Id$)
-
 The typology package offers a basic standard API for associating
 arbitrary objects with types that may then be used for controlling
 execution of code, helping with search interfaces or editing of
@@ -20,9 +18,9 @@ we will then apply dynamic typing to Person objects:
   >>> from cybertools.organize.party import Person
 
   >>> from datetime import date
-  >>> pdata = ((u'John', u'Smith', '1956-08-01'),
-  ...          (u'David', u'Waters', '1972-12-24'),
-  ...          (u'Carla', u'Myers', '1999-10-11'))
+  >>> pdata = (('John', 'Smith', '1956-08-01'),
+  ...          ('David', 'Waters', '1972-12-24'),
+  ...          ('Carla', 'Myers', '2015-10-11'))
   >>> persons = [Person(f, s, date(*[int(d) for d in b.split('-')]))
   ...                         for f, s, b in pdata]
 
@@ -51,7 +49,7 @@ a global utility that does the real work.
 We can now look what the type is telling us about the persons:
 
   >>> john_type.title
-  u'Adult'
+  'Adult'
   >>> john_type.token
   'organize.person.agegroup.adult'
   >>> david_type.token
@@ -90,7 +88,7 @@ another (possibly persistent) object knowing about the available types.
   >>> typeManager = component.getUtility(IAgeGroupManager)
   >>> types = typeManager.types
   >>> [t.title for t in types]
-  [u'Child', u'Adult']
+  ['Child', 'Adult']
   >>> types[0] == carla_type
   True
   >>> types[1] == john_type == david_type
@@ -98,4 +96,4 @@ another (possibly persistent) object knowing about the available types.
   
   >>> t = typeManager.getType(carla_type.token)
   >>> t.title
-  u'Child'
+  'Child'

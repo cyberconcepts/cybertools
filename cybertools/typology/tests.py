@@ -1,9 +1,8 @@
-# $Id$
+# cybertools.typology.tests
 
 import unittest, doctest
 from zope.app.testing import ztapi
 from zope.interface.verify import verifyClass
-from zope.interface import implements
 
 from cybertools.typology.interfaces import IType, ITypeManager
 
