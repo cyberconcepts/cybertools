@@ -43,7 +43,7 @@ for testing purposes here) and a catalog with a few indexes.
 In addition we need a class for the content objects that we want
 to index and query.
 
-  >>> from zope.app.container.contained import Contained
+  >>> from zope.container.contained import Contained
   >>> class Content(Contained):
   ...     def __init__(self, id, f1='', f2='', f3='', t1='', t2='', k1=[]):
   ...         self.id = id

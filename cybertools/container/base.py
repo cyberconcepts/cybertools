@@ -3,8 +3,8 @@
 """ Ordered container implementation.
 """
 
-from zope.browserpage import ViewPageTemplateFile
 from zope.app.container.browser.contents import JustContents
+from zope.browserpage import ViewPageTemplateFile
 from zope.i18nmessageid import ZopeMessageFactory as _
 from zope.cachedescriptors.property import Lazy
 from zope.interface import Interface

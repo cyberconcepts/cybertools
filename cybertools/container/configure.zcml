@@ -6,7 +6,7 @@
    i18n_domain="zope">
 
   <page
-      for="zope.app.container.interfaces.IOrderedContainer"
+      for="zope.container.interfaces.IOrderedContainer"
       name="contents.html"
       template="contents.pt"
       class=".ordered.OrderedContainerView"
@@ -15,7 +15,7 @@
       />
 
   <page
-      for="zope.app.container.interfaces.IContainer"
+      for="zope.container.interfaces.IContainer"
       name="contents.html"
       template="contents.pt"
       class="cybertools.container.ordered.ContainerView"
@@ -24,7 +24,7 @@
       />
 
   <page
-      for="zope.app.container.interfaces.IContainer"
+      for="zope.container.interfaces.IContainer"
       name="ajax.inner.html"
       template="../ajax/innerHtml.pt"
       class="cybertools.container.base.ContainerView"

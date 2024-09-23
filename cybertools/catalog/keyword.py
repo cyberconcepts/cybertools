@@ -6,9 +6,9 @@
 import zope.index.keyword
 import zope.interface
 
-import zope.app.container.contained
 import zope.catalog.attribute
 import zope.catalog.interfaces
+import zope.container.contained
 
 
 class IKeywordIndex(zope.catalog.interfaces.IAttributeIndex,
@@ -20,6 +20,6 @@ class IKeywordIndex(zope.catalog.interfaces.IAttributeIndex,
 @zope.interface.implementer(IKeywordIndex)
 class KeywordIndex(zope.catalog.attribute.AttributeIndex,
                  zope.index.keyword.KeywordIndex,
-                 zope.app.container.contained.Contained):
+                 zope.container.contained.Contained):
 
     pass

@@ -329,8 +329,8 @@ provides a simple handler for this event. (In real life all this is
 done via configure.zcml - see relation/configure.zcml for an example that
 also provides the default behaviour.)
 
-  >>> from zope.app.container.interfaces import IObjectRemovedEvent
-  >>> from zope.app.container.contained import ObjectRemovedEvent
+  >>> from zope.lifecycleevent.interfaces import IObjectRemovedEvent
+  >>> from zope.container.contained import ObjectRemovedEvent
   >>> from zope.event import notify
   >>> from zope.interface import Interface
   >>> from cybertools.relation.registry import invalidateRelations

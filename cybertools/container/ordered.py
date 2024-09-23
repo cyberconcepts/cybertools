@@ -3,8 +3,8 @@
 """ Ordered container implementation.
 """
 
-from zope.app.container.ordered import OrderedContainer as BaseOrderedContainer
 from zope.cachedescriptors.property import Lazy
+from zope.container.ordered import OrderedContainer as BaseOrderedContainer
 from zope.i18nmessageid import ZopeMessageFactory as _
 from zope.interface import Interface
 from base import ContainerView

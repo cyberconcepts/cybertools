@@ -6,7 +6,7 @@
 import mimetypes
 import os
 from urllib.parse import urlencode
-from zope.app.container.contained import Contained
+from zope.container.contained import Contained
 from zope.cachedescriptors.property import Lazy
 from zope import component
 from zope.interface import implementer

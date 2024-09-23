@@ -1,11 +1,9 @@
 Ordered Containers
 ==================
 
-  ($Id$)
-
 Let's add an ordered container and place some objects in it:
       
-  >>> from zope.app.container.ordered import OrderedContainer
+  >>> from zope.container.ordered import OrderedContainer
   >>> c1 = OrderedContainer()
   >>> c1['sub1'] = OrderedContainer()
   >>> c1['sub2'] = OrderedContainer()

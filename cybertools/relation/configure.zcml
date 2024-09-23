@@ -1,5 +1,3 @@
-<!-- $Id$ -->
-
 <configure
    xmlns="http://namespaces.zope.org/zope"
    xmlns:browser="http://namespaces.zope.org/browser"
@@ -15,15 +13,15 @@
         interface=".interfaces.IRelationRegistryUpdate"
         />
     <require
-        interface="zope.app.catalog.interfaces.ICatalogQuery"
+        interface="zope.catalog.interfaces.ICatalogQuery"
         permission="zope.View"
         />
     <require
-        interface="zope.app.catalog.interfaces.ICatalogEdit"
+        interface="zope.catalog.interfaces.ICatalogEdit"
         permission="zope.ManageServices"
         />
     <require
-        interface="zope.app.container.interfaces.IContainer"
+        interface="zope.container.interfaces.IContainer"
         permission="zope.ManageServices"
         />
     <factory id="cybertools.relation.registry.RelationRegistry" />
@@ -38,13 +36,13 @@
 
   <subscriber
         for=".interfaces.IRelationRegistry
-             zope.app.container.interfaces.IObjectAddedEvent"
+             zope.lifecycleevent.interfaces.IObjectAddedEvent"
         handler=".registry.setupIndexes"
         />
 
   <subscriber
         for="zope.interface.Interface
-             zope.app.container.interfaces.IObjectRemovedEvent"
+             zope.lifecycleevent.interfaces.IObjectRemovedEvent"
         handler=".registry.invalidateRelations"
         />
 
