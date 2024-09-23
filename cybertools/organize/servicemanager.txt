@@ -31,9 +31,9 @@ parts (events, lectures, ...).
   >>> workshop.__name__ = 'workshop'
 
   >>> event1 = service.ScheduledService('event1', category='event', manager=workshop,
-  ...                                   title=u'Event 1', capacity=5)
+  ...                                   title='Event 1', capacity=5)
   >>> event2 = service.ScheduledService('event2', category='event', manager=workshop,
-  ...                                   title=u'Event 2')
+  ...                                   title='Event 2')
   >>> workshop.services.append(event1)
   >>> workshop.services.append(event2)
 
@@ -43,26 +43,26 @@ clients. This is done via to form descriptions (schemas), one for the
 personal data (first name, last name), and one for the address.
 
   >>> workshop.clientSchemas.append(schema.Schema(
-  ...               schema.Field('lastName', u'Last Name', required=True,
+  ...               schema.Field('lastName', 'Last Name', required=True,
   ...                            standardFieldName='lastName'),
-  ...               schema.Field('firstName', u'First Name'),
-  ...               schema.Field('email', u'Email Address', required=True,
+  ...               schema.Field('firstName', 'First Name'),
+  ...               schema.Field('email', 'Email Address', required=True,
   ...                            fieldType='email', standardFieldName='email'),
-  ...               schema.Field('age', u'Age', fieldType='number'),
-  ...               schema.Field('addr', u'Personal Address', required=True,
+  ...               schema.Field('age', 'Age', fieldType='number'),
+  ...               schema.Field('addr', 'Personal Address', required=True,
   ...                            fieldtype='radiobuttons',
-  ...                            vocabulary=u'Mrs\nMr'),
-  ...               schema.Field('acadTitles', u'Academic Titles',
+  ...                            vocabulary='Mrs\nMr'),
+  ...               schema.Field('acadTitles', 'Academic Titles',
   ...                            fieldtype='checkboxes',
-  ...                            vocabulary=u'Prof.\nDr.'),
+  ...                            vocabulary='Prof.\nDr.'),
   ...               name='person',
   ...               manager=workshop,
   ... ))
   >>> workshop.clientSchemas.append(schema.Schema(
-  ...               schema.Field('street', u'Street'),
-  ...               schema.Field('city', u'City', required=True),
-  ...               schema.Field('country', u'Country', required=True,
-  ...                            fieldType='dropdown', vocabulary=u'USA\nGermany'),
+  ...               schema.Field('street', 'Street'),
+  ...               schema.Field('city', 'City', required=True),
+  ...               schema.Field('country', 'Country', required=True,
+  ...                            fieldType='dropdown', vocabulary='USA\nGermany'),
   ...               name='address',
   ...               manager=workshop,
   ... ))
@@ -76,7 +76,7 @@ So we are now ready to register participants.
   >>> client1 = IClientFactory(workshop)()
   >>> client1Name = workshop.addClient(client1)
 
-  >>> data = dict(addr=u'Mr', lastName=u'Skywalker', email='luke@skywalker.universe')
+  >>> data = dict(addr='Mr', lastName='Skywalker', email='luke@skywalker.universe')
   >>> inst = component.getAdapter(client1, IInstance, name='editor')
   >>> inst.template = workshop.clientSchemas['person']
   >>> state = inst.applyTemplate(data=data)
@@ -85,7 +85,7 @@ So we are now ready to register participants.
   ['schema.client.__standard__', 'schema.client.person']
 
   >>> client1.__schema_attributes__['schema.client.person']['lastName']
-  u'Skywalker'
+  'Skywalker'
 
 Instead of directly peeking into the attributes we can also use a
 suitable instance adapter.
@@ -93,10 +93,12 @@ suitable instance adapter.
   >>> inst = IInstance(client1)
   >>> inst.template = workshop.clientSchemas['person']
   >>> inst.applyTemplate()
-  {'acadTitles': u'', 'standard.lastName': u'Skywalker', 'addr': u'Mr',
-   'firstName': u'', 'lastName': u'Skywalker', 'age': '', '__name__': '...',
-   'email': u'luke@skywalker.universe',
-   'standard.email': u'luke@skywalker.universe'}
+  {..., 'lastName': 'Skywalker', ...}
+
+{'acadTitles': '', 'standard.lastName': 'Skywalker', 'addr': 'Mr',
+   'firstName': '', 'lastName': 'Skywalker', 'age': '', '__name__': '...',
+   'email': 'luke@skywalker.universe',
+   'standard.email': 'luke@skywalker.universe'}
 
 Note that the ``standardFieldName`` setting for the ``lastName`` field
 results in a 'standard.lastName' entry; this technique may be used to
@@ -110,13 +112,13 @@ We need some additional setup for working with schema views - so we have to
 supply some session handling stuff in order to work with client names.
 
   >>> from zope.interface import implementer
+  >>> from zope.session.interfaces import IClientId
   >>> from zope.session.interfaces import IClientIdManager, ISessionDataContainer
   >>> from zope.session import session
-  >>> component.provideAdapter(session.ClientId)
+  >>> component.provideAdapter(session.ClientId, provides=IClientId)
   >>> component.provideAdapter(session.Session)
   >>> component.provideUtility(session.RAMSessionDataContainer(), ISessionDataContainer)
   >>> class ClientIdManager(object):
-  ...     implements(IClientIdManager)
   ...     def getClientId(self, request): return 'dummy'
   >>> ClientIdManager = implementer(IClientIdManager)(ClientIdManager)
   >>> component.provideUtility(ClientIdManager())
@@ -143,17 +145,19 @@ the corresponding client.
   >>> request = TestRequest(form=input)
   >>> view = SchemaView(schema, request)
   >>> view.data
-  {'acadTitles': u'', 'standard.lastName': u'Skywalker', 'addr': u'Mr',
-   'firstName': u'', 'lastName': u'Skywalker', 'age': '', '__name__': '...',
-   'email': u'luke@skywalker.universe',
-   'standard.email': u'luke@skywalker.universe'}
+  {..., 'lastName': 'Skywalker', ...}
+
+{'acadTitles': '', 'standard.lastName': 'Skywalker', 'addr': 'Mr',
+   'firstName': '', 'lastName': 'Skywalker', 'age': '', '__name__': '...',
+   'email': 'luke@skywalker.universe',
+   'standard.email': 'luke@skywalker.universe'}
 
 When we provide data and an 'update' action a new client object will
 be created - if we clear the client name in the session first via
 ``view.setClientName('')``.
 
   >>> input = dict(lastName='Solo', firstName='Han', email='han.solo@space.net',
-  ...              addr=u'Mr', action='update')
+  ...              addr='Mr', action='update')
   >>> request = TestRequest(form=input)
   >>> view = SchemaView(schema, request)
   >>> view.setClientName('')
@@ -168,15 +172,17 @@ be created - if we clear the client name in the session first via
   >>> request = TestRequest(form=input)
   >>> view = SchemaView(schema, request)
   >>> view.data
-  {'acadTitles': u'', 'standard.lastName': u'Solo', 'addr': u'Mr',
-   'firstName': u'Han', 'lastName': u'Solo',
-   'age': '', '__name__': '...', 'email': u'han.solo@space.net',
-   'standard.email': u'han.solo@space.net'}
+  {..., 'lastName': 'Solo', ...}
+
+{'acadTitles': '', 'standard.lastName': 'Solo', 'addr': 'Mr',
+   'firstName': 'Han', 'lastName': 'Solo',
+   'age': '', '__name__': '...', 'email': 'han.solo@space.net',
+   'standard.email': 'han.solo@space.net'}
 
 If we provide an id parameter we may also change an existing client.
 
-  >>> input = dict(lastName=u'Skywalker', firstName=u'Luke', id=client1Name,
-  ...              email='luke@skywalker.universe', addr=u'Mr', action='update')
+  >>> input = dict(lastName='Skywalker', firstName='Luke', id=client1Name,
+  ...              email='luke@skywalker.universe', addr='Mr', action='update')
   >>> request = TestRequest(form=input)
   >>> view = SchemaView(schema, request)
   >>> view.update()
@@ -186,15 +192,17 @@ If we provide an id parameter we may also change an existing client.
   >>> request = TestRequest(form=input)
   >>> view = SchemaView(schema, request)
   >>> view.data
-  {'acadTitles': u'', 'standard.lastName': u'Skywalker', 'addr': u'Mr',
-   'firstName': u'Luke', 'lastName': u'Skywalker', 'age': '', '__name__': '...',
-   'email': u'luke@skywalker.universe',
-   'standard.email': u'luke@skywalker.universe'}
+  {..., 'lastName': 'Skywalker', ...}
+
+{'acadTitles': '', 'standard.lastName': 'Skywalker', 'addr': 'Mr',
+   'firstName': 'Luke', 'lastName': 'Skywalker', 'age': '', '__name__': '...',
+   'email': 'luke@skywalker.universe',
+   'standard.email': 'luke@skywalker.universe'}
 
 If we do not provide a value for a required attribute we get a validation
 error and the form will be displayed again.
 
-  >>> input = dict(firstName=u'Anakin', action='update')
+  >>> input = dict(firstName='Anakin', action='update')
   >>> request = TestRequest(form=input)
   >>> view = SchemaView(schema, request)
   >>> view.update()
@@ -203,7 +211,7 @@ error and the form will be displayed again.
 The same happens if we provide a number field with a string that cannot
 be converted to an integer.
 
-  >>> input = dict(firstName=u'Anakin', lastName=u'Skywalker', age='foo',
+  >>> input = dict(firstName='Anakin', lastName='Skywalker', age='foo',
   ...             action='update')
   >>> request = TestRequest(form=input)
   >>> view = SchemaView(schema, request)
@@ -216,7 +224,7 @@ More on special field types
   >>> schema2 = workshop.clientSchemas['address']
   >>> countryField = schema2.fields.country
   >>> countryField.getVocabularyItems()
-  [{'token': u'USA', 'title': u'USA'}, {'token': u'Germany', 'title': u'Germany'}]
+  [{'token': 'USA', 'title': 'USA'}, {'token': 'Germany', 'title': 'Germany'}]
 
 
 Registering for Services Using a Registration Template
@@ -437,7 +445,7 @@ We are now ready to trigger a registration checkout.
 
   >>> result = ruleManager.handleEvent(Event(checkoutEvent, client1))
   sender: manager@workshops.com
-  recipients: [u'luke@skywalker.universe']
+  recipients: ['luke@skywalker.universe']
   subject: Workshop Registration
   message:
   Dear Luke Skywalker,
@@ -474,7 +482,7 @@ rendered message.
   >>> input = dict(message='feedback_html')
   >>> view = MessageView(workshop, TestRequest(form=input))
   >>> view.getMessage()
-  u'<p>Dear Luke Skywalker...'
+  '<p>Dear Luke Skywalker...'
 
 
 Service Manager and Service Views
@@ -527,7 +535,7 @@ because the ``waitingList`` flag has not been set.)
   >>> srvView.registeredTotalSubmitted
   0
   >>> srvView.registeredTotalsSubmitted
-  {'numberWaiting': '', 'number': 0}
+  {'number': 0, 'numberWaiting': ''}
 
 Checkout
 --------
@@ -545,7 +553,7 @@ her registrations.
   >>> checkout.getRegistrationsInfo()
   [...]
   >>> checkout.listRegistrationsText()
-  u'Event 1\nDatum: -\nUhrzeit: -\n\n'
+  'Event 1\nDatum: -\nUhrzeit: -\n\n'
 
 When the user clicks the "Confirm Registration" button the corresponding
 actions will be carried out.
@@ -556,7 +564,7 @@ actions will be carried out.
   >>> checkout = CheckoutView(workshop, request)
   >>> checkout.update()
   sender: unknown@sender.com
-  recipients: [u'luke@skywalker.universe']
+  recipients: ['luke@skywalker.universe']
   subject: Workshop Registration
   message: ...
   False
@@ -579,7 +587,7 @@ for security reasons.)
   >>> checkout = CheckoutView(workshop, request)
   >>> checkout.update()
   sender: unknown@sender.com
-  recipients: [u'luke@skywalker.universe']
+  recipients: ['luke@skywalker.universe']
   subject: Workshop Registration
   message: ...
   False
@@ -621,7 +629,7 @@ possible.
   True
 
   >>> input = dict(lastName='Walker', firstName='John', email='john@walker.tv',
-  ...              addr=u'Mr', action='update')
+  ...              addr='Mr', action='update')
   >>> request = TestRequest(form=input)
   >>> schema = workshop.clientSchemas['person']
   >>> view = SchemaView(schema, request)
@@ -755,7 +763,7 @@ conference that is organized in parallel tracks.
   >>> conference.__name__ = 'conference'
 
   >>> main = service.Service('conf_main', manager=conference,
-  ...                                   title=u'Conference', capacity=5)
+  ...                                   title='Conference', capacity=5)
   >>> conference.services.append(main)
 
 

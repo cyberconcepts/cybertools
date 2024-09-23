@@ -14,7 +14,7 @@ class TestMailer(object):
         msg = message_from_string(message)
         print('subject:', msg['Subject'])
         print('message:')
-        print(msg.get_payload(decode=True))
+        print(msg.get_payload(decode=True).decode('UTF-8'))
 
 
 class Test(unittest.TestCase):

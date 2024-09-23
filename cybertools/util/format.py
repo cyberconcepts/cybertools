@@ -66,12 +66,12 @@ def toStr(value, encoding='UTF-8'):
 
 def toUnicode(value, encoding='UTF-8', fallback='ISO8859-15'):
     # or: fallback='CP852'
-    if isinstance(value, unicode):
+    if isinstance(value, str):
         return value
-    elif isinstance(value, str):
+    elif isinstance(value, bytes):
         try:
             return value.decode(encoding)
         except UnicodeDecodeError:
             return value.decode(fallback)
     else:
-        return u''
+        return ''

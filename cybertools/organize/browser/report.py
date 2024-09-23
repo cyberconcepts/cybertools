@@ -4,7 +4,7 @@
 """
 
 import csv
-from io import StringIO
+from io import BytesIO, StringIO
 import itertools
 from zope import component
 from zope.cachedescriptors.property import Lazy
@@ -106,7 +106,7 @@ class RegistrationsExportCsv(BaseView):
                         #waiting.append(reg.numberWaiting)
                         if reg.number or reg.numberWaiting:
                             hasRegs = True
-                        if reg.timeStamp < timeStamp:
+                        if timeStamp == '' or reg.timeStamp < timeStamp:
                             timeStamp = reg.timeStamp
             if not hasRegs:
                 continue
@@ -134,6 +134,7 @@ class RegistrationsExportCsv(BaseView):
             delimiter = ';'
         methodName = self.request.get('get_data_method', 'getAllDataInColumns')
         method = getattr(self, methodName, self.getData)
+        #output = BytesIO()
         output = StringIO()
         try:
             csv.writer(output, dialect='excel', delimiter=delimiter,
@@ -153,6 +154,7 @@ class RegistrationsExportCsv(BaseView):
         return result
 
     def encode(self, text):
+        return text
         if isinstance(text, str):
             result = []
             for c in text:
