@@ -1,36 +1,16 @@
-#
-#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.process.execution
 
-"""
-Execution of a process.
-
-$Id$
+""" Execution of a process.
 """
 
-from zope.interface import implements
+from zope.interface import implementer
 from zope.component import adapts
 from cybertools.process.interfaces import IActivity, IExecution
 from cybertools.process.interfaces import IWorkItem, IActionHandler
 
 
+@implementer(IExecution)
 class Execution(object):
-
-    implements(IExecution)
 
     def __init__(self, parent=None):
         self._currentActivity = None
@@ -65,9 +45,8 @@ class Execution(object):
             successor.execute(execution)
 
 
+@implementer(IWorkItem)
 class WorkItem(object):
-
-    implements(IWorkItem)
 
     def __init__(self, execution):
         self._execution = execution
@@ -88,11 +67,11 @@ class WorkItem(object):
         self.execution.trigger()
 
 
+@implementer(IActionHandler)
 class WorkActionHandler(object):
     """ A simple action handler that creates a work item.
     """
 
-    implements(IActionHandler)
     adapts(IActivity)
 
     def __init__(self, context):

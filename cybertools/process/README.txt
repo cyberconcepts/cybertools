@@ -1,8 +1,6 @@
 Business Process Management
 ===========================
 
-  ($Id$)
-
 We start with the definition of a simple process:
 
   startActivity --> n01 --> endActivity
@@ -28,15 +26,15 @@ process' end activity:
 So let's now associate an action handler with the process' activitys:
 
   >>> from zope.component import provideAdapter, adapts
-  >>> from zope.interface import implements
+  >>> from zope.interface import implementer
   >>> from cybertools.process.interfaces import IActivity, IActionHandler
 
   >>> class DummyHandler(object):
-  ...     implements(IActionHandler)
   ...     adapts(IActivity)
   ...     def __init__(self, context): pass
   ...     def handle(self, execution):
-  ...         print 'working.'
+  ...         print('working.')
+  >>> DummyHandler = implementer(IActionHandler)(DummyHandler)
 
   >>> provideAdapter(DummyHandler)
   >>> execution = process.execute()
