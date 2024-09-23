@@ -1,29 +1,10 @@
-#
-#  Copyright (c) 2006 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.reporter.browser.batch
 
-"""
-A browser view class for batching to be used by a macro or some other
+""" A browser view class for batching to be used by a macro or some other
 HTML providing template.
-
-$Id$
 """
 
-import urllib
+import urllib.parse
 from zope.cachedescriptors.property import Lazy
 from cybertools.reporter.batch import Batch
 
@@ -81,7 +62,7 @@ class BatchView(object):
                 v = form.get(p)
                 if v:
                     params[p] = v
-        return '?' + urllib.urlencode(params)
+        return '?' + urllib.parse.urlencode(params)
 
     def url(self, page):
         return str(self.request.URL) + self.urlParams(page)
@@ -90,7 +71,7 @@ class BatchView(object):
         try:
             url = self.request.URL[-1]
         except KeyError: # make DocTest/TestRequest happy
-            url = `self.request.URL`
+            url = 'self.request.URL'
         return ''.join((url, '/@@ajax.inner.html', self.urlParams(page)))
 
     def navOnClick(self, page):

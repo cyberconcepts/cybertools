@@ -1,35 +1,16 @@
-#
-#  Copyright (c) 2010 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.reporter.resultset
 
-"""
-Result set and related classes for reporting.
+""" Result set and related classes for reporting.
 
 Now obsolete (but still used in some projects),
 use cybertools.composer.report.result instead.
-
-$Id$
 """
 
 # TODO: move the generic stuff to cybertools.reporter.result
 
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
-from zope.interface import Interface, implements
+from zope.interface import Interface, implementer
 
 from cybertools.composer.schema import Schema
 from cybertools.composer.schema.instance import Instance
@@ -37,10 +18,9 @@ from cybertools.reporter.interfaces import IDataSource
 from cybertools.reporter.interfaces import IResultSet, IRow, ICell
 
 
+@implementer(ICell)
 class Cell(object):
     # TODO: replace Cell by FieldInstance
-
-    implements(ICell)
 
     def __init__(self, field, value, row):
         self.field = field
@@ -66,9 +46,8 @@ class Cell(object):
     url = urlTitle = u''
 
 
+@implementer(IRow)
 class Row(Instance):
-
-    implements(IRow)
 
     def __init__(self, context, resultSet):
         self.context = context
@@ -89,11 +68,11 @@ class Row(Instance):
             yield rf(f, getattr(self.context, f.name), self)
 
 
+@implementer(IRow)
 class ContentRow(Instance):
     """ A row adapter for standard content objects.
     """
 
-    implements(IRow)
     adapts(Interface)
 
     @Lazy
@@ -101,9 +80,9 @@ class ContentRow(Instance):
         return self.template.fields
 
 
+@implementer(IResultSet)
 class ResultSet(object):
 
-    implements(IResultSet)
     adapts(IDataSource)
 
     view = None

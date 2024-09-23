@@ -23,9 +23,9 @@ then provide a listing of persons...
   >>> from cybertools.organize.party import Person
 
   >>> from datetime import date
-  >>> pdata = ((u'John', u'Smith', '1956-08-01'),
-  ...          (u'David', u'Waters', '1972-12-24'),
-  ...          (u'Carla', u'Myers', '1981-10-11'))
+  >>> pdata = (('John', 'Smith', '1956-08-01'),
+  ...          ('David', 'Waters', '1972-12-24'),
+  ...          ('Carla', 'Myers', '1981-10-11'))
   >>> persons = DataSource([Person(f, s, date(*[int(d) for d in b.split('-')]))
   ...                         for f, s, b in pdata])
 
@@ -41,18 +41,18 @@ then provide a listing of persons...
   >>> component.provideAdapter(DateFieldInstance, name='date')
 
   >>> rset = IResultSet(persons)
-  >>> rset.schema = Schema(Field(u'firstName'), Field(u'lastName'),
-  ...                      Field(u'birthDate', fieldType='date'))
+  >>> rset.schema = Schema(Field('firstName'), Field('lastName'),
+  ...                      Field('birthDate', fieldType='date'))
 
   >>> rows = list(rset.getRows())
   >>> len(rows)
   3
 
   >>> for r in rows:
-  ...     print r.applyTemplate()
-  {u'lastName': u'John', u'birthDate': '1956-08-01', u'firstName': u'Smith'}
-  {u'lastName': u'David', u'birthDate': '1972-12-24', u'firstName': u'Waters'}
-  {u'lastName': u'Carla', u'birthDate': '1981-10-11', u'firstName': u'Myers'}
+  ...     print(r.applyTemplate())
+  {'firstName': 'Smith', 'lastName': 'John', 'birthDate': '1956-08-01'}
+  {'firstName': 'Waters', 'lastName': 'David', 'birthDate': '1972-12-24'}
+  {'firstName': 'Myers', 'lastName': 'Carla', 'birthDate': '1981-10-11'}
 
 For the browser presentation we can also use a browser view providing
 the result set with extended attributes:
@@ -72,7 +72,7 @@ Batching
 
 We'll use a fairly simple Iterable:
 
-  >>> it = xrange(14)
+  >>> it = range(14)
 
   >>> from cybertools.reporter.batch import Batch
   >>> b = Batch(it, size=5, overlap=1, orphan=2)
@@ -99,8 +99,7 @@ We are now ready to use the corresponding browser view:
   >>> bview.items()
   [3, 4, 5, 6]
   >>> bview.last
-  {'url': 'http://127.0.0.1?b_size=4&b_overlap=1&b_page=5&b_orphan=0',
-   'navOnClick': "dojo.io.updateNode(...); return false;",
-   'title': 5}
+  {'title': 5, 'url': 'http://127.0.0.1?b_page=5&b_size=4&b_overlap=1&b_orphan=0',
+   'navOnClick': "dojo.io.updateNode(...); return false;"}
 
 

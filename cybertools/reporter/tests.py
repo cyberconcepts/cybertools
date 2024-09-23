@@ -1,9 +1,8 @@
-# $Id$
+# cybertools.reporter.tests
 
 import unittest, doctest
 from zope.app.testing import ztapi
 from zope.interface.verify import verifyClass
-from zope.interface import implements
 
 from cybertools.reporter.interfaces import IResultSet, IRow, ICell
 
