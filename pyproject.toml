@@ -14,6 +14,7 @@ authors = [{name = "Helmut Merz", email = "helmutm@cy55.de"}]
 dependencies = [
 	"bs4",
 	"BTrees",
+	"docutils",
 	"lxml",
 	"persistent",
 	"pillow",

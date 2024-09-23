@@ -2,8 +2,6 @@
 Standard Wiki Pre-processors
 ============================
 
-  ($Id$)
-
 
 MediaWiki Formatting
 ====================
@@ -24,6 +22,6 @@ Embedding of Images
 
   >>> src = '''[[image:media01.jpg]]'''
 
-  >>> print preprocess(src)
+  >>> print(preprocess(src))
   .. image:: media01.jpg
 

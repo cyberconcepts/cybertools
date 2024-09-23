@@ -1,14 +1,11 @@
-#! /usr/bin/python
+# cybertools.wiki.tests
 
-"""
-Tests for the 'cybertools.wiki' package.
-
-$Id$
+""" Tests for the 'cybertools.wiki' package.
 """
 
 import unittest, doctest
 from zope import component
-from zope.interface import implements
+from zope.interface import implementer
 from zope.intid.interfaces import IIntIds
 from zope.publisher.interfaces.browser import IBrowserRequest
 from zope.traversing.browser.interfaces import IAbsoluteURL
@@ -25,9 +22,8 @@ from cybertools.wiki.interfaces import IWiki, IWikiPage, IMediaObject
 #from cybertools.wiki.tracking import link
 
 
+@implementer(IAbsoluteURL)
 class WikiURL(object):
-
-    implements(IAbsoluteURL)
 
     def __init__(self, context, request):
         self.context = context
