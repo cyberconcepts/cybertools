@@ -1,23 +1,6 @@
-#
-#  Copyright (c) 2013 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.relation.registry
 
-"""
-Implementation of the utilities needed for the relations package.
+""" Implementation of the utilities needed for the relations package.
 """
 
 from logging import getLogger
@@ -26,9 +9,9 @@ from persistent import Persistent
 from persistent.interfaces import IPersistent
 from zope import component
 from zope.component import adapts
-from zope.interface import Interface, Attribute, implements
-from zope.app.catalog.catalog import Catalog, ResultSet
-from zope.app.catalog.field import FieldIndex
+from zope.interface import Interface, Attribute, implementer
+from zope.catalog.catalog import Catalog, ResultSet
+from zope.catalog.field import FieldIndex
 from zope.intid.interfaces import IIntIds
 from zope.location.interfaces import ILocation
 from zope.event import notify
@@ -36,17 +19,17 @@ from zope.interface.interfaces import ObjectEvent
 from zope.security.proxy import removeSecurityProxy
 from zope.traversing.api import getName, getParent
 
-from interfaces import IRelationRegistry, IRelationInvalidatedEvent, IRelation
+from cybertools.relation.interfaces import IRelationRegistry
+from cybertools.relation.interfaces import IRelationInvalidatedEvent, IRelation
 
 
 logger = getLogger('cybertools.relation.registry')
 
 
+@implementer(IRelationRegistry)
 class DummyRelationRegistry(object):
     """ Dummy implementation for demonstration and test purposes.
     """
-
-    implements(IRelationRegistry)
 
     def __init__(self):
         self.relations = []
@@ -112,11 +95,10 @@ class DummyRelationRegistry(object):
         return result
 
 
+@implementer(IRelationRegistry)
 class RelationRegistry(Catalog):
     """ Local utility for registering (cataloguing) and searching relations.
     """
-
-    implements(IRelationRegistry)
 
     relations = None
 
@@ -202,12 +184,12 @@ class IIndexableRelation(Interface):
     """
 
 
+@implementer(IIndexableRelation)
 class IndexableRelationAdapter(object):
     """ Adapter for providing the attributes needed for indexing
         relation objects.
     """
 
-    implements(IIndexableRelation)
     adapts(IRelation)
 
     def __init__(self, context):
@@ -296,8 +278,9 @@ def setRelationSingle(relation, forSecond=True):
 
 # events and handlers
 
+@implementer(IRelationInvalidatedEvent)
 class RelationInvalidatedEvent(ObjectEvent):
-    implements(IRelationInvalidatedEvent)
+    pass
 
 
 def invalidateRelations(context, event):

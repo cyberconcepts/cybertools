@@ -1,8 +1,6 @@
 Quickstart Instructions
 =======================
 
-  ($Id$)
-
 In the ++etc++/default folder of your Zope 3 site create a Unique Id Utility
 and a relation registry.
 
@@ -87,15 +85,16 @@ reference these objects via IntIds later; the __parent__ and __name__
 attributes are also needed later when we send an IObjectRemovedEvent event):
 
   >>> from persistent import Persistent
-  >>> from zope.interface import implements
+  >>> from zope.interface import implementer
   >>> from cybertools.relation.interfaces import IRelatable
 
   >>> class Person(Persistent):
   ...     __name__ = __parent__ = None
-  ...     implements(IRelatable)
+  >>> Person = implementer(IRelatable)(Person)
 
   >>> class City(Persistent):
-  ...     implements(IRelatable)
+  ...     pass
+  >>> City = implementer(IRelatable)(City)
 
   >>> clark = Person()
   >>> kirk = Person()
@@ -396,10 +395,8 @@ We also need a class for the predicate objects that will be used for
 the constructor of the NamedPredicateRelation class:
 
   >>> from cybertools.relation.interfaces import IPredicate
-  >>> from zope.interface import implements
 
   >>> class Predicate(object):
-  ...     implements(IPredicate)
   ...     def __init__(self, name):
   ...         self.name = name
   ...         self.forClass = None
@@ -407,6 +404,7 @@ the constructor of the NamedPredicateRelation class:
   ...         if self.forClass is not None:
   ...             return self.forClass(self, None, None).getPredicateName()
   ...         return self.name
+  >>> Predicate = implementer(IPredicate)(Predicate)
 
 We can now create a predicate with the name '_lives in_' (that may replace
 our LivesIn relation class from above) and use for registration:

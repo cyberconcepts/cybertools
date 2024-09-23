@@ -44,15 +44,15 @@ class TestRelation(unittest.TestCase):
     def testInterfaces(self):
         verifyClass(IPredicate, Relation)
         verifyClass(IRelation, Relation)
-        self.assert_(IDyadicRelation.providedBy(DyadicRelation(None, None)),
+        self.assertTrue(IDyadicRelation.providedBy(DyadicRelation(None, None)),
             'Interface IDyadicRelation is not implemented by class DyadicRelation.')
         verifyClass(IDyadicRelation, DyadicRelation)
-        self.assert_(ITriadicRelation.providedBy(TriadicRelation(None, None, None)),
+        self.assertTrue(ITriadicRelation.providedBy(TriadicRelation(None, None, None)),
              'Interface ITriadicRelation is not implemented by class TriadicRelation.')
         verifyClass(ITriadicRelation, TriadicRelation)
         # avoid dependency on import:
         from cybertools.relation.registry import RelationRegistry
-        self.assert_(IRelationRegistry.providedBy(RelationRegistry()),
+        self.assertTrue(IRelationRegistry.providedBy(RelationRegistry()),
             'Interface IRelationRegistry is not implemented by class RelationRegistry.')
         verifyClass(IRelationRegistry, RelationRegistry)
 
