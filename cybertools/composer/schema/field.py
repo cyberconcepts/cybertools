@@ -405,16 +405,16 @@ class ListFieldInstance(FieldInstance):
         if isinstance(value, str):
             return value
         if value is None:
-            return u''
-        return u'\n'.join(unicode(self.valueFieldInstance.marshall(v)) for v in value)
+            return ''
+        return '\n'.join(self.valueFieldInstance.marshall(v) for v in value)
         #return [self.valueFieldInstance.marshall(v) for v in value]
 
     def display(self, value):
         if not value:
-            return u''
+            return ''
         if isinstance(value, str):
             return value
-        return u' | '.join(unicode(self.valueFieldInstance.display(v)) for v in value)
+        return ' | '.join(self.valueFieldInstance.display(v) for v in value)
 
     def unmarshall(self, value):
         if isinstance(value, str):
