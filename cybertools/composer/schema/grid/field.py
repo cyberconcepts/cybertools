@@ -157,6 +157,12 @@ class RecordsFieldInstance(GridFieldInstance):
     def getRenderer(self, name):
         return grid_macros.macros.get(name)
 
+    def fromKeyTable(self, value):
+        fis = self.columnFieldInstances
+        return [dict([(fis[0].name, k)] + 
+                     [(fi.name, v[i]) for i, v in enumerate(fis[1:])])
+                for k, v in value.items()]
+
     def marshall(self, value):
         result = []
         value = value or []
@@ -257,6 +263,13 @@ class KeyTableFieldInstance(RecordsFieldInstance):
     def validate(self, value, data=None):
         pass
 
+
+class ContextBasedRecordsFieldInstance(RecordsFieldInstance):
+
+    @Lazy
+    def columnTypes(self):
+        obj = self.clientInstance.context
+        return [Field(name) for name in obj.columnNames]
 
 class ContextBasedKeyTableFieldInstance(KeyTableFieldInstance):
 

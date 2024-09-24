@@ -51,6 +51,16 @@ class Records(Grid):
                               instanceName='records',))
 
 
+class RecordsTable(Grid):
+
+    __typeInfo__ = ('recordstable',
+                    FieldType('recordstable', 'recordstable',
+                              u'A series of records or rows.',
+                              displayRenderer='display_records',
+                              inputRenderer='input_records',
+                              instanceName='recordstable',))
+
+
 class KeyTable(Grid):
 
     __typeInfo__ = ('keytable',
