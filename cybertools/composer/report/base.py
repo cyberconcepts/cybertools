@@ -1,27 +1,10 @@
-#
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.composer.report.base
 
-"""
-Basic classes for report management.
+""" Basic classes for report management.
 """
 
 import operator as standard_operators
-from zope.interface import implements
+from zope.interface import implementer
 
 from cybertools.composer.base import Component, Element, Compound
 from cybertools.composer.base import Template
@@ -33,9 +16,8 @@ from cybertools.util.jeep import Jeep
 from cybertools.util.randomname import generateName
 
 
+@implementer(IReportManager)
 class ReportManager(object):
-
-    implements(IReportManager)
 
     reports = manager = None
     reportsFactory = dict
@@ -63,9 +45,8 @@ class ReportManager(object):
         return self.reports.get(id)
 
 
+@implementer(IReport)
 class Report(Template):
-
-    implements(IReport)
 
     name = identifier = u''
     #title = description = u''
@@ -162,17 +143,15 @@ class Report(Template):
         return [f for f in self.fields if f.name == field.output]
 
 
+@implementer(IQueryCriteria)
 class BaseQueryCriteria(Component):
-
-    implements(IQueryCriteria)
 
     def check(self, obj):
         return True
 
 
+@implementer(ILeafQueryCriteria)
 class LeafQueryCriteria(BaseQueryCriteria, Element):
-
-    implements(ILeafQueryCriteria)
 
     def __init__(self, name, operator, comparisonValue, field):
         self.name = name
@@ -235,9 +214,8 @@ operators = {'any': checkAny, 'not_any': checkNotAny,
              'in': checkIn, 'only': checkOnly}
 
 
+@implementer(ICompoundQueryCriteria)
 class CompoundQueryCriteria(BaseQueryCriteria, Compound):
-
-    implements(ICompoundQueryCriteria)
 
     logicalOperator = 'and'
 

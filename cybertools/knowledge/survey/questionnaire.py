@@ -1,35 +1,17 @@
-#
-#  Copyright (c) 2015 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.knowledge.survey.questionnaire
 
-"""
-Questionnaires, questions and other stuff needed for surveys.
+""" Questionnaires, questions and other stuff needed for surveys.
 """
 
-from zope.interface import implements
+from zope.interface import implementer
 from cybertools.knowledge.survey.interfaces import IQuestionnaire
 from cybertools.knowledge.survey.interfaces import IQuestionGroup, IQuestion
 from cybertools.knowledge.survey.interfaces import IFeedbackItem, IResponse
 
 
+@implementer(IQuestionnaire)
 class Questionnaire(object):
 
-    implements(IQuestionnaire)
-    
     def __init__(self):
         self.questionGroups = []
         self.questions = []
@@ -40,9 +22,8 @@ class Questionnaire(object):
         return self.questionGroups
 
 
+@implementer(IQuestionGroup)
 class QuestionGroup(object):
-
-    implements(IQuestionGroup)
 
     def __init__(self, questionnaire):
         self.questionnaire = questionnaire
@@ -50,9 +31,8 @@ class QuestionGroup(object):
         self.feedbackItems = []
 
 
+@implementer(IQuestion)
 class Question(object):
-
-    implements(IQuestion)
 
     _answerRange = None
     
@@ -65,18 +45,16 @@ class Question(object):
         self.answerRange = None
 
 
+@implementer(IFeedbackItem)
 class FeedbackItem(object):
 
-    implements(IFeedbackItem)
-    
     def __init__(self, text=u''):
         self.text = text
 
 
+@implementer(IResponse)
 class Response(object):
 
-    implements(IResponse)
-    
     def __init__(self, questionnaire, party):
         self.questionnaire = questionnaire
         self.party = party
