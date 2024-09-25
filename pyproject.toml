@@ -21,6 +21,7 @@ dependencies = [
 	"zope.app.container",
 	"zope.app.file",
 	"zope.app.rotterdam",
+	"zope.app.security",
 	"zope.app.testing",
 	"zope.authentication",
 	"zope.browser",
