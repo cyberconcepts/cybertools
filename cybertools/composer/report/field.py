@@ -105,8 +105,8 @@ class Field(Component):
     def getValue(self, row):
         value = self.getRawValue(row)
         if value is None:
-            return u''
-        if isinstance(value, basestring):
+            return ''
+        if isinstance(value, str):
             return value
         return getattr(value, 'title', str(value))
 
