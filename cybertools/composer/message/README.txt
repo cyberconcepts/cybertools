@@ -2,8 +2,6 @@
 Message Management
 ==================
 
-  ($Id$)
-
   >>> from zope import component
   >>> from cybertools.composer.message.base import MessageManager, Message
 
@@ -25,11 +23,11 @@ Message interpolation
 
   >>> from cybertools.composer.message.instance import MessageTemplate
   >>> t = MessageTemplate(messageText)
-  >>> print t.safe_substitute({
+  >>> print(t.safe_substitute({
   ...           'person.firstname': 'John', 'person.lastname': 'Smith',
   ...           '@@list_registrations_text': '0815: Python Introduction',
   ...           'services': 'events',
-  ...           'footer': 'Regards, $sender'})
+  ...           'footer': 'Regards, $sender'}))
   Dear John Smith,
   You have been registered for the following events.
   0815: Python Introduction
@@ -42,11 +40,11 @@ Working with message instances
   >>> from cybertools.composer.message.instance import MessageInstance
   >>> mi = MessageInstance(None, manager.messages['feedback_text'], manager)
   >>> for key, value in mi.applyTemplate().items():
-  ...     print key + ':', value
+  ...     print(key + ':', value)
   url:
+  subjectLine:
   text: Dear $person.firstname $person.lastname,
   You have been registered for the following events.
   $@@list_registrations_text
   Best regards, Jack
   <BLANKLINE>
-  subjectLine:

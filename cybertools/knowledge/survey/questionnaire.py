@@ -82,7 +82,7 @@ class Response(object):
                 if qu.questionType not in (None, 'value_selection'):
                     continue
                 value = self.values.get(qu)
-                if value is None or isinstance(value, basestring):
+                if value is None or isinstance(value, str):
                     continue
                 answerRange = (qu.answerRange or 
                                self.questionnaire.defaultAnswerRange)

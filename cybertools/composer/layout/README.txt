@@ -47,4 +47,4 @@ Browser Views
   >>> page = Page(Document(), TestRequest())
 
   >>> page()
-  u'<!DOCTYPE ...>...<html ...>...</html>...'
+  '<!DOCTYPE ...>...<html ...>...</html>...'

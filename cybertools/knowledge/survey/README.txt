@@ -48,16 +48,16 @@ Now let's calculate the result for resp01.
 
   >>> res = resp01.getResult()
   >>> for fi, score in res:
-  ...     print fi.text, score
+  ...     print(fi.text, score)
   fi03 4.1
   fi01 2.7
   fi02 0.7
 
   >>> res = resp02.getResult()
   >>> for fi, score in res:
-  ...     print fi.text, score
+  ...     print(fi.text, score)
   fi03 4.0
-  fi01 2.4
+  fi01 2.4...
 
 Grouped feedback items
 ----------------------
@@ -70,12 +70,12 @@ Grouped feedback items
 
   >>> res = resp01.getGroupedResult()
   >>> for r in res:
-  ...     print r['feedback'].text, round(r['score'], 2), r['rank']
+  ...     print(r['feedback'].text, round(r['score'], 2), r['rank'])
   fi02 0.58 1
 
   >>> res = resp02.getGroupedResult()
   >>> for r in res:
-  ...     print r['feedback'].text, round(r['score'], 2), r['rank']
+  ...     print(r['feedback'].text, round(r['score'], 2), r['rank'])
   fi03 0.75 1
 
 Team evaluation
@@ -89,5 +89,7 @@ Team evaluation
 
   >>> teamData = resp01.getTeamResult([qugroup], [resp01, resp03])
   >>> teamData
-  [{'average': 0.6666...}]
+  [{'group': ...}]
+
+[{'average': 0.6666...}]
 

@@ -66,13 +66,13 @@ class GridFieldInstance(ListFieldInstance):
         return result
 
     def marshall(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             return value
         v = value or []
         for row in v:
             for fi in self.columnFieldInstances:
                 vr = fi.marshall(row[fi.name])
-                if isinstance(vr, basestring):
+                if isinstance(vr, str):
                     row[fi.name] = vr.replace('\n', '\\n').replace('"', '\\"')
         empty = {}
         for fi in self.columnFieldInstances:
@@ -136,9 +136,10 @@ class GridFieldInstance(ListFieldInstance):
             if idx is not None:
                 fi.index = idx
             value = fi.unmarshall(row.get(fi.name) or u'')
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 value = value.strip()
-            if idx < cardinality:
+            #if idx < cardinality:
+            if cardinality is not None and (idx is None or idx < cardinality):
                 item[fi.name] = value
             else:
                 if fi.default is not None:

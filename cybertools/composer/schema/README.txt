@@ -12,11 +12,11 @@ Working with predefined schemas
 We start with setting up a schema with fields.
 
   >>> serviceSchema = Schema(
-  ...     Field(u'title', renderFactory=None),
-  ...     Field(u'description'),
-  ...     Field(u'start'),
-  ...     Field(u'end'),
-  ...     Field(u'capacity'),
+  ...     Field('title', renderFactory=None),
+  ...     Field('description'),
+  ...     Field('start'),
+  ...     Field('end'),
+  ...     Field('capacity'),
   ... )
 
 For using a schema we need some class that we can use for creating
@@ -42,7 +42,7 @@ correct conversion of input data to context attributes.
   <...FormState object ...>
 
   >>> srv.title, srv.description, srv.capacity
-  (u'Service', u'', u'30')
+  ('Service', '', '30')
 
 Field types
 -----------
@@ -62,7 +62,7 @@ Field types
 Dynamic default values
 ----------------------
 
-  >>> idField = Field(u'id', default='user/title|string:???', defaultValueType='tales')
+  >>> idField = Field('id', default='user/title|string:???', defaultValueType='tales')
   >>> idField.getDefaultValue()
   '???'
 
@@ -70,27 +70,27 @@ Dynamic default values
 Creating a schema from an interface
 ===================================
 
-  >>> from zope.interface import Interface, implements
+  >>> from zope.interface import Interface, implementer
   >>> import zope.schema
   >>> from cybertools.composer.schema.factory import SchemaFactory
   >>> component.provideAdapter(SchemaFactory)
 
   >>> class IPerson(Interface):
-  ...    firstName = zope.schema.TextLine(title=u'First name')
-  ...    lastName = zope.schema.TextLine(title=u'Last name')
-  ...    age = zope.schema.Int(title=u'Age')
+  ...    firstName = zope.schema.TextLine(title='First name')
+  ...    lastName = zope.schema.TextLine(title='Last name')
+  ...    age = zope.schema.Int(title='Age')
 
   >>> class Person(object):
-  ...     implements(IPerson)
-  ...     def __init__(self, firstName=u'', lastName=u'', age=None):
+  ...     def __init__(self, firstName='', lastName='', age=None):
   ...         self.firstName, self.lastName, self.age = firstName, lastName, age
+  >>> Person = implementer(IPerson)(Person)
 
   >>> from cybertools.composer.schema.interfaces import ISchemaFactory
   >>> factory = ISchemaFactory(Person())
 
   >>> schema = factory(IPerson)
   >>> for f in schema.fields:
-  ...     print f.name, f.title, f.fieldType
+  ...     print(f.name, f.title, f.fieldType)
   firstName First name textline
   lastName Last name textline
   age Age number
@@ -109,7 +109,7 @@ Using a more specialized schema factory
   >>> factory = ISchemaFactory(Person())
   >>> schema = factory(IPerson)
   >>> for f in schema.fields:
-  ...     print f.name, f.title, f.fieldType
+  ...     print(f.name, f.title, f.fieldType)
   lastName Last name textline
   age Age number
 
@@ -128,9 +128,9 @@ context object.
   >>> component.provideAdapter(NumberFieldInstance, name='number')
 
   >>> from cybertools.composer.schema.instance import Instance
-  >>> component.provideAdapter(Instance)
+  >>> component.provideAdapter(Instance, adapts=(IPerson,))
 
-  >>> person = Person(u'John', u'Miller', 33)
+  >>> person = Person('John', 'Miller', 33)
 
 Note that the first name is not shown as we excluded it via the schema
 factory above. The age field is a number, but is shown here as a
@@ -140,7 +140,7 @@ data suitable for showing on an HTML form.
   >>> form = Form(person, TestRequest())
   >>> form.interface = IPerson
   >>> form.data
-  {'lastName': u'Miller', 'age': '33'}
+  {'lastName': 'Miller', 'age': '33'}
 
 For editing we have to provide another instance adapter.
 
@@ -165,7 +165,7 @@ Create a new object using a schema-based form
   >>> from cybertools.composer.schema.browser.form import CreateForm
   >>> container = dict()
 
-  >>> input = dict(lastName=u'Smith', age='28', action='update')
+  >>> input = dict(lastName='Smith', age='28', action='update')
   >>> form = CreateForm(container, TestRequest(form=input))
   >>> form.interface = IPerson
   >>> form.factory = Person
@@ -174,23 +174,23 @@ Create a new object using a schema-based form
   >>> form.getName = lambda x: x.lastName.lower()
 
   >>> form.data
-  {'lastName': u'Smith', 'age': '28'}
+  {'lastName': 'Smith', 'age': '28'}
 
   >>> form.update()
   False
 
   >>> p2 = container['smith']
   >>> p2.lastName, p2.age
-  (u'Smith', 28)
+  ('Smith', 28)
 
 Macros / renderers
 ------------------
 
   >>> fieldRenderers = form.fieldRenderers
   >>> sorted(fieldRenderers.keys())
-  [u'field', u'field_spacer', u'fields', u'form', u'input_checkbox',
-   u'input_date', u'input_dropdown', u'input_fileupload', u'input_html',
-   u'input_list', u'input_password', u'input_textarea', u'input_textline']
+  ['field', 'field_spacer', 'fields', 'form', 'input_checkbox',
+   'input_date', 'input_dropdown', 'input_fileupload', 'input_html',
+   'input_list', 'input_password', 'input_textarea', 'input_textline']
 
 
 Special Field Types
@@ -202,15 +202,15 @@ Grids, Records, Key Tables
   >>> from cybertools.composer.schema.grid.field import KeyTableFieldInstance
 
   >>> ktfield = Field('data')
-  >>> ktfield.column_types = [zope.schema.Text(__name__='key', title=u'Key',),
-  ...                         zope.schema.Text(__name__='value', title=u'Value')]
+  >>> ktfield.column_types = [zope.schema.Text(__name__='key', title='Key',),
+  ...                         zope.schema.Text(__name__='value', title='Value')]
 
   >>> ktfi = KeyTableFieldInstance(ktfield)
   >>> ktfi.unmarshall([dict(key='0001', value='First row')])
-  {u'0001': [u'First row']}
+  {'0001': ['First row']}
 
-  >>> ktfi.marshall({u'0001': [u'First row']})
-  [{'value': u'First row', 'key': u'0001'}]
+  >>> ktfi.marshall({'0001': ['First row']})
+  [{'key': '0001', 'value': 'First row'}]
 
 Now with some real stuff, using a field instance that takes the column types
 from the context object of the edit form.
@@ -221,16 +221,16 @@ from the context object of the edit form.
   >>> component.provideAdapter(ContextBasedKeyTableFieldInstance, name='keytable')
 
   >>> class IDataTable(Interface):
-  ...     title = zope.schema.TextLine(title=u'Title', required=False)
-  ...     columnNames = zope.schema.List(title=u'Column Names', required=False)
-  ...     data = KeyTable(title=u'Data', required=False)
+  ...     title = zope.schema.TextLine(title='Title', required=False)
+  ...     columnNames = zope.schema.List(title='Column Names', required=False)
+  ...     data = KeyTable(title='Data', required=False)
   >>> IDataTable['columnNames'].nostore = True
 
   >>> class DataTable(object):
-  ...     implements(IDataTable)
   ...     def __init__(self, title, columnNames):
   ...         self.title = title
   ...         self.columnNames = columnNames
+  >>> DataTable = implementer(IDataTable)(DataTable)
 
   >>> dt = DataTable('Account Types', ['identifier', 'label', 'info'])
 
@@ -245,4 +245,4 @@ from the context object of the edit form.
   False
 
   >>> dt.data
-  {u'0001': [u'Standard', u'']}
+  {'0001': ['Standard', '']}
