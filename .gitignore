@@ -1,6 +1,6 @@
 *.pyc
 *.pyo
-ajax/dojo/*
+*/ajax/dojo/dojo*
 build/
 dist/
 *.swp
