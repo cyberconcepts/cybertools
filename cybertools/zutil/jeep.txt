@@ -76,7 +76,7 @@ More Dictionary Methods
   KeyError: 'fourth'
 
   >>> dict(jeep)
-  {'second': 'new second value', 'third': 'third value', 'first': 'first value'}
+  {'first': 'first value', 'second': 'new second value', 'third': 'third value'}
 
 More Methods and Operators
 --------------------------

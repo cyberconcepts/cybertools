@@ -2,8 +2,6 @@
 Data Caching in the Request
 ===========================
 
-$Id$
-
   >>> from cybertools.zutil.rcache import rcache, rcacheproperty
 
   >>> class View(object):
@@ -13,12 +11,12 @@ $Id$
   ...
   ...     @rcache
   ...     def calculate(self):
-  ...         print 'calculating'
+  ...         print('calculating')
   ...         return 42
   ...
   ...     @rcacheproperty
   ...     def value(self):
-  ...         print 'calculating'
+  ...         print('calculating')
   ...         return 43
 
   >>> from zope.publisher.browser import TestRequest

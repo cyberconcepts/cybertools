@@ -25,6 +25,7 @@ zope-testrunner --test-path=. \
 	-s cybertools.tracking \
 	-s cybertools.typology \
 	-s cybertools.util \
+	-s cybertools.zutil \
 	$*
 
 #-s cybertools.view \

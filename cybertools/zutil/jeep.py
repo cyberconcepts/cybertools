@@ -1,44 +1,24 @@
-#
-#  Copyright (c) 2007 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.zutil.jeep
 
-"""
-A general purpose (thus 'Jeep') class that provides most of the interfaces
+""" A general purpose (thus 'Jeep') class that provides most of the interfaces
 of sequences and dictionaries and in addition allows attribute access to
 the dictionary entries.
 
 This is the Zope-based persistent variant of the Jeep class.
-
-$Id$
 """
 
 from persistent import Persistent
 from persistent.list import PersistentList
 from BTrees.OOBTree import OOBTree
 from zope.app.container.interfaces import IContainer
-from zope.interface import implements
+from zope.interface import implementer
 
 _notfound = object()
 _nodefault = object()
 
 
+@implementer(IContainer)
 class Jeep(Persistent):
-
-    implements(IContainer)
 
     _attributes = ('_sequence', '_mapping')
 
@@ -78,7 +58,7 @@ class Jeep(Persistent):
         del self._mapping[attr]
 
     def __getitem__(self, key):
-        if type(key) in (int, long):
+        if isinstance(key, int):
             return getattr(self, self._sequence[key])
         value = getattr(self, key, _notfound)
         if value is _notfound:
@@ -125,7 +105,7 @@ class Jeep(Persistent):
 
     def pop(self, key=-1):
         value = self[key]
-        if type(key) in (int, long):
+        if isinstance(key, int):
             key = self._sequence[key]
         delattr(self, key)
         return value

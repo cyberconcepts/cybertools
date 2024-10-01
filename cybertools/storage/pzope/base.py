@@ -5,7 +5,7 @@
 
 from persistent import Persistent
 from zope import component
-from zope.interface import implements
+from zope.interface import implementer
 from zope.component.hooks import getSite
 from zope.container.interfaces import IContained
 from zope.intid.interfaces import IIntIds
@@ -17,9 +17,8 @@ from cybertools.util.adapter import AdapterFactory
 storages = AdapterFactory()
 
 
+@implementer(IContained)
 class PersistentObject(Persistent):
-
-    implements(IContained)
 
     __parent__ = __name__ = None
 
