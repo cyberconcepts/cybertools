@@ -1,26 +1,7 @@
 #-*- coding: UTF-8 -*-
-#
-#  Copyright (c) 2011 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.commerce.common
 
-"""
-Common functionality.
-
-$Id$
+""" Common functionality.
 """
 
 from zope import component
@@ -147,10 +128,12 @@ class FloatValue(float):
 def getUidForObject(obj, intIds=None):
     if intIds is None:
         intIds = component.getUtility(IIntIds)
-    return intIds.getId(obj)
+    return str(intIds.getId(obj))
 
 def getObjectForUid(uid, intIds=None):
     if intIds is None:
         intIds = component.getUtility(IIntIds)
+    if isinstance(uid, str) and isdigit(uid):
+        uid = int(uid)
     return intIds.getObject(uid)
 

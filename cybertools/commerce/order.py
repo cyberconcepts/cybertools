@@ -96,7 +96,7 @@ class OrderItems(object):
             criteria['runId'] = criteria.pop('run')
         return self.context.query(**criteria)
 
-    def add(self, product, party, shop, order=-1, run=0, **kw):
+    def add(self, product, party, shop, order='???', run=0, **kw):
         kw['shop'] = self.getUid(shop)
         existing = self.getCart(party, order, shop, run, product=product)
         options = kw.get('options')
@@ -114,7 +114,7 @@ class OrderItems(object):
             self.context.indexTrack(0, track, 'order')
         return track
 
-    def getCart(self, party=None, order=-1, shop=None, run=None, **kw):
+    def getCart(self, party=None, order='???', shop=None, run=None, **kw):
         if run:
             kw['run'] = run
         result = self.query(party=party, order=order, **kw)

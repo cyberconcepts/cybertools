@@ -1,35 +1,17 @@
-#
-#  Copyright (c) 2008 Helmut Merz helmutm@cy55.de
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+# cybertools.pyscript.script
 
 """ Simple implementation of Python scripts.
-
-$Id$
 """
 
 import os, re
 import compiler.pycodegen
-from cStringIO import StringIO
+from io import StringIO
 from persistent import Persistent
 import RestrictedPython.RCompile
 from RestrictedPython.SelectCompiler import ast
 from zope.app.container.btree import BTreeContainer
 from zope.app.container.contained import Contained
-from zope.interface import implements
+from zope.interface import implementer
 from zope.proxy import removeAllProxies
 from zope.security.untrustedpython.builtins import SafeBuiltins
 from zope.security.untrustedpython.rcompile import RestrictionMutator as BaseRM
@@ -84,11 +66,10 @@ class RestrictionMutator(BaseRM):
                             [node.expr, ast.Const(node.attrname)])
 
 
+@implementer(IPythonScript)
 class PythonScript(Contained, Persistent):
     """Persistent Python Page - Content Type
     """
-
-    implements(IPythonScript)
 
     _v_compiled = None
 
@@ -178,13 +159,13 @@ class Function(object):
         lines = []
         if parameters:
             self.parameters = [str(p).strip() for p in parameters.split(',')]
-        #print '*** Function.parameters:', repr(self.parameters)
+        #print('*** Function.parameters:', repr(self.parameters))
         lines.insert(0, 'def dummy(): \n    pass')
         for line in source.splitlines():
             lines.append('    ' + line)
         lines.append('script_result = dummy()')
         source = '\n'.join(lines)
-        #print '*** source:', source
+        #print('*** source:', source)
         self.code = compile(source, filename, 'exec')
 
     def __call__(self, args, globals):
@@ -192,20 +173,20 @@ class Function(object):
         for idx, p in enumerate(self.parameters):
             # TODO: handle parameters with default values like ``attr=abc``
             globals[p] = args[idx]
-        exec self.code in globals, None
+        exec(self.code, globals, None)
 
 
 def _print_usrc(match):
     string = match.group(3)
     raw = match.group(2)
     if raw:
-        return match.group(1)+'print '+`string`
-    return match.group(1)+'print '+match.group(3).encode('unicode-escape')
+        #return match.group(1)+'print '+`string`
+        return match.group(1) + 'print(' + eval('string') + ')'
+    return match.group(1) + 'print(' + match.group(3).encode('unicode-escape') + ')'
 
 
+@implementer(IScriptContainer)
 class ScriptContainer(BTreeContainer):
-
-    implements(IScriptContainer)
 
     unrestricted_objects = ('rstat',)  # not used (yet)
 
