@@ -87,10 +87,9 @@ use ``@property`` but ``@getproperty`` to mark the getter and
   ...         self._feel = feel
 
   >>> i = JamesBrown()
-  >>> i.feel
-  Traceback (most recent call last):
-  ...
-  AttributeError: 'JamesBrown' object has no attribute '_feel'
+  >>> try: i.feel
+  ... except Exception as e: print(e)
+  'JamesBrown' object has no attribute '_feel'
 
   >>> i.feel = "good"
   >>> i.feel
@@ -127,10 +126,9 @@ Of course, deleters are also possible:
   >>> i = JamesBrown()
   >>> i.feel = "good"
   >>> del i.feel
-  >>> i.feel
-  Traceback (most recent call last):
-  ...
-  AttributeError: 'JamesBrown' object has no attribute '_feel'
+  >>> try: i.feel
+  ... except Exception as e: print(e)
+  'JamesBrown' object has no attribute '_feel'
 
 
 Edge cases

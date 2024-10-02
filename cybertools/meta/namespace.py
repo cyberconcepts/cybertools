@@ -85,8 +85,10 @@ class Executor(object):
         error = ''
         try:
             exec(text, self.namespace)
-        except:
-            error = traceback.format_exc()
+        except Exception as e:
+            #error = traceback.format_exc()
+            if e:
+                error = traceback.format_exception(e, e, e.__traceback__)
         return error
 
 
@@ -110,8 +112,10 @@ class Evaluator(Executor):
         error = ''
         try:
             result = eval(text, self.namespace)
-        except:
-            error = traceback.format_exc()
+        except Exception as e:
+            #error = traceback.format_exc()
+            if e:
+                error = traceback.format_exception(e, e, e.__traceback__)
         return result, error
 
     def evalutateOrExecute(self, text):

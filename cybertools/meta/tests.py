@@ -1,4 +1,4 @@
-#! /usr/bin/python
+# cybertools.meta.tests
 
 """
 Tests for the 'cybertools.meta' package.
@@ -17,7 +17,7 @@ class Test(unittest.TestCase):
 def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
     return unittest.TestSuite((
-        unittest.makeSuite(Test),
+        unittest.TestLoader().loadTestsFromTestCase(Test),
         doctest.DocFileSuite('README.txt', optionflags=flags),
         doctest.DocFileSuite('namespace.txt', optionflags=flags),
         ))

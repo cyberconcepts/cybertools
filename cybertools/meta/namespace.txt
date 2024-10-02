@@ -107,7 +107,7 @@ value and an - hopefully empty - error string.
   (625, '')
 
   >>> ev.evaluate('30/0')
-  (None, 'Traceback...ZeroDivisionError...')
+  (None, ['Traceback...ZeroDivisionError...'])
 
 Trying to execute a statement leads to a syntax error.
 ... in Python3 print is a function ...
@@ -133,4 +133,4 @@ Execution of Statements
   ''
 
   >>> ex.execute('30/0')
-  'Traceback...ZeroDivisionError...'
+  ['Traceback...ZeroDivisionError...']

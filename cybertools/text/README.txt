@@ -77,11 +77,15 @@ RTF Files
   >>> f = open(os.path.join(testdir, 'mary.rtf'), 'rb')
   >>> result = transform(f)
   >>> print(log)
-  >>> words = result.split()
-  >>> len(words)
-  90
-  >>> u'lamb' in words
-  True
+  zope.server WARNING
+    rtf2xml is not available
+
+>> words = result.split()
+>> len(words)
+90
+>> u'lamb' in words
+True
+
   >>> f.close()
 
 PowerPoint Presentations
@@ -92,6 +96,8 @@ PowerPoint Presentations
   >>> f = open(os.path.join(testdir, 'mary.ppt'), 'rb')
   >>> result = transform(f)
   >>> print(log)
+  zope.server WARNING
+    rtf2xml is not available
   zope.server WARNING
     ppthtml is not available
 
