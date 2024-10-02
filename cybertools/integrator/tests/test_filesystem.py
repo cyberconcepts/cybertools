@@ -1,3 +1,4 @@
+# cybertools.integrator.tests.test_filesystem
 
 import os
 import unittest, doctest
@@ -19,9 +20,9 @@ class Test(unittest.TestCase):
 
 def test_suite():
     return unittest.TestSuite((
-                unittest.makeSuite(Test),
-                doctest.DocFileSuite('../filesystem.txt', optionflags=flags),
-            ))
+        unittest.TestLoader().loadTestsFromTestCase(Test),
+        doctest.DocFileSuite('../filesystem.txt', optionflags=flags),
+        ))
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')

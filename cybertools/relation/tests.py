@@ -59,9 +59,9 @@ class TestRelation(unittest.TestCase):
 
 def test_suite():
     return unittest.TestSuite((
-                unittest.makeSuite(TestRelation),
-                doctest.DocFileSuite('README.txt'),
-            ))
+        unittest.TestLoader().loadTestsFromTestCase(TestRelation),
+        doctest.DocFileSuite('README.txt'),
+        ))
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')

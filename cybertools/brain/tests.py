@@ -1,3 +1,4 @@
+# cybertools.brain.tests
 
 import unittest, doctest
 from zope.interface.verify import verifyClass
@@ -18,10 +19,9 @@ class TestBrain(unittest.TestCase):
 def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
     return unittest.TestSuite((
-                unittest.makeSuite(TestBrain),
-                doctest.DocFileSuite('README.txt',
-                             optionflags=flags,),
-           ))
+        unittest.TestLoader().loadTestsFromTestCase(TestBrain),
+        doctest.DocFileSuite('README.txt', optionflags=flags,),
+        ))
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')

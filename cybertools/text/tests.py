@@ -1,7 +1,6 @@
-#! /usr/bin/python
+# cybertools.text.tests
 
-"""
-Tests for the 'cybertools.text' package.
+""" Tests for the 'cybertools.text' package.
 """
 
 import unittest, doctest

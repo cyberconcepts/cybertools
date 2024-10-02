@@ -1,4 +1,4 @@
-#! /usr/bin/python
+# cybertools.process.tests
 
 """
 Tests for the 'cybertools.process' package.
@@ -7,7 +7,7 @@ Tests for the 'cybertools.process' package.
 import unittest, doctest
 from cybertools.process.definition import Process
 
-class TestProcess(unittest.TestCase):
+class Test(unittest.TestCase):
     "Basic tests for the process package."
 
     def testBasicStuff(self):
@@ -17,7 +17,7 @@ class TestProcess(unittest.TestCase):
 def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
     return unittest.TestSuite((
-        unittest.makeSuite(TestProcess),
+        unittest.TestLoader().loadTestsFromTestCase(Test),
         doctest.DocFileSuite('README.txt', optionflags=flags),
         ))
 

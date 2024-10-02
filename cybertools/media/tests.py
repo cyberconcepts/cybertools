@@ -1,9 +1,6 @@
-#! /usr/bin/python
+# cybertools.media.tests
 
-"""
-Tests for the 'cybertools.media' package.
-
-$Id$
+""" Tests for the 'cybertools.media' package.
 """
 
 import os
@@ -35,9 +32,9 @@ class Test(unittest.TestCase):
 def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
     return unittest.TestSuite((
-                unittest.makeSuite(Test),
-                doctest.DocFileSuite('README.txt', optionflags=flags),
-            ))
+        unittest.TestLoader().loadTestsFromTestCase(Test),
+        doctest.DocFileSuite('README.txt', optionflags=flags),
+        ))
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')

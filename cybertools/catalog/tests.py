@@ -1,7 +1,6 @@
-#! /usr/bin/python
+# cybertools.catalog.tests
 
-"""
-Tests for the 'cybertools.catalog' package.
+""" Tests for the 'cybertools.catalog' package.
 """
 
 import unittest, doctest
@@ -17,7 +16,7 @@ class Test(unittest.TestCase):
 def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
     return unittest.TestSuite((
-        unittest.makeSuite(Test),
+        unittest.TestLoader().loadTestsFromTestCase(Test),
         doctest.DocFileSuite('README.txt', optionflags=flags),
         ))
 

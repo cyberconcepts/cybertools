@@ -41,9 +41,9 @@ class TestLink(unittest.TestCase):
 
 def test_suite():
     return unittest.TestSuite((
-                unittest.makeSuite(TestLink),
-                doctest.DocFileSuite('README.txt'),
-            ))
+        unittest.TestLoader().loadTestsFromTestCase(TestLink),
+        doctest.DocFileSuite('README.txt'),
+        ))
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')

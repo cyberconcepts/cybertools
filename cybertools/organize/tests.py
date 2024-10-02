@@ -1,7 +1,6 @@
-#! /usr/bin/python
+# cybertools.organize.tests
 
-"""
-Tests for the 'cybertools.organize' package.
+""" Tests for the 'cybertools.organize' package.
 """
 
 import unittest, doctest
@@ -34,7 +33,7 @@ def setUp(site):
 def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
     return unittest.TestSuite((
-        unittest.makeSuite(TestParty),
+        unittest.TestLoader().loadTestsFromTestCase(TestParty),
         doctest.DocFileSuite('README.txt', optionflags=flags),
         doctest.DocFileSuite('formmanager.txt', optionflags=flags),
         doctest.DocFileSuite('servicemanager.txt', optionflags=flags),

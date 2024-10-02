@@ -1,7 +1,6 @@
-#! /usr/bin/python
+# cybertools.knowledge.tests
 
-"""
-Tests for the 'cybertools.knowledge' package.
+""" Tests for the 'cybertools.knowledge' package.
 """
 
 import unittest, doctest
@@ -17,7 +16,7 @@ class TestKnowledge(unittest.TestCase):
 def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
     return unittest.TestSuite((
-        unittest.makeSuite(TestKnowledge),
+        unittest.TestLoader().loadTestsFromTestCase(TestKnowledge),
         doctest.DocFileSuite('README.txt', optionflags=flags),
         ))
 
