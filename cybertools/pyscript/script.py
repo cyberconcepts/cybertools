@@ -4,17 +4,17 @@
 """
 
 import os, re
-import compiler.pycodegen
+#import compiler.pycodegen
 from io import StringIO
 from persistent import Persistent
-import RestrictedPython.RCompile
-from RestrictedPython.SelectCompiler import ast
-from zope.app.container.btree import BTreeContainer
-from zope.app.container.contained import Contained
+#import RestrictedPython.RCompile
+#from RestrictedPython.SelectCompiler import ast
+from zope.container.btree import BTreeContainer
+from zope.container.contained import Contained
 from zope.interface import implementer
 from zope.proxy import removeAllProxies
-from zope.security.untrustedpython.builtins import SafeBuiltins
-from zope.security.untrustedpython.rcompile import RestrictionMutator as BaseRM
+#from zope.security.untrustedpython.builtins import SafeBuiltins
+#from zope.security.untrustedpython.rcompile import RestrictionMutator as BaseRM
 from zope.traversing.api import getParent, getPath
 
 from cybertools.pyscript.interfaces import IPythonScript, IScriptContainer
@@ -42,9 +42,10 @@ def compile(text, filename, mode):
     return gen.getCode()
 
 
-class RExpression(RestrictedPython.RCompile.RestrictedCompileMode):
+#class RExpression(RestrictedPython.RCompile.RestrictedCompileMode):
+class RExpression(object):
 
-    CodeGeneratorClass = compiler.pycodegen.ExpressionCodeGenerator
+    #CodeGeneratorClass = compiler.pycodegen.ExpressionCodeGenerator
 
     def __init__(self, source, filename, mode="eval"):
         self.mode = mode
@@ -53,7 +54,8 @@ class RExpression(RestrictedPython.RCompile.RestrictedCompileMode):
         self.rm = RestrictionMutator()
 
 
-class RestrictionMutator(BaseRM):
+#class RestrictionMutator(BaseRM):
+class RestrictionMutator(object):
 
     unrestricted_objects = unrestricted_objects
 

@@ -19,7 +19,7 @@ class Test(unittest.TestCase):
 def test_suite():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
     return unittest.TestSuite((
-        unittest.makeSuite(Test),
+        unittest.TestLoader().loadTestsFromTestCase(Test),
         #doctest.DocTestSuite(cybertools.util.property, optionflags=flags),
         doctest.DocFileSuite('adapter.txt', optionflags=flags),
         #doctest.DocFileSuite('aop.txt', optionflags=flags),

@@ -177,6 +177,8 @@ class RelationRegistry(Catalog):
         results = self.apply(criteria)
         return ResultSet(results, intids)
 
+RelationsRegistry = RelationRegistry
+
 
 class IIndexableRelation(Interface):
     """ Provides the attributes needed for indexing relation objects in
