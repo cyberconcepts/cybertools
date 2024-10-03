@@ -60,7 +60,7 @@ class FileSystemStorage(object):
             data = f.read()
             f.close()
             return data
-        except(IOError, e):
+        except IOError as e:
             logger.warn(e)
                         #'File %r cannot be read.' % fn)
             return ''
@@ -70,7 +70,7 @@ class FileSystemStorage(object):
         fn = self.getDir(address, subDir)
         try:
             return os.path.getsize(fn)
-        except(OSError, e):
+        except OSError as e:
             logger.warn(e)
             return 0
 
@@ -81,7 +81,7 @@ class FileSystemStorage(object):
             ts = os.path.getmtime(fn)
             if ts:
                 return datetime.fromtimestamp(ts)
-        except(OSError, e):
+        except OSError as e:
             logger.warn(e)
             return None
 
