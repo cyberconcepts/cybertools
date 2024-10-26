@@ -24,6 +24,8 @@ sentencePattern = re.compile(r'[:.\?\!]')
 
 def sanitize(value, validTags=validTags, validAttrs=validAttrs,
                     validStyles=validStyles, stripEscapedComments=True):
+    if value is None:
+        return ''
     soup = BeautifulSoup(value, features='lxml')
     for comment in soup.findAll(string=lambda text: isinstance(text, Comment)):
         comment.extract()

@@ -167,7 +167,7 @@ class RecordsFieldInstance(GridFieldInstance):
     def marshall(self, value):
         result = []
         value = value or []
-        cardinality = getattr(self.context, 'cardinality', None)
+        cardinality = getattr(self.context, 'cardinality', None) or 0
         for row in value:
             item = {}
             for fi in self.columnFieldInstances:
