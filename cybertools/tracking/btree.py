@@ -101,7 +101,7 @@ class Track(Persistent):
 class TrackingStorage(BTreeContainer):
 
     trackFactory = Track
-    indexAttributes = trackFactory.index_attributes
+    #indexAttributes = trackFactory.index_attributes
 
     trackNum = runId = 0
     runs = None             # currently active runs
@@ -109,14 +109,19 @@ class TrackingStorage(BTreeContainer):
     currentRuns = None      # the currently active run for each task
     storage = None          # compatibility with new cco.storage
 
+    @property
+    def indexAttributes(self):
+        return self.trackFactory.index_attributes
+
     def __init__(self, *args, **kw):
         trackFactory = kw.pop('trackFactory', None)
         if trackFactory is not None:
             self.trackFactory = trackFactory
-            self.indexAttributes = trackFactory.index_attributes
+            #self.indexAttributes = trackFactory.index_attributes
         super(TrackingStorage, self).__init__(*args, **kw)
         self.indexes = OOBTree.OOBTree()
-        for idx in self.indexAttributes:
+        #for idx in self.indexAttributes:
+        for idx in (trackFactory or self.trackFactory).index_attributes:
             self.indexes[idx] = FieldIndex()
         self.runs = IOBTree.IOBTree()
         self.finishedRuns = IOBTree.IOBTree()
