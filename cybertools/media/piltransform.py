@@ -36,8 +36,8 @@ class PILTransform(object):
     def open(self, path):
         try:
             self.im = Image.open(path)
-        except (IOError, e):
-            logger.warn(e)
+        except IOError as e:
+            logger.warning(e)
             self.im = None
 
     def rotate(self, angle, resize):

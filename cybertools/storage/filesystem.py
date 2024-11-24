@@ -61,7 +61,7 @@ class FileSystemStorage(object):
             f.close()
             return data
         except IOError as e:
-            logger.warn(e)
+            logger.warning(e)
                         #'File %r cannot be read.' % fn)
             return ''
 
