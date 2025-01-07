@@ -88,12 +88,12 @@ class GridFieldInstance(ListFieldInstance):
         headers = [fi.context.title for fi in self.columnFieldInstances]
         rows = []
         value = value or []
-        cardinality = getattr(self.context, 'cardinality', None)
+        cardinality = getattr(self.context, 'cardinality', None) or 0
         for item in value:
             rows.append([fi.display(item.get(fi.name))
                             for fi in self.columnFieldInstances])
         if cardinality > len(value):
-            for item in range(len(value), self.context.cardinality):
+            for item in range(len(value), cardinality):
                 rows.append([fi.display(fi.default) 
                                 for fi in self.columnFieldInstances])
         empty = not rows or (len(rows) == 1 and not [v for v in rows[0] if v])
