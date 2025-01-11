@@ -1,7 +1,6 @@
 # cybertools.commerce.order
 
-"""
-Order and order item classes.
+""" Order and order item classes.
 """
 
 from zope.cachedescriptors.property import Lazy
@@ -46,7 +45,7 @@ class OrderItem(Track):
     def getObject(self, ref):
         if isinstance(ref, int):
             return getObjectForUid(ref)
-        if isinstance(ref, basestring):
+        if isinstance(ref, str):
             if ref.isdigit:
                 return getObjectForUid(int(ref))
             if ':' in ref:

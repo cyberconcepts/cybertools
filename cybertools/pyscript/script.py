@@ -35,7 +35,7 @@ unrestricted_objects = ('rpy', 'r', 'as_py', 'rstat')
 
 
 def compile(text, filename, mode):
-    if not isinstance(text, basestring):
+    if not isinstance(text, str):
         raise TypeError("Compiled source must be string")
     gen = RExpression(text, str(filename), mode)
     gen.compile()
@@ -115,11 +115,11 @@ class PythonScript(Contained, Persistent):
         # compile() don't accept '\r' altogether
         source = source.replace("\r\n", "\n")
         source = source.replace("\r", "\n")
-        if isinstance(source, unicode):
+        if isinstance(source, str):
             # Use special conversion function to work around
             # compiler-module failure to handle unicode in literals
             try:
-                source = source.encode('ascii')
+                source = source.encode()
             except UnicodeEncodeError:
                 return self._tripleQuotedString.sub(_print_usrc, source)
         return self._tripleQuotedString.sub(r"\1print \2\3", source)

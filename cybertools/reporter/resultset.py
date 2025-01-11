@@ -29,21 +29,16 @@ class Cell(object):
 
     @property
     def text(self):
-        value = self.value
-        if value:
-            if isinstance(value, unicode):
-                return value
-            return unicode(str(value))
-        return u''
+        return str(self.value) or ''
 
     @property
     def token(self):
         return self.value
 
     def sortKey(self):
-        return self.value
+        return self.text
 
-    url = urlTitle = u''
+    url = urlTitle = ''
 
 
 @implementer(IRow)

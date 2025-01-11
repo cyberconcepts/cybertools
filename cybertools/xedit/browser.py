@@ -66,7 +66,7 @@ class ExternalEditorView(object):
 
 def fromUnicode(text):
     if not text:
-        return ''
-    if isinstance(text, unicode):
+        return b''
+    if isinstance(text, str):
         return text.encode('UTF-8')
     return text

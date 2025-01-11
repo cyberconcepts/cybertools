@@ -111,7 +111,7 @@ class AutoElement(Element):
         try:
             return super(AutoElement, self).__getitem__(key)
         except KeyError:
-            if isinstance(key, basestring):
+            if isinstance(key, str):
                 result = self.__class__(self.namespace, key, parent=self)
                 self.children[key] = result
                 return result

@@ -166,8 +166,7 @@ class LeafQueryCriteria(BaseQueryCriteria, Element):
             if comparisonValue in (None, '',):
                 return True
         value = self.field.getSelectValue(row)
-        if (self.field.fieldType == 'number' and
-                isinstance(comparisonValue, basestring)):
+        if (self.field.fieldType == 'number' and isinstance(comparisonValue, str)):
             comparisonValue = int(comparisonValue)
         op = operators.get(self.operator)
         if op is None:

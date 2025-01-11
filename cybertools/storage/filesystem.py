@@ -63,7 +63,7 @@ class FileSystemStorage(object):
         except IOError as e:
             logger.warning(e)
                         #'File %r cannot be read.' % fn)
-            return ''
+            return b''
 
     def getSize(self, address, params={}):
         subDir = params.get('subdirectory')
