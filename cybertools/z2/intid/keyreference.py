@@ -5,7 +5,7 @@ from zExceptions import NotFound
 from persistent import IPersistent
 from zope.component import adapter, adapts
 from zope.app.component.hooks import getSite
-from zope.interface import implements, implementer
+from zope.interface import implementer
 from zope.app.keyreference.interfaces import IKeyReference, NotYet
 from zope.app.keyreference.persistent import KeyReferenceToPersistent
 from site import get_root, aq_iter
@@ -30,6 +30,7 @@ def add_object_to_connection(ob, event):
         connection.add(aq_base(ob))
 
 
+@implementer(IKeyReference)
 class KeyReferenceToPersistent(KeyReferenceToPersistent):
     """a zope2ish implementation of keyreferences that unwraps objects
     that have Acquisition wrappers
@@ -38,7 +39,6 @@ class KeyReferenceToPersistent(KeyReferenceToPersistent):
 
     @@ cache IConnection as a property and volative attr?
     """
-    implements(IKeyReference)
     adapts(IPersistent)
 
     key_type_id = 'five.intid.keyreference'

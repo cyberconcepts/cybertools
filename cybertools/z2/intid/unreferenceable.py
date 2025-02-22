@@ -1,7 +1,7 @@
 # Sometimes persistent classes are never meant to be persisted. The most
 # common example are CMFCore directory views and filesystem objects.
 # Register specific handlers that are no-ops to circumvent
-from zope.interface import implements
+from zope.interface import implementer
 from zope.app.keyreference.interfaces import IKeyReference, NotYet
 
 def addIntIdSubscriber(ob, event):
@@ -13,9 +13,9 @@ def removeIntIdSubscriber(ob, event):
 def moveIntIdSubscriber(ob, event):
     return
 
+@implementer(IKeyReference)
 class KeyReferenceNever(object):
     """A keyreference that is never ready"""
-    implements(IKeyReference)
     
     key_type_id = 'five.intid.cmfexceptions.keyreference'
     

@@ -1,13 +1,10 @@
-"""Tests for pyscript
+# cybertools.pyscript.tests
 
-Based on Zope Python Page.
-
-$Id$
-"""
+#Based on Zope Python Page.
 
 import unittest, doctest
 from zope import component
-from zope.interface import implements
+from zope.interface import implementer
 from zope.location.traversing import LocationPhysicallyLocatable
 from zope.traversing.interfaces import IContainmentRoot
 from zope.traversing.interfaces import IPhysicallyLocatable
@@ -17,8 +14,8 @@ from zope.app.testing import placelesssetup
 from cybertools.pyscript.script import ScriptContainer, HAS_R
 
 
+@implementer(IContainmentRoot)
 class Root(ScriptContainer, Contained):
-    implements(IContainmentRoot)
 
     __parent__ = None
     __name__ = 'root'

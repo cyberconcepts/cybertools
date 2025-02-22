@@ -8,13 +8,13 @@ from zope.app.intid.interfaces import IntIdAddedEvent, IntIdRemovedEvent
 from zope.app.container.interfaces import IObjectAddedEvent, IObjectRemovedEvent
 from zope.app.keyreference.interfaces import IKeyReference, NotYet
 from zope.event import notify
-from zope.interface import implements
+from zope.interface import implementer
 
 _marker = []
 
+@implementer(IIntIds)
 class IntIds(z3IntIds):
     """ zope2ish intid utility """
-    implements(IIntIds)
 
     meta_type="IntId Utility"
 

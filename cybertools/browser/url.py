@@ -6,7 +6,6 @@
 from urlparse import urlparse
 
 from zope.container.traversal import ItemTraverser
-from zope.interface import Interface, implements
 
 
 class TraversalRedirector(ItemTraverser):
