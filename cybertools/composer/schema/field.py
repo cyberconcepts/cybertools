@@ -4,6 +4,7 @@
 """
 
 from datetime import datetime
+import locale
 from logging import getLogger
 from time import strptime, strftime
 from zope.browser.interfaces import ITerms
@@ -283,6 +284,11 @@ class DecimalFieldInstance(NumberFieldInstance):
     def unmarshall(self, value):
         if not value:
             return None
+        view = self.clientInstance.view
+        langInfo = view and getattr(view, 'languageInfo', None) or None
+        if langInfo and langInfo.language == 'de':
+            locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
+            return locale.atof(value)
         if ',' in value:
             value = value.replace(',', '.')
         return float(value)
