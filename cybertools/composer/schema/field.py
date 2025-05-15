@@ -4,17 +4,15 @@
 """
 
 from datetime import datetime
-import locale
 from logging import getLogger
 from time import strptime, strftime
 from zope.browser.interfaces import ITerms
+from zope.i18n.format import DateTimeParseError
 from zope.i18n.locales import locales
 from zope.interface import implementer
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 from zope import component
-from zope.i18n.format import DateTimeParseError
-from zope.i18n.locales import locales
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 from zope.tales.engine import Engine
 from zope.tales.tales import Context
@@ -264,9 +262,9 @@ class DecimalFieldInstance(NumberFieldInstance):
     format = 'decimal'
 
     def marshall(self, value):
-        return self.display(value, pattern=u'0.00;-0.00')
+        return self.display(value, pattern='0.00;-0.00')
 
-    def display(self, value, pattern=u'#,##0.00;-#,##0.00'):
+    def display(self, value, pattern='#,##0.00;-#,##0.00'):
         if value is None:
             return ''
         if isinstance(value, str):
@@ -281,14 +279,15 @@ class DecimalFieldInstance(NumberFieldInstance):
             return fmt.format(value, pattern=pattern)
         return '%.2f' % value
 
-    def unmarshall(self, value):
+    def unmarshall(self, value, pattern='#,##0.00;-#,##0.00'):
         if not value:
             return None
         view = self.clientInstance.view
         langInfo = view and getattr(view, 'languageInfo', None) or None
-        if langInfo and langInfo.language == 'de':
-            locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
-            return locale.atof(value)
+        if langInfo:
+            locale = locales.getLocale(langInfo.language)
+            fmt = locale.numbers.getFormatter(self.format)
+            return fmt.parse(value, pattern=pattern)
         if ',' in value:
             value = value.replace(',', '.')
         return float(value)
