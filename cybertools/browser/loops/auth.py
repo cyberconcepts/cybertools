@@ -36,6 +36,10 @@ class LoopsSessionCredentialsPlugin(SessionCredentialsPlugin):
         request.response.redirect(url)
         return True
 
+    def logout(self, request):
+        super(LoopsSessionCredentialsPlugin, self).logout(request)
+        return None # allow logout by other plugins or utilities
+
 
 class LoginLogout(BaseLoginLogout):
 
