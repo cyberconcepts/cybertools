@@ -28,13 +28,14 @@ class FileSystemStorage(object):
         self.subDir = subDir
 
     def getDir(self, address, subDir=None):
+        if isinstance(address, bytes):
+            address = address.decode('UTF-8')
         subDir = subDir or self.subDir
-        subDir = str(subDir)
         if self.rootDir is None:
             if subDir:
                 return os.path.join(subDir, address)
             return address
-        return os.path.join(str(self.rootDir), subDir, address)
+        return os.path.join(self.rootDir, subDir, address)
 
     def setData(self, address, data, params={}):
         subDir = params.get('subdirectory')
